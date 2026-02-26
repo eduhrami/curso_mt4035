@@ -1,5 +1,6 @@
 # Sesión 8 — Presentaciones finales + examen final
 
+**Fecha:** 10 de junio de 2026  
 **Profesores:** Eduardo y Marcos  
 **Ancla del packet:** Sesión 7 incluye presentaciones finales y examen final
 

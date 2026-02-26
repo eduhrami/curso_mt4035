@@ -1,5 +1,6 @@
 # Sesión 1 — Fundamentos: analítica de retail y e-commerce
 
+**Fecha:** 23 de abril de 2026  
 **Profesor:** Eduardo  
 **Ancla del packet:** Introducción a la analítica de retail/e-commerce  
 **Ancla del plan de estudios:** Tema 1

@@ -1,5 +1,6 @@
 # Sesión 3 — Analítica de ventas e inventario (pronóstico, demanda, pruebas A/B)
 
+**Fecha:** 6 de mayo de 2026  
 **Profesor:** Marcos  
 **Ancla del plan de estudios:** Tema 3  
 **Nota:** El packet combina ventas/inventario con segmentación antes; esta guía lo separa para crear 8 sesiones

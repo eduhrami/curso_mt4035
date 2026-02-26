@@ -1,5 +1,6 @@
 # Sesión 6 — Precios y promociones + fraude y seguridad
 
+**Fecha:** 27 de mayo de 2026  
 **Profesor:** Marcos  
 **Ancla del packet:** La Sesión 3 incluye precios/promos y fraude/seguridad  
 **Ancla del plan de estudios:** Temas 4–5

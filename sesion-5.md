@@ -1,5 +1,6 @@
 # Sesión 5 — Analítica de transporte y logística (ruteo, costo, última milla)
 
+**Fecha:** 21 de mayo de 2026  
 **Profesor:** Eduardo  
 **Ancla del packet:** Sesión 5  
 **Ancla del plan de estudios:** Tema 8

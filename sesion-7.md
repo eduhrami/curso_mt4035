@@ -1,5 +1,6 @@
 # Sesión 7 — Diseño de red de supply chain + tecnologías emergentes
 
+**Fecha:** 3 de junio de 2026  
 **Profesor:** Eduardo  
 **Ancla del packet:** Sesión 6 incluye diseño de red + tech emergente  
 **Ancla del plan de estudios:** Temas 9–10

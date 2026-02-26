@@ -1,5 +1,6 @@
 # Sesión 2 — Segmentación y perfilado (CLV, RFM, personalización)
 
+**Fecha:** 29 de abril de 2026  
 **Profesor:** Marcos  
 **Ancla del packet:** La Sesión 2 incluye segmentación/perfilado  
 **Ancla del plan de estudios:** Tema 2
