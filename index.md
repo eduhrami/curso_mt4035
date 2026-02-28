@@ -2,6 +2,10 @@
 
 **Materia:** MT4035 – Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro
 
+## Objetivos del Curso
+
+Este curso tiene como propósito que el estudiantado comprenda y aplique herramientas de analítica de datos en contextos de comercio minorista, comercio electrónico y cadena de suministro, con un enfoque práctico orientado a la toma de decisiones. A lo largo de las sesiones, se desarrollarán competencias para identificar y analizar indicadores clave de desempeño (KPIs), interpretar el comportamiento del cliente, evaluar operaciones comerciales y logísticas, y proponer mejoras sustentadas en evidencia. Mediante casos, trabajo de campo y análisis aplicado, el curso busca que las y los estudiantes integren una visión estratégica y operativa de la analítica, conectando datos, procesos y decisiones para generar valor en entornos reales de negocio.
+
 ## Sesiones
 
 1. **[Fundamentos: analítica de retail y e-commerce](./sesion-1.md)** — *Profesor Eduardo*  

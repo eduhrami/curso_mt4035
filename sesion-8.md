@@ -6,10 +6,17 @@
 
 ---
 
+## Descripción de la sesión
+
+La sesión final está dedicada a la integración de todos los conceptos del curso a través de las presentaciones de proyecto y el examen final. Los equipos exponen su trabajo de campo y análisis aplicado, mostrando cómo conectan datos, procesos y decisiones para generar valor en un contexto real de negocio. El examen complementa esta evaluación, asegurando que cada estudiante consolide una comprensión individual de los marcos y herramientas revisados.
+
 ## Objetivos
 
-- Evidenciar pensamiento analítico end-to-end y recomendaciones accionables
-- Validar comprensión individual con el examen final
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
+- Evidenciar pensamiento analítico end-to-end y formular recomendaciones accionables basadas en evidencia
+- Comunicar de forma clara hallazgos, insights y su impacto esperado en KPIs de negocio
+- Validar su comprensión individual de los conceptos y herramientas clave mediante el examen final
 
 ---
 

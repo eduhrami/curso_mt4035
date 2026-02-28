@@ -7,10 +7,17 @@
 
 ---
 
+## Descripción de la sesión
+
+Esta sesión combina la analítica de precios y promociones con la gestión de fraude y consideraciones de privacidad y seguridad. Se revisan métricas para evaluar la efectividad de promociones y se discuten distintas palancas de precio y sus efectos sobre ventas y margen. En paralelo, se analizan patrones típicos de fraude en retail y e-commerce, así como los tradeoffs entre control, experiencia del cliente y aprovechamiento de datos.
+
 ## Objetivos
 
-- Evaluar efectividad de promociones y palancas de precio
-- Reconocer patrones de fraude y cómo privacidad/seguridad afectan la analítica
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
+- Evaluar la efectividad de promociones y distintas palancas de precio usando métricas adecuadas
+- Reconocer patrones de fraude relevantes en retail y cómo privacidad/seguridad afectan la analítica
+- Proponer diseños de promociones y esquemas de control que equilibren rentabilidad, riesgo y experiencia del cliente
 
 ---
 

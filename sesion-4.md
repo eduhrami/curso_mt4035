@@ -7,10 +7,17 @@
 
 ---
 
+## Descripción de la sesión
+
+La sesión introduce la perspectiva de supply chain management (SCM) aplicada al retail, enfatizando la relación entre decisiones operativas y desempeño en tiempo, costo y nivel de servicio. Se revisan KPIs clave de supply chain y modelos básicos de gestión de inventario como EOQ y ROP, resaltando sus supuestos y limitaciones. A través del caso 7-Eleven Japan, se explora cómo el uso inteligente de datos puede convertirse en una ventaja competitiva a lo largo de la cadena de suministro.
+
 ## Objetivos
 
-- Conectar KPIs de supply chain (tiempo, costo, nivel de servicio) con analítica
-- Entender EOQ/ROP y sus límites
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
+- Conectar KPIs de supply chain (tiempo, costo, nivel de servicio) con decisiones analíticas y operativas
+- Entender EOQ/ROP, sus supuestos y límites en contextos reales de retail
+- Identificar oportunidades de creación de valor a partir del uso de datos en casos como 7-Eleven
 
 ---
 

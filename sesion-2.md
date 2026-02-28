@@ -7,10 +7,17 @@
 
 ---
 
+## Descripción de la sesión
+
+Esta sesión profundiza en la creación de valor a través del entendimiento del cliente. Se introducen los conceptos de valor de vida del cliente (CLV) y de segmentación basada en RFM, discutiendo cómo estos enfoques permiten priorizar clientes y diseñar propuestas diferenciadas. A partir de ejercicios prácticos, se conecta cada segmento con decisiones concretas de targeting, personalización, canales y medición de resultados.
+
 ## Objetivos
 
-- Explicar CLV e implementar lógica tipo RFM
-- Traducir segmentos en acciones (targeting, personalización, ofertas)
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
+- Explicar CLV e implementar lógica tipo RFM para clasificar clientes
+- Traducir segmentos en acciones (targeting, personalización, ofertas) alineadas a objetivos de negocio
+- Plantear hipótesis de segmentación y definir KPIs para evaluar el impacto de las acciones propuestas
 
 ---
 

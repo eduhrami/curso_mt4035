@@ -7,10 +7,17 @@
 
 ---
 
+## Descripción de la sesión
+
+En esta sesión se analizan de forma crítica los datos de ventas e inventario, diferenciando entre lo que el cliente quiso comprar, lo que efectivamente compró y lo que se perdió por falta de producto. Se presenta una visión general de los flujos de pronóstico de demanda, incorporando patrones de estacionalidad y eventos especiales. Finalmente, se introduce el uso de experimentos y pruebas A/B en retail para evaluar cambios comerciales u operativos de forma rigurosa.
+
 ## Objetivos
 
-- Distinguir demanda vs ventas vs ventas perdidas; comprender el sesgo por quiebres de stock
-- Trazar un flujo de pronóstico y cuándo usar experimentos (A/B)
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
+- Distinguir demanda vs ventas vs ventas perdidas y comprender el sesgo por quiebres de stock
+- Trazar un flujo de pronóstico de demanda que incorpore estacionalidad y eventos relevantes
+- Identificar cuándo y cómo usar experimentos (A/B) para medir el impacto de decisiones sobre ventas e inventario
 
 ---
 

@@ -7,10 +7,17 @@
 
 ---
 
+## Descripción de la sesión
+
+En esta sesión se abordan los retos analíticos de transporte y logística en entornos omnicanal. Se discuten KPIs logísticos relacionados con promesa de entrega, cumplimiento y costo, así como los principales tradeoffs de la última milla. Además, se introducen de forma intuitiva los problemas de ruteo y su impacto en la experiencia del cliente y la rentabilidad, incluyendo el papel emergente de la IA en logística.
+
 ## Objetivos
 
-- Definir KPIs logísticos y proponer intervenciones analíticas
-- Entender tradeoffs de última milla y restricciones de ruteo
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
+- Definir KPIs logísticos clave y proponer intervenciones analíticas para mejorarlos
+- Entender los tradeoffs de última milla y las restricciones básicas de ruteo en contextos reales
+- Relacionar decisiones de diseño logístico con la promesa y el cumplimiento de entrega al cliente final
 
 ---
 

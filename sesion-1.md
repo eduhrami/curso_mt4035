@@ -7,10 +7,17 @@
 
 ---
 
+## Descripción de la sesión
+
+En esta sesión se presenta el mapa general del curso y el rol de la analítica de datos en el comercio minorista y el comercio electrónico. Se revisan las principales fuentes de datos (POS, canales digitales, CRM y supply chain) y se discute cómo se transforman en información accionable. A partir de ejemplos concretos, se introduce una taxonomía de KPIs que conecta el desempeño del negocio con decisiones tácticas y estratégicas.
+
 ## Objetivos
 
+Al finalizar la sesión, las y los estudiantes serán capaces de:
+
 - Alinear qué es analítica en retail, de dónde vienen los datos (POS, web/app, CRM, supply chain)
-- Establecer categorías de KPI y conectarlas con decisiones
+- Establecer categorías de KPI y conectarlas con decisiones de negocio
+- Reconocer los componentes principales de un sistema de medición omnicanal y su relevancia para la experiencia de cliente
 
 ---
 
