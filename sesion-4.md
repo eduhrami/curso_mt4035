@@ -44,8 +44,9 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Lecturas recomendadas
 
 - Agrawal, N., & Smith, S. A. (Eds.). (2015). *Retail supply chain management: Quantitative models and empirical studies* (2nd ed.). Springer.
-- Chopra, S. (2005). *Seven-Eleven Japan Co.* Kellogg School of Management, Case KEL026.
-- Lal, R., & Han, A. (2011). *Tanpin Kanri: Retail Practice at Seven-Eleven Japan.* Harvard Business School Case 506-002.
+- Chopra, S. (2005). *Seven-Eleven Japan Co.* Kellogg School of Management, Case KEL026. https://store.hbr.org/product/seven-eleven-japan-co/KEL026
+- Lal, R., & Han, A. (2011). *Tanpin Kanri: Retail Practice at Seven-Eleven Japan.* Harvard Business School Case 506-002. https://store.hbr.org/product/tanpin-kanri-retail-practice-at-seven-eleven-japan/506002
+- Johnson, P. F., & Mark, K. (2019). *Walmart: Supply Chain Management* (Case No. W19317). Ivey Publishing. https://store.hbr.org/product/walmart-supply-chain-management/W19317
 - Complemento: capítulos de inventarios (safety stock, service levels, variabilidad)
 
 ---
