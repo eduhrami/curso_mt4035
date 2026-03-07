@@ -48,4 +48,4 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-[← Volver al índice](./index.md)
+[← Volver al índice](./README.md)
