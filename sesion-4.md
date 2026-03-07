@@ -31,7 +31,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Preparación del estudiante
 
-- Leer el caso *7-Eleven Japan Co.* (asignado)
+- Leer el caso *Seven-Eleven Japan Co.* (asignado)
 
 ---
 
@@ -43,7 +43,9 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Lecturas recomendadas
 
-- **Agrawal & Smith** — pensamiento cuantitativo aplicado a retail SCM
+- Agrawal, N., & Smith, S. A. (Eds.). (2015). *Retail supply chain management: Quantitative models and empirical studies* (2nd ed.). Springer.
+- Chopra, S. (2005). *Seven-Eleven Japan Co.* Kellogg School of Management, Case KEL026.
+- Lal, R., & Han, A. (2011). *Tanpin Kanri: Retail Practice at Seven-Eleven Japan.* Harvard Business School Case 506-002.
 - Complemento: capítulos de inventarios (safety stock, service levels, variabilidad)
 
 ---

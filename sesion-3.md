@@ -43,8 +43,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Lecturas recomendadas
 
-- **Agrawal & Smith** — *Retail Supply Chain Management: Quantitative Models and Empirical Studies* (mentalidad de inventario/demanda)
-- Complemento: primer de experimentación/pruebas A/B (capítulos seleccionados)
+- Agrawal, N., & Smith, S. A. (Eds.). (2015). *Retail supply chain management: Quantitative models and empirical studies* (2nd ed.). Springer.
+- Complemento: manual de experimentación/pruebas A/B (capítulos seleccionados)
 
 ---
 
