@@ -43,6 +43,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Lecturas recomendadas
 
+- Fernie, J., & Sparks, L. (Eds.). (2018). *Logistics and retail management: Emerging issues and new challenges in the retail supply chain* (5th ed.). Kogan Page.
 - Complemento: capítulos de analítica de operaciones/logística (ruteo + economía de última milla + diseño de servicio)
 
 ---
