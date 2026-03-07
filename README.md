@@ -16,6 +16,8 @@ A lo largo de las sesiones, se desarrollarán competencias para identificar y an
 
 ## Sesiones
 
+En cada sesión se explorarán los conceptos principales así como casos de estudio de aplicación de las distintas técnicas y métodos en la industria.
+
 1. **[Fundamentos: analítica de retail y e-commerce](./sesion-1.md)** — *Profesor Eduardo*  
    **Fecha:** 23 de abril de 2026  
    Introducción a analítica en retail, taxonomía de KPIs, fuentes de datos
