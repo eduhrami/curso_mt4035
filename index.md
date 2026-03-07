@@ -4,7 +4,15 @@
 
 ## Objetivos del Curso
 
-Este curso tiene como propósito que el estudiantado comprenda y aplique herramientas de analítica de datos en contextos de comercio minorista, comercio electrónico y cadena de suministro, con un enfoque práctico orientado a la toma de decisiones. A lo largo de las sesiones, se desarrollarán competencias para identificar y analizar indicadores clave de desempeño (KPIs), interpretar el comportamiento del cliente, evaluar operaciones comerciales y logísticas, y proponer mejoras sustentadas en evidencia. Mediante casos, trabajo de campo y análisis aplicado, el curso busca que las y los estudiantes integren una visión estratégica y operativa de la analítica, conectando datos, procesos y decisiones para generar valor en entornos reales de negocio.
+Este curso tiene como propósito que el estudiantado comprenda y aplique herramientas de analítica de datos en contextos de comercio minorista, comercio electrónico y cadena de suministro, con un enfoque práctico orientado a la toma de decisiones.
+
+**a) Analítica de datos (técnicas clásicas y modelos matemáticos):** Se utilizarán técnicas de análisis descriptivo, visualización de datos, análisis de series temporales simples, modelos de inventarios (EOQ, ROP), modelos de ubicación de instalaciones, y métodos de optimización para resolver problemas operativos del retail y la cadena de suministro.
+
+**b) Analítica avanzada o predictiva:** Se aplicarán modelos predictivos estadísticos y de machine learning para Forecasting de demanda, segmentación de clientes (RFM, CLV), detección de fraude, predicción de rotación de inventario, y optimización de rutas logísticas.
+
+**c) Inteligencia artificial y tecnologías emergentes:** Se explorará el uso de IA generativa, modelos de lenguaje para análisis de reseñas, IoT para monitoreo en tiempo real, gemelos digitales, y blockchain para trazabilidad en la cadena de suministro.
+
+A lo largo de las sesiones, se desarrollarán competencias para identificar y analizar indicadores clave de desempeño (KPIs), interpretar el comportamiento del cliente, evaluar operaciones comerciales y logísticas, y proponer mejoras sustentadas en evidencia. Mediante casos, trabajo de campo y análisis aplicado, el curso busca que las y los estudiantes integren una visión estratégica y operativa de la analítica, conectando datos, procesos y decisiones para generar valor en entornos reales de negocio.
 
 ## Sesiones
 
