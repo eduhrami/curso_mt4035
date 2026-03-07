@@ -6,6 +6,8 @@
 
 Este curso tiene como propósito que el estudiantado comprenda y aplique herramientas de analítica de datos en contextos de comercio minorista, comercio electrónico y cadena de suministro, con un enfoque práctico orientado a la toma de decisiones.
 
+La analítica de datos en retail transforma información transaccional, comportamental y operativa en conocimiento accionable. A través de métricas e indicadores clave de desempeño (KPIs), las organizaciones pueden medir y optimizar cada eslabón de la cadena de valor: desde la adquisición y retención de clientes (CLV, tasa de conversión, NPS), pasando por la gestión de inventario y disponibilidad (fill rate, días de inventario, quiebres de stock), hasta la eficiencia logística y entrega (OTIF, costo por pedido, última milla). Casos de éxito como Amazon (personalización y logística predictiva), 7-Eleven Japan (inventario basado en demanda real), Tesco (gestión de categoría y disponibilidad), y Walmart (optimización de inventario y supply chain), demuestran cómo el uso sistemático de datos genera ventajas competitivas sostenibles en el sector.
+
 **a) Analítica de datos (técnicas clásicas y modelos matemáticos):** Se utilizarán técnicas de análisis descriptivo, visualización de datos, análisis de series temporales simples, modelos de inventarios (EOQ, ROP), modelos de ubicación de instalaciones, y métodos de optimización para resolver problemas operativos del retail y la cadena de suministro.
 
 **b) Analítica avanzada o predictiva:** Se aplicarán modelos predictivos estadísticos y de machine learning para Forecasting de demanda, segmentación de clientes (RFM, CLV), detección de fraude, predicción de rotación de inventario, y optimización de rutas logísticas.
