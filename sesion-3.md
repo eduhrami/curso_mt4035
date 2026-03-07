@@ -44,7 +44,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Lecturas recomendadas
 
 - Agrawal, N., & Smith, S. A. (Eds.). (2015). *Retail supply chain management: Quantitative models and empirical studies* (2nd ed.). Springer.
-- Complemento: manual de experimentación/pruebas A/B (capítulos seleccionados)
+- Complemento: Alvarez, J. B., McLoughlin, D. P., & Shelman, M. (2014). *Tesco Group Food* (Case No. 514022). Harvard Business School. https://store.hbr.org/product/tesco-group-food/514022
 
 ---
 
