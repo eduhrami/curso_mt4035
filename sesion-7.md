@@ -44,7 +44,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Lecturas recomendadas
 
-- **Zentes** — *Strategic Retail Management: Text and International Cases*
+- Zentes, J., Morschett, D., & Schramm-Klein, H. (2017). *Strategic retail management: Text and international cases* (3rd ed.). Springer Gabler.
 - Complemento: lecturas cortas de practicantes sobre visibilidad, IoT en retail e IA para personalización
 
 ---

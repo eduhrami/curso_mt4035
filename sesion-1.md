@@ -43,7 +43,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Lecturas recomendadas
 
-- **Berman** — *Retail Management: A Strategic Approach* (marco estratégico de retail)
+- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.
 - Complemento: handout del profesor sobre "árboles de KPI de retail" y "medición omnicanal"
 
 ---

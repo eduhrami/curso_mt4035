@@ -43,7 +43,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Lecturas recomendadas
 
-- **Berman** — enfoque estratégico para precios y promociones
+- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson. Enfoque estratégico para precios y promociones.
 - Complemento: capítulos de pricing/revenue management + overview de fraude (reporte industria o capítulo de texto)
 
 ---
