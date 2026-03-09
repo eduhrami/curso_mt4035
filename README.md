@@ -16,7 +16,7 @@ Las distintas técnicas de analítica que se utilizarán en el curso comprenden:
 
 **c) Inteligencia artificial y tecnologías emergentes:** Se explorará el uso de IA generativa, modelos de lenguaje para análisis de reseñas, IoT para monitoreo en tiempo real, gemelos digitales, y blockchain para trazabilidad en la cadena de suministro.
 
-A lo largo de las sesiones, se estudiarán los principales indicadores clave de desempeño (KPIs) de cada eslabón de la cadena de valor, se presnetarán las técnicas para interpretar el comportamiento del cliente, evaluar operaciones comerciales y logísticas, y proponer mejoras sustentadas en evidencia. Mediante casos, trabajo de campo y análisis aplicado, el curso busca que las y los estudiantes integren una visión estratégica y operativa de la analítica, conectando datos, procesos y decisiones para generar valor en entornos reales de negocio.
+A lo largo de las sesiones, se estudiarán los principales indicadores clave de desempeño (KPIs) de cada eslabón de la cadena de valor, se presentarán técnicas para interpretar el comportamiento del cliente, evaluar operaciones comerciales y logísticas, y proponer mejoras sustentadas en evidencia. Mediante casos, trabajo de campo y análisis aplicado, el curso busca que las y los estudiantes integren una visión estratégica y operativa de la analítica, conectando datos, procesos y decisiones para generar valor en entornos reales de negocio.
 
 ## Sesiones
 
@@ -34,21 +34,21 @@ En cada sesión se explorarán los conceptos principales así como casos de estu
    **Fecha:** 6 de mayo de 2026  
    Pronóstico de demanda, quiebres de stock, pruebas A/B
 
-4. **[SCM + gestión de inventario](./sesion-4.md)** — *Profesor Eduardo*  
+4. **[SCM + inventario + fundamentos de diseño de red](./sesion-4.md)** — *Profesor Eduardo*  
    **Fecha:** 13 de mayo de 2026  
-   KPIs de supply chain, EOQ/ROP, discusión de caso
+   KPIs de supply chain, diseño de red (fundamentos), EOQ/ROP, caso 7-Eleven
 
 5. **[Transporte y logística](./sesion-5.md)** — *Profesor Eduardo*  
    **Fecha:** 21 de mayo de 2026  
-   KPIs logísticos, ruteo, última milla, promesa de entrega
+   Diseño de red para fulfillment omnicanal, KPIs logísticos, ruteo, última milla
 
 6. **[Precios y promociones + fraude](./sesion-6.md)** — *Profesor Marcos*  
    **Fecha:** 27 de mayo de 2026  
    Efectividad de promociones, pricing, patrones de fraude
 
-7. **[Diseño de red + tecnologías emergentes](./sesion-7.md)** — *Profesor Eduardo*  
+7. **[Tecnologías emergentes](./sesion-7.md)** — *Profesor Eduardo*  
    **Fecha:** 3 de junio de 2026  
-   Ubicación de instalaciones, IoT, IA/ML, blockchain
+   IoT/visibilidad, IA/ML y genAI, automatización/robótica, blockchain
 
 8. **[Presentaciones finales + examen](./sesion-8.md)** — *Profesores Eduardo y Marcos*  
    **Fecha:** 10 de junio de 2026  
