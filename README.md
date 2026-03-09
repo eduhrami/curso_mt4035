@@ -34,7 +34,7 @@ En cada sesión se explorarán los conceptos principales así como casos de estu
    **Fecha:** 6 de mayo de 2026  
    Pronóstico de demanda, quiebres de stock, pruebas A/B
 
-4. **[SCM + gestión de inventario + caso 7-Eleven](./sesion-4.md)** — *Profesor Eduardo*  
+4. **[SCM + gestión de inventario](./sesion-4.md)** — *Profesor Eduardo*  
    **Fecha:** 13 de mayo de 2026  
    KPIs de supply chain, EOQ/ROP, discusión de caso
 
