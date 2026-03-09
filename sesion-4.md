@@ -1,8 +1,8 @@
-# Sesión 4 — Introducción a SCM + gestión de inventario + caso 7-Eleven
+# Sesión 4 — Introducción a SCM + gestión de inventario
 
 **Fecha:** 13 de mayo de 2026  
 **Profesor:** Eduardo  
-**Ancla del packet:** Sesión 4 incluye SCM + inventarios + caso 7-Eleven y foro  
+**Ancla del packet:** Sesión 4 incluye SCM + inventarios 
 **Ancla del plan de estudios:** Temas 6–7
 
 ---
