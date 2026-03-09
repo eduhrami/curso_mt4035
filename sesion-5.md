@@ -9,7 +9,7 @@
 
 ## Descripción de la sesión
 
-En esta sesión se abordan los retos analíticos de transporte y logística en entornos omnicanal, conectándolos explícitamente con decisiones de diseño de red para fulfillment (por ejemplo: ship-from-store vs CD, dark stores, micro-fulfillment, cross-docking). Se discuten KPIs logísticos relacionados con promesa de entrega, cumplimiento y costo, así como los principales tradeoffs de la última milla. Además, se introducen de forma intuitiva los problemas de ruteo y su impacto en la experiencia del cliente y la rentabilidad, incluyendo el papel emergente de la IA en logística.
+En esta sesión se abordan los retos analíticos de transporte y logística en entornos omnicanal, construyendo sobre el diagrama de red y KPIs definidos en la Sesión 4. Se conectan decisiones de fulfillment (por ejemplo: ship-from-store vs CD, dark stores, micro-fulfillment, cross-docking) con promesa de entrega, cumplimiento, costo y capacidad. Además, se introducen de forma intuitiva los problemas de ruteo y su impacto en la experiencia del cliente y la rentabilidad, incluyendo el papel emergente de la IA en logística.
 
 ## Objetivos
 
@@ -24,23 +24,36 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase
 
-1. **Diseño de red para omnicanal:** opciones de fulfillment (ship-from-store, CD, dark store, MFC) y tradeoffs costo-servicio
-2. **Promesa vs cumplimiento de entrega** (KPIs de experiencia)
-3. **Optimización de rutas** (bases) + drivers de costo en última milla
-4. **IA en logística:** predicción de ETAs, asignación dinámica y detección de anomalías (discusión)
+1. **Del diagrama a decisiones:** diseño de red/fulfillment omnicanal y cómo cambia el cost-to-serve
+2. **Promesa vs cumplimiento de entrega:** KPIs, ventanas de entrega, causas típicas de incumplimiento
+3. **Ruteo y última milla:** drivers de costo, restricciones (capacidad/tiempo), por qué VRP es difícil
+4. **IA en logística:** predicción de ETAs, asignación dinámica, monitoreo de anomalías y límites operativos
+
+## Subtemas (detalle)
+
+- **Fulfillment omnicanal:** ship-from-store, ship-from-DC, BOPIS, dark stores, MFC; cuándo conviene cada uno
+- **Segmentación de servicio:** no todos los SKUs/clientes merecen el mismo SLA; implicancias para costo y capacidad
+- **Order promising:** promesa realista vs optimista; buffers, cut-off times y su relación con OTIF
+- **Economía de última milla:** densidad, drop size, reintentos, devoluciones; relación con costo por pedido
+- **Ruteo (VRP):** ventanas de tiempo, múltiples depósitos, restricciones de flota, priorización; heurísticas vs óptimo
+- **Asignación dinámica:** cómo decidir "desde dónde" cumplir un pedido (tienda vs CD) y tradeoffs locales vs globales
+- **Reverse logistics:** devoluciones como parte del diseño (costo, tiempos, reputación)
 
 ---
 
 ## Preparación del estudiante
 
+- Traer el diagrama de red (as-is) de la Sesión 4
 - Capturar promesa y tiempo real de entrega del retailer (alineado a trabajo de campo)
 - Identificar (por evidencia observable) desde dónde se cumple el pedido cuando es posible: tienda, CD, tercero/marketplace
+- Registrar el costo de entrega (si aplica) y si existe umbral de envío gratis
 
 ---
 
 ## Tarea / entregable
 
-- Checkpoint de proyecto: baseline de KPIs logísticos + 2 hipótesis de mejora (al menos 1 debe ser a nivel de red/fulfillment, no solo ruteo)
+- Checkpoint de proyecto: baseline de KPIs logísticos + 2 hipótesis de mejora (al menos 1 debe ser a nivel de red/fulfillment)
+- Proyecto: 1 escenario to-be de red/fulfillment (diagrama simple) + impacto esperado en 2 KPIs (servicio y costo)
 
 ---
 

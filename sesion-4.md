@@ -25,9 +25,19 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Estructura en clase
 
 1. **Mapa de KPIs:** lead time, fill rate, OTIF, cost-to-serve
-2. **Diseño de red (fundamentos):** nodos/echelons, centralizado vs regional, costo vs servicio, posicionamiento de inventario
+2. **Diseño de red (fundamentos):** nodos/echelons, centralizado vs regional, costo vs servicio, posicionamiento de inventario y capacidad
 3. **Modelos de control:** EOQ/ROP (visión general)
 4. **Discusión 7-Eleven:** "¿Dónde está la ventaja de datos y cómo se manifiesta?"
+
+## Subtemas (detalle)
+
+- **Lenguaje de red:** nodos (proveedor, CD, tienda, dark store, 3PL) y echelons; flujos físicos vs flujos de información
+- **Servicio objetivo:** qué significa "nivel de servicio" (fill rate/OTIF) y cómo se conecta con disponibilidad y promesa al cliente
+- **Posicionamiento de inventario:** dónde conviene almacenar (central vs regional), qué se gana/pierde en tiempo y variabilidad
+- **Trade-off costo-servicio:** costo fijo (nodos) vs costo variable (transporte/manejo); noción de cost-to-serve
+- **Capacidad y cuellos de botella:** capacidades en CD/tienda y por qué importan incluso con buen pronóstico
+- **Escenarios simples:** comparación 1 CD vs 2 CDs (análisis de sensibilidad básico, sin optimización formal)
+- **Límites de la sesión:** ruteo de última milla, asignación dinámica de pedidos y selección de transportistas se profundizan en Sesión 5
 
 ---
 
@@ -35,6 +45,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 - Leer el caso *Seven-Eleven Japan Co.* (asignado)
 - Dibujar (a alto nivel) la red del retailer del proyecto: tienda(s) / CD(s) / dark store / 3PL, y dónde creen que se posiciona el inventario
+- Marcar 1 punto de dolor del sistema (quiebre, demora, sustitución, devoluciones) y el KPI que lo captura
 
 ---
 
