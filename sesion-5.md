@@ -41,10 +41,17 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Lecturas recomendadas
+## Libro de texto
 
 - Fernie, J., & Sparks, L. (Eds.). (2018). *Logistics and retail management: Emerging issues and new challenges in the retail supply chain* (5th ed.). Kogan Page.
-- Complemento: Spiegel, J. R., McKenna, M. T., Lakshman, G. S., & Nordstrom, P. G. (2013). *Method and system for anticipatory package shipping* (U.S. Patent No. US 8,615,473). U.S. Patent and Trademark Office. https://patents.google.com/patent/US8615473B2/en
+
+## Lecturas recomendadas (APA)
+
+- Spiegel, J. R., McKenna, M. T., Lakshman, G. S., & Nordstrom, P. G. (2013, December 24). *Method and system for anticipatory package shipping* (U.S. Patent No. US 8,615,473). U.S. Patent and Trademark Office. https://patents.google.com/patent/US8615473B2/en
+
+## Complementos
+
+- Capítulos de analítica de operaciones/logística (ruteo + economía de última milla + diseño de servicio)
 
 ---
 

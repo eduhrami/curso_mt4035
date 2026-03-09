@@ -34,9 +34,18 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Lecturas recomendadas
+## Libro de texto
 
-- Sin lecturas nuevas; usar la sesión para síntesis y repaso
+- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.
+
+## Lecturas recomendadas (APA)
+
+- Knaflic, C. N. (2015). *Storytelling with data: A data visualization guide for business professionals*. Wiley. https://www.wiley.com/en-us/Storytelling+with+Data%3A+A+Data+Visualization+Guide+for+Business+Professionals-p-9781119002253
+
+## Complementos
+
+- Plantilla de presentacion del curso y rubrica de evaluacion (Canvas)
+- Videos sugeridos: como contar historias con datos (charlas tipo TED / workshops cortos)
 
 ---
 

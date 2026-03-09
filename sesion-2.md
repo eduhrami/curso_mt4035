@@ -41,10 +41,17 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Lecturas recomendadas
+## Libro de texto
 
-- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson. Capítulos sobre estrategia de cliente y gestión de relaciones.
+- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.
+
+## Lecturas recomendadas (APA)
+
 - Linden, G., Smith, B., & York, J. (2003). Amazon.com recommendations: Item-to-item collaborative filtering. *IEEE Internet Computing, 7*(1), 76–80. https://doi.org/10.1109/MIC.2003.1167344
+
+## Complementos
+
+- Texto práctico de analítica de clientes/marketing analytics (capítulos de segmentación + CLV)
 
 ---
 

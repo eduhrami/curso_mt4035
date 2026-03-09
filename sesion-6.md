@@ -41,10 +41,18 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Lecturas recomendadas
+## Libro de texto
 
-- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson. Enfoque estratégico para precios y promociones.
-- Complemento: capítulos de pricing/revenue management + overview de fraude (reporte industria o capítulo de texto)
+- Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.
+
+## Lecturas recomendadas (APA)
+
+- Blattberg, R. C., Briesch, R., & Fox, E. J. (1995). How promotions work. *Marketing Science, 14*(3_supplement), G122–G132. https://doi.org/10.1287/mksc.14.3.g122
+- Bolton, R. J., & Hand, D. J. (2002). Statistical fraud detection: A review. *Statistical Science, 17*(3), 235–255. https://doi.org/10.1214/ss/1042727940
+
+## Complementos
+
+- Capítulos de pricing/revenue management + overview de fraude (reporte industria o capítulo de texto)
 
 ---
 
