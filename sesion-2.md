@@ -27,17 +27,31 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 2. **Taller RFM** (pizarrón + hoja de cálculo)
 3. **Segmento → oferta → canal → KPI**
 
+## Subtemas (detalle)
+
+- **Unit economics orientado a cliente:** margen de contribución, CAC, payback, churn/retención; por qué CLV es un puente entre marketing y finanzas
+- **CLV (descriptivo):** cohortes, tasas de retención, frecuencia, ticket y margen; CLV histórico vs CLV "a futuro" (con descuento)
+- **CLV (predictivo):** modelos simples de probabilidad de compra/retención; cuándo usar modelos estadísticos/ML vs reglas
+- **RFM en práctica:** definición de ventanas (recency/frequency/monetary), scoring por cuantiles, estabilidad en el tiempo y riesgos de sobreinterpretación
+- **Segmentación accionable:** segmentos por valor vs por necesidad/comportamiento; cómo evitar segmentos "bonitos" pero inútiles
+- **Personalización y recomendaciones:** intuición de filtrado colaborativo (Amazon) y métricas de evaluación (CTR, conversión, AOV, margen)
+- **Medición de impacto:** diseño de tests (holdout/A-B), incrementality vs correlación, guardrails (p. ej. margen, reclamos)
+- **Riesgos y límites:** resolución de identidad (online/offline), sesgos, privacidad y compliance
+- **Continuidad y no-overlap:** la taxonomía general de KPIs y el diccionario de métricas se ve en Sesión 1; demanda/inventario y sesgo por stock-outs se profundiza en Sesión 3
+
 ---
 
 ## Preparación del estudiante
 
 - Identificar qué identificadores del cliente existen en el retailer elegido (lealtad, email, teléfono, cookies)
+- Identificar 2 eventos/acciones observables que podrían disparar una personalización (p. ej. abandono de carrito, recompra, alta de lealtad)
 
 ---
 
 ## Tarea / entregable
 
 - Hipótesis de segmentación para el proyecto: segmentos esperados + acciones propuestas
+- Definir 1 KPI principal de éxito (y 1 guardrail) para evaluar una acción por segmento
 
 ---
 

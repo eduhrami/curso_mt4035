@@ -27,17 +27,31 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 2. **Visión general de pronóstico** (baseline, estacionalidad, eventos)
 3. **Pruebas A/B en retail:** guardrails, KPIs, errores comunes
 
+## Subtemas (detalle)
+
+- **Demanda censurada:** ventas observadas vs demanda real; cómo los stock-outs "recortan" la serie y sesgan conclusiones
+- **Ventas perdidas y sustitución:** señales (agotado online, sustituciones, cancelaciones) y aproximaciones para cuantificar pérdida
+- **Datos de inventario:** snapshots, inventario disponible vs inventario en tránsito, on-shelf availability y sus trampas
+- **Forecasting pipeline:** limpieza, agregación jerárquica (SKU-tienda vs categoría), baselines (naive, moving average), estacionalidad y eventos/promociones
+- **Métricas de pronóstico:** MAPE/WAPE, sesgo (bias), intervalos; por qué el error impacta fill rate y costo de inventario
+- **Intervenciones medibles:** cambios de surtido, planogramas, reposición, UI de disponibilidad; qué KPI toca cada uno
+- **Experimentos en retail (operación/merchandising):** diseño A/B (tiendas/zona), efectos de estacionalidad, interferencia y guardrails
+- **Alternativas a A/B:** diferencias-en-diferencias / before-after con controles cuando no hay randomización
+- **Continuidad y no-overlap:** definición general de KPIs/diccionario se ve en Sesión 1; segmentación/CLV se ve en Sesión 2; políticas de inventario (EOQ/ROP) y red se profundizan en Sesión 4
+
 ---
 
 ## Preparación del estudiante
 
 - Recopilar señales observables de stock (agotado online, sustituciones, promesas de entrega)
+- Identificar 1 SKU/categoría crítica del retailer y describir cómo se observa disponibilidad (en web/app/tienda)
 
 ---
 
 ## Tarea / entregable
 
 - Proyecto: definir 3 KPIs operativos de inventario/disponibilidad y cómo medirlos
+- Proponer 1 hipótesis de mejora que pueda evaluarse con experimento o cuasi-experimento
 
 ---
 
