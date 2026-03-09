@@ -41,9 +41,13 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Lecturas recomendadas
+## Libro de texto
 
 - Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.
+
+## Lecturas recomendadas (APA)
+
+- Davenport, T. H. (2006, January). Competing on analytics. *Harvard Business Review*. https://hbr.org/2006/01/competing-on-analytics
 
 ## Complementos
 

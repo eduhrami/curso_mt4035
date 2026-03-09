@@ -42,10 +42,18 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Lecturas recomendadas
+## Libro de texto
 
 - Zentes, J., Morschett, D., & Schramm-Klein, H. (2017). *Strategic retail management: Text and international cases* (3rd ed.). Springer Gabler.
-- Complemento: lecturas cortas de practicantes sobre visibilidad, IoT en retail e IA para personalización
+
+## Lecturas recomendadas (APA)
+
+- Atzori, L., Iera, A., & Morabito, G. (2010). The Internet of Things: A survey. *Computer Networks, 54*(15), 2787–2805. https://doi.org/10.1016/j.comnet.2010.05.010
+- Iansiti, M., & Lakhani, K. R. (2017, January–February). The truth about blockchain. *Harvard Business Review*. https://hbr.org/2017/01/the-truth-about-blockchain
+
+## Complementos
+
+- Lecturas cortas de practicantes sobre visibilidad, IoT en retail e IA para personalización
 
 ---
 
