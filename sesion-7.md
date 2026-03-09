@@ -1,59 +1,63 @@
-# Sesión 7 — Diseño de red de supply chain + tecnologías emergentes
+# Sesión 7 — Tecnologías emergentes (IA, IoT, automatización, blockchain)
 
 **Fecha:** 3 de junio de 2026  
 **Profesor:** Eduardo  
-**Ancla del packet:** Sesión 6 incluye diseño de red + tech emergente  
+**Ancla del packet:** Sesión 6 incluye tech emergente
 **Ancla del plan de estudios:** Temas 9–10
 
 ---
 
 ## Descripción de la sesión
 
-En esta sesión se toma una mirada horizontal a las tecnologías emergentes a lo largo de todos los temas del curso: cliente y segmentación, ventas e inventario, precios y promociones, fraude y seguridad, transporte y logística, y diseño de red de supply chain. Más que ver la tecnología como un fin en sí mismo, se analizan casos concretos de IoT, IA/ML, automatización, analítica en tiempo real y blockchain para identificar dónde realmente agregan valor, cuáles son sus límites y qué capacidades organizacionales requieren. La discusión se articula en torno a cómo conectar datos, procesos y decisiones para potenciar los proyectos finales del curso.
+Esta sesión se enfoca exclusivamente en tecnologías emergentes y cómo evaluar (sin "buzzwords") su contribución real a KPIs de negocio en retail, e-commerce y supply chain. Se revisan cuatro familias: (1) IoT y visibilidad en tiempo real, (2) IA/ML y, en particular, IA generativa aplicada a procesos, (3) automatización y robótica en fulfillment/operaciones, y (4) blockchain e infraestructura de confianza para trazabilidad e intercambio de datos. El énfasis está en traducir tecnología en cambio de proceso, requerimientos de datos/operación, riesgos (privacidad, seguridad, compliance) y un plan de implementación tipo MVP alineado al proyecto final.
 
 ## Objetivos
 
 Al finalizar la sesión, las y los estudiantes serán capaces de:
 
-- Mapear cómo tecnologías emergentes (IoT, IA/ML, analítica en tiempo real, automatización, blockchain) pueden apoyar decisiones en los distintos temas del curso
-- Identificar usos realistas y límites de estas tecnologías en retail, e-commerce y cadena de suministro, evitando soluciones "de buzzword"
-- Traducir iniciativas tecnológicas en cambios de proceso e impactos esperados sobre KPIs de cliente, operación, logística y rentabilidad
-- Conectar de forma explícita el proyecto final del curso con oportunidades tecnológicas concretas y factibles
+- Evaluar tecnologías emergentes con un marco consistente: problema -> KPI -> dato -> modelo -> integración en proceso -> riesgos
+- Identificar casos de uso realistas de IoT, IA/ML (incl. generativa), automatización y blockchain en retail y supply chain
+- Traducir una iniciativa tecnológica en un MVP con requerimientos de datos, cambios operativos, métricas de éxito y limitaciones
+- Conectar el proyecto final del curso con oportunidades tecnológicas concretas y factibles
 
 ---
 
 ## Estructura en clase
 
-1. **Mapa horizontal:** del cliente a la supply chain end-to-end y recap de temas del curso
-2. **Tecnologías emergentes por eslabón:** cliente/marketing, tienda y operación, inventario y supply chain, logística/última milla, riesgo y fraude
-3. **Taller aplicado al proyecto:** para cada equipo, tecnología → cambio de proceso → impacto en KPI → factibilidad
+1. **Marco de evaluación:** problema -> KPI -> dato -> tecnología -> proceso -> riesgo
+2. **Familias tecnológicas:** IoT/visibilidad, IA/ML + genAI, automatización, blockchain
+3. **Mini-casos guiados:** dónde agregan valor y dónde no (criterio de factibilidad)
+4. **Taller aplicado al proyecto:** para cada equipo, caso de uso -> MVP -> KPI -> datos -> operación -> riesgos
 
 ---
 
 ## Preparación del estudiante
 
-- Identificar al menos 2 tecnologías emergentes que el retailer/proyecto ya use o pudiera usar, y en qué parte del journey o de la cadena se aplicarían
+- Identificar 2 procesos del retailer/proyecto donde haya fricción (costo, tiempo, error o mala experiencia) y proponer 1 tecnología candidata por proceso
+- Para cada candidata: KPI objetivo, datos disponibles/proxy y un riesgo (privacidad/seguridad/operación)
 
 ---
 
 ## Tarea / entregable
 
-- Refinar el storyline de la presentación final incorporando explícitamente el rol (realista) de tecnologías emergentes: problema → evidencia → insight → recomendación → impacto KPI → capacidades tecnológicas/organizacionales requeridas
+- 1-pager por equipo: caso de uso -> KPI -> datos -> MVP (4-6 semanas) -> riesgos/controles -> plan de medición
 
 ---
 
 ## Libro de texto
 
-- Zentes, J., Morschett, D., & Schramm-Klein, H. (2017). *Strategic retail management: Text and international cases* (3rd ed.). Springer Gabler.
+- Iansiti, M., & Lakhani, K. R. (2020). *Competing in the age of AI: Strategy and leadership when algorithms and networks run the world*. Harvard Business Review Press. https://store.hbr.org/product/competing-in-the-age-of-ai-strategy-and-leadership-when-algorithms-and-networks-run-the-world/10272
 
 ## Lecturas recomendadas (APA)
 
 - Atzori, L., Iera, A., & Morabito, G. (2010). The Internet of Things: A survey. *Computer Networks, 54*(15), 2787–2805. https://doi.org/10.1016/j.comnet.2010.05.010
+- Davenport, T. H., & Ronanki, R. (2018, January–February). Artificial intelligence for the real world. *Harvard Business Review*. https://hbr.org/2018/01/artificial-intelligence-for-the-real-world
 - Iansiti, M., & Lakhani, K. R. (2017, January–February). The truth about blockchain. *Harvard Business Review*. https://hbr.org/2017/01/the-truth-about-blockchain
 
 ## Complementos
 
-- Lecturas cortas de practicantes sobre visibilidad, IoT en retail e IA para personalización
+- Lecturas cortas de practicantes sobre visibilidad end-to-end, IoT en retail y adopción de IA generativa
+- Demos sugeridas (clase): ejemplo de clasificación de tickets con LLM + ejemplo de análisis de reseñas (material del profesor)
 
 ---
 
