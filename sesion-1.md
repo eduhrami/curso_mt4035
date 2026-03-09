@@ -27,11 +27,23 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 2. **Taxonomía de KPIs:** crecimiento, rentabilidad, retención, experiencia, cumplimiento/fulfillment
 3. **Mini-caso:** "Si fueras CDO de un retailer, ¿qué 10 KPIs reportarías semanalmente?"
 
+## Subtemas (detalle)
+
+- **Qué es "analítica" en retail:** descriptivo (qué pasó), diagnóstico (por qué pasó), predictivo (qué pasará), prescriptivo (qué conviene hacer)
+- **Fuentes de datos y granularidad:** POS (ticket/SKU), e-commerce (sesión/eventos), marketing (campañas), CRM/lealtad, inventarios, logística/entregas, devoluciones
+- **De dato a decisión:** métricas -> KPI -> objetivo -> palanca -> experimento/implementación -> medición
+- **Árboles de KPI (norte y descomposición):** ventas (traffic x conversion x ticket), margen, disponibilidad, costo de servir, NPS/experiencia
+- **KPIs omnicanal:** conversión web/app, abandono de carrito, disponibilidad online, fill rate/OTIF, sustituciones, devoluciones
+- **Sesgos comunes de medición:** ventas vs demanda (stock-outs), atribución de marketing, cambios de mix, estacionalidad y promociones
+- **Diccionario de métricas:** definiciones, ventanas de tiempo, fuentes, owner, calidad de datos; por qué evita discusiones eternas
+- **Continuidad del curso:** segmentación/CLV (Sesión 2), demanda e inventario (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5)
+
 ---
 
 ## Preparación del estudiante (antes de clase)
 
 - Traer 1 ejemplo de retailer omnicanal y listar 5 KPIs medibles
+- Para 2 KPIs, anotar: (i) fuente probable de datos, (ii) periodicidad de reporte, (iii) decisión que habilita
 
 ---
 
