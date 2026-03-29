@@ -70,6 +70,10 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 - Capítulos de analítica de operaciones/logística (ruteo + economía de última milla + diseño de servicio)
 - Video corto sugerido: introducción intuitiva a VRP/ruteo y por qué es difícil (material del profesor)
 
+## Bibliografía complementaria (Manning)
+
+- Biegel, G. (2026). *Digital twins in action*. Manning. https://www.manning.com/books/digital-twins-in-action
+
 ---
 
 [← Volver al índice](./README.md)

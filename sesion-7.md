@@ -59,6 +59,11 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 - Lecturas cortas de practicantes sobre visibilidad end-to-end, IoT en retail y adopción de IA generativa
 - Demos sugeridas (clase): ejemplo de clasificación de tickets con LLM + ejemplo de análisis de reseñas (material del profesor)
 
+## Bibliografía complementaria (Manning)
+
+- Biegel, G. (2026). *Digital twins in action*. Manning. https://www.manning.com/books/digital-twins-in-action
+- Lanham, M. (2025). *AI agents in action: Build, orchestrate, and deploy autonomous multi-agent systems*. Manning. https://www.manning.com/books/ai-agents-in-action
+
 ---
 
 [← Volver al índice](./README.md)
