@@ -1,42 +1,47 @@
-# Sesión 1 — Fundamentos: analítica de retail y e-commerce
+# Sesión 1 — Fundamentos analíticos para retail y e-commerce
 
 **Fecha:** 23 de abril de 2026  
 **Profesor:** Eduardo  
-**Ancla del packet:** Introducción a la analítica de retail/e-commerce  
+**Ancla del packet:** Fundamentos analíticos y marco metodológico del curso  
 **Ancla del plan de estudios:** Tema 1
 
 ---
 
 ## Descripción de la sesión
 
-En esta sesión se presenta el mapa general del curso y el rol de la analítica de datos en el comercio minorista y el comercio electrónico. Se revisan las principales fuentes de datos (POS, canales digitales, CRM y supply chain) y se discute cómo se transforman en información accionable. A partir de ejemplos concretos, se introduce una taxonomía de KPIs que conecta el desempeño del negocio con decisiones tácticas y estratégicas.
+En esta sesión se establecen los fundamentos analíticos que servirán de base para el resto del curso. Se presenta el mapa general de aplicaciones en retail, e-commerce y supply chain, pero el énfasis está en las técnicas de análisis de datos, estadística y modelación matemática que permiten pasar de datos operativos a decisiones de negocio. También se introduce una taxonomía de KPIs como mapa general de los resultados del negocio que se busca afectar, sin entrar todavía al detalle de cada indicador. Se revisan tipos de análisis, estructura de métricas y KPIs, principios de calidad de datos, nociones de variabilidad, segmentación básica, series de tiempo, experimentación y lógica de optimización, de modo que las sesiones posteriores puedan concentrarse en aplicaciones específicas.
 
 ## Objetivos
 
 Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 - Alinear qué es analítica en retail, de dónde vienen los datos (POS, web/app, CRM, supply chain)
-- Establecer categorías de KPI y conectarlas con decisiones de negocio
-- Reconocer los componentes principales de un sistema de medición omnicanal y su relevancia para la experiencia de cliente
+- Distinguir las principales familias de técnicas analíticas del curso: descriptivas, diagnósticas, predictivas y prescriptivas
+- Reconocer la taxonomía de KPIs del curso como mapa de resultados de negocio y relacionarla con técnicas para medir, comparar y decidir
+- Relacionar métricas, KPIs, variabilidad, segmentación, pronóstico, experimentación y optimización con decisiones de negocio
+- Reconocer los supuestos básicos y alcances de las herramientas cuantitativas que se aplicarán en las sesiones posteriores
 
 ---
 
 ## Estructura en clase (sugerida)
 
-1. **Mapa del curso:** retail → cliente → operaciones → supply chain → tecnologías emergentes
-2. **Taxonomía de KPIs:** crecimiento, rentabilidad, retención, experiencia, cumplimiento/fulfillment
-3. **Mini-caso:** "Si fueras CDO de un retailer, ¿qué 10 KPIs reportarías semanalmente?"
+1. **Mapa del curso:** técnicas analíticas -> aplicaciones de cliente -> operaciones -> supply chain -> tecnologías emergentes
+2. **Mapa de negocio + caja de herramientas analítica:** taxonomía de KPIs, métricas, estadística descriptiva, variabilidad, segmentación, series de tiempo, experimentación, optimización
+3. **Mini-caso:** "Si fueras CDO de un retailer, ¿qué preguntas de negocio resolverías con cada técnica?"
 
 ## Subtemas (detalle)
 
 - **Qué es "analítica" en retail:** descriptivo (qué pasó), diagnóstico (por qué pasó), predictivo (qué pasará), prescriptivo (qué conviene hacer)
 - **Fuentes de datos y granularidad:** POS (ticket/SKU), e-commerce (sesión/eventos), marketing (campañas), CRM/lealtad, inventarios, logística/entregas, devoluciones
-- **De dato a decisión:** métricas -> KPI -> objetivo -> palanca -> experimento/implementación -> medición
-- **Árboles de KPI (norte y descomposición):** ventas (traffic x conversion x ticket), margen, disponibilidad, costo de servir, NPS/experiencia
-- **KPIs omnicanal:** conversión web/app, abandono de carrito, disponibilidad online, fill rate/OTIF, sustituciones, devoluciones
-- **Sesgos comunes de medición:** ventas vs demanda (stock-outs), atribución de marketing, cambios de mix, estacionalidad y promociones
-- **Diccionario de métricas:** definiciones, ventanas de tiempo, fuentes, owner, calidad de datos; por qué evita discusiones eternas
-- **Continuidad del curso:** segmentación/CLV (Sesión 2), demanda e inventario (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5)
+- **De dato a decisión:** métrica -> KPI -> pregunta de negocio -> método analítico -> decisión -> medición
+- **Taxonomía de KPIs como mapa:** crecimiento, rentabilidad, retención, experiencia y cumplimiento; qué tipo de preguntas ayudan a formular y cómo orientan la comparación
+- **Estadística descriptiva y variabilidad:** distribuciones, percentiles, dispersión, outliers, estacionalidad y diferencias entre promedio y comportamiento real
+- **Relaciones y segmentación básica:** cortes por canal, cohorte, categoría, región, cliente y momento; intuición sobre correlación vs causalidad
+- **Pronóstico y series de tiempo (intuición):** tendencia, estacionalidad, ruido, horizonte de decisión y error de pronóstico
+- **Experimentación y evaluación:** lógica de pruebas A/B, grupos comparables, métricas de resultado y sesgos frecuentes de medición
+- **Modelos matemáticos y optimización:** intuición de trade-offs, restricciones, costo-servicio y por qué aparecen en inventarios, red y logística
+- **Diccionario de métricas y calidad de datos:** definiciones, ventanas de tiempo, fuentes, owner, trazabilidad y consistencia
+- **Continuidad del curso:** cómo estas técnicas se aplican en segmentación/CLV (Sesión 2), demanda e inventario (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5)
 
 ---
 
@@ -64,6 +69,11 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Complementos
 
 - Handout del profesor sobre "árboles de KPI de retail" y "medición omnicanal"
+
+## Bibliografía complementaria (Manning)
+
+- Khalil, M. (2025). *Effective data analysis: Hard and soft skills to accelerate your career*. Manning. https://www.manning.com/books/effective-data-analysis
+- Gold, C. S. (2020). *Fighting churn with data: The science and strategy of customer retention*. Manning. https://www.manning.com/books/fighting-churn-with-data
 
 ---
 

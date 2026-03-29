@@ -24,7 +24,7 @@ En cada sesión se explorarán los conceptos principales así como casos de estu
 
 1. **[Fundamentos: analítica de retail y e-commerce](./sesion-1.md)** — *Profesor Eduardo*  
    **Fecha:** 23 de abril de 2026  
-   Introducción a analítica en retail, taxonomía de KPIs, fuentes de datos
+   Fundamentos analíticos, taxonomía de KPIs como mapa del negocio, fuentes de datos y técnicas para medir y comparar
 
 2. **[Segmentación y perfilado](./sesion-2.md)** — *Profesor Marcos*  
    **Fecha:** 29 de abril de 2026  
@@ -69,3 +69,10 @@ En cada sesión se explorarán los conceptos principales así como casos de estu
 - **Equipos:** 4-5 estudiantes
 - **Partes:** Trabajo de campo (experiencia de compra) + Trabajo de análisis (dataset)
 - **Entregables:** Reportes + presentación (~15 min) + coevaluación
+
+## Bibliografía complementaria (Manning)
+
+- Khalil, M. (2025). *Effective data analysis: Hard and soft skills to accelerate your career*. Manning. https://www.manning.com/books/effective-data-analysis
+- Gold, C. S. (2020). *Fighting churn with data: The science and strategy of customer retention*. Manning. https://www.manning.com/books/fighting-churn-with-data
+- Biegel, G. (2026). *Digital twins in action*. Manning. https://www.manning.com/books/digital-twins-in-action
+- Lanham, M. (2025). *AI agents in action: Build, orchestrate, and deploy autonomous multi-agent systems*. Manning. https://www.manning.com/books/ai-agents-in-action
