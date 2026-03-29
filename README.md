@@ -22,7 +22,7 @@ A lo largo de las sesiones, se estudiarán los principales indicadores clave de 
 
 En cada sesión se explorarán los conceptos principales así como casos de estudio de aplicación de las distintas técnicas y métodos en la industria.
 
-1. **[Fundamentos: analítica de retail y e-commerce](./sesion-1.md)** — *Profesor Eduardo*  
+1. **[Fundamentos analíticos para retail y e-commerce](./sesion-1.md)** — *Profesor Eduardo*  
    **Fecha:** 23 de abril de 2026  
    Fundamentos analíticos, taxonomía de KPIs como mapa del negocio, fuentes de datos y técnicas para medir y comparar
 
