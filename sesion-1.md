@@ -9,52 +9,114 @@
 
 ## Descripción de la sesión
 
-En esta sesión se establecen los fundamentos analíticos que servirán de base para el resto del curso. Se presenta el mapa general de aplicaciones en retail, e-commerce y supply chain, pero el énfasis está en las técnicas de análisis de datos, estadística y modelación matemática que permiten pasar de datos operativos a decisiones de negocio. También se introduce una taxonomía de KPIs como mapa general de los resultados del negocio que se busca afectar, sin entrar todavía al detalle de cada indicador. Se revisan tipos de análisis, estructura de métricas y KPIs, principios de calidad de datos, nociones de variabilidad, segmentación básica, series de tiempo, experimentación y lógica de optimización, de modo que las sesiones posteriores puedan concentrarse en aplicaciones específicas.
+Esta sesión es de carácter **metodológico**. Su propósito es construir la caja de herramientas estadística y analítica que se usará de forma transversal en el resto del curso, presentando cada herramienta desde un punto de vista **conceptual, no formal**: qué pregunta de negocio responde, qué supuestos tiene, cómo se interpreta y dónde se aplica en retail, e-commerce y supply chain. Primero se establece el marco general (qué es analítica en retail, de dónde vienen los datos, cómo se pasa de dato a decisión y cómo una taxonomía de KPIs organiza los resultados del negocio). Sobre esa base se recorre la caja de herramientas: variabilidad y distribuciones, muestreo y representatividad, pruebas de hipótesis y p-value, correlación vs. causalidad, regresión, series de tiempo y análisis de sobrevivencia. El objetivo no es profundizar en fórmulas, sino dejar un lenguaje común y criterios de elección que las sesiones posteriores aplicarán a problemas concretos.
 
 ## Objetivos
 
 Al finalizar la sesión, las y los estudiantes serán capaces de:
 
-- Alinear qué es analítica en retail, de dónde vienen los datos (POS, web/app, CRM, supply chain)
-- Distinguir las principales familias de técnicas analíticas del curso: descriptivas, diagnósticas, predictivas y prescriptivas
-- Reconocer la taxonomía de KPIs del curso como mapa de resultados de negocio y relacionarla con técnicas para medir, comparar y decidir
-- Relacionar métricas, KPIs, variabilidad, segmentación, pronóstico, experimentación y optimización con decisiones de negocio
-- Reconocer los supuestos básicos y alcances de las herramientas cuantitativas que se aplicarán en las sesiones posteriores
+- Explicar qué es analítica en retail, de dónde vienen los datos (POS, web/app, CRM, supply chain) y cómo se encadena dato -> KPI -> pregunta de negocio -> decisión.
+- Distinguir las familias de analítica (descriptiva, diagnóstica, predictiva, prescriptiva) y relacionarlas con la taxonomía de KPIs del curso.
+- Reconocer los principales tipos de distribuciones estadísticas y qué fenómenos de negocio tienden a representar (normales, heavy/long tail, tiempos entre eventos, conteos raros).
+- Interpretar conceptualmente una prueba de hipótesis: hipótesis nula vs. alternativa, estadístico de prueba, p-value, y cuándo tiene sentido una prueba de una cola vs. dos colas.
+- Diferenciar correlación y causalidad, y reconocer cuándo una regresión explica, cuándo predice y cuándo engaña.
+- Entender el propósito de técnicas de series de tiempo y análisis de sobrevivencia como herramientas para modelar tendencias, estacionalidad y fenómenos de tiempo-a-evento en retail.
+- Argumentar por qué el muestreo y la representatividad son condición previa a cualquier análisis cuantitativo serio.
 
 ---
 
 ## Estructura en clase (sugerida)
 
-1. **Mapa del curso:** técnicas analíticas -> aplicaciones de cliente -> operaciones -> supply chain -> tecnologías emergentes
-2. **Mapa de negocio + caja de herramientas analítica:** taxonomía de KPIs, métricas, estadística descriptiva, variabilidad, segmentación, series de tiempo, experimentación, optimización
-3. **Mini-caso:** "Si fueras CDO de un retailer, ¿qué preguntas de negocio resolverías con cada técnica?"
+1. **Mapa del curso (10 min):** técnicas analíticas -> clientes -> operaciones -> supply chain -> tecnologías emergentes, y dónde se conecta cada sesión.
+2. **Del dato a la decisión + taxonomía de KPIs (25 min):** fuentes, granularidades, familias de analítica y KPIs como mapa de resultados de negocio.
+3. **Caja de herramientas estadística — bloque conceptual (75 min):**
+   - Variabilidad y distribuciones (qué fenómenos representan).
+   - Muestreo y representatividad.
+   - Pruebas de hipótesis, estadístico de prueba y p-value.
+   - Correlación vs. causalidad.
+   - Regresión, series de tiempo y análisis de sobrevivencia.
+4. **Mini-caso guiado (20 min):** "Si fueras CDO de un retailer, ¿qué herramienta de la caja usarías para cada pregunta de negocio?" — se asigna una herramienta por pregunta sin resolver cálculos.
+5. **Cierre y continuidad (10 min):** cómo cada herramienta reaparece en las sesiones 2–7.
+
+---
 
 ## Subtemas (detalle)
 
-- **Qué es "analítica" en retail:** descriptivo (qué pasó), diagnóstico (por qué pasó), predictivo (qué pasará), prescriptivo (qué conviene hacer)
-- **Fuentes de datos y granularidad:** POS (ticket/SKU), e-commerce (sesión/eventos), marketing (campañas), CRM/lealtad, inventarios, logística/entregas, devoluciones
-- **De dato a decisión:** métrica -> KPI -> pregunta de negocio -> método analítico -> decisión -> medición
-- **Taxonomía de KPIs como mapa:** crecimiento, rentabilidad, retención, experiencia y cumplimiento; qué tipo de preguntas ayudan a formular y cómo orientan la comparación
-- **Estadística descriptiva y variabilidad:** distribuciones, percentiles, dispersión, outliers, estacionalidad y diferencias entre promedio y comportamiento real
-- **Relaciones y segmentación básica:** cortes por canal, cohorte, categoría, región, cliente y momento; intuición sobre correlación vs causalidad
-- **Pronóstico y series de tiempo (intuición):** tendencia, estacionalidad, ruido, horizonte de decisión y error de pronóstico
-- **Experimentación y evaluación:** lógica de pruebas A/B, grupos comparables, métricas de resultado y sesgos frecuentes de medición
-- **Modelos matemáticos y optimización:** intuición de trade-offs, restricciones, costo-servicio y por qué aparecen en inventarios, red y logística
-- **Diccionario de métricas y calidad de datos:** definiciones, ventanas de tiempo, fuentes, owner, trazabilidad y consistencia
-- **Continuidad del curso:** cómo estas técnicas se aplican en segmentación/CLV (Sesión 2), demanda e inventario (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5)
+> **Nota de alcance:** Esta sesión es metodológica y conceptual. Se nombran y explican herramientas; **no** se desarrollan derivaciones, demostraciones ni ejercicios de cálculo. Las aplicaciones operativas se profundizan en sesiones posteriores (ver notas de no-traslape al final de cada bloque).
+
+### Bloque A — Marco general
+
+- **Qué es "analítica" en retail:** descriptivo (qué pasó), diagnóstico (por qué pasó), predictivo (qué pasará), prescriptivo (qué conviene hacer); por qué un mismo problema suele requerir varias de estas capas.
+- **Fuentes de datos y granularidad:** POS (ticket/SKU), e-commerce (sesión/eventos), marketing (campañas), CRM/lealtad, inventarios, logística/entregas, devoluciones; unidades de observación y periodicidad.
+- **De dato a decisión:** métrica -> KPI -> pregunta de negocio -> método analítico -> decisión -> medición del resultado.
+- **Taxonomía de KPIs como mapa:** crecimiento, rentabilidad, retención, experiencia y cumplimiento; qué tipo de preguntas ayuda a formular cada familia y cómo orienta la comparación entre periodos, canales y segmentos.
+
+### Bloque B — Variabilidad y distribuciones
+
+- **Estadística descriptiva y variabilidad:** media, mediana, percentiles, dispersión, outliers; por qué el promedio casi siempre "miente" en retail y cuándo conviene leer la distribución completa.
+- **Distribuciones y fenómenos que representan (visión conceptual):**
+  - *Normal / gaussiana:* errores de medición, agregados grandes, desviaciones alrededor de un objetivo (p. ej., tiempos de proceso estables).
+  - *Log-normal y heavy / long tail (incluye power-law):* ventas por SKU, ticket de compra, valor del cliente, tamaño de pedidos; muchas métricas de retail son de cola pesada y por eso el promedio es un mal resumen.
+  - *Exponencial / Weibull:* tiempos entre eventos (tiempo entre compras, tiempo a la siguiente visita, vida útil de un equipo).
+  - *Poisson:* conteo de eventos raros en una ventana (llegadas a caja, reclamos, intentos de fraude por hora).
+  - *Binomial / Bernoulli:* conversiones, tasas de click, éxitos vs. fracasos.
+  - *Uniforme:* cuando asumimos "no hay preferencia" como punto de partida.
+- **Por qué identificar la distribución importa:** elegir el resumen correcto (media vs. mediana vs. cuantiles), detectar cuándo un método "normal" no aplica, y reconocer que las decisiones en colas pesadas las mueven unos pocos casos extremos.
+
+> *No traslapa con Sesión 3:* aquí no se ajustan modelos de demanda; solo se nombran las distribuciones y los fenómenos que representan.
+
+### Bloque C — Muestreo y representatividad
+
+- **Por qué importa el muestreo:** todo análisis asume que los datos observados hablan por una población mayor; si el marco muestral está torcido, el análisis lo estará también.
+- **Sesgos frecuentes en retail:** encuestas sólo a clientes activos, paneles autoseleccionados, datos de lealtad que ignoran al comprador anónimo, registros de e-commerce sin offline.
+- **Representatividad y tamaño:** intuición sobre por qué muestras más grandes no arreglan un sesgo de selección, y por qué "más datos" no equivale a "mejores datos".
+
+### Bloque D — Pruebas de hipótesis (visión conceptual)
+
+- **La lógica del contraste:** planteamos una hipótesis nula (H0, "no hay efecto" o "nada cambió") y una alternativa (H1); los datos se usan para decidir si H0 resulta inverosímil.
+- **Estadístico de prueba:** cómo resumimos la evidencia en un solo número que mide "qué tan lejos" están los datos observados del mundo donde H0 es cierta.
+- **P-value e interpretación correcta:** probabilidad de observar un resultado al menos tan extremo como el observado *si H0 fuera cierta*; **no** es la probabilidad de que H0 sea cierta, ni el tamaño del efecto, ni una medida de importancia de negocio. Discusión de malinterpretaciones frecuentes en tableros y reportes ejecutivos.
+- **Una cola vs. dos colas:** cuándo la pregunta es "¿cambió?" (dos colas) y cuándo es "¿mejoró en una dirección específica?" (una cola); la elección debe hacerse **antes** de ver los datos.
+- **Errores tipo I y tipo II (intuición):** el costo de "ver efectos donde no hay" vs. "no ver efectos donde sí los hay", y cómo este trade-off se traduce en decisiones de negocio (ej.: lanzar o no una promoción).
+
+> *No traslapa con Sesión 3:* el diseño operativo y la ejecución de pruebas A/B se trabaja allá; aquí solo se construye la lógica conceptual que A/B usa.
+
+### Bloque E — Correlación, causalidad y regresión
+
+- **Correlación no es causalidad:** cómo dos curvas pueden moverse juntas por una tercera variable (confusor), por efecto estacional, o por pura coincidencia en series cortas.
+- **Criterios informales para sospechar causalidad:** temporalidad, plausibilidad, dosis-respuesta, mecanismo; y por qué los experimentos (A/B) son la manera limpia de romper la ambigüedad.
+- **Regresión (intuición):** modelar cómo una variable de resultado depende de otras; diferencia entre usarla para **explicar** (entender el efecto de un driver) y usarla para **predecir** (anticipar un valor). Qué dice y qué no dice un coeficiente.
+- **Señales de alarma:** variables omitidas, colinealidad, extrapolación fuera del rango observado, "ensalada de variables" sin hipótesis previa.
+
+> *No traslapa con Sesión 2:* RFM/CLV y modelos de segmentación aplicados se ven allá; aquí sólo se presenta la lógica de relacionar variables.
+
+### Bloque F — Tiempo y eventos
+
+- **Series de tiempo (intuición):** componentes de tendencia, estacionalidad (semanal, mensual, anual, festividades), ciclo y ruido; horizonte de decisión y noción de error de pronóstico; por qué el mismo dato se ve distinto según el nivel de agregación.
+- **Análisis de sobrevivencia (intuición):** herramientas pensadas para modelar **tiempo hasta un evento** (churn de cliente, tiempo a la siguiente compra, vida útil de un activo, tiempo a stock-out). Idea clave de "censura" (clientes que todavía no han churneado al cierre del análisis) y por qué usar regresiones ordinarias sobre estos tiempos lleva a conclusiones equivocadas.
+- **Experimentación A/B (vista conceptual):** aterrizaje de pruebas de hipótesis al diseño de experimentos controlados; grupos comparables, asignación aleatoria, métricas primarias declaradas antes del experimento.
+
+> *No traslapa con Sesión 3:* pronósticos operativos de demanda; *ni con Sesión 5:* KPIs logísticos y ruteo; *ni con Sesión 6:* detección de fraude.
+
+### Bloque G — Cierre metodológico
+
+- **Optimización y modelos matemáticos (intuición):** cuándo el problema deja de ser "medir/predecir" y pasa a ser "decidir bajo restricciones" (trade-offs, costo-servicio); por qué aparece en inventarios, red y logística.
+- **Diccionario de métricas y calidad de datos:** definiciones, ventanas de tiempo, fuentes, owner, trazabilidad y consistencia; por qué sin esto cualquier análisis es frágil.
+- **Continuidad del curso:** cómo la caja de herramientas aterriza en segmentación/CLV (Sesión 2), demanda, inventario y A/B testing (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5), pricing y fraude (Sesión 6) y tecnologías emergentes (Sesión 7).
 
 ---
 
 ## Preparación del estudiante (antes de clase)
 
-- Traer 1 ejemplo de retailer omnicanal y listar 5 KPIs medibles
-- Para 2 KPIs, anotar: (i) fuente probable de datos, (ii) periodicidad de reporte, (iii) decisión que habilita
+- Traer 1 ejemplo de retailer omnicanal y listar 5 KPIs medibles.
+- Para 2 KPIs, anotar: (i) fuente probable de datos, (ii) periodicidad de reporte, (iii) decisión que habilita.
+- Traer **un ejemplo** (tomado de prensa, reporte de industria o experiencia propia) de: (a) una decisión de negocio en retail que se apoyó en datos y una prueba o métrica estadística, **o** (b) una "correlación engañosa" que llevó a una conclusión incorrecta. Estar listos para describirlo en 2 minutos.
 
 ---
 
 ## Tarea / entregable
 
-- Formar equipos; shortlist de empresas candidatas (con presencia física + online)
+- Formar equipos; shortlist de empresas candidatas (con presencia física + online) para el proyecto final.
 
 ---
 
@@ -65,10 +127,14 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Lecturas recomendadas (APA)
 
 - Davenport, T. H. (2006, January). Competing on analytics. *Harvard Business Review*. https://hbr.org/2006/01/competing-on-analytics
+- Downey, A. B. (2025). *Think stats: Exploratory data analysis in Python* (3rd ed.). O'Reilly Media. Versión abierta en notebooks: https://allendowney.github.io/ThinkStats/
+
+> *Guía de lectura de Think Stats (3e) para esta sesión:* capítulos iniciales sobre distribuciones, estadística descriptiva, pruebas de hipótesis y relaciones entre variables. Leerlos como **construcción de intuición**, no como referencia de implementación.
 
 ## Complementos
 
-- Handout del profesor sobre "árboles de KPI de retail" y "medición omnicanal"
+- Handout del profesor sobre "árboles de KPI de retail" y "medición omnicanal".
+- Tabla-resumen de la caja de herramientas estadística: herramienta -> pregunta de negocio típica -> supuesto clave -> sesión del curso en que se profundiza.
 
 ## Bibliografía complementaria (Manning)
 
