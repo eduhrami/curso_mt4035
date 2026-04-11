@@ -43,10 +43,15 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante
+## Actividad en clase
 
-- Identificar qué identificadores del cliente existen en el retailer elegido (lealtad, email, teléfono, cookies)
-- Identificar 2 eventos/acciones observables que podrían disparar una personalización (p. ej. abandono de carrito, recompra, alta de lealtad)
+Caso de segmentación presentado por el profesor en clase: a partir de una descripción breve (o dataset simple) de la cartera de clientes de un retailer, en equipos:
+
+1. Proponer umbrales de scoring **RFM** y clasificar a los clientes en 4–5 segmentos accionables (por ejemplo *champions*, *leales*, *nuevos*, *en riesgo*, *durmientes*).
+2. Para los 3 segmentos más grandes, proponer: **acción comercial**, **canal**, **KPI de éxito** y un **guardrail** (por ejemplo margen o tasa de reclamos).
+3. Identificar al menos un **riesgo operativo o ético** de la segmentación propuesta (resolución de identidad, privacidad, sesgos por canal o por historial).
+
+**Entregable de la actividad:** tabla del equipo con segmentos, acciones, KPIs y guardrails.
 
 ---
 

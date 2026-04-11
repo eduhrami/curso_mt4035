@@ -43,10 +43,15 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante
+## Actividad en clase
 
-- Recopilar señales observables de stock (agotado online, sustituciones, promesas de entrega)
-- Identificar 1 SKU/categoría crítica del retailer y describir cómo se observa disponibilidad (en web/app/tienda)
+Lectura y discusión en clase del caso **Tesco Group Food** (HBS 514022, incluido en las lecturas de la sesión). En equipos:
+
+1. Lectura individual guiada (≈15 min) de las secciones clave del caso.
+2. Identificar: (i) dónde hay posible **demanda censurada** por stock-outs, (ii) qué decisiones de surtido, reposición o disponibilidad tomarían a partir de los datos del caso, (iii) qué **sesgos o datos faltantes** limitan el análisis.
+3. Diseño rápido de un **experimento** (A/B o cuasi-experimento) para probar una intervención operativa o de merchandising: hipótesis, métrica primaria, grupos comparables, guardrail.
+
+**Entregable de la actividad:** ficha del equipo con hallazgos del caso y diseño del experimento.
 
 ---
 

@@ -45,11 +45,11 @@ Every session file follows this template:
 2. **Objetivos** — Learning objectives.
 3. **Estructura en clase** — Suggested in-class time breakdown. For **sessions 2 through 7**, this section begins with a **"Quiz inicial en línea (~15 min)"** block that references the content of the immediately preceding session — preserve this block when editing.
 4. **Subtemas** — Detailed subtopic list with explicit non-overlap notes referencing other sessions.
-5. **Preparación del estudiante** — Student preparation tasks.
-6. **Tarea / entregable** — Team deliverable tied to the final project.
+5. **Actividad en clase** — Case-based in-class workshop with a short team deliverable. Every session from 1 to 7 has one (session 8 is presentations + final exam, so it has none). **Do NOT use a "Preparación del estudiante" / pre-class prep section** — the course convention is that nothing is prepared before class; any case or reading happens during class time. Activities are case-based by default (either a case already referenced in the session's bibliography, or a mini-case presented by the professor).
+6. **Tarea / entregable** — Team deliverable tied to the final project (out-of-class homework, distinct from the in-class activity).
 7. **Libro de texto / Lecturas / Complementos** — APA references and supporting materials.
 
-Session 1 has no quiz (it is the first session). Session 8 has no quiz; it is presentations + in-person final exam. The final exam is specified in `examen-final.md`.
+Session 1 has no quiz (it is the first session). Session 8 has no quiz and no in-class activity section; it is presentations + in-person final exam. The final exam is specified in `examen-final.md`.
 
 ## Evaluation structure (fixed decisions)
 
