@@ -58,16 +58,20 @@ Implementar herramientas de analítica de datos en un caso práctico de una empr
 
 | # | Fecha | Profesor | Tema | Objetivo específico | Business question |
 |---|---|---|---|---|---|
-| 1 | 23-abr | Eduardo | Fundamentos analíticos para retail y e-commerce | Construir la caja de herramientas conceptual (distribuciones, muestreo, pruebas de hipótesis, correlación/causalidad, regresión, series de tiempo, sobrevivencia) que se usará en el resto del curso. | ¿Qué herramientas estadísticas debo conocer para tomar decisiones basadas en datos en retail? |
+| 1 | 23-abr | Eduardo y Marcos | Fundamentos analíticos para retail y e-commerce | Construir la caja de herramientas conceptual (distribuciones, muestreo, pruebas de hipótesis, correlación/causalidad, regresión, series de tiempo, sobrevivencia) que se usará en el resto del curso. | ¿Qué herramientas estadísticas debo conocer para tomar decisiones basadas en datos en retail? |
 | 2 | 29-abr | Marcos | Segmentación y perfilado de clientes | Aplicar CLV y RFM para segmentar clientes y conectar cada segmento con acciones accionables de marketing y experiencia. | ¿Cómo identifico a mis clientes más valiosos y cómo les ofrezco experiencias diferenciadas? |
-| 3 | 6-may | Marcos | Analítica de ventas e inventario | Diferenciar demanda, ventas y ventas perdidas; trazar un flujo de pronóstico; usar pruebas A/B para medir impacto. | ¿Qué debería vender, cuánto inventario necesito, y cómo sé si mis cambios funcionan? |
+| 3 | 5-may ⚠ | Eduardo ⚠ | Analítica de ventas e inventario | Diferenciar demanda, ventas y ventas perdidas; trazar un flujo de pronóstico; usar pruebas A/B para medir impacto. | ¿Qué debería vender, cuánto inventario necesito, y cómo sé si mis cambios funcionan? |
 | 4 | 13-may | Eduardo | SCM + inventario + diseño de red | Conectar KPIs de supply chain con decisiones de red e inventario; entender EOQ/ROP y el trade-off costo-servicio. | ¿Cómo diseño una red que balancea costo de operar vs nivel de servicio al cliente? |
 | 5 | 21-may | Eduardo | Transporte y logística omnicanal | Comparar alternativas de fulfillment, analizar KPIs de transporte y entender los tradeoffs de última milla y ruteo. | ¿Cómo hago llegar mis pedidos al cliente al menor costo sin romper la promesa de entrega? |
 | 6 | 27-may | Marcos | Precios, promociones, fraude y seguridad | Evaluar efectividad de promociones y palancas de precio; detectar patrones de fraude y balancear control con experiencia del cliente. | ¿Cómo fijo precios y promos que impulsan ventas sin destruir margen, y cómo protejo el negocio contra el fraude? |
 | 7 | 3-jun | Eduardo | Tecnologías emergentes | Evaluar IoT, IA/ML (incl. generativa), automatización y blockchain con un marco consistente que traduzca tecnología en cambio de proceso y KPIs. | ¿Qué tecnologías emergentes generan valor real en retail y supply chain, y cómo las implemento sin caer en buzzwords? |
 | 8 | 10-jun | Eduardo + Marcos | Presentaciones finales y examen | Evidenciar pensamiento analítico end-to-end mediante la presentación del proyecto final y consolidar comprensión individual mediante examen presencial. | ¿Puedo integrar todo el curso en una recomendación defendible frente a un líder de negocio? |
 
-El detalle de cada sesión (estructura, subtemas, preparación, entregables, bibliografía específica) se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
+El detalle de cada sesión (estructura, subtemas, actividad en clase, entregables, bibliografía específica) se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
+
+> ⚠ **Sesión 3 en revisión.** Propuesta vigente: mover la sesión del 6 al **5 de mayo** con **Eduardo** como profesor, porque Eduardo no está disponible del 6 al 9 de mayo. Si el cambio de fecha no se concreta, la sesión vuelve al **6 de mayo** con **Marcos**. Seguimiento en [`plan-syllabus.md`](./plan-syllabus.md).
+>
+> **Sesión 1 co-impartida** por Eduardo y Marcos; distribución de temas entre ambos aún por definir.
 
 ## IV. Metodología del curso
 
@@ -144,9 +148,9 @@ Textos principales confirmados hasta hoy:
 
 | # | Fecha | Modalidad | Profesor | Contenido | Quiz aplicado | Entregables del estudiante |
 |---|---|---|---|---|---|---|
-| 1 | 23-abr | *(por def.)* | Eduardo | Fundamentos analíticos | — | Shortlist de empresas candidatas para el proyecto final |
+| 1 | 23-abr | *(por def.)* | Eduardo y Marcos | Fundamentos analíticos | — | Shortlist de empresas candidatas para el proyecto final |
 | 2 | 29-abr | *(por def.)* | Marcos | Segmentación y perfilado (CLV, RFM) | Quiz 1 — Sesión 1 | Hipótesis de segmentación + KPI principal y guardrail |
-| 3 | 6-may | *(por def.)* | Marcos | Ventas, inventario y pruebas A/B | Quiz 2 — Sesión 2 | 3 KPIs operativos de inventario + 1 hipótesis de mejora con experimento |
+| 3 | 5-may ⚠ | *(por def.)* | Eduardo ⚠ | Ventas, inventario y pruebas A/B | Quiz 2 — Sesión 2 | 3 KPIs operativos de inventario + 1 hipótesis de mejora con experimento |
 | 4 | 13-may | *(por def.)* | Eduardo | SCM, inventario y diseño de red | Quiz 3 — Sesión 3 | Diagrama de red as-is del retailer + foro del caso 7-Eleven |
 | 5 | 21-may | *(por def.)* | Eduardo | Transporte y logística omnicanal | Quiz 4 — Sesión 4 | Baseline de KPIs logísticos + escenario to-be de red/fulfillment |
 | 6 | 27-may | *(por def.)* | Marcos | Precios, promociones y fraude | Quiz 5 — Sesión 5 | Memo de promociones + plan de medición + consideraciones de fraude |
