@@ -1,7 +1,7 @@
 # Sesión 1 — Fundamentos analíticos para retail y e-commerce
 
 **Fecha:** 23 de abril de 2026  
-**Profesor:** Eduardo  
+**Profesores:** Eduardo y Marcos (co-impartida; distribución de temas por definir)  
 **Ancla del packet:** Fundamentos analíticos y marco metodológico del curso  
 **Ancla del plan de estudios:** Tema 1
 

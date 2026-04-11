@@ -64,8 +64,10 @@ The **weighting of each component** is a draft in `syllabus.md` section V and is
 
 ## Instructors and session ownership
 
-- **Eduardo:** Sessions 1 (methodological foundations), 4 (SCM / network design), 5 (logistics), 7 (emerging tech), 8 (co-host).
-- **Marcos:** Sessions 2 (segmentation / CLV), 3 (sales / inventory), 6 (pricing / fraud), 8 (co-host).
+- **Eduardo:** Sessions 4 (SCM / network design), 5 (logistics), 7 (emerging tech). Co-hosts sessions 1 and 8 with Marcos.
+- **Marcos:** Sessions 2 (segmentation / CLV), 6 (pricing / fraud). Co-hosts sessions 1 and 8 with Eduardo.
+- **Session 1** (methodological foundations) is co-taught by both; topic distribution pending.
+- **Session 3** (sales / inventory) is **pending reassignment.** Currently Marcos on 6-May. Proposed to move to 5-May with Eduardo, because Eduardo is blocked May 6–9 by a trip. If the date change does not land, session 3 stays with Marcos on 6-May. Tracking lives in `plan-syllabus.md`.
 
 ## Course progression
 

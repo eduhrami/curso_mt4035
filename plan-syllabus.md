@@ -53,7 +53,13 @@
 2. **Siguiente iteración:** recibir datos de Fase B y cerrar las secciones administrativas.
 3. **Iteraciones posteriores:** C3 (diseño de quizzes conforme se cierran contenidos de cada sesión), C5 y C6 (articulación fina de evaluación), D1 (confirmar ponderaciones definitivas a partir del borrador), D2 y D3 (cuando se cierren textos y trabajo de análisis).
 
+## Pendientes de confirmación (eventos específicos)
+
+- **Sesión 3 — posible cambio de fecha y profesor.** Propuesta: mover sesión 3 del **6 de mayo al 5 de mayo**, con reasignación de **Marcos → Eduardo**. Motivo: Eduardo está bloqueado del **6 al 9 de mayo** por un viaje. Ambos cambios están acoplados: si el cambio de fecha no se concreta, la sesión vuelve al 6 de mayo con Marcos como responsable. Estado actual en los documentos: marcado con ⚠ en `syllabus.md` y en el encabezado de `sesion-3.md`.
+- **Sesión 1 — distribución de temas entre co-profesores.** Confirmada como co-impartida por Eduardo y Marcos. Pendiente definir quién presenta qué bloque del contenido metodológico (caja de herramientas estadística).
+
 ## Notas
 
 - Cualquier cambio en las decisiones baseline (práctica como evaluación de competencia, esquema de quizzes, examen presencial) se refleja primero en este archivo y se propaga al resto de los documentos.
 - Las ponderaciones propuestas en `syllabus.md` son un borrador para iterar, no son definitivas.
+- Cuando se confirmen o descarten los pendientes listados arriba, actualizar los documentos afectados (`sesion-1.md`, `sesion-3.md`, `syllabus.md`, `README.md`, `CLAUDE.md`) en una sola pasada.
