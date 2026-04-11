@@ -23,6 +23,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase
 
+**Quiz inicial en línea (~15 min):** quiz en Canvas al inicio de la sesión, sobre los contenidos de la Sesión 2 (segmentación y perfilado de clientes).
+
 1. **Demanda vs ventas vs quiebres** (por qué "ventas" puede mentir)
 2. **Visión general de pronóstico** (baseline, estacionalidad, eventos)
 3. **Pruebas A/B en retail:** guardrails, KPIs, errores comunes

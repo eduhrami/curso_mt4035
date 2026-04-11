@@ -24,6 +24,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase
 
+**Quiz inicial en línea (~15 min):** quiz en Canvas al inicio de la sesión, sobre los contenidos de la Sesión 4 (SCM, inventario y diseño de red).
+
 1. **Del diagrama a decisiones:** diseño de red/fulfillment omnicanal y cómo cambia el cost-to-serve
 2. **Promesa vs cumplimiento de entrega:** KPIs, ventanas de entrega, causas típicas de incumplimiento
 3. **Ruteo y última milla:** drivers de costo, restricciones (capacidad/tiempo), por qué VRP es difícil

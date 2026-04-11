@@ -23,7 +23,9 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Formato
 
 - **Presentaciones por equipo:** ~15 minutos cada una
-- **Examen final:** Puedes correr primero presentaciones y luego examen, o al revés
+- **Examen final presencial:** individual, cubre todo el curso con énfasis especial en el contenido de la **Sesión 7** (tecnologías emergentes), que es el único bloque no evaluado por quiz durante el curso. Ver [`examen-final.md`](./examen-final.md) para el detalle de formato, cobertura y criterios.
+- **Orden:** presentaciones y examen pueden correrse en cualquier orden a criterio del profesor.
+- **Nota:** la sesión 8 no tiene quiz inicial.
 
 ---
 

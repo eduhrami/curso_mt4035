@@ -24,6 +24,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase
 
+**Quiz inicial en línea (~15 min):** quiz en Canvas al inicio de la sesión, sobre los contenidos de la Sesión 6 (precios, promociones, fraude y seguridad).
+
 1. **Marco de evaluación:** problema -> KPI -> dato -> tecnología -> proceso -> riesgo
 2. **Familias tecnológicas:** IoT/visibilidad, IA/ML + genAI, automatización, blockchain
 3. **Mini-casos guiados:** dónde agregan valor y dónde no (criterio de factibilidad)
