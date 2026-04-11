@@ -70,6 +70,11 @@ En cada sesión se explorarán los conceptos principales así como casos de estu
 - **Partes:** Trabajo de campo (experiencia de compra) + Trabajo de análisis (dataset)
 - **Entregables:** Reportes + presentación (~15 min) + coevaluación
 
+## Prácticas y entregables
+
+- **[Práctica — Trabajo de campo](./practica-trabajo-de-campo.md)** — diagnóstico de un proceso crítico de una empresa real apoyado en la caja de herramientas analítica del curso.
+- **[Rúbrica de la práctica de trabajo de campo](./rubrica-practica-trabajo-de-campo.md)** *(borrador preliminar)*
+
 ## Bibliografía complementaria (Manning)
 
 - Khalil, M. (2025). *Effective data analysis: Hard and soft skills to accelerate your career*. Manning. https://www.manning.com/books/effective-data-analysis
