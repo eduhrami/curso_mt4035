@@ -43,11 +43,16 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante
+## Actividad en clase
 
-- Leer el caso *Seven-Eleven Japan Co.* (asignado)
-- Dibujar (a alto nivel) la red del retailer del proyecto: tienda(s) / CD(s) / dark store / 3PL, y dónde creen que se posiciona el inventario
-- Marcar 1 punto de dolor del sistema (quiebre, demora, sustitución, devoluciones) y el KPI que lo captura
+Lectura y discusión guiada del caso **Seven-Eleven Japan Co.** (Kellogg KEL026, incluido en las lecturas de la sesión). En equipos:
+
+1. Lectura individual de las secciones clave del caso (≈20 min).
+2. Identificar cómo el uso de datos y analítica se convirtió en una **ventaja competitiva** de 7-Eleven Japan a lo largo de la cadena: captura de datos en POS, frecuencia de reposición, decisiones de surtido a nivel tienda.
+3. Dibujar un diagrama simplificado de la red de 7-Eleven Japan y compararlo a alto nivel con la red del retailer del proyecto final.
+4. Usar la plantilla del profesor para comparar a grandes rasgos un escenario **1 CD vs 2 CDs**, identificando el trade-off costo–servicio.
+
+**Entregable de la actividad:** diagrama comparativo (7-Eleven vs retailer propio) + 3 hallazgos clave sobre cómo los datos habilitan decisiones de red e inventario.
 
 ---
 

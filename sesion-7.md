@@ -33,10 +33,16 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante
+## Actividad en clase
 
-- Identificar 2 procesos del retailer/proyecto donde haya fricción (costo, tiempo, error o mala experiencia) y proponer 1 tecnología candidata por proceso
-- Para cada candidata: KPI objetivo, datos disponibles/proxy y un riesgo (privacidad/seguridad/operación)
+Taller aplicado al proyecto final: evaluación estructurada de una **tecnología emergente** (IoT, IA/ML incluyendo generativa, automatización o blockchain) para un proceso concreto del retailer del proyecto. En equipos:
+
+1. Seleccionar **un proceso** del retailer donde hoy exista fricción (costo, tiempo, error o mala experiencia).
+2. Aplicar el marco del día: **problema → KPI → dato → tecnología → proceso → riesgos**.
+3. Bosquejar un **MVP de 4–6 semanas**: qué datos necesita, qué cambia en la operación, qué métrica de éxito usaría, qué riesgos debe controlar (privacidad, seguridad, compliance).
+4. Cerrar con un criterio de **factibilidad** (¿por qué sí / por qué no?) basado en la realidad del retailer.
+
+**Entregable de la actividad:** 1-pager por equipo con el marco completo (problema → MVP → métricas → riesgos).
 
 ---
 

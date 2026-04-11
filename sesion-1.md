@@ -108,20 +108,17 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Actividad en clase
 
-Durante el bloque de "Mini-caso guiado" (≈20 min), los equipos aplican la caja de herramientas a preguntas de negocio reales:
+Análisis de un **retailer omnicanal y sus KPIs** aplicando la caja de herramientas estadística del día. En equipos:
 
-1. Cada equipo recibe una pregunta de negocio en retail, e-commerce o logística. Ejemplos:
-   - "¿Cuál fue el impacto real de la promoción del fin de semana en margen?"
-   - "¿Qué clientes están por dejar de comprar?"
-   - "¿Cuánto inventario necesito para la próxima semana de un SKU estacional?"
-   - "¿Puedo atribuir la caída de ventas a la entrada de un nuevo competidor o a un cambio de temporada?"
-2. El equipo debe, sin entrar a cálculos:
-   - Identificar qué **herramienta(s) de la caja de herramientas** aplicarían y por qué (hipótesis, distribución esperada, regresión, series de tiempo, sobrevivencia, experimento, etc.).
-   - Anotar qué **datos** necesitarían, qué **supuestos** deberían validarse antes de confiar en el resultado, y qué **tipo de distribución** esperan observar en los datos clave.
-   - Clasificar la pregunta como descriptiva, diagnóstica, predictiva o prescriptiva.
-3. Cada equipo comparte su recomendación en ~2 minutos al resto del grupo.
+1. Seleccionar (o recibir del profesor) un retailer omnicanal real — con presencia física y digital — sobre el que se tenga información pública suficiente (prensa, reportes anuales, sitio web, observación directa).
+2. Identificar **5–7 KPIs** relevantes para el retailer, cubriendo distintas familias: crecimiento, rentabilidad, retención, experiencia y cumplimiento.
+3. Para cada KPI, anotar:
+   - La probable **distribución** de los datos subyacentes (normal, heavy / long tail, Poisson, exponencial, etc.) y por qué.
+   - La(s) **herramienta(s)** de la caja del día que usarían para analizarlo (estadística descriptiva, pruebas de hipótesis, regresión, series de tiempo, sobrevivencia, experimento, etc.) y por qué.
+   - Una **pregunta de negocio** que el KPI ayuda a responder y la decisión que habilitaría.
+4. Cada equipo comparte 2 minutos al grupo: retailer elegido, 2 KPIs con herramienta asignada y una decisión de negocio que habilitarían.
 
-**Entregable de la actividad:** una hoja breve por equipo con (i) la herramienta elegida, (ii) los datos y supuestos, y (iii) un esquema a mano alzada de la distribución esperada en los datos clave.
+**Entregable de la actividad:** hoja resumen por equipo con los KPIs, distribuciones esperadas, herramientas asignadas y decisiones habilitadas.
 
 ---
 

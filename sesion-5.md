@@ -43,12 +43,16 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante
+## Actividad en clase
 
-- Traer el diagrama de red (as-is) de la Sesión 4
-- Capturar promesa y tiempo real de entrega del retailer (alineado a trabajo de campo)
-- Identificar (por evidencia observable) desde dónde se cumple el pedido cuando es posible: tienda, CD, tercero/marketplace
-- Registrar el costo de entrega (si aplica) y si existe umbral de envío gratis
+Mini-caso de **fulfillment omnicanal** presentado por el profesor en clase: un retailer debe decidir cómo cumplir los pedidos de un producto específico bajo restricciones de costo, promesa y capacidad. En equipos:
+
+1. Comparar al menos **dos opciones de fulfillment** (por ejemplo *ship-from-store* vs *ship-from-DC*, o *BOPIS* vs entrega a domicilio).
+2. Estimar a orden de magnitud el **costo por pedido** y el **tiempo de entrega** de cada opción, listando los supuestos clave.
+3. Identificar los **KPIs logísticos** (OTIF, cost-to-serve, ventana de entrega) que cambian con cada opción y cómo se ve afectada la promesa al cliente.
+4. Hacer una recomendación y listar dos riesgos de la implementación.
+
+**Entregable de la actividad:** tabla comparativa de las opciones + recomendación del equipo con supuestos explícitos.
 
 ---
 

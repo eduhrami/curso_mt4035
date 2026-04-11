@@ -31,9 +31,15 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante
+## Actividad en clase
 
-- Dar seguimiento al precio de 1 producto por ~2 semanas (alineado a trabajo de campo)
+Mini-caso de **efectividad de promociones** presentado por el profesor en clase: un retailer corre una promoción con resultados ambiguos y debe decidir si repetirla. En equipos:
+
+1. Diagnosticar si la promoción **realmente movió ventas incrementales** o solo **adelantó demanda** (canibalización temporal) o desplazó ventas entre SKUs (canibalización cruzada).
+2. Proponer un **plan de medición mejorado** para la próxima promoción: grupos de control, métricas primarias, ventanas de análisis, guardrails.
+3. Listar 2–3 **riesgos de fraude** asociados al diseño promocional (cupones, lealtad, devoluciones) y cómo mitigarlos sin dañar la experiencia del cliente.
+
+**Entregable de la actividad:** memo corto del equipo con diagnóstico + plan de medición + consideraciones de fraude.
 
 ---
 
