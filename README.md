@@ -2,6 +2,8 @@
 
 **Materia:** MT4035 – Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro
 
+**Syllabus oficial (en construcción):** [`syllabus.md`](./syllabus.md) · **Plan de trabajo:** [`plan-syllabus.md`](./plan-syllabus.md)
+
 ## Objetivos del Curso
 
 La analítica de datos en retail transforma información transaccional, de comportamiento y operativa en conocimiento accionable. A través de métricas e indicadores clave de desempeño (KPIs), las organizaciones pueden medir y optimizar cada eslabón de la cadena de valor: desde la adquisición y retención de clientes (CLV, tasa de conversión, NPS), pasando por la gestión de inventario y disponibilidad (fill rate, días de inventario, stock-outs), hasta la eficiencia logística y entrega (OTIF, costo por pedido, última milla). Empresas líderes continuamente demuestran cómo el uso sistemático de datos genera ventajas competitivas sostenibles en el sector.
@@ -74,6 +76,7 @@ En cada sesión se explorarán los conceptos principales así como casos de estu
 
 - **[Práctica — Trabajo de campo](./practica-trabajo-de-campo.md)** — diagnóstico de un proceso crítico de una empresa real apoyado en la caja de herramientas analítica del curso.
 - **[Rúbrica de la práctica de trabajo de campo](./rubrica-practica-trabajo-de-campo.md)** *(borrador preliminar)*
+- **[Examen final presencial](./examen-final.md)** *(borrador preliminar)* — formato, cobertura y criterios
 
 ## Bibliografía complementaria (Manning)
 
