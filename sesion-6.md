@@ -23,6 +23,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase
 
+**Quiz inicial en línea (~15 min):** quiz en Canvas al inicio de la sesión, sobre los contenidos de la Sesión 5 (transporte y logística).
+
 1. **Efectividad de promos:** lift, canibalización, impacto en margen
 2. **Analítica de pricing:** datos necesarios y controles
 3. **Fraude:** patrones, capas de prevención, tradeoffs

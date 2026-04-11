@@ -24,6 +24,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase
 
+**Quiz inicial en línea (~15 min):** quiz en Canvas al inicio de la sesión, sobre los contenidos de la Sesión 3 (analítica de ventas e inventario).
+
 1. **Mapa de KPIs:** lead time, fill rate, OTIF, cost-to-serve
 2. **Diseño de red (fundamentos):** nodos/echelons, centralizado vs regional, costo vs servicio, posicionamiento de inventario y capacidad
 3. **Modelos de control:** EOQ/ROP (visión general)
