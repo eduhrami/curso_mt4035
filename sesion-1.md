@@ -106,11 +106,22 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
-## Preparación del estudiante (antes de clase)
+## Actividad en clase
 
-- Traer 1 ejemplo de retailer omnicanal y listar 5 KPIs medibles.
-- Para 2 KPIs, anotar: (i) fuente probable de datos, (ii) periodicidad de reporte, (iii) decisión que habilita.
-- Traer **un ejemplo** (tomado de prensa, reporte de industria o experiencia propia) de: (a) una decisión de negocio en retail que se apoyó en datos y una prueba o métrica estadística, **o** (b) una "correlación engañosa" que llevó a una conclusión incorrecta. Estar listos para describirlo en 2 minutos.
+Durante el bloque de "Mini-caso guiado" (≈20 min), los equipos aplican la caja de herramientas a preguntas de negocio reales:
+
+1. Cada equipo recibe una pregunta de negocio en retail, e-commerce o logística. Ejemplos:
+   - "¿Cuál fue el impacto real de la promoción del fin de semana en margen?"
+   - "¿Qué clientes están por dejar de comprar?"
+   - "¿Cuánto inventario necesito para la próxima semana de un SKU estacional?"
+   - "¿Puedo atribuir la caída de ventas a la entrada de un nuevo competidor o a un cambio de temporada?"
+2. El equipo debe, sin entrar a cálculos:
+   - Identificar qué **herramienta(s) de la caja de herramientas** aplicarían y por qué (hipótesis, distribución esperada, regresión, series de tiempo, sobrevivencia, experimento, etc.).
+   - Anotar qué **datos** necesitarían, qué **supuestos** deberían validarse antes de confiar en el resultado, y qué **tipo de distribución** esperan observar en los datos clave.
+   - Clasificar la pregunta como descriptiva, diagnóstica, predictiva o prescriptiva.
+3. Cada equipo comparte su recomendación en ~2 minutos al resto del grupo.
+
+**Entregable de la actividad:** una hoja breve por equipo con (i) la herramienta elegida, (ii) los datos y supuestos, y (iii) un esquema a mano alzada de la distribución esperada en los datos clave.
 
 ---
 
