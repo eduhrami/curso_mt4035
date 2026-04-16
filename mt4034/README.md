@@ -1,8 +1,8 @@
 # MT4034 — Índice de sesiones
 
-**Materia:** MT4034 – Aplicaciones, gestión y gobernanza de la IA
+**Materia:** MT4034 – Aplicaciones, gestión y gobernanza de la inteligencia artificial
 
-> ⚠ **Curso en construcción.** Contenidos, calendario, profesores y bibliografía están pendientes de definir. Esta estructura es un esqueleto homologado al curso MT4035 y se irá poblando conforme el diseño del curso avance.
+> ⚠ **Curso en rediseño.** La estructura temática y los objetivos se han reconstruido a partir del syllabus de la edición previa (ver [`curso_anterior/`](./curso_anterior/)). Fechas, profesor, ponderaciones, rúbricas y bibliografía final siguen pendientes.
 
 El documento maestro del curso es el **[syllabus oficial](./syllabus.md)** (en construcción), que contiene objetivos, competencias, metodología, evaluación, calendario y políticas. Este índice es una guía rápida de navegación a las sesiones y los entregables; para cualquier dato sobre ponderaciones, reglas o bibliografía consolidada, ir al syllabus.
 
@@ -12,14 +12,14 @@ El documento maestro del curso es el **[syllabus oficial](./syllabus.md)** (en c
 
 | # | Sesión | Fecha | Profesor |
 |---|---|---|---|
-| 1 | [Sesión 1](./sesion-1.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 2 | [Sesión 2](./sesion-2.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 3 | [Sesión 3](./sesion-3.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 4 | [Sesión 4](./sesion-4.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 5 | [Sesión 5](./sesion-5.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 6 | [Sesión 6](./sesion-6.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 7 | [Sesión 7](./sesion-7.md) *(por definir)* | *(por definir)* | *(por definir)* |
-| 8 | [Sesión 8](./sesion-8.md) — Presentaciones finales + examen | *(por definir)* | *(por definir)* |
+| 1 | [Fundamentos de IA y del curso](./sesion-1.md) | *(por definir)* | *(por definir)* |
+| 2 | [Prácticas responsables de IA](./sesion-2.md) | *(por definir)* | *(por definir)* |
+| 3 | [Gobierno de datos](./sesion-3.md) | *(por definir)* | *(por definir)* |
+| 4 | [Ética de la IA](./sesion-4.md) | *(por definir)* | *(por definir)* |
+| 5 | [IA generativa](./sesion-5.md) | *(por definir)* | *(por definir)* |
+| 6 | [IA comercial y mercadotecnia](./sesion-6.md) | *(por definir)* | *(por definir)* |
+| 7 | [Gestión de proyectos de IA](./sesion-7.md) | *(por definir)* | *(por definir)* |
+| 8 | [Presentaciones finales + examen](./sesion-8.md) | *(por definir)* | *(por definir)* |
 
 Para el mapa de temas, objetivos específicos y *business questions* de cada sesión, ver la sección III del [syllabus](./syllabus.md).
 
@@ -35,6 +35,7 @@ El detalle de la evaluación (ponderaciones, quizzes, proyecto final, políticas
 
 - **[Syllabus oficial del curso](./syllabus.md)** *(en construcción)* — documento maestro, 10 secciones estilo EGADE
 - **[Plan de trabajo del syllabus](./plan-syllabus.md)** — estado vivo del diseño
+- **[`curso_anterior/`](./curso_anterior/)** — plan de estudios y syllabus de la edición previa, material de referencia únicamente
 
 ---
 

@@ -1,6 +1,6 @@
 # Sesión 8 — Presentaciones finales + examen final
 
-> ⚠ **Sesión en construcción.** Esqueleto homologado al formato del curso MT4035. Contenido por redactar.
+> ⚠ **Sesión en construcción.** Estructura homologada al formato del curso MT4035. Formato, tiempos y criterios específicos por afinar.
 
 **Fecha:** *(por definir)*
 **Profesor:** *(por definir)*
@@ -8,19 +8,23 @@
 
 ## Descripción de la sesión
 
-Sesión de cierre del curso **MT4034**. Presentaciones finales de los equipos y examen final presencial individual. No tiene quiz inicial; el contenido de la sesión 7 se evalúa mediante el examen final.
+Sesión de cierre del curso **MT4034**. Presentaciones finales de los equipos del proyecto integrador y examen final presencial individual. No tiene quiz inicial; el contenido de la sesión 7 (gestión de proyectos de IA) se evalúa mediante el examen presencial.
 
 ## Objetivos
 
-*(por definir)*
+- Integrar y comunicar los conocimientos del curso mediante la presentación del proyecto final en equipo, con decisiones basadas en métricas y reflexión sobre impacto ético y legal.
+- Demostrar comprensión individual de los temas del curso, con énfasis en gestión de proyectos de IA (sesión 7), mediante el examen presencial.
 
 ## Formato
 
-*(por definir)* — tiempo por equipo, Q&A, orden de presentaciones, formato del examen presencial. Ver [`examen-final.md`](./examen-final.md).
+*(por afinar con profesor titular)*
+
+- **Presentaciones por equipo** — tiempo por equipo, Q&A, criterios de rúbrica (ver [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md)).
+- **Examen final presencial** — ver [`examen-final.md`](./examen-final.md). Cobertura general del curso con énfasis explícito en la sesión 7.
 
 ## Checklist de entregables
 
-*(por definir)*
+*(por definir — reporte final, presentación, autoevaluación de equipo, etc.)*
 
 ## Libro de texto
 
@@ -32,7 +36,7 @@ Sesión de cierre del curso **MT4034**. Presentaciones finales de los equipos y 
 
 ## Complementos
 
-*(por definir)*
+*(por definir — rúbrica y plantilla de presentación)*
 
 ---
 
