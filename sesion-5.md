@@ -70,6 +70,8 @@ Mini-caso de **fulfillment omnicanal** presentado por el profesor en clase: un r
 ## Lecturas recomendadas (APA)
 
 - Spiegel, J. R., McKenna, M. T., Lakshman, G. S., & Nordstrom, P. G. (2013, December 24). *Method and system for anticipatory package shipping* (U.S. Patent No. US 8,615,473). U.S. Patent and Trademark Office. https://patents.google.com/patent/US8615473B2/en
+- Chaubard, F. (2023). *AI for retail: A practical guide to modernize your retail business with AI and automation*. Wiley. — caps. 18 (presupuestos y calendarización de mano de obra) y 20 (almacenes y centros de distribución) para operaciones de fulfillment.
+- Prajapat, R. (2024). *AI-powered ecommerce: How machine learning is transforming online shopping*. Apress. https://doi.org/10.1007/979-8-8688-0923-1 — cap. 8 (eficiencia como habilitador de la experiencia de entrega y la rentabilidad en e-commerce).
 
 ## Complementos
 

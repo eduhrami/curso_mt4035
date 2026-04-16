@@ -72,6 +72,7 @@ Lectura y discusión guiada del caso **Seven-Eleven Japan Co.** (Kellogg KEL026,
 - Chopra, S. (2005, January 1). *Seven-Eleven Japan Co.* (Case No. KEL026). Kellogg School of Management. https://store.hbr.org/product/seven-eleven-japan-co/KEL026
 - Lal, R., & Han, A. (2005, July 12). *Tanpin Kanri: Retail Practice at Seven-Eleven Japan* (Case No. 506002). Harvard Business School. https://store.hbr.org/product/tanpin-kanri-retail-practice-at-seven-eleven-japan/506002
 - Johnson, P. F., & Mark, K. (2019, July 8). *Walmart: Supply Chain Management* (Case No. W19317). Ivey Publishing. https://store.hbr.org/product/walmart-supply-chain-management/W19317
+- Chaubard, F. (2023). *AI for retail: A practical guide to modernize your retail business with AI and automation*. Wiley. — caps. 16–17 (inventario, órdenes, SCM y replenishment con IA) como lente práctico sobre diseño de red y políticas de inventario.
 
 ## Complementos
 

@@ -136,8 +136,11 @@ Análisis de un **retailer omnicanal y sus KPIs** aplicando la caja de herramien
 
 - Davenport, T. H. (2006, January). Competing on analytics. *Harvard Business Review*. https://hbr.org/2006/01/competing-on-analytics
 - Downey, A. B. (2025). *Think stats: Exploratory data analysis in Python* (3rd ed.). O'Reilly Media. Versión abierta en notebooks: https://allendowney.github.io/ThinkStats/
+- Okunev, R. (2022). *Analytics for retail: A step-by-step guide to the statistics behind a successful retail business*. Apress. https://doi.org/10.1007/978-1-4842-7830-7
 
 > *Guía de lectura de Think Stats (3e) para esta sesión:* capítulos iniciales sobre distribuciones, estadística descriptiva, pruebas de hipótesis y relaciones entre variables. Leerlos como **construcción de intuición**, no como referencia de implementación.
+>
+> *Guía de lectura de Okunev (2022) para esta sesión — técnicas analíticas:* caps. 1–3 (estadística descriptiva, curva normal, probabilidad), cap. 6 (comunicación visual de frecuencias y porcentajes), caps. 7–9 (pruebas de hipótesis, correlación de Pearson y regresión lineal, t-test independiente) y cap. 10 (caso integrador tipo campaña de email). Usarlos como **catálogo de técnicas estadísticas aplicadas al retail**, complementario a la intuición de Downey.
 
 ## Complementos
 

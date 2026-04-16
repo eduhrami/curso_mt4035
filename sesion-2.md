@@ -69,6 +69,7 @@ Caso de segmentación presentado por el profesor en clase: a partir de una descr
 ## Lecturas recomendadas (APA)
 
 - Linden, G., Smith, B., & York, J. (2003). Amazon.com recommendations: Item-to-item collaborative filtering. *IEEE Internet Computing, 7*(1), 76–80. https://doi.org/10.1109/MIC.2003.1167344
+- Prajapat, R. (2024). *AI-powered ecommerce: How machine learning is transforming online shopping*. Apress. https://doi.org/10.1007/979-8-8688-0923-1 — cap. 7 (personalización como experiencia generada por IA) como extensión natural de RFM/CLV hacia segmentación 1-a-1.
 
 ## Complementos
 
