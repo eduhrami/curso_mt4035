@@ -1,4 +1,4 @@
-# Cursos EGADE — Eduardo H.
+# Cursos EGADE — Marcos Chavez  & Eduardo Ramirez
 
 Repositorio de materiales docentes. Cada curso vive en su propio subdirectorio y contiene su **syllabus maestro**, **plan de trabajo del syllabus**, archivos de sesión homologados y artefactos de evaluación.
 
