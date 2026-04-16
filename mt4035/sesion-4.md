@@ -9,7 +9,7 @@
 
 ## Descripción de la sesión
 
-La sesión introduce la perspectiva de supply chain management (SCM) aplicada al retail, enfatizando la relación entre decisiones de diseño y control (red, inventarios y reposición) y el desempeño en tiempo, costo y nivel de servicio. Se revisan KPIs clave de supply chain y se presenta una introducción al diseño de red (qué nodos existen, dónde posicionar inventario y capacidad, y cómo se balancea costo vs servicio). Luego se revisan modelos básicos de gestión de inventario como EOQ y ROP, resaltando sus supuestos y limitaciones. Finalmente, a través del caso 7-Eleven Japan, se discute cómo el uso inteligente de datos puede convertirse en una ventaja competitiva a lo largo de la cadena.
+La sesión introduce la perspectiva de supply chain management (SCM) aplicada al retail, enfatizando la relación entre decisiones de diseño y control (red, inventarios y reposición) y el desempeño en tiempo, costo y nivel de servicio. Se revisan KPIs clave de supply chain y se presenta una introducción al diseño de red (qué nodos existen, dónde posicionar inventario y capacidad, y cómo se balancea costo vs servicio). Luego se revisan modelos básicos de gestión de inventario como EOQ y ROP, resaltando sus supuestos y limitaciones. A través del caso 7-Eleven Japan, se discute cómo el uso inteligente de datos puede convertirse en una ventaja competitiva a lo largo de la cadena. La sesión incluye además la simulación **Beer Game** — un ejercicio clásico de cadena de suministro (originalmente desarrollado en MIT por Sterman) que permite experimentar de primera mano el efecto bullwhip en un canal de distribución de 4 niveles (detallista → mayorista → distribuidor → fabricante).
 
 ## Objetivos
 
@@ -29,7 +29,8 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 1. **Mapa de KPIs:** lead time, fill rate, OTIF, cost-to-serve
 2. **Diseño de red (fundamentos):** nodos/echelons, centralizado vs regional, costo vs servicio, posicionamiento de inventario y capacidad
 3. **Modelos de control:** EOQ/ROP (visión general)
-4. **Discusión 7-Eleven:** "¿Dónde está la ventaja de datos y cómo se manifiesta?"
+4. **Beer Game (simulación en línea, ~30–40 min):** los equipos juegan la simulación por 20 semanas en https://beergame.masystem.se/ asumiendo cada integrante un rol (detallista, mayorista, distribuidor, fabricante). El objetivo es experimentar el efecto bullwhip y los múltiples niveles de explicación de una problemática de SCM desde una perspectiva sistémica.
+5. **Discusión 7-Eleven:** "¿Dónde está la ventaja de datos y cómo se manifiesta?"
 
 ## Subtemas (detalle)
 
@@ -60,6 +61,7 @@ Lectura y discusión guiada del caso **Seven-Eleven Japan Co.** (Kellogg KEL026,
 
 - Actividad en foro (preguntas del caso + interacción con pares)
 - Proyecto: 1 diagrama de red (as-is) + 3 KPIs de servicio/costo que la red impacta
+- **Beer Game — reporte en equipo:** presentación breve (PPT o equivalente) que incluya: (1) evidencia de la simulación de 20 semanas (gráficas de órdenes vs. tiempo e inventario vs. tiempo), (2) conclusiones de cada integrante del equipo: estrategias usadas, decisiones tomadas, situaciones enfrentadas, si se cumplió o no el objetivo de pedido y qué aprendieron sobre el efecto bullwhip y la dinámica de cadenas de suministro.
 
 ---
 
@@ -73,11 +75,14 @@ Lectura y discusión guiada del caso **Seven-Eleven Japan Co.** (Kellogg KEL026,
 - Lal, R., & Han, A. (2005, July 12). *Tanpin Kanri: Retail Practice at Seven-Eleven Japan* (Case No. 506002). Harvard Business School. https://store.hbr.org/product/tanpin-kanri-retail-practice-at-seven-eleven-japan/506002
 - Johnson, P. F., & Mark, K. (2019, July 8). *Walmart: Supply Chain Management* (Case No. W19317). Ivey Publishing. https://store.hbr.org/product/walmart-supply-chain-management/W19317
 - Chaubard, F. (2023). *AI for retail: A practical guide to modernize your retail business with AI and automation*. Wiley. — caps. 16–17 (inventario, órdenes, SCM y replenishment con IA) como lente práctico sobre diseño de red y políticas de inventario.
+- Hammond, J. H. (1994). *Beer game: Board version* (Background Note No. 694-104). Harvard Business School. https://store.hbr.org/product/beer-game-board-version/694104 — simulación clásica de cadena de suministro que ilustra el efecto bullwhip en un canal de distribución de 4 niveles.
+- Sterman, J. (2023). *MIT Sloan beer game online* [Simulación web]. MIT Sloan School of Management. https://mitsloan.mit.edu/teaching-resources-library/mit-sloan-beer-game-online — versión digital de referencia académica del Beer Game (©2023 MIT Sloan). Material de contexto; la simulación del curso se juega en MA System (ver Complementos).
 
 ## Complementos
 
 - Capítulos de inventarios (safety stock, service levels, variabilidad)
 - Material del profesor: plantilla simple (hoja de cálculo) para comparar 1 CD vs 2 CDs (costo total vs tiempo de entrega)
+- **Beer Game (simulación en línea):** la sesión incluye la simulación del Beer Game para experimentar de primera mano el efecto bullwhip. Se juega en línea desde https://beergame.masystem.se/ (reglas: https://www.masystem.se/MA-system-Consulting/Play-The-Beer-Game/Rules). Referencia institucional: Hammond (1994), citada arriba.
 
 ---
 
