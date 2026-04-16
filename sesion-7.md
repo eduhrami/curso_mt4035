@@ -61,6 +61,8 @@ Taller aplicado al proyecto final: evaluación estructurada de una **tecnología
 - Atzori, L., Iera, A., & Morabito, G. (2010). The Internet of Things: A survey. *Computer Networks, 54*(15), 2787–2805. https://doi.org/10.1016/j.comnet.2010.05.010
 - Davenport, T. H., & Ronanki, R. (2018, January–February). Artificial intelligence for the real world. *Harvard Business Review*. https://hbr.org/2018/01/artificial-intelligence-for-the-real-world
 - Iansiti, M., & Lakhani, K. R. (2017, January–February). The truth about blockchain. *Harvard Business Review*. https://hbr.org/2017/01/the-truth-about-blockchain
+- Chaubard, F. (2023). *AI for retail: A practical guide to modernize your retail business with AI and automation*. Wiley. — secciones 2 (teoría de IA aplicada al retail, caps. 5–13) y 4 (estrategia y roadmap de adopción, caps. 24–27). Texto de referencia para mapear casos de uso → MVP → KPIs → riesgos.
+- Prajapat, R. (2024). *AI-powered ecommerce: How machine learning is transforming online shopping*. Apress. https://doi.org/10.1007/979-8-8688-0923-1 — caps. 4–7 (search, recomendaciones, ranking y personalización con ML) como catálogo de casos de uso de IA en e-commerce.
 
 ## Complementos
 

@@ -140,9 +140,12 @@ Textos principales confirmados hasta hoy:
 
 - Agrawal, N., & Smith, S. A. (Eds.). (2015). *Retail supply chain management: Quantitative models and empirical studies* (2nd ed.). Springer.
 - Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.
+- Chaubard, F. (2023). *AI for retail: A practical guide to modernize your retail business with AI and automation*. Wiley.
 - Downey, A. B. (2025). *Think stats: Exploratory data analysis in Python* (3rd ed.). O'Reilly Media. https://allendowney.github.io/ThinkStats/
 - Fernie, J., & Sparks, L. (Eds.). (2018). *Logistics and retail management: Emerging issues and new challenges in the retail supply chain* (5th ed.). Kogan Page.
 - Iansiti, M., & Lakhani, K. R. (2020). *Competing in the age of AI: Strategy and leadership when algorithms and networks run the world*. Harvard Business Review Press.
+- Okunev, R. (2022). *Analytics for retail: A step-by-step guide to the statistics behind a successful retail business*. Apress.
+- Prajapat, R. (2024). *AI-powered ecommerce: How machine learning is transforming online shopping*. Apress.
 
 ## VII. Calendario del curso
 

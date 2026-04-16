@@ -71,6 +71,7 @@ Lectura y discusión en clase del caso **Tesco Group Food** (HBS 514022, incluid
 ## Lecturas recomendadas (APA)
 
 - Alvarez, J. B., McLoughlin, D. P., & Shelman, M. (2014, January 16). *Tesco Group Food* (Case No. 514022). Harvard Business School. https://store.hbr.org/product/tesco-group-food/514022
+- Okunev, R. (2022). *Analytics for retail: A step-by-step guide to the statistics behind a successful retail business*. Apress. https://doi.org/10.1007/978-1-4842-7830-7 — cap. 4 (retail math: márgenes, markups/markdowns, métricas de inventario y crecimiento), cap. 5 (ratios financieros) y cap. 11 (forecasting para planeación de escenarios).
 
 ## Complementos
 

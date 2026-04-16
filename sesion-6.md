@@ -57,6 +57,8 @@ Mini-caso de **efectividad de promociones** presentado por el profesor en clase:
 
 - Blattberg, R. C., Briesch, R., & Fox, E. J. (1995). How promotions work. *Marketing Science, 14*(3_supplement), G122–G132. https://doi.org/10.1287/mksc.14.3.g122
 - Bolton, R. J., & Hand, D. J. (2002). Statistical fraud detection: A review. *Statistical Science, 17*(3), 235–255. https://doi.org/10.1214/ss/1042727940
+- Chaubard, F. (2023). *AI for retail: A practical guide to modernize your retail business with AI and automation*. Wiley. — cap. 15 (merchandising con IA), cap. 21 (checkout y prevención de pérdidas) y cap. 22 (pricing y promociones).
+- Prajapat, R. (2024). *AI-powered ecommerce: How machine learning is transforming online shopping*. Apress. https://doi.org/10.1007/979-8-8688-0923-1 — cap. 3 (merchandising en marketplaces de e-commerce) como contraparte digital a pricing y promoción en tienda física.
 
 ## Complementos
 
