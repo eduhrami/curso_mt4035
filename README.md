@@ -1,36 +1,22 @@
-# MT4035 — Índice de sesiones
+# Cursos EGADE — Eduardo H.
 
-**Materia:** MT4035 – Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro
+Repositorio de materiales docentes. Cada curso vive en su propio subdirectorio y contiene su **syllabus maestro**, **plan de trabajo del syllabus**, archivos de sesión homologados y artefactos de evaluación.
 
-El documento maestro del curso es el **[syllabus oficial](./syllabus.md)** (en construcción), que contiene objetivos, competencias, metodología, evaluación, calendario y políticas. Este índice es una guía rápida de navegación a las sesiones y los entregables; para cualquier dato sobre ponderaciones, reglas o bibliografía consolidada, ir al syllabus.
+## Cursos
 
-**Plan de trabajo del syllabus:** [`plan-syllabus.md`](./plan-syllabus.md) — documento vivo con el estado del rediseño del curso.
-
-## Sesiones
-
-| # | Sesión | Fecha | Profesor |
+| Clave | Curso | Edición | Índice |
 |---|---|---|---|
-| 1 | [Fundamentos analíticos para retail y e-commerce](./sesion-1.md) | 23 de abril de 2026 | Marcos|
-| 2 | [Segmentación y perfilado de clientes](./sesion-2.md) | 29 de abril de 2026 | Marcos |
-| 3 | [Analítica de ventas e inventario](./sesion-3.md) | 6 de mayo de 2026 (On-line) | Marcos |
-| 4 | [SCM + inventario + fundamentos de diseño de red](./sesion-4.md) | 13 de mayo de 2026 | Eduardo |
-| 5 | [Transporte y logística omnicanal](./sesion-5.md) | 21 de mayo de 2026 | Eduardo |
-| 6 | [Precios, promociones y fraude](./sesion-6.md) | 27 de mayo de 2026 | Marcos |
-| 7 | [Tecnologías emergentes](./sesion-7.md) | 3 de junio de 2026 | Eduardo |
-| 8 | [Presentaciones finales + examen](./sesion-8.md) | 10 de junio de 2026 | Eduardo |
+| **MT4035** | Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro | 2026 (23-abr – 10-jun) | [`mt4035/README.md`](./mt4035/README.md) |
+| **MT4034** | Aplicaciones, gestión y gobernanza de la IA | *(por definir)* | [`mt4034/README.md`](./mt4034/README.md) |
 
-Para el mapa de temas, objetivos específicos y *business questions* de cada sesión, ver la sección III del [syllabus](./syllabus.md).
+Cada curso es independiente en contenido, syllabus y bibliografía, pero **comparte la misma estructura formal**: 8 sesiones con plantilla unificada, syllabus de 10 secciones en formato institucional EGADE, plan de trabajo con fases A/B/C/D, y artefactos de evaluación (práctica de campo, rúbrica, examen final).
 
-## Prácticas y entregables
+## Convenciones comunes
 
-El detalle de la evaluación (ponderaciones, quizzes, proyecto final, políticas) vive en el [syllabus](./syllabus.md). Enlaces directos a los entregables:
+- Todo el contenido docente está en español.
+- El **syllabus** de cada curso es la fuente única de verdad para objetivos, competencias, metodología, evaluación, calendario y políticas.
+- Los **README de curso** son índices de navegación — no duplican contenido del syllabus.
+- Los archivos `sesion-N.md` siguen la misma plantilla entre cursos (descripción, objetivos, estructura en clase, subtemas, actividad en clase, tarea/entregable, bibliografía).
+- Las secciones en construcción se marcan con ⚠ y la nota *"borrador preliminar"*.
 
-- **[Práctica — Trabajo de campo](./practica-trabajo-de-campo.md)** — actividad que evalúa la competencia institucional *Toma de decisiones estratégicas*
-- **[Rúbrica de la práctica](./rubrica-practica-trabajo-de-campo.md)** *(borrador preliminar)*
-- **[Examen final presencial](./examen-final.md)** *(borrador preliminar)*
-
-## Material de referencia
-
-- **[Syllabus oficial del curso](./syllabus.md)** — documento maestro, 10 secciones estilo EGADE
-- **[Plan de trabajo del syllabus](./plan-syllabus.md)** — estado vivo del rediseño
-- **[`curso_anterior/`](./curso_anterior/)** — syllabus de la edición previa (S24), material de referencia únicamente
+Para guía detallada al editar este repositorio, ver [`CLAUDE.md`](./CLAUDE.md).

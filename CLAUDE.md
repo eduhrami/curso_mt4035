@@ -4,27 +4,39 @@ This file provides guidance to Claude Code (claude.ai/code) when working in this
 
 ## Project Overview
 
-Curriculum documentation repository for **MT4035** — a university course on data analytics applied to retail, e-commerce, logistics and supply chain management. All content is in Spanish. There is no source code, build system, or test suite — this is a pure markdown documentation project.
+Multi-course curriculum documentation repository for university courses taught by Eduardo (and collaborators). All content is in Spanish. There is no source code, build system, or test suite — this is a pure markdown documentation project.
 
-The current edition is taught by Eduardo and Marcos. Session 1 opens on 23-abr-2026; session 8 closes with presentations and the in-person final exam on 10-jun-2026.
+Currently hosts two courses:
+- **MT4035** — *Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro.* 2026 edition (23-abr – 10-jun), taught by Eduardo and Marcos. Content is mature.
+- **MT4034** — *Aplicaciones, gestión y gobernanza de la IA.* Early-stage design; only the homologated skeleton exists so far.
+
+Both courses are **independent in content** (syllabus, bibliography, instructors) but **share the same formal structure**: 8 sessions, 10-section EGADE syllabus, session template, evaluation artifacts, and editorial conventions. When extending the repository to a new course, clone the MT4035 skeleton, not its content.
 
 ## Repository structure
+
+Top-level:
+- `README.md` — Level-1 index linking to each course's level-2 README. Does not duplicate course content.
+- `CLAUDE.md` — This file.
+- `mt4035/` — All MT4035 course materials.
+- `mt4034/` — All MT4034 course materials (skeleton).
+
+Inside each course directory (`mt4035/`, `mt4034/`, ...):
 
 **Master documents:**
 - `syllabus.md` — **Authoritative course syllabus** in the 10-section EGADE institutional template. Single source of truth for objectives, competencies, methodology, evaluation, calendar, bibliography, and policies. Sections still in construction are flagged with ⚠.
 - `plan-syllabus.md` — Living work plan for building the syllabus. Checkbox-tracked by phase (A/B/C/D). Update it whenever items move state.
-- `README.md` — Lightweight navigation index pointing to the syllabus and the per-session files. Does **not** duplicate content that lives in the syllabus.
+- `README.md` — Lightweight navigation index (level-2) pointing to the syllabus and the per-session files. Does **not** duplicate content that lives in the syllabus. Links back to the top-level index via `../README.md`.
 
 **Session content:**
 - `sesion-1.md` through `sesion-8.md` — One file per class session, each following a consistent template.
 
-**Evaluation artifacts:**
-- `practica-trabajo-de-campo.md` — Field-work practice. This activity evaluates the institutional competency *Toma de decisiones estratégicas*.
-- `rubrica-practica-trabajo-de-campo.md` — Preliminary rubric for the field-work practice.
-- `examen-final.md` — Preliminary specification of the in-person final exam.
+**Evaluation artifacts** (per course, when applicable):
+- `practica-trabajo-de-campo.md` — Field-work practice specification. In MT4035, this activity evaluates the institutional competency *Toma de decisiones estratégicas*.
+- `rubrica-practica-trabajo-de-campo.md` — Rubric for the field-work practice.
+- `examen-final.md` — Specification of the in-person final exam.
 
 **Reference:**
-- `curso_anterior/` — Reference-only archive of the previous edition of MT4035 (see "Previous course version" below).
+- `mt4035/curso_anterior/` — Reference-only archive of the previous edition of MT4035 (see "Previous course version" below). Specific to MT4035; do not replicate in other courses.
 
 ## Document hierarchy and single source of truth
 
