@@ -98,7 +98,7 @@ Convención de estados:
 ## 5. Assignment Groups y evaluación
 
 - ⏳ **Rediseñar los 2 Assignment Groups actuales** ("Tareas Individuales 50%", "Tareas en Equipo 50%") y reemplazarlos por los 5 grupos del esquema aprobado:
-  1. Reportes de casos y actividades de clase — Equipo — 18%
+  1. Reportes de casos y actividades de clase — Individual — 18%
   2. Quizzes en línea — Individual — 12%
   3. Tareas — Equipo — 10%
   4. Examen final presencial — Individual — 20%

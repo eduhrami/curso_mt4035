@@ -183,7 +183,7 @@ El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md
 
 ## X. Políticas para la evaluación
 
-- **Reportes de casos y actividades de clase (18%, equipo).** Seis entregables de equipo generados durante los talleres en clase. Cada reporte tiene fecha de entrega específica; las entregas tardías se penalizan según las políticas generales del programa. Se espera asistencia puntual y participación activa del equipo; en sesiones remotas, cámara encendida.
+- **Reportes de casos y actividades de clase (18%, individual).** Seis entregables individuales generados durante los talleres en clase. Cada reporte tiene fecha de entrega específica; las entregas tardías se penalizan según las políticas generales del programa. Se espera asistencia puntual y participación activa; en sesiones remotas, cámara encendida.
 - **Quizzes en línea (12%, individual).** Los 6 quizzes se realizan en Canvas al inicio de cada sesión de la 2 a la 7. Son individuales y tienen tiempo limitado. No se permite reposición fuera del plazo salvo causa justificada aprobada por el profesor.
 - **Tareas (10%, equipo).** Dos tareas asignadas por el profesor, entregadas fuera de clase por cada equipo en las fechas indicadas.
 - **Examen final presencial (20%, individual).** Se realiza en la sesión 8. Es individual, sin apoyo de materiales salvo los explícitamente autorizados por los profesores. Consultar [`examen-final.md`](./examen-final.md).
