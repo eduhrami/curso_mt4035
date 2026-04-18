@@ -6,7 +6,7 @@
 
 ## I. Datos generales del curso
 
-> ⚠ **Pendiente — requiere confirmación administrativa.**
+> ⚠ **Pendiente — requiere confirmación administrativa** de Programa y Trimestre / periodo.
 
 | Dato | Valor |
 |---|---|
@@ -14,9 +14,9 @@
 | Clave | MT4035 |
 | Programa | *(por confirmar)* |
 | Trimestre / periodo | *(por definir)* |
-| Modalidad | *(por definir)* |
-| Horario | *(por definir)* |
-| Salón / Zoom | *(por definir)* |
+| Modalidad | Presencial |
+| Horario | 18:30 – 21:45 (algunas sesiones en miércoles, otras en jueves; ver calendario en §VII) |
+| Salón | EG-215 |
 | Número de sesiones | 8 |
 | Fecha de inicio | 23 de abril de 2026 |
 | Fecha de fin | 10 de junio de 2026 |
@@ -146,16 +146,18 @@ Textos principales confirmados hasta hoy:
 
 ## VII. Calendario del curso
 
-| # | Fecha | Modalidad | Profesor | Contenido | Quiz aplicado | Entregables del estudiante |
+Todas las sesiones son **presenciales** en **EG-215**, horario **18:30 – 21:45**. El día de la semana varía: sesiones 1 y 5 en jueves; sesiones 2, 3, 4, 6, 7 y 8 en miércoles.
+
+| # | Fecha | Día | Profesor | Contenido | Quiz aplicado | Entregables del estudiante |
 |---|---|---|---|---|---|---|
-| 1 | 23-abr | *(por def.)* | Eduardo y Marcos | Fundamentos analíticos | — | Shortlist de empresas candidatas para el proyecto final |
-| 2 | 29-abr | *(por def.)* | Marcos | Segmentación y perfilado (CLV, RFM) | Quiz 1 — Sesión 1 | Hipótesis de segmentación + KPI principal y guardrail |
-| 3 | 6-may | *(por def.)* | Marcos | Ventas, inventario y pruebas A/B | Quiz 2 — Sesión 2 | 3 KPIs operativos de inventario + 1 hipótesis de mejora con experimento |
-| 4 | 13-may | *(por def.)* | Eduardo | SCM, inventario y diseño de red | Quiz 3 — Sesión 3 | Diagrama de red as-is del retailer + foro del caso 7-Eleven |
-| 5 | 21-may | *(por def.)* | Eduardo | Transporte y logística omnicanal | Quiz 4 — Sesión 4 | Baseline de KPIs logísticos + escenario to-be de red/fulfillment |
-| 6 | 27-may | *(por def.)* | Marcos | Precios, promociones y fraude | Quiz 5 — Sesión 5 | Memo de promociones + plan de medición + consideraciones de fraude |
-| 7 | 3-jun | *(por def.)* | Eduardo | Tecnologías emergentes | Quiz 6 — Sesión 6 | 1-pager por equipo: caso de uso → MVP → KPIs → riesgos |
-| 8 | 10-jun | Presencial | Eduardo + Marcos | Presentaciones finales + examen final | — | Reporte y presentación del proyecto final + examen presencial |
+| 1 | 23-abr | Jueves | Eduardo y Marcos | Fundamentos analíticos | — | Shortlist de empresas candidatas para el proyecto final |
+| 2 | 29-abr | Miércoles | Marcos | Segmentación y perfilado (CLV, RFM) | Quiz 1 — Sesión 1 | Hipótesis de segmentación + KPI principal y guardrail |
+| 3 | 6-may | Miércoles | Marcos | Ventas, inventario y pruebas A/B | Quiz 2 — Sesión 2 | 3 KPIs operativos de inventario + 1 hipótesis de mejora con experimento |
+| 4 | 13-may | Miércoles | Eduardo | SCM, inventario y diseño de red | Quiz 3 — Sesión 3 | Diagrama de red as-is del retailer + foro del caso 7-Eleven |
+| 5 | 21-may | Jueves | Eduardo | Transporte y logística omnicanal | Quiz 4 — Sesión 4 | Baseline de KPIs logísticos + escenario to-be de red/fulfillment |
+| 6 | 27-may | Miércoles | Marcos | Precios, promociones y fraude | Quiz 5 — Sesión 5 | Memo de promociones + plan de medición + consideraciones de fraude |
+| 7 | 3-jun | Miércoles | Eduardo | Tecnologías emergentes | Quiz 6 — Sesión 6 | 1-pager por equipo: caso de uso → MVP → KPIs → riesgos |
+| 8 | 10-jun | Miércoles | Eduardo + Marcos | Presentaciones finales + examen final | — | Reporte y presentación del proyecto final + examen presencial |
 
 El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
 
