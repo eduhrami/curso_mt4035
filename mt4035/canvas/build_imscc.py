@@ -128,7 +128,7 @@ EVALUACION_BODY = f"""{GRADIENT_BAR}
 <li>Se recomienda que consultes semanalmente tus puntos acumulados en el botón <strong>Calificaciones</strong>, disponible en el menú izquierdo de la plataforma.</li>
 <li>Una vez publicada la calificación y la retroalimentación de cada actividad, tendrás <strong>una semana</strong> para solicitar aclaración o revisión; después de ese plazo, la calificación se considera definitiva.</li>
 </ul>
-<p>La evaluación se compone de 5 elementos. El esquema distingue entre actividades <strong>individuales</strong> (32%) y <strong>colaborativas/en equipo</strong> (68%).</p>
+<p>La evaluación se compone de 5 elementos. El esquema distingue entre actividades <strong>individuales</strong> (50%) y <strong>colaborativas/en equipo</strong> (50%).</p>
 
 <table style="width: 100%; border-collapse: collapse; border: 1px solid #cccccc; margin-left: auto; margin-right: auto;" border="1" cellspacing="0" cellpadding="6">
 <caption><strong>Composición de la evaluación</strong></caption>
@@ -142,15 +142,15 @@ EVALUACION_BODY = f"""{GRADIENT_BAR}
 <tbody>
 <tr>
 <td colspan="2" style="background-color: #f1f1f1;"><strong>Actividades individuales</strong></td>
-<td style="text-align: center; background-color: #f1f1f1;"><strong>32%</strong></td>
+<td style="text-align: center; background-color: #f1f1f1;"><strong>50%</strong></td>
 </tr>
+<tr><td>Reportes de casos y actividades de clase (6 entregables)</td><td style="text-align: center;">Individual</td><td style="text-align: center;">18%</td></tr>
 <tr><td>Quizzes en línea (6 quizzes, uno al inicio de cada sesión de la 2 a la 7)</td><td style="text-align: center;">Individual</td><td style="text-align: center;">12%</td></tr>
 <tr><td>Examen final presencial (sesión 8)</td><td style="text-align: center;">Individual</td><td style="text-align: center;">20%</td></tr>
 <tr>
 <td colspan="2" style="background-color: #f1f1f1;"><strong>Actividades colaborativas</strong></td>
-<td style="text-align: center; background-color: #f1f1f1;"><strong>68%</strong></td>
+<td style="text-align: center; background-color: #f1f1f1;"><strong>50%</strong></td>
 </tr>
-<tr><td>Reportes de casos y actividades de clase (6 entregables)</td><td style="text-align: center;">Equipo</td><td style="text-align: center;">18%</td></tr>
 <tr><td>Tareas (2 tareas)</td><td style="text-align: center;">Equipo</td><td style="text-align: center;">10%</td></tr>
 <tr><td>Proyecto final (trabajo de análisis + trabajo de campo + presentación + coevaluación)</td><td style="text-align: center;">Equipo</td><td style="text-align: center;">40%</td></tr>
 <tr>
@@ -164,7 +164,7 @@ EVALUACION_BODY = f"""{GRADIENT_BAR}
 <ul>
 <li><strong>Quizzes en línea:</strong> 6 quizzes en Canvas, individuales, con tiempo limitado. Cada quiz evalúa el contenido de la sesión inmediatamente anterior. La sesión 8 no tiene quiz; ese contenido (sesión 7) se integra al examen final presencial.</li>
 <li><strong>Examen final presencial:</strong> individual, en sesión 8, cubre todo el curso con énfasis en la sesión 7 (tecnologías emergentes).</li>
-<li><strong>Reportes de casos y actividades de clase:</strong> seis entregables de equipo generados durante los talleres en clase, uno por sesión.</li>
+<li><strong>Reportes de casos y actividades de clase:</strong> seis entregables individuales generados durante los talleres en clase, uno por sesión.</li>
 <li><strong>Tareas:</strong> dos tareas asignadas por el profesor, entregadas fuera de clase por cada equipo.</li>
 <li><strong>Proyecto final:</strong> integra el trabajo de campo (evaluación de la competencia institucional <em>Toma de decisiones estratégicas</em>), el trabajo de análisis sobre un dataset, la presentación final y la coevaluación entre pares. Se evalúa con rúbrica; la coevaluación representa al menos 10% de la calificación del proyecto.</li>
 </ul>
@@ -203,7 +203,7 @@ BIBLIOGRAFIA_BODY = f"""{GRADIENT_BAR}
 POLITICAS_B_LIST = """<ol type="a">
 <li><strong>Integración de equipos:</strong> los equipos del proyecto final serán de <strong>3 a 5 integrantes</strong>. Se forman durante la primera sesión.</li>
 <li><strong>Quizzes en línea (12%, individual):</strong> los 6 quizzes se aplican al inicio de cada sesión de la 2 a la 7, en Canvas, con tiempo limitado. No se permite reposición fuera del plazo salvo causa justificada aprobada por el profesor.</li>
-<li><strong>Reportes de casos y actividades de clase (18%, equipo):</strong> se entregan durante o al cierre de cada sesión, según la fecha específica indicada en Canvas. Se espera asistencia puntual y participación activa del equipo; en sesiones remotas, cámara encendida.</li>
+<li><strong>Reportes de casos y actividades de clase (18%, individual):</strong> se entregan durante o al cierre de cada sesión, según la fecha específica indicada en Canvas. Se espera asistencia puntual y participación activa; en sesiones remotas, cámara encendida.</li>
 <li><strong>Tareas (10%, equipo):</strong> dos tareas asignadas por el profesor, entregadas fuera de clase por cada equipo en la fecha indicada en Canvas.</li>
 <li><strong>Examen final presencial (20%, individual):</strong> se realiza en la sesión 8. Es individual, sin apoyo de materiales salvo los explícitamente autorizados por los profesores.</li>
 <li><strong>Proyecto final (40%, equipo):</strong> integra el trabajo de campo, el trabajo de análisis, la presentación final y la coevaluación entre pares. Se evalúa con rúbrica; la coevaluación representa al menos 10% de la calificación del proyecto.</li>
