@@ -55,7 +55,7 @@
 
 ## Pendientes de confirmación (eventos específicos)
 
-- **Sesión 3 — posible cambio de fecha y profesor.** Propuesta: mover sesión 3 del **6 de mayo al 5 de mayo**, con reasignación de **Marcos → Eduardo**. Motivo: Eduardo está bloqueado del **6 al 9 de mayo** por un viaje. Ambos cambios están acoplados: si el cambio de fecha no se concreta, la sesión vuelve al 6 de mayo con Marcos como responsable. Estado actual en los documentos: marcado con ⚠ en `syllabus.md` y en el encabezado de `sesion-3.md`.
+- ✅ **Sesión 3 — confirmada el 6 de mayo con Marcos.** Eduardo confirmó no disponibilidad del 6 al 9 de mayo (viaje), por lo que se descarta la propuesta de mover la sesión al 5 de mayo con Eduardo. La sesión queda en su fecha original (**6 de mayo**) con **Marcos** como responsable. Propagado a `syllabus.md` y `sesion-3.md` (2026-04-18).
 - **Sesión 1 — distribución de temas entre co-profesores.** Confirmada como co-impartida por Eduardo y Marcos. Pendiente definir quién presenta qué bloque del contenido metodológico (caja de herramientas estadística).
 
 ## Notas

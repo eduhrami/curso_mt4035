@@ -1,11 +1,9 @@
 # Sesión 3 — Analítica de ventas e inventario (pronóstico, demanda, pruebas A/B)
 
-**Fecha:** 5 de mayo de 2026 *(pendiente de confirmar)*  
-**Profesor:** Eduardo *(pendiente de confirmar)*  
+**Fecha:** 6 de mayo de 2026  
+**Profesor:** Marcos  
 **Ancla del plan de estudios:** Tema 3  
 **Nota:** El packet combina ventas/inventario con segmentación antes; esta guía lo separa para crear 8 sesiones
-
-> ⚠ **Reasignación en revisión.** Propuesta vigente: mover la sesión del **6 al 5 de mayo** con **Eduardo** como profesor, porque Eduardo no está disponible del 6 al 9 de mayo. Si el cambio de fecha no se concreta, la sesión vuelve al **6 de mayo** con **Marcos** como responsable. Seguimiento en [`plan-syllabus.md`](./plan-syllabus.md).
 
 ---
 
