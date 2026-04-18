@@ -94,15 +94,14 @@ El curso opera bajo un modelo de **aprendizaje activo** que combina exposición 
 
 ### Ponderaciones propuestas (borrador)
 
-| Componente | Ponderación propuesta |
-|---|---|
-| Participación en clase | 15% |
-| Quizzes en línea (6 quizzes) | 10% |
-| Práctica de trabajo de campo / evaluación de competencia "Toma de decisiones estratégicas" | 10% |
-| Reportes y actividades de aprendizaje por sesión | 10% |
-| Examen final presencial | 15% |
-| Proyecto final (trabajo de análisis + presentación + coevaluación) | 40% |
-| **Total** | **100%** |
+| Componente | Modalidad | Ponderación |
+|---|---|---|
+| Reportes de casos y actividades de clase (6) | Equipo | 18% |
+| Quizzes en línea (6) | Individual | 12% |
+| Tareas (2) | Equipo | 10% |
+| Examen final presencial | Individual | 20% |
+| Proyecto final (trabajo de análisis + trabajo de campo + presentación + coevaluación) | Equipo | 40% |
+| **Total** | | **100%** |
 
 ### Quizzes en línea
 
@@ -182,12 +181,11 @@ El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md
 
 ## X. Políticas para la evaluación
 
-- **Participación (15%).** Para obtener la puntuación completa, el estudiante debe asistir a las sesiones, cumplir con la preparación previa y colaborar activamente en las actividades de clase. En sesiones remotas se espera cámara encendida y participación activa.
-- **Quizzes en línea.** Los quizzes se realizan en Canvas al inicio de cada sesión de la 2 a la 7. Son individuales y tienen tiempo limitado. No se permite reposición fuera del plazo salvo causa justificada aprobada por el profesor.
-- **Entregables por sesión.** Los reportes y actividades de aprendizaje tienen fechas de entrega específicas. Las entregas tardías se penalizan según las políticas generales del programa.
-- **Práctica de trabajo de campo.** Evalúa la competencia institucional *Toma de decisiones estratégicas* y se entrega en las fechas definidas para el proyecto final.
-- **Examen final presencial.** Se realiza en la sesión 8. Es individual, sin apoyo de materiales salvo los explícitamente autorizados por los profesores. Consultar [`examen-final.md`](./examen-final.md).
-- **Proyecto final y coevaluación.** El proyecto se evalúa de forma grupal con rúbrica, e incluye una coevaluación entre pares que representa al menos 10% de la calificación del proyecto.
+- **Reportes de casos y actividades de clase (18%, equipo).** Seis entregables de equipo generados durante los talleres en clase. Cada reporte tiene fecha de entrega específica; las entregas tardías se penalizan según las políticas generales del programa. Se espera asistencia puntual y participación activa del equipo; en sesiones remotas, cámara encendida.
+- **Quizzes en línea (12%, individual).** Los 6 quizzes se realizan en Canvas al inicio de cada sesión de la 2 a la 7. Son individuales y tienen tiempo limitado. No se permite reposición fuera del plazo salvo causa justificada aprobada por el profesor.
+- **Tareas (10%, equipo).** Dos tareas asignadas por el profesor, entregadas fuera de clase por cada equipo en las fechas indicadas.
+- **Examen final presencial (20%, individual).** Se realiza en la sesión 8. Es individual, sin apoyo de materiales salvo los explícitamente autorizados por los profesores. Consultar [`examen-final.md`](./examen-final.md).
+- **Proyecto final (40%, equipo).** Integra el trabajo de campo (evaluación de la competencia institucional *Toma de decisiones estratégicas*), el trabajo de análisis sobre un dataset, la presentación final y la coevaluación entre pares. Se evalúa con rúbrica; la coevaluación representa al menos 10% de la calificación del proyecto.
 - **Integridad académica.** Se aplica la política institucional del Tecnológico de Monterrey. El uso de herramientas de IA generativa debe ser declarado y alineado con las políticas del curso que se definirán en la primera sesión.
 
 ---

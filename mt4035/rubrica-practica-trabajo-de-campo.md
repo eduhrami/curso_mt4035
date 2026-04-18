@@ -82,7 +82,7 @@ donde cada Cᵢ es un valor entre 1 y 4. La escala final se traduce a la calific
 
 - Los pesos propuestos priorizan deliberadamente el **diagnóstico y uso de la caja de herramientas (25%)** sobre la presentación (15%), para premiar el pensamiento analítico sobre la forma.
 - Validar con Marcos que los criterios sean consistentes con lo que evalúa en sus sesiones.
-- Al cerrar las ponderaciones globales del curso, confirmar el peso total de esta práctica dentro del porcentaje destinado a "Reportes y actividades de aprendizaje" (o la categoría equivalente en la evaluación revisada).
+- En la edición 2026, el trabajo de campo forma parte del componente **Proyecto final (40%, equipo)**; confirmar el peso interno de la práctica dentro de ese 40% al cerrar la rúbrica global del proyecto.
 - Considerar agregar un criterio de **autoevaluación y coevaluación** si se mantiene esa práctica en la edición actual.
 
 ---
