@@ -96,7 +96,7 @@ El curso opera bajo un modelo de **aprendizaje activo** que combina exposición 
 
 | Componente | Modalidad | Ponderación |
 |---|---|---|
-| Reportes de casos y actividades de clase (6) | Equipo | 18% |
+| Reportes de casos y actividades de clase (6) | Individual | 18% |
 | Quizzes en línea (6) | Individual | 12% |
 | Tareas (2) | Equipo | 10% |
 | Examen final presencial | Individual | 20% |
