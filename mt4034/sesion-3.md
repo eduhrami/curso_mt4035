@@ -119,6 +119,11 @@ Vinculado al proyecto final: entregar un **caso de uso de IA generativa validado
 
 ---
 
+## Caso HBS sugerido
+
+- **The Clueless: Navigating an Ethical AI Marketing Dilemma.** Pradhan, S., & Chattopadhyay, M. Ivey Publishing, Case No. **W39696**. Distribuido vía Harvard Business Publishing: [hbsp.harvard.edu/product/W39696-PDF-ENG](https://hbsp.harvard.edu/product/W39696-PDF-ENG).
+  - **Por qué esta sesión:** ancla la discusión ética en un dilema real de IA aplicada a mercadotecnia — escenario natural para trabajar los bloques D (tipos de sesgo, métricas de equidad), E (transparencia, explicabilidad, accountability) y F (estrategia ética mínima viable) de esta sesión. La arista comercial del caso crea además un puente claro hacia los patrones de IA comercial que se profundizan en la sesión 5.
+
 ## Libro de texto
 
 - Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson.

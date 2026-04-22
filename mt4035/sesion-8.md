@@ -36,6 +36,15 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ---
 
+## Fechas administrativas posteriores a la sesión
+
+- **Encuesta ECOA:** abierta del lun 8-jun-2026 al jue 11-jun-2026. La ventana está abierta durante esta sesión y cierra un día después — recordar a las y los estudiantes completarla antes de salir del aula.
+- **Envío de calificaciones finales (profesor):** del sáb 13-jun-2026 al mar 16-jun-2026 a las 15:00 hrs. Plazo interno para calificar el examen presencial, cerrar el proyecto integrador y capturar calificaciones en el sistema institucional.
+
+Referencia completa: sección VII del [`syllabus.md`](./syllabus.md#fechas-administrativas-institucionales).
+
+---
+
 ## Libro de texto
 
 - Berman, B., Evans, J. R., & Chatterjee, P. M. (2021). *Retail management: A strategic approach* (13th ed.). Pearson.

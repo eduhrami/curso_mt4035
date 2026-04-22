@@ -120,6 +120,10 @@ Para la sesión 8:
 - **Presentación final** (equipo): soporte visual, guion de exposición, reparto de tiempos.
 - **Autoevaluación del equipo:** reparto de roles, dinámica, aprendizajes.
 
+## Caso HBS
+
+> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+
 ## Libro de texto
 
 - Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson. — capítulos sobre adopción y proyectos.
