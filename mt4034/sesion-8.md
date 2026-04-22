@@ -1,42 +1,75 @@
 # Sesión 8 — Presentaciones finales + examen final
 
-> ⚠ **Sesión en construcción.** Estructura homologada al formato del curso MT4035. Formato, tiempos y criterios específicos por afinar.
-
-**Fecha:** *(por definir)*
-**Profesor:** *(por definir)*
+**Fecha:** 14 de mayo de 2026 (jueves)
+**Profesor:** Eduardo
 **Modalidad:** Presencial
+**Ancla del packet:** Cierre del curso — integración y evaluación individual
+
+---
 
 ## Descripción de la sesión
 
-Sesión de cierre del curso **MT4034**. Presentaciones finales de los equipos del proyecto integrador y examen final presencial individual. No tiene quiz inicial; el contenido de la sesión 7 (gestión de proyectos de IA) se evalúa mediante el examen presencial.
+Sesión de cierre del curso **MT4034**. Cumple dos propósitos: **presentaciones finales del proyecto integrador** (evaluación en equipo) y **examen final presencial** (evaluación individual). No tiene quiz inicial; el contenido de la sesión 7 (Gestión de proyectos de IA) — único bloque del curso no cubierto por los quizzes semanales — se evalúa mediante el examen presencial con énfasis específico. La sesión cierra formalmente el curso; no hay entregables posteriores más allá de los que se consolidan en esta sesión.
 
 ## Objetivos
 
-- Integrar y comunicar los conocimientos del curso mediante la presentación del proyecto final en equipo, con decisiones basadas en métricas y reflexión sobre impacto ético y legal.
-- Demostrar comprensión individual de los temas del curso, con énfasis en gestión de proyectos de IA (sesión 7), mediante el examen presencial.
+Al finalizar la sesión, las y los estudiantes habrán:
+
+- **Integrado y comunicado** los conocimientos del curso mediante la presentación del proyecto final en equipo, con una recomendación defendible ante una audiencia ejecutiva y una reflexión explícita sobre impacto ético y regulatorio.
+- **Demostrado** individualmente la comprensión de los temas del curso — con énfasis particular en gestión de proyectos de IA (sesión 7) — mediante el examen presencial.
 
 ## Formato
 
-*(por afinar con profesor titular)*
+### Presentaciones por equipo
 
-- **Presentaciones por equipo** — tiempo por equipo, Q&A, criterios de rúbrica (ver [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md)).
-- **Examen final presencial** — ver [`examen-final.md`](./examen-final.md). Cobertura general del curso con énfasis explícito en la sesión 7.
+- **Tiempo por equipo:** ⚠ *(por afinar, orientativo: 15 min presentación + 10 min Q&A).*
+- **Audiencia:** los dos profesores titulares, el resto del grupo y, cuando aplique, invitados/as de industria.
+- **Criterios de rúbrica:** ver [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md) *(por redactar).* Incluye claridad del problema, solidez del diagnóstico, alineación con marcos de IA responsable, viabilidad del roadmap, calidad del *business case*, desempeño en Q&A.
+- **Material requerido por equipo:**
+  - Reporte final del proyecto (documento).
+  - Presentación final (soporte visual).
+  - Matriz de riesgos éticos y alineación regulatoria.
+  - Lista de verificación de controles de IA responsable.
 
-## Checklist de entregables
+### Examen final presencial
 
-*(por definir — reporte final, presentación, autoevaluación de equipo, etc.)*
+- **Descripción completa:** [`examen-final.md`](./examen-final.md) *(por redactar).*
+- **Formato:** presencial, individual, sin apoyo de materiales salvo los explícitamente autorizados por los profesores.
+- **Cobertura:** todo el curso, con **énfasis explícito** en el contenido de la sesión 7 (Gestión de proyectos de IA), que no fue cubierto por ningún quiz.
+- **Duración:** ⚠ *(por definir).*
+
+## Checklist de entregables del equipo
+
+Para cada equipo, al cerrar la sesión:
+
+- [ ] Reporte final del proyecto entregado.
+- [ ] Presentación final realizada.
+- [ ] Autoevaluación de equipo entregada.
+- [ ] Coevaluación entre pares completada.
+
+## Estructura en clase (sugerida)
+
+⚠ *Por afinar con profesores titulares; la propuesta depende del número de equipos.*
+
+1. **Bienvenida y logística (10 min).**
+2. **Presentaciones por equipo** (tiempo total = N × 25 min, con pausas cada 2–3 equipos).
+3. **Receso.**
+4. **Examen final presencial individual.**
+5. **Cierre del curso (15 min):** reflexión colectiva, siguientes pasos, reconocimientos.
 
 ## Libro de texto
 
-*(no aplica en esta sesión)*
+*(No aplica en esta sesión.)*
 
 ## Lecturas recomendadas (APA)
 
-*(no aplica en esta sesión)*
+*(No aplica en esta sesión. Para repasar, ver las lecturas de cada sesión 1–7 y la bibliografía general del syllabus.)*
 
 ## Complementos
 
-*(por definir — rúbrica y plantilla de presentación)*
+- Rúbrica del proyecto final *(por redactar en [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md))*.
+- Guía de estudio para el examen *(por redactar en [`examen-final.md`](./examen-final.md))*.
+- Formatos de autoevaluación y coevaluación de equipo.
 
 ---
 
