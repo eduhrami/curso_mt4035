@@ -8,7 +8,7 @@ Multi-course curriculum documentation repository for university courses taught b
 
 Currently hosts two courses:
 - **MT4035** — *Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro.* 2026 edition (23-abr – 10-jun), taught by Eduardo and Marcos. Content is mature.
-- **MT4034** — *Aplicaciones, gestión y gobernanza de la inteligencia artificial.* In redesign; session structure, objectives, and business questions are drafted from the prior edition. Dates, instructor(s), evaluation weights, rubrics, and final bibliography are pending.
+- **MT4034** — *Aplicaciones, gestión y gobernanza de la inteligencia artificial.* 2026 edition (24-abr – 14-may), taught by Marcos (S1, S2, S4, S5, S6, S7) and Eduardo (S3, S8). Calendar, session ownership and per-session content are official; evaluation weights, rubrics, practice spec, exam spec and administrative details (trimestre, modalidad, room) are pending.
 
 Both courses are **independent in content** (syllabus, bibliography, instructors) but **share the same formal structure**: 8 sessions, 10-section EGADE syllabus, session template, evaluation artifacts, and editorial conventions. When extending the repository to a new course, clone the structure, not the content.
 
@@ -67,7 +67,7 @@ Session 1 has no quiz (it is the first session). Session 8 has no quiz and no in
 
 These structural decisions apply to **both courses** — do not change them without explicit user instruction:
 
-- **6 online quizzes** in Canvas, applied at the start of sessions 2–7. Each quiz evaluates the content of the immediately preceding session.
+- **6 online quizzes** in Canvas, applied at the start of sessions 2–7. Each quiz evaluates the content of the immediately preceding session. In MT4034, S6 and S7 run as a double session on the same day (9-may-2026): Quiz 5 opens block 1 (S6) and Quiz 6 opens block 2 (S7) on that same day.
 - **Session 8 has no quiz.** The content of session 7 is evaluated through the in-person final exam instead.
 - **In-person final exam** in session 8, with explicit emphasis on session 7 content.
 - **Field-work practice** as the activity that materializes the evaluation of the corresponding institutional competency.
@@ -137,17 +137,29 @@ Key references confirmed and in use:
 
 # MT4034 — Course-specific guidance
 
+## Instructors and session ownership (MT4034)
+
+- **Marcos:** Sessions 1 (AI fundamentals + course framing), 2 (data governance + emerging tech), 4 (responsible AI practices), 5 (commercial AI and marketing), 6 (business cases) and 7 (AI project management). Sessions 6 and 7 run back-to-back on 9-may as a **double session**.
+- **Eduardo:** Sessions 3 (generative AI + AI ethics) and 8 (final presentations + exam).
+- Sessions are single-instructor (no co-teaching in this edition).
+
+## Calendar (MT4034 — 2026 edition)
+
+- Start date: **24-abr-2026** (Friday). End date: **14-may-2026** (Thursday). Roughly 3 weeks.
+- Sessions run on mixed weekdays (Thursdays, Fridays, Saturdays) — no fixed day.
+- **Double session 9-may:** Session 6 (Business Cases) in block 1 and Session 7 (AI Project Management) in block 2 of the same Saturday. Quiz 6 is applied between the two blocks.
+
 ## Course progression (MT4034)
 
-**Phase 1 — Foundations and responsible AI (Sessions 1–2):** AI/ML/DL fundamentals, emerging tech landscape (IoT, blockchain, digital twins), principles and frameworks of responsible AI.
+**Phase 1 — Foundations (Sessions 1–2):** AI/ML/DL fundamentals + course framing (S1); data governance (quality, privacy, security, ethics) + emerging technologies in depth (IoT, blockchain, digital twins) (S2). S1 gives a brief panorama of emerging tech; S2 deepens it.
 
-**Phase 2 — Governance and ethics (Sessions 3–4):** Data governance (quality, privacy, security, ethics), AI ethics (bias, fairness, transparency, explainability).
+**Phase 2 — Generative AI, ethics, responsible practices (Sessions 3–4):** Generative AI (LLMs, diffusion, multimodal) with AI ethics (bias, fairness, transparency, explainability) as a combined block (S3); synthesis into responsible AI practices aligned with regulatory frameworks — EU AI Act, NIST AI RMF, ISO/IEC 42001, OECD, UNESCO (S4).
 
-**Phase 3 — Applications (Sessions 5–6):** Generative AI use cases, commercial AI and marketing (personalization, automation, predictive analytics).
+**Phase 3 — Commercial applications and integration (Sessions 5–6):** Commercial AI and marketing — segmentation, recommendation, pricing, personalization, automation (S5); business cases as integrative synthesis across all prior content (S6).
 
-**Phase 4 — Integration (Session 7):** AI project management (scoping, stakeholders, planning, data management, communication).
+**Phase 4 — Project management and close (Sessions 7–8):** AI project management — scoping, stakeholders, roadmap, data management, executive communication (S7); team presentations + in-person individual final exam (S8).
 
-**Capstone (Session 8):** Team presentations + individual in-person final exam.
+The content of **S7 is the only block not covered by any quiz** and therefore is the one emphasized in the final exam (analogous to how MT4035 handles its session 7).
 
 ## Previous course version — MT4034 (`mt4034/curso_anterior/`)
 
@@ -161,8 +173,9 @@ Contains two documents from the prior edition: the institutional plan de estudio
 
 **Actively being redesigned — do NOT carry forward from `mt4034/curso_anterior/`:**
 - **Evaluation weights.** The previous 40/10/20/20/10 scheme is under revision; new edition homologates to MT4035 structure (quizzes + exam + project).
-- **Textbooks and readings.** Rose (2021) remains as base text; Finlay and Russell & Norvig as suggested. Bibliography is being expanded (regulatory frameworks, academic papers, newer AI references).
+- **Textbooks and readings.** Rose (2021) remains as base text; Finlay and Russell & Norvig as suggested. Bibliography has been expanded with regulatory frameworks (EU AI Act, NIST AI RMF, ISO/IEC 42001, OECD, UNESCO) and reference books on data governance, fairness, and AI strategy.
 - **Session structure.** Previous edition had sessions 7–8 both for presentations; new edition uses session 7 for "Gestión de proyectos de IA" and session 8 for presentations + exam.
+- **Session sequence.** 2026 edition reorders topics — the sequence is: Fundamentals → Data governance + Emerging tech → Generative AI + Ethics → Responsible AI practices → Commercial AI → Business cases → AI project management → Presentations + exam. S6 and S7 are delivered as a double session on 9-may.
 - **Competencias institucionales.** Pending confirmation with academic coordination.
 
 **Important:** Do NOT copy content verbatim from `curso_anterior/` for either course. Treat it as institutional anchor and inspiration, not as a template to clone.

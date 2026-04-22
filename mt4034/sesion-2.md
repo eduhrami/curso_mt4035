@@ -1,59 +1,142 @@
-# Sesión 2 — Prácticas responsables de IA
+# Sesión 2 — Gobierno de datos + Tecnologías emergentes
 
-> ⚠ **Sesión en construcción.** Contenido temático derivado del syllabus previo; estructura homologada al formato del curso MT4035.
+**Fecha:** 25 de abril de 2026 (sábado)
+**Profesor:** Marcos
+**Modalidad:** ⚠ *(por definir)*
+**Ancla del packet:** Datos como insumo y tecnologías habilitadoras de la IA
+**Ancla del plan de estudios:** Tema 2
 
-**Fecha:** *(por definir)*
-**Profesor:** *(por definir)*
-**Modalidad:** *(por definir)*
+---
 
 ## Descripción de la sesión
 
-Analiza y compara distintos modelos de prácticas responsables de IA adoptados por las empresas. Introduce principios, marcos y casos que permiten evaluar cómo las organizaciones integran la IA de forma responsable en procesos y productos.
+Esta sesión aterriza dos bloques complementarios sobre los que se sostiene cualquier iniciativa de IA confiable: **gobierno de datos** y **tecnologías emergentes**. En el bloque de gobernanza se exploran los pilares de la gestión efectiva de datos (calidad, privacidad, seguridad, ética) y los marcos organizacionales que los operacionalizan (roles, políticas, estándares, regulación aplicable). En el bloque de tecnologías emergentes se profundiza en **IoT**, **blockchain** y **digital twins** — introducidos brevemente en la sesión 1 — discutiendo arquitecturas, casos de uso y cómo se integran con sistemas de IA para generar, verificar o desplegar valor. El énfasis es aplicado: al final de la sesión, cada equipo debe poder identificar los datos que necesita su caso, qué riesgos de gobernanza enfrenta y qué tecnologías emergentes podrían amplificar o restringir su propuesta.
 
-**Business question:** ¿Cómo están integrando las empresas la IA de manera responsable en sus procesos y prácticas?
+**Business question:** ¿Cómo se conectan los modelos de datos actuales con su gobernanza ante las incertidumbres que plantea la IA?
 
 ## Objetivos
 
-- Analizar y comparar modelos de IA responsable en uso en la industria.
-- Identificar principios comunes (accountability, equidad, transparencia, seguridad, privacidad) y sus implicaciones operativas.
-- Evaluar cómo una organización puede adoptar prácticas responsables consistentes con su estrategia.
+Al finalizar la sesión, las y los estudiantes serán capaces de:
 
-## Estructura en clase
+- Explicar los cuatro pilares del gobierno de datos — calidad, privacidad, seguridad, ética — y los roles organizacionales que los sostienen (CDO, data steward, data owner, DPO).
+- Reconocer los marcos y estándares más relevantes (DAMA-DMBOK, ISO 27001, GDPR, LFPDPPP) y diferenciar qué problema resuelve cada uno.
+- Evaluar las dimensiones de calidad de datos (completitud, exactitud, consistencia, oportunidad, unicidad, validez) y proponer métricas operativas.
+- Diferenciar los mecanismos de privacidad (minimización, anonimización, seudonimización, consentimiento) y las señales de alerta cuando un flujo de datos los compromete.
+- Explicar qué son IoT, blockchain y digital twins, cómo se arquitecturan a nivel conceptual y en qué casos se combinan con IA.
+- Identificar los datos, riesgos de gobernanza y posibles tecnologías habilitadoras para el caso del proyecto del equipo.
 
-- **Quiz inicial en línea (~15 min)** — evalúa los contenidos de la sesión 1.
-- **Marco conceptual** — principios de IA responsable y sus fuentes (OECD AI Principles, NIST AI RMF, ISO/IEC 42001, EU AI Act — visión general).
-- **Panorama industrial** — cómo distintas empresas han formalizado principios y prácticas.
-- **Actividad en clase** — análisis comparativo de marcos (ver abajo).
-- **Cierre** — síntesis y vínculo con gobierno de datos (sesión 3) y ética (sesión 4).
+---
+
+## Estructura en clase (sugerida)
+
+1. **Quiz inicial en línea (~15 min)** — evalúa los contenidos de la sesión 1.
+2. **¿Por qué hablar de gobierno de datos antes que de modelos? (15 min):** datos de baja calidad arruinan sistemas de IA; sin gobernanza, el valor no se sostiene.
+3. **Pilares del gobierno de datos (40 min):** calidad, privacidad, seguridad, ética; roles y artefactos típicos.
+4. **Marcos y regulación aplicable (25 min):** DAMA-DMBOK, ISO 27001, GDPR, LFPDPPP (México), con referencia al EU AI Act y NIST AI RMF que se profundizan en la sesión 4.
+5. **Tecnologías emergentes — bloque profundo (45 min):**
+   - IoT: arquitectura, casos de uso, integración con IA.
+   - Blockchain: propiedades, casos de uso (trazabilidad, contratos inteligentes), cuándo sí y cuándo no.
+   - Digital twins: qué son, por qué ahora, casos en manufactura, logística y operaciones.
+6. **Actividad en clase (35 min):** diagnóstico de gobernanza + mapa de tecnologías emergentes para el caso del equipo.
+7. **Cierre y continuidad (10 min):** puente a ética (sesión 3) y prácticas responsables (sesión 4).
+
+---
 
 ## Subtemas (detalle)
 
-- Principios de IA responsable: origen, alcance, limitaciones.
-- Marcos regulatorios y de gestión de riesgo (visión panorámica; la profundización de gobernanza se ve en la sesión 3).
-- Prácticas organizacionales: comités de IA responsable, guidelines, auditoría interna.
-- Casos de industria: comparaciones entre empresas líderes.
+> **Nota de alcance:** Gobierno de datos se ve desde la perspectiva organizacional. La ética algorítmica (sesgo, equidad, explicabilidad) se profundiza en la sesión 3 y los marcos regulatorios de IA como EU AI Act o NIST AI RMF se trabajan en la sesión 4.
 
-*No cubre:* gobierno de datos en detalle (sesión 3), ética y explicabilidad en profundidad (sesión 4).
+### Bloque A — Pilares del gobierno de datos
+
+- **Calidad de datos.** Dimensiones clásicas: completitud, exactitud, consistencia, oportunidad, unicidad, validez; métricas y monitoreo; ciclo de vida del dato (captura, almacenamiento, uso, archivado, eliminación).
+- **Privacidad.** Principios: legalidad, finalidad, minimización, proporcionalidad, conservación limitada; roles (titular, controlador, encargado); mecanismos técnicos (anonimización, seudonimización, agregación, privacidad diferencial — intuición).
+- **Seguridad.** Controles técnicos y organizativos; clasificación de información; respuesta a incidentes; ISO 27001 como referencia.
+- **Ética de datos.** Uso secundario, consentimiento informado, impactos diferenciales, transparencia hacia los titulares.
+
+### Bloque B — Roles y artefactos organizacionales
+
+- **Roles típicos:** Chief Data Officer (CDO), data steward, data owner, data custodian, Data Protection Officer (DPO).
+- **Artefactos:** políticas de datos, glosario de términos, catálogo de datos, matriz de responsabilidades (RACI), registro de tratamientos (ROPA), evaluaciones de impacto (DPIA).
+- **Madurez de gobierno de datos:** desde reactiva hasta optimizada; modelos de referencia (DAMA-DMBOK, DCAM).
+
+### Bloque C — Marcos y regulación aplicable
+
+- **DAMA-DMBOK:** cuerpo de conocimiento para la gestión de datos; 11 áreas funcionales.
+- **ISO 27001 / ISO 27701:** seguridad de la información y privacidad.
+- **GDPR (UE):** regla de referencia global sobre protección de datos personales.
+- **LFPDPPP / LGPDPPSO (México):** Ley Federal de Protección de Datos Personales en Posesión de los Particulares y Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados.
+- **Panorama de regulaciones de IA** como preámbulo (EU AI Act, NIST AI RMF, ISO/IEC 42001) — *se profundizan en la sesión 4*.
+
+> *No traslapa con Sesión 4:* el diseño de un programa de IA responsable alineado a estos marcos se trabaja allá.
+
+### Bloque D — Tecnologías emergentes: IoT
+
+- **Definición y arquitectura:** sensores → conectividad → ingesta → procesamiento (edge vs. cloud) → analítica → acción.
+- **Casos de uso típicos:** mantenimiento predictivo, monitoreo de cadena de frío, flotas, *smart retail*, *smart city*.
+- **Integración con IA:** IoT como fuente de datos para modelos (anomalías, pronóstico, visión por computadora).
+- **Riesgos:** superficie de ataque, privacidad, calidad de señal, costo total.
+
+### Bloque E — Tecnologías emergentes: blockchain
+
+- **Propiedades clave:** inmutabilidad, descentralización, auditabilidad, programabilidad (contratos inteligentes).
+- **Casos de uso donde sí aporta:** trazabilidad en cadenas de suministro, tokenización de activos, registros de propiedad, verificación de credenciales, auditoría de datos que alimentan IA.
+- **Casos de uso donde no aporta:** un problema de IA no se arregla agregando blockchain; decisión de diseño, no moda.
+- **Integración con IA:** verificabilidad de la procedencia de los datos; registro inmutable de decisiones algorítmicas; *tokenization* de datos/modelos.
+
+### Bloque F — Tecnologías emergentes: digital twins
+
+- **Definición:** réplica digital de un sistema físico (activo, proceso, instalación) actualizada con datos en tiempo real.
+- **Niveles:** gemelo descriptivo (qué es), informativo (qué pasa), predictivo (qué pasará), prescriptivo (qué conviene hacer).
+- **Casos de uso:** manufactura, logística, infraestructura, salud, *smart buildings*.
+- **Integración con IA:** simulación con ML, optimización continua, prueba de escenarios antes de intervenir el sistema real.
+
+### Bloque G — Puente a sesiones siguientes
+
+- Gobierno de datos y tecnologías emergentes como **base** para IA generativa (sesión 3), ética algorítmica (sesión 3), prácticas responsables (sesión 4) y aplicaciones comerciales (sesión 5).
+- El diagnóstico de esta sesión alimenta los entregables parciales del proyecto final.
+
+---
 
 ## Actividad en clase
 
-*(por diseñar)* — comparativo por equipo de dos o tres marcos/compañías; entregable corto en clase.
+**Diagnóstico de gobierno de datos + mapa de tecnologías emergentes del caso del equipo.** En equipos:
+
+1. Para el caso del proyecto del equipo, completar una ficha con:
+   - **Mapa de datos:** qué datos se necesitan, de dónde vienen, quién es el *owner*, qué riesgos de calidad/privacidad/seguridad/ética presenta cada fuente.
+   - **Matriz de madurez:** evaluación cualitativa (baja/media/alta) del caso actual en cada pilar de gobernanza.
+   - **Tecnologías emergentes pertinentes:** elegir 1 de las 3 (IoT, blockchain, digital twin) y justificar por qué aportaría al caso; descartar las otras 2 con justificación.
+2. Cada equipo comparte 2 minutos al grupo: un riesgo de gobernanza relevante y una tecnología emergente que amplificaría su propuesta.
+
+**Entregable de la actividad:** ficha por equipo con el diagnóstico descrito.
+
+---
 
 ## Tarea / entregable
 
-*(por definir)* — vinculado al proyecto final: identificar los principios de IA responsable aplicables al dominio elegido.
+Vinculado al proyecto final: entregar una **ficha de datos y tecnologías** del caso del equipo (2 páginas), con:
+
+- Inventario de datos y sus fuentes.
+- Riesgos de gobernanza y mitigaciones propuestas.
+- Tecnología emergente elegida y por qué (con descarte justificado de las otras 2).
+
+---
 
 ## Libro de texto
 
-- Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson.
+- Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson. — capítulos sobre datos.
 
 ## Lecturas recomendadas (APA)
 
-*(por definir — debe incluir al menos un marco institucional vigente: OECD AI Principles, NIST AI RMF, EU AI Act o ISO/IEC 42001. Verificar fuentes autoritativas.)*
+- Ladley, J. (2019). *Data governance: How to design, deploy, and sustain an effective data governance program* (2nd ed.). Academic Press.
+- DAMA International. (2017). *DAMA-DMBOK: Data management body of knowledge* (2nd ed.). Technics Publications. — caps. 1–3 (introducción y calidad).
+- Iansiti, M., & Lakhani, K. R. (2020). *Competing in the age of AI: Strategy and leadership when algorithms and networks run the world*. Harvard Business Review Press. — cap. sobre la fábrica de IA.
+- Diario Oficial de la Federación. (2010). *Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)*.
 
 ## Complementos
 
-*(por definir)*
+- Plantilla de *mapa de datos* y *matriz de madurez de gobernanza*.
+- Tabla comparativa IoT vs. blockchain vs. digital twin: qué problema resuelve, qué no, cómo se integra con IA.
+- Lista curada de reguladores y autoridades (IFT, INAI, CNBV) relevantes al contexto mexicano.
 
 ---
 

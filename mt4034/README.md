@@ -2,7 +2,7 @@
 
 **Materia:** MT4034 – Aplicaciones, gestión y gobernanza de la inteligencia artificial
 
-> ⚠ **Curso en rediseño.** La estructura temática y los objetivos se han reconstruido a partir del syllabus de la edición previa (ver [`curso_anterior/`](./curso_anterior/)). Fechas, profesor, ponderaciones, rúbricas y bibliografía final siguen pendientes.
+> ⚠ **Curso en rediseño.** Calendario, temas y profesores oficializados; ponderaciones, rúbricas y bibliografía final en construcción.
 
 El documento maestro del curso es el **[syllabus oficial](./syllabus.md)** (en construcción), que contiene objetivos, competencias, metodología, evaluación, calendario y políticas. Este índice es una guía rápida de navegación a las sesiones y los entregables; para cualquier dato sobre ponderaciones, reglas o bibliografía consolidada, ir al syllabus.
 
@@ -12,14 +12,16 @@ El documento maestro del curso es el **[syllabus oficial](./syllabus.md)** (en c
 
 | # | Sesión | Fecha | Profesor |
 |---|---|---|---|
-| 1 | [Fundamentos de IA y del curso](./sesion-1.md) | *(por definir)* | *(por definir)* |
-| 2 | [Prácticas responsables de IA](./sesion-2.md) | *(por definir)* | *(por definir)* |
-| 3 | [Gobierno de datos](./sesion-3.md) | *(por definir)* | *(por definir)* |
-| 4 | [Ética de la IA](./sesion-4.md) | *(por definir)* | *(por definir)* |
-| 5 | [IA generativa](./sesion-5.md) | *(por definir)* | *(por definir)* |
-| 6 | [IA comercial y mercadotecnia](./sesion-6.md) | *(por definir)* | *(por definir)* |
-| 7 | [Gestión de proyectos de IA](./sesion-7.md) | *(por definir)* | *(por definir)* |
-| 8 | [Presentaciones finales + examen](./sesion-8.md) | *(por definir)* | *(por definir)* |
+| 1 | [Fundamentos de IA y del curso](./sesion-1.md) | 24 de abril de 2026 (vie) | Marcos |
+| 2 | [Gobierno de datos + Tecnologías emergentes](./sesion-2.md) | 25 de abril de 2026 (sáb) | Marcos |
+| 3 | [IA generativa + Ética de la IA](./sesion-3.md) | 30 de abril de 2026 (jue) | Eduardo |
+| 4 | [Prácticas responsables de IA](./sesion-4.md) | 7 de mayo de 2026 (jue) | Marcos |
+| 5 | [IA comercial y mercadotecnia](./sesion-5.md) | 8 de mayo de 2026 (vie) | Marcos |
+| 6 | [Casos empresariales](./sesion-6.md) | 9 de mayo de 2026 (sáb, bloque 1) | Marcos |
+| 7 | [Gestión de proyectos de IA](./sesion-7.md) | 9 de mayo de 2026 (sáb, bloque 2) | Marcos |
+| 8 | [Presentaciones finales + examen](./sesion-8.md) | 14 de mayo de 2026 (jue) | Eduardo |
+
+> **Sesión doble 9-may:** S6 y S7 se imparten en el mismo día en dos bloques consecutivos. Entre ambos bloques se aplica el quiz 6 (ver §V del syllabus).
 
 Para el mapa de temas, objetivos específicos y *business questions* de cada sesión, ver la sección III del [syllabus](./syllabus.md).
 
