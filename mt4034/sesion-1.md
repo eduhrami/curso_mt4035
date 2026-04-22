@@ -116,6 +116,10 @@ Nota: la sesión 1 **no tiene quiz inicial**; los quizzes se aplican al inicio d
 
 ---
 
+## Caso HBS
+
+> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+
 ## Libro de texto
 
 - Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson. — capítulos introductorios.

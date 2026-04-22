@@ -110,6 +110,10 @@ Vinculado al proyecto final: integrar los **3 aprendizajes accionables** y el be
 
 ---
 
+## Casos HBS
+
+> ⚠ **Pendiente de asignación.** Esta sesión requiere **dos** casos (bloques 3 y 4 de la estructura). Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+
 ## Libro de texto
 
 - Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson.

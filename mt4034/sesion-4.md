@@ -121,6 +121,10 @@ Vinculado al proyecto final: entregar la **alineación del caso del equipo con u
 
 ---
 
+## Caso HBS
+
+> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+
 ## Libro de texto
 
 - Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson. — capítulos sobre adopción y riesgos.

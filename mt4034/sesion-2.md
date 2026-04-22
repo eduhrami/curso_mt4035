@@ -121,6 +121,12 @@ Vinculado al proyecto final: entregar una **ficha de datos y tecnologías** del 
 
 ---
 
+## Caso HBS sugerido
+
+- **Mastercard's Ethical Approach to Governing AI** (IMD Case No. IM1225, 2022). IMD / Harvard Business Publishing. [store.hbr.org/product/mastercard-s-ethical-approach-to-governing-ai/IM1225](https://store.hbr.org/product/mastercard-s-ethical-approach-to-governing-ai/IM1225)
+  - **Por qué esta sesión:** Mastercard se posiciona como líder en *privacy by design* y construye un *AI Governance Council* con un marco explícito de responsabilidad de datos — cubre los cuatro pilares del Bloque A (calidad, privacidad, seguridad, ética), los roles del Bloque B y conecta gobernanza con una tecnología emergente (IA) en un caso real.
+  - **Decisiones que ancla la discusión:** aplicación del framework a dos adquisiciones (ambas descartadas), vínculo entre AI Garage (2018) y Governance Council, tensión entre velocidad comercial y controles de datos.
+
 ## Libro de texto
 
 - Rose, D. (2021). *Artificial intelligence for business: What you need to know about machine learning and neural networks* (2nd ed.). Pearson. — capítulos sobre datos.

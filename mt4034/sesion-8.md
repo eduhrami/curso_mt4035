@@ -55,7 +55,14 @@ Para cada equipo, al cerrar la sesión:
 2. **Presentaciones por equipo** (tiempo total = N × 25 min, con pausas cada 2–3 equipos).
 3. **Receso.**
 4. **Examen final presencial individual.**
-5. **Cierre del curso (15 min):** reflexión colectiva, siguientes pasos, reconocimientos.
+5. **Cierre del curso (15 min):** reflexión colectiva, siguientes pasos, reconocimientos. Recordatorio a las y los estudiantes de completar la **encuesta ECOA** antes de que cierre la ventana el mismo 14-may.
+
+## Fechas administrativas posteriores a la sesión
+
+- **Encuesta ECOA:** abierta del 11-may-2026 al 14-may-2026. La ventana cierra el mismo día de esta sesión.
+- **Envío de calificaciones finales (profesor):** del 16-may-2026 al 19-may-2026 a las 15:00 hrs. Plazo interno para calificar el examen presencial, cerrar el proyecto integrador y capturar calificaciones en el sistema institucional.
+
+Referencia completa: sección VII del [`syllabus.md`](./syllabus.md#fechas-administrativas-institucionales).
 
 ## Libro de texto
 

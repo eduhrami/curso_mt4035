@@ -161,6 +161,13 @@ Todas las sesiones son **presenciales** en **EG-215**, horario **18:30 – 21:45
 
 El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
 
+### Fechas administrativas institucionales
+
+| Hito | Ventana | Observaciones |
+|---|---|---|
+| Encuesta ECOA (evaluación del curso por el estudiante) | lun 8-jun-2026 → jue 11-jun-2026 | Abre 2 días antes de la sesión 8 y cierra 1 día después; se recuerda a las y los estudiantes completarla durante o al cierre de la S8 (10-jun). |
+| Envío de calificaciones finales (profesor) | sáb 13-jun-2026 → mar 16-jun-2026, 15:00 hrs | Tres días después de la sesión 8. Define el plazo interno para calificar el examen, cerrar el proyecto y capturar calificaciones. |
+
 ## VIII. Compromisos del estudiante
 
 - Involucrarse al 100% en las actividades de aprendizaje, tanto conducidas en clase como independientes.

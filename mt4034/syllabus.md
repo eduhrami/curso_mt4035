@@ -167,6 +167,21 @@ La práctica de trabajo de campo es la **actividad formal que evalúa la compete
 - DAMA International. (2017). *DAMA-DMBOK: Data management body of knowledge* (2nd ed.). Technics Publications.
 - Wilson, H. J., & Daugherty, P. R. (2018). *Human + machine: Reimagining work in the age of AI*. Harvard Business Review Press.
 
+### Casos HBS por sesión
+
+> La fuente oficial de casos es [hbsp.harvard.edu](https://hbsp.harvard.edu). Solo se consignan los casos con case ID verificado; el resto queda marcado como ⚠ pendiente de asignación.
+
+| Sesión | Caso HBS |
+|---|---|
+| S1 — Fundamentos de IA | ⚠ *pendiente de asignación* |
+| S2 — Gobierno de datos + tec. emergentes | *Mastercard's Ethical Approach to Governing AI* — IMD **IM1225** (2022) — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/IM1225-PDF-ENG) |
+| S3 — IA generativa + Ética | *The Clueless: Navigating an Ethical AI Marketing Dilemma* — Pradhan & Chattopadhyay — Ivey **W39696** — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/W39696-PDF-ENG) |
+| S4 — Prácticas responsables de IA | ⚠ *pendiente de asignación* |
+| S5 — IA comercial y mercadotecnia | ⚠ *pendiente de asignación* |
+| S6 — Casos empresariales *(sesión doble, 2 casos)* | ⚠ *pendiente de asignación* |
+| S7 — Gestión de proyectos de IA | ⚠ *pendiente de asignación* |
+| S8 — Presentaciones + examen | — *(no aplica)* |
+
 ### Marcos institucionales y regulatorios
 
 - European Parliament & Council of the European Union. (2024). *Regulation (EU) 2024/1689 — Artificial Intelligence Act*.
@@ -189,6 +204,13 @@ La práctica de trabajo de campo es la **actividad formal que evalúa la compete
 | 8 | 14-may-2026 | Jueves | Presencial | Eduardo | Presentaciones finales + examen final | — | Reporte y presentación del proyecto final + examen presencial |
 
 El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
+
+### Fechas administrativas institucionales
+
+| Hito | Ventana | Observaciones |
+|---|---|---|
+| Encuesta ECOA (evaluación del curso por el estudiante) | 11-may-2026 → 14-may-2026 | Se traslapa con la última semana del curso; se recuerda a las y los estudiantes completarla antes del cierre de la sesión 8 el 14-may. |
+| Envío de calificaciones finales (profesor) | 16-may-2026 → 19-may-2026, 15:00 hrs | Dos días después de la sesión 8. Define el plazo interno para calificar el examen, cerrar el proyecto y capturar calificaciones. |
 
 ## VIII. Compromisos del estudiante
 
