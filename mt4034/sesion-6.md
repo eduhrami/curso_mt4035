@@ -31,7 +31,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 2. **Marco de análisis de casos (15 min):** plantilla común para leer un caso (contexto, problema, solución, datos, gobernanza, resultados, riesgos, aprendizajes).
 3. **Caso HBS — *The Rise and Fall of IBM Watson's AI Medical System* (45 min):** lectura crítica y discusión guiada sobre los retos de despliegue comercial de IA en salud, aplicando la plantilla común.
 4. **Invitado/a de industria (30 min, si aplica):** conversación estructurada sobre la adopción real y los tradeoffs vividos.
-5. **Actividad en clase (35 min):** benchmarking del caso del equipo con 2 empresas comparables.
+5. **Microactividad opcional (35 min, si el tiempo lo permite):** benchmarking del caso del equipo con 2 empresas comparables.
 6. **Transición a bloque 2 (10 min):** cierre e introducción a la sesión 7 (Gestión de proyectos de IA), que se imparte inmediatamente después.
 
 > **Transición a S7 (bloque 2):** entre los dos bloques se aplica el **Quiz 6** — que evalúa el contenido de esta sesión 6 — antes de arrancar con gestión de proyectos de IA.
@@ -88,6 +88,17 @@ Los casos se eligen año a año por el profesor para reflejar los temas más rel
 
 ## Actividad en clase
 
+**Discusión del caso HBS *The Rise and Fall of IBM Watson's AI Medical System*** (~45 min). La actividad principal aplica la plantilla común (contexto → problema → solución → datos → gobernanza → resultados → riesgos → aprendizajes) a la narrativa documentada de éxito anticipado y retracción posterior. En equipos:
+
+1. **Reconstrucción del caso (15 min):** cada equipo llena la plantilla de 8 celdas con la evidencia del caso.
+2. **Identificación de patrones (15 min):** el equipo etiqueta cada decisión documentada como **patrón de éxito** (Bloque C) o **anti-patrón** (Bloque D) con justificación.
+3. **Aterrizaje al caso del equipo (10 min):** ¿qué decisión de IBM Watson se parece a una decisión que su equipo podría tomar? ¿cuál evitarían?
+4. **Plenaria breve (5 min):** cada equipo comparte el anti-patrón más transferible.
+
+**Entregable de la actividad:** plantilla llena + 3 aprendizajes accionables del caso para el proyecto del equipo.
+
+### Microactividad opcional (si queda tiempo en clase o como ejercicio fuera de clase)
+
 **Benchmarking del caso del equipo con 2 empresas reales.** En equipos:
 
 1. Identificar **2 empresas comparables** al caso del proyecto por sector, tamaño o problema.
@@ -97,9 +108,8 @@ Los casos se eligen año a año por el profesor para reflejar los temas más rel
    - **Anti-patrón** evitado (o sufrido).
    - Qué es **transferible** al caso del equipo y qué no.
 3. Consolidar **3 aprendizajes accionables** para el proyecto del equipo.
-4. Cada equipo comparte 3 minutos al grupo: los 3 aprendizajes y cómo cambian (si cambian) el diseño de su propuesta.
 
-**Entregable de la actividad:** ficha por equipo con el benchmarking y los 3 aprendizajes accionables.
+Esta microactividad alimenta directamente la tarea / entregable del equipo descrita abajo.
 
 ---
 

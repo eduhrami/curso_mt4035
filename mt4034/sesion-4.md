@@ -35,7 +35,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 4. **NIST AI RMF (25 min):** las funciones Govern / Map / Measure / Manage, perfiles sectoriales, interacción con marcos de ciberseguridad.
 5. **ISO/IEC 42001 (20 min):** AI Management System certificable; cómo se articula con ISO 27001 y 9001.
 6. **OECD & UNESCO + panorama de otras jurisdicciones (15 min):** visión global; rutas regulatorias en México y América Latina.
-7. **Actividad comparativa en clase (35 min):** *jigsaw* de 3 marcos operables (EU AI Act, NIST AI RMF, ISO/IEC 42001) — ronda de expertos + ronda mixta con matriz comparativa común.
+7. **Actividad comparativa en clase — jigsaw (50 min):** *jigsaw* de 3 marcos operables (EU AI Act, NIST AI RMF, ISO/IEC 42001) — ronda de expertos + ronda mixta con matriz comparativa común + plenaria de cierre.
 8. **Cierre y continuidad (10 min):** puente a aplicaciones comerciales (sesión 5) y a gestión de proyectos (sesión 7), donde estos controles se aterrizan a la ejecución.
 
 ---
@@ -103,7 +103,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 **Jigsaw comparativo de 3 marcos operables de IA responsable** (EU AI Act, NIST AI RMF e ISO/IEC 42001).
 
-**Ronda 1 — grupos de expertos (15 min).** El grupo se divide en 3 equipos, uno por marco. Cada equipo, apoyado en las lecturas base de la sesión, llena **su columna** de una **matriz comparativa común** con las siguientes 7 dimensiones:
+**Ronda 1 — grupos de expertos (20 min).** El grupo se divide en 3 equipos, uno por marco. Cada equipo, apoyado en las lecturas base de la sesión, llena **su columna** de una **matriz comparativa común** con las siguientes 7 dimensiones:
 
 1. **Naturaleza jurídica:** vinculante / voluntario / estándar certificable / *soft law*.
 2. **Alcance jurisdiccional y extraterritorialidad.**
@@ -113,12 +113,14 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 6. **Evidencias / artefactos exigidos:** *model cards*, *AI impact assessments*, documentación técnica, auditorías.
 7. **Mecanismo de cumplimiento:** sanción, certificación, auto-adhesión, supervisión.
 
-**Ronda 2 — grupos mixtos (20 min).** Se remezcla al grupo en equipos nuevos que incluyan al menos un "experto" de cada marco. En cada equipo mixto:
+**Ronda 2 — grupos mixtos (25 min).** Se remezcla al grupo en equipos nuevos que incluyan al menos un "experto" de cada marco. En cada equipo mixto:
 
-1. Cada experto expone su marco contra la matriz (~3 min).
+1. Cada experto expone su marco contra la matriz (~4 min).
 2. El equipo consolida la matriz comparativa y responde por escrito dos preguntas de cierre:
    - ¿Dónde **convergen** los 3 marcos y dónde **divergen** de forma material?
    - Para el proyecto del equipo: ¿qué marco resultaría **más restrictivo** y cuál es el **mínimo piso** que deberían cumplir?
+
+**Plenaria de cierre (5 min).** Cada equipo mixto nombra 1 divergencia material y el marco que considera mínimo piso para su proyecto.
 
 **Entregable en clase (por equipo mixto):** matriz comparativa llena + 1 slide con las dos respuestas de cierre; se sube al LMS al final de la sesión.
 
