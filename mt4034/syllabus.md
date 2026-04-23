@@ -179,7 +179,7 @@ El proyecto de investigación es la **actividad formal que evalúa la competenci
 
 | Sesión | Caso HBS |
 |---|---|
-| S1 — Fundamentos de IA | ⚠ *pendiente de asignación* |
+| S1 — Fundamentos de IA | — *(sin caso HBS; actividad en clase = "¿Es IA o no es IA?" — taxonomía express de IA/ML/DL/gen-AI)* |
 | S2 — Gobierno de datos + tec. emergentes | *Mastercard's Ethical Approach to Governing AI* — IMD **IM1225** (2022) — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/IM1225-PDF-ENG) |
 | S3 — IA generativa + Ética | *The Clueless: Navigating an Ethical AI Marketing Dilemma* — Pradhan & Chattopadhyay — Ivey **W39696** — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/W39696-PDF-ENG) |
 | S4 — Prácticas responsables de IA | — *(sin caso HBS; actividad en clase = jigsaw comparativo de EU AI Act / NIST AI RMF / ISO/IEC 42001)* |

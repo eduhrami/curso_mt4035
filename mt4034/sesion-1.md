@@ -34,7 +34,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 3. **Tipos de aprendizaje a nivel intuitivo (30 min):** supervisado, no supervisado, por refuerzo; qué problemas de negocio típicos resuelve cada uno.
 4. **Insumos y fallas típicas (25 min):** datos, cómputo, problema bien definido, métricas; por qué los proyectos de IA fracasan en la práctica.
 5. **Panorama de tecnologías emergentes (15 min):** IoT, blockchain, digital twins como habilitadores o compañeros de la IA; *la profundización está en la sesión 2*.
-6. **Caso introductorio (20 min):** un ejemplo empresarial corto (p. ej. adopción de IA en una cadena minorista o en un banco) para anclar la conversación a decisiones de negocio.
+6. **Actividad en clase — "¿Es IA o no es IA?" (30 min):** clasificación en equipos de 12–15 productos/decisiones reales por tipo de IA (regla programada / ML clásico / DL / IA generativa / no es IA); plenaria con 3 casos fronterizos.
 7. **Proyecto final y cierre (15 min):** formación de equipos, shortlist de contextos candidatos, business questions por sesión, continuidad del curso.
 
 Nota: la sesión 1 **no tiene quiz inicial**; los quizzes se aplican al inicio de las sesiones 2 a 7.
@@ -96,16 +96,14 @@ Nota: la sesión 1 **no tiene quiz inicial**; los quizzes se aplican al inicio d
 
 ## Actividad en clase
 
-**Mapa del panorama de IA aplicado a un dominio de negocio.** En equipos:
+**"¿Es IA o no es IA?" — Taxonomía express (~30 min).** Dinámica introductoria para construir la intuición que distingue entre regla programada, ML clásico, *deep learning*, IA generativa y tecnologías que no son IA. Ancla los Bloques B (definiciones operativas) y C (tipos de aprendizaje) de esta sesión.
 
-1. El profesor asigna (o el equipo elige) un dominio de negocio concreto (p. ej. un banco minorista mexicano, una cadena de retail, una aseguradora, una línea aérea).
-2. Cada equipo construye un mapa con:
-   - **3 aplicaciones candidatas** de IA en el dominio, clasificadas por tipo de aprendizaje (supervisado / no supervisado / por refuerzo).
-   - **Para cada aplicación:** problema de negocio que resuelve, datos necesarios, métrica de éxito, y un riesgo potencial relevante (de gobernanza, ética o adopción).
-   - **Una combinación con tecnología emergente** (IoT, blockchain o digital twin) que podría amplificar una de las tres aplicaciones.
-3. Cada equipo comparte 2 minutos al grupo: dominio, una aplicación priorizada y su business question.
+1. **Preparación (2 min):** el profesor reparte 12–15 tarjetas con productos/decisiones reales — por ejemplo: recomendaciones de Netflix, autocompletado de Gmail, filtro antispam, control del aire acondicionado de un edificio, detección de fraude en tarjeta, radiología asistida, chatbot bancario, pricing dinámico de una aerolínea, traducción de DeepL, ChatGPT, Stable Diffusion, un reporte automatizado en Excel.
+2. **Clasificación en equipos (15 min):** cada equipo coloca cada tarjeta en una de 5 categorías: **regla programada / ML clásico / DL / IA generativa / no es IA**. Para cada tarjeta debe justificar brevemente la elección y, si es IA, nombrar el tipo de aprendizaje dominante (supervisado / no supervisado / por refuerzo).
+3. **Plenaria con casos fronterizos (10 min):** el profesor selecciona 3 tarjetas con mayor dispersión entre equipos y detona debate; se cierra con la distinción IA → ML → DL → gen-AI.
+4. **Aterrizaje al proyecto (3 min):** cada equipo identifica de la lista **1 ejemplo** cuyo tipo de IA se parezca al que podría usar su proyecto.
 
-**Entregable de la actividad:** hoja resumen por equipo con el mapa descrito.
+**Entregable de la actividad:** tabla de clasificación por equipo + los 3 casos fronterizos con justificación.
 
 ---
 
@@ -118,7 +116,7 @@ Nota: la sesión 1 **no tiene quiz inicial**; los quizzes se aplican al inicio d
 
 ## Caso HBS
 
-> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+No aplica. La sesión 1 es introductoria y usa la dinámica **"¿Es IA o no es IA?"** (ver *Actividad en clase*) como aterrizaje pedagógico; no requiere caso HBS.
 
 ## Libro de texto
 
