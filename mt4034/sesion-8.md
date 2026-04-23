@@ -24,7 +24,7 @@ Al finalizar la sesión, las y los estudiantes habrán:
 
 - **Tiempo por equipo:** ⚠ *(por afinar, orientativo: 15 min presentación + 10 min Q&A).*
 - **Audiencia:** los dos profesores titulares, el resto del grupo y, cuando aplique, invitados/as de industria.
-- **Criterios de rúbrica:** ver [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md) *(por redactar).* Incluye claridad del problema, solidez del diagnóstico, alineación con marcos de IA responsable, viabilidad del roadmap, calidad del *business case*, desempeño en Q&A.
+- **Criterios de rúbrica:** ver [`rubrica-proyecto-de-investigacion.md`](./rubrica-proyecto-de-investigacion.md) *(por redactar).* Incluye claridad de la pregunta de investigación, solidez de la revisión de literatura y análisis de casos documentados, alineación con marcos de IA responsable, calidad argumentativa de la propuesta, desempeño en Q&A.
 - **Material requerido por equipo:**
   - Reporte final del proyecto (documento).
   - Presentación final (soporte visual).
@@ -59,7 +59,7 @@ Para cada equipo, al cerrar la sesión:
 
 ## Fechas administrativas posteriores a la sesión
 
-- **Encuesta ECOA:** abierta del 11-may-2026 al 14-may-2026. La ventana cierra el mismo día de esta sesión.
+- **Encuesta ECOA:** abierta del 11-may-2026 al 14-may-2026. La ventana cierra el mismo día de esta sesión. **Contestar la ECOA para ambos profesores titulares (Marcos y Eduardo) otorga +2 puntos extra sobre la calificación final del curso** (ver §V del [`syllabus.md`](./syllabus.md#puntos-extra-por-ecoa)).
 - **Envío de calificaciones finales (profesor):** del 16-may-2026 al 19-may-2026 a las 15:00 hrs. Plazo interno para calificar el examen presencial, cerrar el proyecto integrador y capturar calificaciones en el sistema institucional.
 
 Referencia completa: sección VII del [`syllabus.md`](./syllabus.md#fechas-administrativas-institucionales).
@@ -74,7 +74,7 @@ Referencia completa: sección VII del [`syllabus.md`](./syllabus.md#fechas-admin
 
 ## Complementos
 
-- Rúbrica del proyecto final *(por redactar en [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md))*.
+- Rúbrica del proyecto final *(por redactar en [`rubrica-proyecto-de-investigacion.md`](./rubrica-proyecto-de-investigacion.md))*.
 - Guía de estudio para el examen *(por redactar en [`examen-final.md`](./examen-final.md))*.
 - Formatos de autoevaluación y coevaluación de equipo.
 
