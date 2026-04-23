@@ -29,11 +29,10 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 1. **Quiz inicial en línea (~15 min)** — evalúa los contenidos de la sesión 5.
 2. **Marco de análisis de casos (15 min):** plantilla común para leer un caso (contexto, problema, solución, datos, gobernanza, resultados, riesgos, aprendizajes).
-3. **Caso empresarial 1 (40 min):** presentación + discusión guiada — típicamente una empresa con adopción de IA madura.
-4. **Caso empresarial 2 (40 min):** presentación + discusión guiada — típicamente una empresa con un caso complejo de gobernanza o ética.
-5. **Invitado/a de industria (30 min, si aplica):** conversación estructurada sobre la adopción real y los tradeoffs vividos.
-6. **Actividad en clase (35 min):** benchmarking del caso del equipo con 2 empresas comparables.
-7. **Transición a bloque 2 (10 min):** cierre e introducción a la sesión 7 (Gestión de proyectos de IA), que se imparte inmediatamente después.
+3. **Caso HBS — *The Rise and Fall of IBM Watson's AI Medical System* (45 min):** lectura crítica y discusión guiada sobre los retos de despliegue comercial de IA en salud, aplicando la plantilla común.
+4. **Invitado/a de industria (30 min, si aplica):** conversación estructurada sobre la adopción real y los tradeoffs vividos.
+5. **Actividad en clase (35 min):** benchmarking del caso del equipo con 2 empresas comparables.
+6. **Transición a bloque 2 (10 min):** cierre e introducción a la sesión 7 (Gestión de proyectos de IA), que se imparte inmediatamente después.
 
 > **Transición a S7 (bloque 2):** entre los dos bloques se aplica el **Quiz 6** — que evalúa el contenido de esta sesión 6 — antes de arrancar con gestión de proyectos de IA.
 
@@ -110,9 +109,11 @@ Vinculado al proyecto final: integrar los **3 aprendizajes accionables** y el be
 
 ---
 
-## Casos HBS
+## Caso HBS sugerido
 
-> ⚠ **Pendiente de asignación.** Esta sesión requiere **dos** casos (bloques 3 y 4 de la estructura). Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+- **Challenges in Commercial Deployment of AI: Insights from The Rise and Fall of IBM Watson's AI Medical System.** Huy, Q., Vuori, T., Ojanpera, T., & Duke, L. S. (2023, febrero 13). INSEAD / Harvard Business Publishing, Case No. **IN1896-PDF-ENG** (16 páginas; disciplina: Strategy). Tiempo estimado de lectura previa: ~34 min. Disponible en [hbsp.harvard.edu/product/IN1896-PDF-ENG](https://hbsp.harvard.edu/product/IN1896-PDF-ENG).
+  - **Por qué esta sesión:** caso integrador por excelencia — expone los retos de comercialización de IA en un dominio crítico (salud), combina fundamentos técnicos (sesión 1), gobernanza de datos (sesión 2), cuestiones éticas (sesión 3), prácticas responsables (sesión 4) y aplicaciones comerciales (sesión 5) en una narrativa real de éxito anticipado seguido de retracción. Permite discutir **patrones de éxito** (Bloque C) y **anti-patrones** (Bloque D) con evidencia documentada de una empresa top.
+  - **Decisiones que ancla la discusión:** cómo IBM definió el alcance inicial; qué supuestos sobre los datos clínicos resultaron erróneos; cómo se manejaron la comunicación pública y las expectativas de mercado; qué señales de alarma fueron ignoradas; qué aprendizajes son transferibles a cualquier despliegue comercial de IA.
 
 ## Libro de texto
 
