@@ -39,7 +39,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
    - Customer experience: chatbots, asistentes, copilots.
 4. **Medición e impacto (25 min):** KPIs comerciales, diseño de experimentos (A/B), atribución, lectura responsable de resultados.
 5. **Riesgos específicos de IA comercial (20 min):** manipulación, *dark patterns*, sesgo hacia clientes rentables, discriminación indirecta.
-6. **Actividad en clase (35 min):** priorización valor/esfuerzo/riesgo para el caso del equipo.
+6. **Caso HBS — *Generative AI in Marketing* con rol-simulación del Marco 4 A's (65 min):** aplicación inductiva del marco a las cuatro viñetas + escenario nuevo, deliberación estructurada y presentación ejecutiva al cierre.
 7. **Cierre y continuidad (10 min):** puente a casos empresariales (sesión 6) y gestión de proyectos (sesión 7).
 
 ---
@@ -114,7 +114,13 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Actividad en clase
 
-**Priorización de casos de uso comerciales de IA para el caso del equipo.** En equipos:
+La actividad principal en clase es la **discusión y rol-simulación del caso HBS *Generative AI in Marketing* con el Marco de las 4 A's** (65 min). Ver especificación, dinámica y objetivo de aprendizaje en la sección "Caso HBS sugerido" más abajo.
+
+---
+
+## Tarea / entregable
+
+Vinculado al proyecto de investigación: **priorización de casos de uso comerciales de IA** para el caso del equipo (2 páginas). Entregable sugerido como trabajo fuera de clase:
 
 1. Generar una lista de **6 a 10 casos de uso candidatos** de IA comercial / mercadotecnia pertinentes al caso del proyecto del equipo.
 2. Para cada caso, estimar:
@@ -123,21 +129,18 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
    - **Riesgo** (bajo / medio / alto): gobernanza, ética, regulación — usando los marcos de la sesión 4.
 3. Priorizar con una **matriz valor vs. esfuerzo** y filtrar por riesgo.
 4. Elegir los **top 2 casos** y definir para cada uno: KPI a optimizar, métrica de éxito, hipótesis de impacto, control de riesgo mínimo.
-5. Cada equipo comparte 3 minutos al grupo: top 2 casos y su métrica anchor.
 
-**Entregable de la actividad:** matriz de priorización + ficha de los top 2 casos.
-
----
-
-## Tarea / entregable
-
-Vinculado al proyecto final: entregar **la priorización de casos de uso comerciales** (2 páginas), con la matriz valor/esfuerzo/riesgo completa, los top 2 casos expandidos y su hipótesis de impacto.
+**Entregable:** matriz de priorización + ficha expandida de los top 2 casos con su hipótesis de impacto.
 
 ---
 
-## Caso HBS
+## Caso HBS sugerido
 
-> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+- **Generative AI in Marketing.** Israeli, A. (2025, octubre 15). Harvard Business School Publishing, Case No. **526022-PDF-ENG** (5 páginas; disciplina: Marketing). Tiempo estimado de lectura previa: ~11 min. **Duración en clase: 65 min** (según *Teaching Notes* de HBS). Disponible en [hbsp.harvard.edu/product/526022-PDF-ENG](https://hbsp.harvard.edu/product/526022-PDF-ENG).
+  - **Por qué esta sesión:** el caso usa cuatro viñetas para exponer la tensión estratégica de adoptar IA generativa en marketing; conecta de forma directa con los patrones de personalización, *marketing automation* y experiencia del cliente del Bloque de "Patrones de aplicación", y obliga a los equipos a aterrizar las decisiones dentro del marco de prácticas responsables trabajado en la sesión 4 (riesgos específicos: alucinaciones, *brand safety*, derechos de uso de datos del cliente, *dark patterns*).
+  - **Decisiones que ancla la discusión:** cuándo sí y cuándo no usar IA generativa en cada viñeta; trade-offs entre velocidad de *go-to-market*, calidad de contenido, riesgo reputacional y costo de supervisión humana; cómo generalizar las lecciones de marketing a otras funciones.
+  - **Dinámica propuesta en clase — rol-simulación con el Marco de las 4 A's.** Los equipos aplican inductivamente el marco (**A**umentación, **A**lineación, **U**mbral de Riesgo Aceptable y Rendición de Cuentas — *A*ccountability) a las cuatro viñetas del caso y, posteriormente, a un escenario nuevo presentado por el profesor. La actividad combina trabajo en equipo, deliberación estructurada y presentación ejecutiva al cierre.
+  - **Objetivo de aprendizaje de la dinámica:** que las y los estudiantes pasen del **diagnóstico** (identificar por qué falló o funcionó la IA en cada viñeta) a la **prescripción** (diseñar un plan de gobernanza accionable), desarrollando criterio gerencial sobre cuándo desplegar, modificar o retirar aplicaciones de IA generativa.
 
 ## Libro de texto
 
