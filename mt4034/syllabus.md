@@ -117,7 +117,7 @@ El curso opera bajo un modelo de **aprendizaje activo** que combina exposición 
 | Quizzes en línea (6) | Individual | 12% |
 | Tareas (2) | Equipo | 10% |
 | Examen final presencial | Individual | 20% |
-| Proyecto final (trabajo de campo + presentación + coevaluación) | Equipo | 40% |
+| Proyecto final (proyecto de investigación + presentación + coevaluación) | Equipo | 40% |
 | **Total** | | **100%** |
 
 ### Quizzes en línea
@@ -129,12 +129,12 @@ El curso opera bajo un modelo de **aprendizaje activo** que combina exposición 
 - Cada quiz tiene el mismo peso dentro del componente de quizzes.
 - Los quizzes son individuales, en Canvas, con tiempo limitado.
 
-### Práctica de trabajo de campo (evaluación de competencia)
+### Proyecto de investigación (evaluación de competencia)
 
-La práctica de trabajo de campo es la **actividad formal que evalúa la competencia institucional correspondiente** (por confirmar con coordinación académica). Consiste en el diagnóstico de un contexto empresarial real, el mapeo de oportunidades de IA y la propuesta de un proyecto apoyado en los marcos del curso (gobernanza, ética, prácticas responsables, aplicaciones comerciales, gestión de proyectos).
+El proyecto de investigación es la **actividad formal que evalúa la competencia institucional correspondiente** (por confirmar con coordinación académica). A diferencia de un trabajo de campo, no requiere la entrada a una organización específica ni la recolección de datos primarios in situ: consiste en la definición de una pregunta de investigación sobre gobernanza, ética o aplicación empresarial de IA, la revisión de literatura y fuentes regulatorias pertinentes, el análisis de casos documentados (públicos o académicos), y la articulación de una propuesta apoyada en los marcos del curso (gobernanza, ética, prácticas responsables, aplicaciones comerciales, gestión de proyectos).
 
-- Consigna completa: [`practica-trabajo-de-campo.md`](./practica-trabajo-de-campo.md) *(por redactar)*
-- Rúbrica: [`rubrica-practica-trabajo-de-campo.md`](./rubrica-practica-trabajo-de-campo.md) *(por redactar)*
+- Consigna completa: [`proyecto-de-investigacion.md`](./proyecto-de-investigacion.md) *(por redactar)*
+- Rúbrica: [`rubrica-proyecto-de-investigacion.md`](./rubrica-proyecto-de-investigacion.md) *(por redactar)*
 
 ### Examen final presencial
 
@@ -145,7 +145,13 @@ La práctica de trabajo de campo es la **actividad formal que evalúa la compete
 
 ### Proyecto final
 
-> ⚠ **Por rediseñar en detalle.** El proyecto final integra el trabajo de campo y la presentación, e incluye entregables parciales por sesión que se consolidan en la sesión 8.
+> ⚠ **Por rediseñar en detalle.** El proyecto final integra el proyecto de investigación y la presentación, e incluye entregables parciales por sesión que se consolidan en la sesión 8.
+
+### Puntos extra por ECOA
+
+- **+2 puntos extra** sobre la calificación final del curso por **contestar la encuesta ECOA para ambos profesores titulares** (Marcos y Eduardo) dentro de la ventana oficial (11-may-2026 → 14-may-2026; ver §VII *Fechas administrativas institucionales*).
+- El beneficio es individual. Se acredita con el registro institucional de completitud de la ECOA para ambas cátedras; no requiere evidencia adicional por parte del estudiante.
+- Los 2 puntos se suman sobre la calificación final resultante del esquema de 100%, sujeto a los límites que defina el reglamento institucional.
 
 ## VI. Bibliografía sugerida
 
@@ -239,7 +245,7 @@ El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md
 - **Quizzes en línea (12%, individual).** Los 6 quizzes se realizan en Canvas al inicio de cada sesión de la 2 a la 7. Son individuales y tienen tiempo limitado. No se permite reposición fuera del plazo salvo causa justificada aprobada por el profesor.
 - **Tareas (10%, equipo).** Dos tareas asignadas por el profesor, entregadas fuera de clase por cada equipo en las fechas indicadas.
 - **Examen final presencial (20%, individual).** Se realiza en la sesión 8. Es individual, sin apoyo de materiales salvo los explícitamente autorizados por los profesores. Consultar [`examen-final.md`](./examen-final.md).
-- **Proyecto final (40%, equipo).** Integra el trabajo de campo, el diseño de la propuesta, la presentación final y la coevaluación entre pares. Se evalúa con rúbrica; la coevaluación representa al menos 10% de la calificación del proyecto.
+- **Proyecto final (40%, equipo).** Integra el proyecto de investigación, el diseño de la propuesta, la presentación final y la coevaluación entre pares. Se evalúa con rúbrica; la coevaluación representa al menos 10% de la calificación del proyecto.
 - **Integridad académica.** Se aplica la política institucional del Tecnológico de Monterrey. El uso de herramientas de IA generativa debe ser declarado y alineado con las políticas del curso que se definirán en la primera sesión.
 
 ---

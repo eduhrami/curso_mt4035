@@ -29,8 +29,8 @@ Para el mapa de temas, objetivos específicos y *business questions* de cada ses
 
 El detalle de la evaluación (ponderaciones, quizzes, proyecto final, políticas) vive en el [syllabus](./syllabus.md). Enlaces directos a los entregables:
 
-- **[Práctica — Trabajo de campo](./practica-trabajo-de-campo.md)** *(por redactar)* — actividad que evalúa la competencia institucional correspondiente
-- **[Rúbrica de la práctica](./rubrica-practica-trabajo-de-campo.md)** *(por redactar)*
+- **[Proyecto de investigación](./proyecto-de-investigacion.md)** *(por redactar)* — actividad que evalúa la competencia institucional correspondiente
+- **[Rúbrica del proyecto de investigación](./rubrica-proyecto-de-investigacion.md)** *(por redactar)*
 - **[Examen final presencial](./examen-final.md)** *(por redactar)*
 
 ## Material de referencia

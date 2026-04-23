@@ -36,8 +36,8 @@ Documento vivo que rastrea el rediseño del curso **MT4034 – Aplicaciones, ges
 
 - [ ] Cerrar ponderaciones del esquema de evaluación (sección V del syllabus). Borrador actual: 18% reportes + 12% quizzes + 10% tareas + 20% examen + 40% proyecto final, homologado con MT4035.
 - [x] **Cerrar la estructura de quizzes:** 6 quizzes (Q1–Q5 al inicio S2–S6; Q6 al inicio del bloque 2 de la sesión doble del 9-may antes de S7). La sesión 8 no tiene quiz.
-- [ ] Redactar la especificación de la práctica / trabajo de campo (`practica-trabajo-de-campo.md`).
-- [ ] Redactar la rúbrica de la práctica (`rubrica-practica-trabajo-de-campo.md`).
+- [ ] Redactar la especificación del proyecto de investigación (`proyecto-de-investigacion.md`).
+- [ ] Redactar la rúbrica del proyecto de investigación (`rubrica-proyecto-de-investigacion.md`).
 - [ ] Redactar la especificación del examen final presencial (`examen-final.md`), con énfasis explícito en S7.
 - [ ] Diseñar el banco de 6 quizzes en línea (sesiones 2–7).
 - [ ] Definir el proyecto final en equipo: entregables parciales por sesión (ya esbozados en cada archivo), rúbrica integral, criterios de cierre.
