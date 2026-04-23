@@ -47,6 +47,14 @@ Para cada equipo, al cerrar la sesión:
 - [ ] Autoevaluación de equipo entregada.
 - [ ] Coevaluación entre pares completada.
 
+## Checklist individual
+
+Para cada estudiante, al cerrar la sesión:
+
+- [ ] Examen final presencial completado.
+- [ ] **Coevaluación de compañeros de equipo** capturada en Canvas (≥10% de la calificación del proyecto final).
+- [ ] **Encuesta ECOA contestada para ambos profesores titulares** (Marcos y Eduardo) dentro del bloque en clase — habilita los +2 puntos extra (ver §V del [`syllabus.md`](./syllabus.md#puntos-extra-por-ecoa)).
+
 ## Estructura en clase (sugerida)
 
 ⚠ *Por afinar con profesores titulares; la propuesta depende del número de equipos.*
@@ -55,7 +63,9 @@ Para cada equipo, al cerrar la sesión:
 2. **Presentaciones por equipo** (tiempo total = N × 25 min, con pausas cada 2–3 equipos).
 3. **Receso.**
 4. **Examen final presencial individual.**
-5. **Cierre del curso (15 min):** reflexión colectiva, siguientes pasos, reconocimientos. Recordatorio a las y los estudiantes de completar la **encuesta ECOA** antes de que cierre la ventana el mismo 14-may.
+5. **Coevaluación entre miembros del equipo (~15 min):** bloque individual en clase para que cada estudiante evalúe al resto de sus compañeros de equipo con la rúbrica institucional (aportación de trabajo, cumplimiento, calidad, colaboración y comunicación). La coevaluación representa al menos **10% de la calificación del proyecto final** (ver §X del [`syllabus.md`](./syllabus.md#políticas-para-la-evaluación-borrador)). Se entrega por Canvas con dispositivos personales.
+6. **Aplicación de la encuesta ECOA en clase (~10 min):** se destina un bloque explícito dentro de la sesión para que las y los estudiantes contesten la **ECOA para ambos profesores titulares (Marcos y Eduardo)**, ya que la ventana institucional cierra el mismo 14-may y la completitud otorga **+2 puntos extra** sobre la calificación final (ver §V del [`syllabus.md`](./syllabus.md#puntos-extra-por-ecoa)). Se sugiere hacerlo después del examen y antes del cierre, con dispositivos personales.
+7. **Cierre del curso (15 min):** reflexión colectiva, siguientes pasos, reconocimientos.
 
 ## Fechas administrativas posteriores a la sesión
 
