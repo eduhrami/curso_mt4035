@@ -34,7 +34,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 3. **Patrones de aplicación empresarial (30 min):** prompting, RAG, fine-tuning, agentes; cuándo usar cada uno.
 4. **Riesgos específicos de IA generativa (25 min):** alucinación, PII, IP, prompt injection, costo, lock-in.
 5. **Ética de la IA — marco conceptual (35 min):** sesgo, equidad, transparencia, explicabilidad, accountability.
-6. **Actividad en clase (30 min):** diseño de caso de uso de IA generativa + matriz de riesgos éticos.
+6. **Caso HBS *The Clueless* — actividad principal (50 min):** discusión guiada del dilema ético y diseño de la estrategia ética mínima viable.
 7. **Cierre y continuidad (10 min):** puente a prácticas responsables (sesión 4) como síntesis operativa.
 
 ---
@@ -100,16 +100,23 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Actividad en clase
 
-**Diseño y diagnóstico de un caso de uso de IA generativa.** En equipos:
+**Discusión del caso HBS *The Clueless: Navigating an Ethical AI Marketing Dilemma*** (~50 min). La actividad principal aplica los Bloques D (tipos de sesgo, métricas de equidad), E (transparencia, explicabilidad, accountability) y F (estrategia ética mínima viable) al dilema real del caso. En equipos:
 
-1. Partiendo del caso del proyecto del equipo, diseñar un **caso de uso candidato de IA generativa** con:
-   - Problema de negocio y usuario objetivo.
-   - Patrón de aplicación elegido (prompting, RAG, fine-tuning o agente) y por qué.
-   - Datos que alimentan el sistema y controles de privacidad asociados.
-   - **Matriz de riesgos éticos** con 4 filas mínimo (sesgo, privacidad, transparencia, accountability) — cada fila con: descripción del riesgo, impacto potencial, mitigación propuesta, métrica de control.
-2. Cada equipo comparte 3 minutos al grupo: caso de uso y el riesgo ético más importante con su mitigación.
+1. **Identificación de riesgos éticos en el caso (15 min):** cada equipo ubica 3 riesgos éticos del caso usando la taxonomía del Bloque D (sesgo de datos / modelo / despliegue) y del Bloque E (transparencia, accountability).
+2. **Decisión en frío vs. en caliente (20 min):** el equipo se posiciona frente al dilema central — ¿qué decidir?, ¿con qué criterio?, ¿a quién se le rinde cuentas? — primero con calma analítica y después bajo presión del profesor (ronda rápida).
+3. **Estrategia ética mínima viable (10 min):** cada equipo redacta los **3 controles éticos operativos** que deberían estar en su lugar *antes* de desplegar la decisión.
+4. **Plenaria breve (5 min):** cada equipo comparte el control más crítico.
 
-**Entregable de la actividad:** ficha por equipo con el caso y la matriz de riesgos éticos.
+**Entregable de la actividad:** ficha por equipo con los 3 riesgos éticos identificados + los 3 controles éticos operativos propuestos.
+
+### Microactividad opcional (si queda tiempo en clase o como ejercicio fuera de clase)
+
+**Diseño de caso de uso de IA generativa + matriz de riesgos éticos del caso del equipo.** Partiendo del caso del proyecto:
+
+1. Diseñar un **caso de uso candidato de IA generativa** con problema, usuario, patrón (prompting / RAG / fine-tuning / agente), datos y controles de privacidad.
+2. Construir la **matriz de riesgos éticos** (4 filas mínimo: sesgo, privacidad, transparencia, accountability), cada una con descripción, impacto, mitigación y métrica de control.
+
+Esta microactividad alimenta directamente la tarea / entregable del equipo descrita abajo.
 
 ---
 

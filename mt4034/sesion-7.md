@@ -35,12 +35,13 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 1. **Quiz en línea (~15 min)** — Quiz 6, evalúa los contenidos de la sesión 6.
 2. **Por qué fracasan los proyectos de IA (15 min):** causas recurrentes y cómo diseñar el proyecto para evitarlas.
-3. **Scoping y business case (25 min):** problema, hipótesis, métrica anchor, criterios de éxito/fracaso.
-4. **Stakeholders, roadmap y riesgos (30 min):** mapa de stakeholders, comunicación, hitos realistas, contingencias.
-5. **Gestión de datos y modelo (25 min):** datos, validación, despliegue, monitoreo, *guardrails*.
-6. **Comunicación ejecutiva (20 min):** estructura de una presentación ejecutiva, *storytelling* con evidencia, honestidad metodológica.
-7. **Revisión cruzada entre equipos (35 min):** cada equipo ensaya su presentación final y recibe retroalimentación estructurada.
-8. **Cierre e instrucciones para la sesión 8 (10 min):** logística de presentaciones, examen presencial, entregables finales.
+3. **Scoping y business case (20 min):** problema, hipótesis, métrica anchor, criterios de éxito/fracaso.
+4. **Stakeholders, roadmap y riesgos (25 min):** mapa de stakeholders, comunicación, hitos realistas, contingencias.
+5. **Gestión de datos y modelo (20 min):** datos, validación, despliegue, monitoreo, *guardrails*.
+6. **Comunicación ejecutiva (15 min):** estructura de una presentación ejecutiva, *storytelling* con evidencia, honestidad metodológica.
+7. **Caso HBS *Volkswagen Group* — actividad principal (50 min):** aplicación integradora de los Bloques B–E al caso de VW Group y su visión "NEW AUTO".
+8. **Revisión cruzada entre equipos — cierre (20 min):** ensayo de la presentación final con retroalimentación estructurada.
+9. **Cierre e instrucciones para la sesión 8 (10 min):** logística de presentaciones, examen presencial, entregables finales.
 
 ---
 
@@ -101,14 +102,24 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Actividad en clase
 
-**Revisión cruzada entre equipos.** Tras una exposición de 15 min de las plantillas y la rúbrica:
+**Discusión del caso HBS *Volkswagen Group: Embracing the Era of Generative AI*** (~50 min). La actividad principal aplica de forma integradora los Bloques B (scoping y business case), C (stakeholders, roadmap y riesgos), D (gestión de datos y modelo) y E (comunicación ejecutiva) al caso de VW Group y su visión "NEW AUTO — Mobility for generations to come". En equipos:
 
-1. Cada equipo presenta su proyecto en **formato corto (8 min)** a otro equipo, que asume el rol de comité ejecutivo.
-2. Retroalimentación estructurada (5 min) usando la rúbrica de evaluación del proyecto: claridad del problema, solidez de la evidencia, tratamiento de riesgos, viabilidad de la recomendación, desempeño en Q&A.
+1. **Reconstrucción del proyecto de IA generativa de VW (15 min):** ¿cuál era el problema? ¿qué decisiones de *scoping* tomó VW? ¿qué *stakeholders* aparecen y cuáles quedaron fuera?
+2. **Mapeo al roadmap realista (15 min):** ubicar las decisiones de VW en la secuencia descubrimiento → PoC → piloto → despliegue; identificar los hitos críticos y **3 riesgos prioritarios** (registro corto de riesgos).
+3. **Comunicación ejecutiva (15 min):** cada equipo redacta **la recomendación de 1 slide** que le haría al comité ejecutivo de VW usando la estructura problema → hipótesis → evidencia → recomendación → riesgos → pregunta de decisión.
+4. **Plenaria breve (5 min):** cada equipo comparte su recomendación ejecutiva más clara.
+
+**Entregable de la actividad:** ficha por equipo con el registro de 3 riesgos + la recomendación ejecutiva de 1 slide.
+
+### Cierre — revisión cruzada entre equipos (20 min)
+
+Ensayo final de la presentación del proyecto del equipo ante otro equipo como comité ejecutivo:
+
+1. Presentación en formato corto (6 min por equipo).
+2. Retroalimentación estructurada (4 min) con la rúbrica del proyecto: claridad del problema, solidez de la evidencia, tratamiento de riesgos, viabilidad de la recomendación, desempeño en Q&A.
 3. Cada equipo recibe y da retroalimentación a al menos otro equipo.
-4. Ajustes de 10 min para incorporar observaciones antes de la sesión 8.
 
-**Entregable de la actividad:** notas de retroalimentación recibidas + versión ajustada del outline de presentación.
+**Entregable del cierre:** notas de retroalimentación recibidas + versión ajustada del outline de presentación para la sesión 8.
 
 ---
 
@@ -120,9 +131,11 @@ Para la sesión 8:
 - **Presentación final** (equipo): soporte visual, guion de exposición, reparto de tiempos.
 - **Autoevaluación del equipo:** reparto de roles, dinámica, aprendizajes.
 
-## Caso HBS
+## Caso HBS sugerido
 
-> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
+- **Volkswagen Group: Embracing the Era of Generative AI.** Su, N., Fang, Y., Chau, I., & Fang, C. (2024, diciembre 13). Ivey Publishing / Harvard Business Publishing, Case No. **W41556-PDF-ENG** (14 páginas; disciplina: General Management). Tiempo estimado de lectura previa: ~29 min. Disponible en [hbsp.harvard.edu/product/W41556-PDF-ENG](https://hbsp.harvard.edu/product/W41556-PDF-ENG).
+  - **Por qué esta sesión:** caso integrador para cerrar el curso — VW Group despliega una visión estratégica multi-año ("NEW AUTO") que integra IA generativa en operaciones, producto y experiencia de cliente, y obliga a los equipos a transitar por todos los bloques de gestión de proyectos (scoping, stakeholders, roadmap, datos, comunicación ejecutiva) en una narrativa real de transformación.
+  - **Decisiones que ancla la discusión:** cómo VW definió el alcance de su iniciativa de IA generativa; qué stakeholders internos y externos priorizó; qué trade-offs de roadmap aparecen al combinar sostenibilidad, *mobility* e IA; cómo se articula la comunicación ejecutiva de una apuesta multi-año frente al consejo y al mercado.
 
 ## Libro de texto
 

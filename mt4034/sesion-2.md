@@ -37,7 +37,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
    - IoT: arquitectura, casos de uso, integración con IA.
    - Blockchain: propiedades, casos de uso (trazabilidad, contratos inteligentes), cuándo sí y cuándo no.
    - Digital twins: qué son, por qué ahora, casos en manufactura, logística y operaciones.
-6. **Actividad en clase (35 min):** diagnóstico de gobernanza + mapa de tecnologías emergentes para el caso del equipo.
+6. **Caso HBS *Mastercard* — actividad principal (50 min):** discusión guiada centrada en los 4 pilares de gobernanza y en el *AI Governance Council*; aterrizaje al caso del equipo.
 7. **Cierre y continuidad (10 min):** puente a ética (sesión 3) y prácticas responsables (sesión 4).
 
 ---
@@ -99,15 +99,24 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Actividad en clase
 
-**Diagnóstico de gobierno de datos + mapa de tecnologías emergentes del caso del equipo.** En equipos:
+**Discusión del caso HBS *Mastercard's Ethical Approach to Governing AI*** (~50 min). La actividad principal aplica los cuatro pilares del gobierno de datos (Bloque A) y el mapa de roles y artefactos (Bloque B) al *AI Governance Council* de Mastercard. En equipos:
 
-1. Para el caso del proyecto del equipo, completar una ficha con:
-   - **Mapa de datos:** qué datos se necesitan, de dónde vienen, quién es el *owner*, qué riesgos de calidad/privacidad/seguridad/ética presenta cada fuente.
-   - **Matriz de madurez:** evaluación cualitativa (baja/media/alta) del caso actual en cada pilar de gobernanza.
-   - **Tecnologías emergentes pertinentes:** elegir 1 de las 3 (IoT, blockchain, digital twin) y justificar por qué aportaría al caso; descartar las otras 2 con justificación.
-2. Cada equipo comparte 2 minutos al grupo: un riesgo de gobernanza relevante y una tecnología emergente que amplificaría su propuesta.
+1. **Lectura guiada del framework (10 min):** cada equipo ubica los controles de Mastercard bajo los 4 pilares (calidad, privacidad, seguridad, ética).
+2. **Análisis de las dos adquisiciones descartadas (20 min):** ¿qué criterios operaron? ¿qué habría pasado sin el AI Governance Council? ¿qué artefactos del Bloque B fueron decisivos?
+3. **Aterrizaje al caso del equipo (15 min):** identificar **2 controles que adoptaría** y **1 que no aplica** a su contexto, con justificación.
+4. **Plenaria breve (5 min):** cada equipo comparte el control más relevante para su caso.
 
-**Entregable de la actividad:** ficha por equipo con el diagnóstico descrito.
+**Entregable de la actividad:** ficha por equipo con los 2 controles adoptados + el control descartado con justificación.
+
+### Microactividad opcional (si queda tiempo en clase o como ejercicio fuera de clase)
+
+**Diagnóstico de gobierno de datos + mapa de tecnologías emergentes del caso del equipo.** Completar una ficha con:
+
+- **Mapa de datos:** qué datos se necesitan, de dónde vienen, quién es el *owner*, qué riesgos de calidad/privacidad/seguridad/ética presenta cada fuente.
+- **Matriz de madurez:** evaluación cualitativa (baja/media/alta) del caso actual en cada pilar de gobernanza.
+- **Tecnologías emergentes pertinentes:** elegir 1 de las 3 (IoT, blockchain, digital twin) y justificar por qué aportaría al caso; descartar las otras 2 con justificación.
+
+Esta microactividad alimenta directamente la tarea / entregable del equipo descrita abajo.
 
 ---
 
