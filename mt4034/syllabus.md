@@ -182,9 +182,9 @@ El proyecto de investigación es la **actividad formal que evalúa la competenci
 | S1 — Fundamentos de IA | ⚠ *pendiente de asignación* |
 | S2 — Gobierno de datos + tec. emergentes | *Mastercard's Ethical Approach to Governing AI* — IMD **IM1225** (2022) — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/IM1225-PDF-ENG) |
 | S3 — IA generativa + Ética | *The Clueless: Navigating an Ethical AI Marketing Dilemma* — Pradhan & Chattopadhyay — Ivey **W39696** — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/W39696-PDF-ENG) |
-| S4 — Prácticas responsables de IA | ⚠ *pendiente de asignación* |
-| S5 — IA comercial y mercadotecnia | ⚠ *pendiente de asignación* |
-| S6 — Casos empresariales *(sesión doble, 2 casos)* | ⚠ *pendiente de asignación* |
+| S4 — Prácticas responsables de IA | — *(sin caso HBS; actividad en clase = jigsaw comparativo de EU AI Act / NIST AI RMF / ISO/IEC 42001)* |
+| S5 — IA comercial y mercadotecnia | *Generative AI in Marketing* — Israeli — HBS **526022** (2025) — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/526022-PDF-ENG) |
+| S6 — Casos empresariales *(sesión doble)* | *Challenges in Commercial Deployment of AI: The Rise and Fall of IBM Watson's AI Medical System* — Huy, Vuori, Ojanpera & Duke — INSEAD **IN1896** (2023) — [hbsp.harvard.edu](https://hbsp.harvard.edu/product/IN1896-PDF-ENG) |
 | S7 — Gestión de proyectos de IA | ⚠ *pendiente de asignación* |
 | S8 — Presentaciones + examen | — *(no aplica)* |
 
