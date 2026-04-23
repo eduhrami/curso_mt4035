@@ -30,7 +30,7 @@ Documento vivo que rastrea el rediseño del curso **MT4034 – Aplicaciones, ges
 - [x] Diseñar la actividad en clase basada en caso / taller para cada sesión 1–7.
 - [x] Verificar y actualizar la bibliografía (Rose, Finlay, Russell & Norvig; Iansiti & Lakhani, Davenport & Mittal, Mitchell, Barocas et al., Ladley, DAMA-DMBOK; marcos EU AI Act, NIST AI RMF, ISO/IEC 42001, OECD, UNESCO).
 - [ ] Asignar lecturas específicas por sesión con bibliografía final consolidada.
-- [ ] Asignar un caso HBS por sesión con case ID verificado en `hbsp.harvard.edu`. Asignados: S2 (*Mastercard*, IM1225) y S3 (*The Clueless*, W39696). Pendientes: S1, S4, S5, S6 (2 casos), S7.
+- [ ] Asignar un caso HBS por sesión con case ID verificado en `hbsp.harvard.edu`. Asignados: S2 (*Mastercard*, IM1225), S3 (*The Clueless*, W39696) y S5 (*Generative AI in Marketing*, 526022). Pendientes: S1, S6 (2 casos), S7. **S4 queda sin caso HBS**: su actividad en clase es un *jigsaw* comparativo de 3 marcos regulatorios (EU AI Act, NIST AI RMF, ISO/IEC 42001).
 
 ## Fase C — Evaluación
 

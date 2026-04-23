@@ -35,7 +35,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 4. **NIST AI RMF (25 min):** las funciones Govern / Map / Measure / Manage, perfiles sectoriales, interacción con marcos de ciberseguridad.
 5. **ISO/IEC 42001 (20 min):** AI Management System certificable; cómo se articula con ISO 27001 y 9001.
 6. **OECD & UNESCO + panorama de otras jurisdicciones (15 min):** visión global; rutas regulatorias en México y América Latina.
-7. **Actividad en clase (35 min):** alineación del caso del equipo con un marco específico; lista de controles mínimos viables.
+7. **Actividad comparativa en clase (35 min):** *jigsaw* de 3 marcos operables (EU AI Act, NIST AI RMF, ISO/IEC 42001) — ronda de expertos + ronda mixta con matriz comparativa común.
 8. **Cierre y continuidad (10 min):** puente a aplicaciones comerciales (sesión 5) y a gestión de proyectos (sesión 7), donde estos controles se aterrizan a la ejecución.
 
 ---
@@ -101,29 +101,34 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Actividad en clase
 
-**Alineación del caso del equipo con un marco de IA responsable.** En equipos:
+**Jigsaw comparativo de 3 marcos operables de IA responsable** (EU AI Act, NIST AI RMF e ISO/IEC 42001).
 
-1. Elegir **uno** de los tres marcos operables (EU AI Act, NIST AI RMF o ISO/IEC 42001).
-2. Para el caso del proyecto del equipo, completar una ficha con:
-   - **Clasificación** según el marco elegido (p. ej. nivel de riesgo en EU AI Act; función y características en NIST AI RMF).
-   - **Controles mínimos viables** por etapa del ciclo de vida (diseño, datos, entrenamiento, despliegue, monitoreo) — al menos 8 controles concretos.
-   - **Evidencias** que la organización debería poder mostrar a un auditor o regulador.
-   - **Roles responsables** dentro de la organización.
-3. Cada equipo comparte 3 minutos al grupo: marco elegido, clasificación del caso y los 3 controles más importantes con su evidencia.
+**Ronda 1 — grupos de expertos (15 min).** El grupo se divide en 3 equipos, uno por marco. Cada equipo, apoyado en las lecturas base de la sesión, llena **su columna** de una **matriz comparativa común** con las siguientes 7 dimensiones:
 
-**Entregable de la actividad:** ficha por equipo con la alineación al marco.
+1. **Naturaleza jurídica:** vinculante / voluntario / estándar certificable / *soft law*.
+2. **Alcance jurisdiccional y extraterritorialidad.**
+3. **Destinatarios:** proveedor, *deployer*, Estado, autoridades regulatorias.
+4. **Clasificación de riesgo** (si aplica) y umbrales de aplicabilidad.
+5. **Obligaciones sustantivas clave** (3 a 5 bullets por marco).
+6. **Evidencias / artefactos exigidos:** *model cards*, *AI impact assessments*, documentación técnica, auditorías.
+7. **Mecanismo de cumplimiento:** sanción, certificación, auto-adhesión, supervisión.
+
+**Ronda 2 — grupos mixtos (20 min).** Se remezcla al grupo en equipos nuevos que incluyan al menos un "experto" de cada marco. En cada equipo mixto:
+
+1. Cada experto expone su marco contra la matriz (~3 min).
+2. El equipo consolida la matriz comparativa y responde por escrito dos preguntas de cierre:
+   - ¿Dónde **convergen** los 3 marcos y dónde **divergen** de forma material?
+   - Para el proyecto del equipo: ¿qué marco resultaría **más restrictivo** y cuál es el **mínimo piso** que deberían cumplir?
+
+**Entregable en clase (por equipo mixto):** matriz comparativa llena + 1 slide con las dos respuestas de cierre; se sube al LMS al final de la sesión.
 
 ---
 
 ## Tarea / entregable
 
-Vinculado al proyecto final: entregar la **alineación del caso del equipo con un marco regulatorio/gestión** (2 páginas), consolidando los 8+ controles mínimos viables, sus evidencias y los roles responsables.
+Vinculado al proyecto de investigación: cada equipo entrega la **alineación de su proyecto con un marco regulatorio/gestión** (2 páginas) eligiendo uno de los tres marcos trabajados en clase. La alineación consolida clasificación, controles mínimos viables por etapa del ciclo de vida, evidencias exigibles y roles responsables, apoyándose en la matriz comparativa construida en la actividad.
 
 ---
-
-## Caso HBS
-
-> ⚠ **Pendiente de asignación.** Por seleccionar desde [hbsp.harvard.edu](https://hbsp.harvard.edu) como fuente oficial.
 
 ## Libro de texto
 
