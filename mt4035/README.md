@@ -10,14 +10,14 @@ El documento maestro del curso es el **[syllabus oficial](./syllabus.md)** (en c
 
 | # | Sesión | Fecha | Profesor |
 |---|---|---|---|
-| 1 | [Fundamentos analíticos para retail y e-commerce](./sesion-1.md) | 23 de abril de 2026 | Marcos|
-| 2 | [Segmentación y perfilado de clientes](./sesion-2.md) | 29 de abril de 2026 | Marcos |
-| 3 | [Analítica de ventas e inventario](./sesion-3.md) | 6 de mayo de 2026 (On-line) | Marcos |
-| 4 | [SCM + inventario + fundamentos de diseño de red](./sesion-4.md) | 13 de mayo de 2026 | Eduardo |
-| 5 | [Transporte y logística omnicanal](./sesion-5.md) | 21 de mayo de 2026 | Eduardo |
-| 6 | [Precios, promociones y fraude](./sesion-6.md) | 27 de mayo de 2026 | Marcos |
-| 7 | [Tecnologías emergentes](./sesion-7.md) | 3 de junio de 2026 | Eduardo |
-| 8 | [Presentaciones finales + examen](./sesion-8.md) | 10 de junio de 2026 | Eduardo |
+| 1 | [Fundamentos analíticos para retail y e-commerce](./sesion-1.md) | 24 de septiembre de 2026 | Marcos Chávez |
+| 2 | [Segmentación y perfilado de clientes](./sesion-2.md) | 01 de octubre de 2026 | Marcos Chávez |
+| 3 | [Analítica de ventas e inventario](./sesion-3.md) | 08 de octubre de 2026 (Online) | Marcos Chávez |
+| 4 | [SCM + inventario + fundamentos de diseño de red](./sesion-4.md) | 15 de octubre de 2026 | Eduardo Ramírez |
+| 5 | [Transporte y logística omnicanal](./sesion-5.md) | 05 de noviembre de 2026 | Eduardo Ramírez |
+| 6 | [HBI Global Supply Chain Management Simulation](./sesion-6.md) | 12 de noviembre de 2026 | Eduardo Ramírez |
+| 7 | [Precios, promociones y fraude](./sesion-7.md) | 19 de noviembre de 2026 | Marcos Chávez |
+| 8 | [Presentaciones finales + examen](./sesion-8.md) | 26 de noviembre de 2026 | Marcos Chávez |
 
 Para el mapa de temas, objetivos específicos y *business questions* de cada sesión, ver la sección III del [syllabus](./syllabus.md).
 
