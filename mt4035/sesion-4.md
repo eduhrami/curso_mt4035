@@ -1,6 +1,6 @@
 # Sesión 4 — SCM + inventario + fundamentos de diseño de red
 
-**Fecha:** 13 de mayo de 2026  
+**Fecha:** 15 de octubre de 2026  
 **Profesor:** Eduardo  
 **Ancla del packet:** Sesión 4 incluye SCM + inventarios + diseño de red (fundamentos)
 **Ancla del plan de estudios:** Temas 6–7
@@ -40,7 +40,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 - **Trade-off costo-servicio:** costo fijo (nodos) vs costo variable (transporte/manejo); noción de cost-to-serve
 - **Capacidad y cuellos de botella:** capacidades en CD/tienda y por qué importan incluso con buen pronóstico
 - **Escenarios simples:** comparación 1 CD vs 2 CDs (análisis de sensibilidad básico, sin optimización formal)
-- **Límites de la sesión:** ruteo de última milla, asignación dinámica de pedidos y selección de transportistas se profundizan en Sesión 5
+- **Límites de la sesión:** ruteo de última milla, asignación dinámica de pedidos y selección de transportistas se profundizan en Sesión 5; abastecimiento global (costo vs. *lead time* entre proveedores) y decisiones de producción bajo demanda incierta se trabajan en la simulación de la Sesión 6
 
 ---
 

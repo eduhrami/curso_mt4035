@@ -56,7 +56,10 @@
 ## Pendientes de confirmación (eventos específicos)
 
 - ✅ **Sesión 3 — confirmada el 6 de mayo con Marcos.** Eduardo confirmó no disponibilidad del 6 al 9 de mayo (viaje), por lo que se descarta la propuesta de mover la sesión al 5 de mayo con Eduardo. La sesión queda en su fecha original (**6 de mayo**) con **Marcos** como responsable. Propagado a `syllabus.md` y `sesion-3.md` (2026-04-18).
-- **Sesión 1 — distribución de temas entre co-profesores.** Confirmada como co-impartida por Eduardo y Marcos. Pendiente definir quién presenta qué bloque del contenido metodológico (caja de herramientas estadística).
+- ✅ **Calendario oficial de la edición sep–nov 2026** (README actualizado por Marcos el 20-sep-2026). Sesiones en jueves del 24-sep al 26-nov, sesión 3 en línea. Distribución: Marcos S1, S2, S3, S7 y S8; Eduardo S4, S5 y S6. La S6 pasa a ser la **simulación HBI Global Supply Chain Management** y precios/fraude se mueve a S7. El bloque de tecnologías emergentes sale del calendario (archivado en `archivo/sesion-tecnologias-emergentes.md`). Ya no hay co-docencia en S1 ni en S8. Propagado a `syllabus.md`, `examen-final.md`, archivos de sesión y `CLAUDE.md` (2026-09-30).
+- [ ] **Confirmar con coordinación** las fechas administrativas (ECOA y envío de calificaciones) y el salón de esta edición; hoy están estimadas.
+- [ ] **Licencias de la simulación HBI** (producto 8623, versión en español 8623-HTM-SPA): solicitar el *coursepack* en HBP antes del 12-nov.
+- [ ] **Actualizar el export de Canvas** (`canvas/build_imscc.py`) con el nuevo calendario y la nueva S6.
 
 ## Notas
 

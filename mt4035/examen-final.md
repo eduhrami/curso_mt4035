@@ -7,13 +7,13 @@
 ## Características generales
 
 - **Modalidad:** Presencial, individual.
-- **Fecha:** Sesión 8 — 10 de junio de 2026.
+- **Fecha:** Sesión 8 — 26 de noviembre de 2026.
 - **Duración propuesta:** 90 minutos *(por confirmar)*.
 - **Materiales permitidos:** lápiz o bolígrafo, calculadora simple, y un resumen personal de una hoja tamaño carta (por ambas caras) preparado por el estudiante *(propuesta sujeta a confirmación)*.
 
 ## Cobertura
 
-El examen cubre el contenido de todo el curso. Dado que las sesiones 1 a 6 son evaluadas de forma individual a través de los quizzes en línea que se aplican al inicio de la sesión siguiente, el examen final tiene **énfasis especial en el contenido de la sesión 7 (tecnologías emergentes)**, que es el único bloque no evaluado por quiz durante el curso.
+El examen cubre el contenido de todo el curso. Dado que las sesiones 1 a 6 son evaluadas de forma individual a través de los quizzes en línea que se aplican al inicio de la sesión siguiente, el examen final tiene **énfasis especial en el contenido de la sesión 7 (precios, promociones y fraude)**, que es el único bloque no evaluado por quiz durante el curso.
 
 El examen también incluye preguntas transversales que conectan herramientas de distintas sesiones aplicadas a un caso breve, para evaluar la capacidad de integración que se espera del perfil de egreso.
 
@@ -24,8 +24,8 @@ El examen también incluye preguntas transversales que conectan herramientas de 
 | A | Caja de herramientas analítica (Sesión 1) | 15% |
 | B | Segmentación, CLV, ventas, inventario y pruebas A/B (Sesiones 2–3) | 20% |
 | C | SCM, diseño de red, transporte y logística (Sesiones 4–5) | 20% |
-| D | Precios, promociones y fraude (Sesión 6) | 15% |
-| E | **Tecnologías emergentes — énfasis** (Sesión 7) | 20% |
+| D | Simulación de supply chain global: abastecimiento y decisiones bajo incertidumbre (Sesión 6) | 15% |
+| E | **Precios, promociones y fraude — énfasis** (Sesión 7) | 20% |
 | F | Integración: caso corto con recomendación | 10% |
 | **Total** | | **100%** |
 

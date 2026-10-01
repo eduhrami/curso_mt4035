@@ -14,12 +14,12 @@
 | Clave | MT4035 |
 | Programa | *(por confirmar)* |
 | Trimestre / periodo | *(por definir)* |
-| Modalidad | Presencial |
-| Horario | 18:30 – 21:45 (algunas sesiones en miércoles, otras en jueves; ver calendario en §VII) |
-| Salón | EG-215 |
+| Modalidad | Presencial (sesión 3 en línea) |
+| Horario | Jueves 18:30 – 21:45 (ver calendario en §VII) |
+| Salón | EG-215 *(por confirmar para esta edición)* |
 | Número de sesiones | 8 |
-| Fecha de inicio | 23 de abril de 2026 |
-| Fecha de fin | 10 de junio de 2026 |
+| Fecha de inicio | 24 de septiembre de 2026 |
+| Fecha de fin | 26 de noviembre de 2026 |
 
 ## II. Datos del profesor
 
@@ -58,18 +58,16 @@ Implementar herramientas de analítica de datos en un caso práctico de una empr
 
 | # | Fecha | Profesor | Tema | Objetivo específico | Business question |
 |---|---|---|---|---|---|
-| 1 | 23-abr | Eduardo y Marcos | Fundamentos analíticos para retail y e-commerce | Construir la caja de herramientas conceptual (distribuciones, muestreo, pruebas de hipótesis, correlación/causalidad, regresión, series de tiempo, sobrevivencia) que se usará en el resto del curso. | ¿Qué herramientas estadísticas debo conocer para tomar decisiones basadas en datos en retail? |
-| 2 | 29-abr | Marcos | Segmentación y perfilado de clientes | Aplicar CLV y RFM para segmentar clientes y conectar cada segmento con acciones accionables de marketing y experiencia. | ¿Cómo identifico a mis clientes más valiosos y cómo les ofrezco experiencias diferenciadas? |
-| 3 | 6-may | Marcos | Analítica de ventas e inventario | Diferenciar demanda, ventas y ventas perdidas; trazar un flujo de pronóstico; usar pruebas A/B para medir impacto. | ¿Qué debería vender, cuánto inventario necesito, y cómo sé si mis cambios funcionan? |
-| 4 | 13-may | Eduardo | SCM + inventario + diseño de red | Conectar KPIs de supply chain con decisiones de red e inventario; entender EOQ/ROP y el trade-off costo-servicio. | ¿Cómo diseño una red que balancea costo de operar vs nivel de servicio al cliente? |
-| 5 | 21-may | Eduardo | Transporte y logística omnicanal | Comparar alternativas de fulfillment, analizar KPIs de transporte y entender los tradeoffs de última milla y ruteo. | ¿Cómo hago llegar mis pedidos al cliente al menor costo sin romper la promesa de entrega? |
-| 6 | 27-may | Marcos | Precios, promociones, fraude y seguridad | Evaluar efectividad de promociones y palancas de precio; detectar patrones de fraude y balancear control con experiencia del cliente. | ¿Cómo fijo precios y promos que impulsan ventas sin destruir margen, y cómo protejo el negocio contra el fraude? |
-| 7 | 3-jun | Eduardo | Tecnologías emergentes | Evaluar IoT, IA/ML (incl. generativa), automatización y blockchain con un marco consistente que traduzca tecnología en cambio de proceso y KPIs. | ¿Qué tecnologías emergentes generan valor real en retail y supply chain, y cómo las implemento sin caer en buzzwords? |
-| 8 | 10-jun | Eduardo + Marcos | Presentaciones finales y examen | Evidenciar pensamiento analítico end-to-end mediante la presentación del proyecto final y consolidar comprensión individual mediante examen presencial. | ¿Puedo integrar todo el curso en una recomendación defendible frente a un líder de negocio? |
+| 1 | 24-sep | Marcos | Fundamentos analíticos para retail y e-commerce | Construir la caja de herramientas conceptual (distribuciones, muestreo, pruebas de hipótesis, correlación/causalidad, regresión, series de tiempo, sobrevivencia) que se usará en el resto del curso. | ¿Qué herramientas estadísticas debo conocer para tomar decisiones basadas en datos en retail? |
+| 2 | 1-oct | Marcos | Segmentación y perfilado de clientes | Aplicar CLV y RFM para segmentar clientes y conectar cada segmento con acciones accionables de marketing y experiencia. | ¿Cómo identifico a mis clientes más valiosos y cómo les ofrezco experiencias diferenciadas? |
+| 3 | 8-oct (en línea) | Marcos | Analítica de ventas e inventario | Diferenciar demanda, ventas y ventas perdidas; trazar un flujo de pronóstico; usar pruebas A/B para medir impacto. | ¿Qué debería vender, cuánto inventario necesito, y cómo sé si mis cambios funcionan? |
+| 4 | 15-oct | Eduardo | SCM + inventario + diseño de red | Conectar KPIs de supply chain con decisiones de red e inventario; entender EOQ/ROP y el trade-off costo-servicio. | ¿Cómo diseño una red que balancea costo de operar vs nivel de servicio al cliente? |
+| 5 | 5-nov | Eduardo | Transporte y logística omnicanal | Comparar alternativas de fulfillment, analizar KPIs de transporte y entender los tradeoffs de última milla y ruteo. | ¿Cómo hago llegar mis pedidos al cliente al menor costo sin romper la promesa de entrega? |
+| 6 | 12-nov | Eduardo | Simulación de supply chain global (HBI Global Supply Chain Management Simulation) | Tomar decisiones de pronóstico, abastecimiento y producción bajo demanda incierta, balanceando costo, *lead time* y flexibilidad entre proveedores. | ¿Cómo diseño una cadena de suministro que sea rentable y a la vez lo bastante flexible para reaccionar a cambios en la demanda? |
+| 7 | 19-nov | Marcos | Precios, promociones, fraude y seguridad | Evaluar efectividad de promociones y palancas de precio; detectar patrones de fraude y balancear control con experiencia del cliente. | ¿Cómo fijo precios y promos que impulsan ventas sin destruir margen, y cómo protejo el negocio contra el fraude? |
+| 8 | 26-nov | Marcos | Presentaciones finales y examen | Evidenciar pensamiento analítico end-to-end mediante la presentación del proyecto final y consolidar comprensión individual mediante examen presencial. | ¿Puedo integrar todo el curso en una recomendación defendible frente a un líder de negocio? |
 
 El detalle de cada sesión (estructura, subtemas, actividad en clase, entregables, bibliografía específica) se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
-
-> **Sesión 1 co-impartida** por Eduardo y Marcos; distribución de temas entre ambos aún por definir.
 
 ## IV. Metodología del curso
 
@@ -79,6 +77,7 @@ El curso opera bajo un modelo de **aprendizaje activo** que combina exposición 
 
 - Clases y exposiciones donde se presentan conceptos, marcos y herramientas analíticas.
 - Análisis de casos de empresa (Seven-Eleven Japan, Tesco, Walmart, entre otros) y foros de discusión.
+- Simulaciones de negocio: Beer Game (sesión 4) y *Global Supply Chain Management Simulation* de Harvard Business Impact (sesión 6).
 - Talleres aplicados en clase donde los equipos aplican las herramientas de la sesión al caso del proyecto final.
 - **Quizzes en línea** aplicados al inicio de las sesiones 2 a 7 para consolidar el contenido de la sesión inmediatamente anterior.
 
@@ -122,8 +121,8 @@ La práctica de trabajo de campo es la **actividad formal que evalúa la compete
 
 - Descripción completa: [`examen-final.md`](./examen-final.md)
 - **Formato:** presencial, individual.
-- **Cobertura:** todo el curso, con énfasis especial en el contenido de la **sesión 7** (tecnologías emergentes), que es el único bloque no evaluado por quiz durante el curso.
-- **Fecha:** sesión 8 (10 de junio de 2026).
+- **Cobertura:** todo el curso, con énfasis especial en el contenido de la **sesión 7** (precios, promociones y fraude), que es el único bloque no evaluado por quiz durante el curso.
+- **Fecha:** sesión 8 (26 de noviembre de 2026).
 
 ### Proyecto final
 
@@ -146,27 +145,29 @@ Textos principales confirmados hasta hoy:
 
 ## VII. Calendario del curso
 
-Todas las sesiones son **presenciales** en **EG-215**, horario **18:30 – 21:45**. El día de la semana varía: sesiones 1 y 5 en jueves; sesiones 2, 3, 4, 6, 7 y 8 en miércoles.
+Todas las sesiones son en **jueves**, horario **18:30 – 21:45**. Son **presenciales** en **EG-215** *(salón por confirmar para esta edición)*, excepto la **sesión 3, que es en línea**. Entre la sesión 4 (15-oct) y la sesión 5 (5-nov) hay un receso de tres semanas.
 
 | # | Fecha | Día | Profesor | Contenido | Quiz aplicado | Entregables del estudiante |
 |---|---|---|---|---|---|---|
-| 1 | 23-abr | Jueves | Eduardo y Marcos | Fundamentos analíticos | — | Shortlist de empresas candidatas para el proyecto final |
-| 2 | 29-abr | Miércoles | Marcos | Segmentación y perfilado (CLV, RFM) | Quiz 1 — Sesión 1 | Hipótesis de segmentación + KPI principal y guardrail |
-| 3 | 6-may | Miércoles | Marcos | Ventas, inventario y pruebas A/B | Quiz 2 — Sesión 2 | 3 KPIs operativos de inventario + 1 hipótesis de mejora con experimento |
-| 4 | 13-may | Miércoles | Eduardo | SCM, inventario y diseño de red | Quiz 3 — Sesión 3 | Diagrama de red as-is del retailer + foro del caso 7-Eleven |
-| 5 | 21-may | Jueves | Eduardo | Transporte y logística omnicanal | Quiz 4 — Sesión 4 | Baseline de KPIs logísticos + escenario to-be de red/fulfillment |
-| 6 | 27-may | Miércoles | Marcos | Precios, promociones y fraude | Quiz 5 — Sesión 5 | Memo de promociones + plan de medición + consideraciones de fraude |
-| 7 | 3-jun | Miércoles | Eduardo | Tecnologías emergentes | Quiz 6 — Sesión 6 | 1-pager por equipo: caso de uso → MVP → KPIs → riesgos |
-| 8 | 10-jun | Miércoles | Eduardo + Marcos | Presentaciones finales + examen final | — | Reporte y presentación del proyecto final + examen presencial |
+| 1 | 24-sep | Jueves | Marcos | Fundamentos analíticos | — | Shortlist de empresas candidatas para el proyecto final |
+| 2 | 1-oct | Jueves | Marcos | Segmentación y perfilado (CLV, RFM) | Quiz 1 — Sesión 1 | Hipótesis de segmentación + KPI principal y guardrail |
+| 3 | 8-oct | Jueves (en línea) | Marcos | Ventas, inventario y pruebas A/B | Quiz 2 — Sesión 2 | 3 KPIs operativos de inventario + 1 hipótesis de mejora con experimento |
+| 4 | 15-oct | Jueves | Eduardo | SCM, inventario y diseño de red | Quiz 3 — Sesión 3 | Diagrama de red as-is del retailer + foro del caso 7-Eleven |
+| 5 | 5-nov | Jueves | Eduardo | Transporte y logística omnicanal | Quiz 4 — Sesión 4 | Baseline de KPIs logísticos + escenario to-be de red/fulfillment |
+| 6 | 12-nov | Jueves | Eduardo | Simulación de supply chain global (HBI) | Quiz 5 — Sesión 5 | Propuesta de mezcla de proveedores para una categoría del retailer |
+| 7 | 19-nov | Jueves | Marcos | Precios, promociones y fraude | Quiz 6 — Sesión 6 | Memo de promociones + plan de medición + consideraciones de fraude |
+| 8 | 26-nov | Jueves | Marcos | Presentaciones finales + examen final | — | Reporte y presentación del proyecto final + examen presencial |
 
 El detalle por sesión se encuentra en los archivos `sesion-1.md` a `sesion-8.md`.
 
 ### Fechas administrativas institucionales
 
+> ⚠ **Fechas por confirmar con coordinación.** Se estimaron con la misma regla de la edición anterior.
+
 | Hito | Ventana | Observaciones |
 |---|---|---|
-| Encuesta ECOA (evaluación del curso por el estudiante) | lun 8-jun-2026 → jue 11-jun-2026 | Abre 2 días antes de la sesión 8 y cierra 1 día después; se recuerda a las y los estudiantes completarla durante o al cierre de la S8 (10-jun). |
-| Envío de calificaciones finales (profesor) | sáb 13-jun-2026 → mar 16-jun-2026, 15:00 hrs | Tres días después de la sesión 8. Define el plazo interno para calificar el examen, cerrar el proyecto y capturar calificaciones. |
+| Encuesta ECOA (evaluación del curso por el estudiante) | mar 24-nov-2026 → vie 27-nov-2026 | Abre 2 días antes de la sesión 8 y cierra 1 día después; se recuerda a las y los estudiantes completarla durante o al cierre de la S8 (26-nov). |
+| Envío de calificaciones finales (profesor) | dom 29-nov-2026 → mié 2-dic-2026, 15:00 hrs | Tres días después de la sesión 8. Define el plazo interno para calificar el examen, cerrar el proyecto y capturar calificaciones. |
 
 ## VIII. Compromisos del estudiante
 

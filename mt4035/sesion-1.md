@@ -1,7 +1,7 @@
 # Sesión 1 — Fundamentos analíticos para retail y e-commerce
 
-**Fecha:** 23 de abril de 2026  
-**Profesores:** Eduardo y Marcos (co-impartida; distribución de temas por definir)  
+**Fecha:** 24 de septiembre de 2026  
+**Profesor:** Marcos  
 **Ancla del packet:** Fundamentos analíticos y marco metodológico del curso  
 **Ancla del plan de estudios:** Tema 1
 
@@ -27,7 +27,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Estructura en clase (sugerida)
 
-1. **Mapa del curso (10 min):** técnicas analíticas -> clientes -> operaciones -> supply chain -> tecnologías emergentes, y dónde se conecta cada sesión.
+1. **Mapa del curso (10 min):** técnicas analíticas -> clientes -> operaciones -> supply chain -> pricing y fraude, y dónde se conecta cada sesión.
 2. **Del dato a la decisión + taxonomía de KPIs (25 min):** fuentes, granularidades, familias de analítica y KPIs como mapa de resultados de negocio.
 3. **Caja de herramientas estadística — bloque conceptual (75 min):**
    - Variabilidad y distribuciones (qué fenómenos representan).
@@ -96,13 +96,13 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 - **Análisis de sobrevivencia (intuición):** herramientas pensadas para modelar **tiempo hasta un evento** (churn de cliente, tiempo a la siguiente compra, vida útil de un activo, tiempo a stock-out). Idea clave de "censura" (clientes que todavía no han churneado al cierre del análisis) y por qué usar regresiones ordinarias sobre estos tiempos lleva a conclusiones equivocadas.
 - **Experimentación A/B (vista conceptual):** aterrizaje de pruebas de hipótesis al diseño de experimentos controlados; grupos comparables, asignación aleatoria, métricas primarias declaradas antes del experimento.
 
-> *No traslapa con Sesión 3:* pronósticos operativos de demanda; *ni con Sesión 5:* KPIs logísticos y ruteo; *ni con Sesión 6:* detección de fraude.
+> *No traslapa con Sesión 3:* pronósticos operativos de demanda; *ni con Sesión 5:* KPIs logísticos y ruteo; *ni con Sesión 7:* detección de fraude.
 
 ### Bloque G — Cierre metodológico
 
 - **Optimización y modelos matemáticos (intuición):** cuándo el problema deja de ser "medir/predecir" y pasa a ser "decidir bajo restricciones" (trade-offs, costo-servicio); por qué aparece en inventarios, red y logística.
 - **Diccionario de métricas y calidad de datos:** definiciones, ventanas de tiempo, fuentes, owner, trazabilidad y consistencia; por qué sin esto cualquier análisis es frágil.
-- **Continuidad del curso:** cómo la caja de herramientas aterriza en segmentación/CLV (Sesión 2), demanda, inventario y A/B testing (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5), pricing y fraude (Sesión 6) y tecnologías emergentes (Sesión 7).
+- **Continuidad del curso:** cómo la caja de herramientas aterriza en segmentación/CLV (Sesión 2), demanda, inventario y A/B testing (Sesión 3), red e inventarios (Sesión 4), logística (Sesión 5), simulación de supply chain bajo incertidumbre (Sesión 6) y pricing y fraude (Sesión 7).
 
 ---
 

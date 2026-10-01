@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working in this
 Multi-course curriculum documentation repository for university courses taught by Eduardo and Marcos at EGADE. All content is in Spanish. There is no source code, build system, or test suite — this is a pure markdown documentation project.
 
 Currently hosts two courses:
-- **MT4035** — *Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro.* 2026 edition (23-abr – 10-jun), taught by Eduardo and Marcos. Content is mature.
+- **MT4035** — *Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro.* 2026 edition (24-sep – 26-nov, Thursdays), taught by Marcos (S1, S2, S3, S7, S8) and Eduardo (S4, S5, S6). Content is mature.
 - **MT4034** — *Aplicaciones, gestión y gobernanza de la inteligencia artificial.* 2026 edition (24-abr – 14-may), taught by Marcos (S1, S2, S4, S5, S6, S7) and Eduardo (S3, S8). Calendar, session ownership and per-session content are official; evaluation weights, rubrics, practice spec, exam spec and administrative details (trimestre, modalidad, room) are pending.
 
 Both courses are **independent in content** (syllabus, bibliography, instructors) but **share the same formal structure**: 8 sessions, 10-section EGADE syllabus, session template, evaluation artifacts, and editorial conventions. When extending the repository to a new course, clone the structure, not the content.
@@ -80,10 +80,10 @@ The **weighting of each component** is a draft in each course's `syllabus.md` se
 
 ## Instructors and session ownership (MT4035)
 
-- **Eduardo:** Sessions 4 (SCM / network design), 5 (logistics), 7 (emerging tech). Co-hosts sessions 1 and 8 with Marcos.
-- **Marcos:** Sessions 2 (segmentation / CLV), 3 (sales / inventory), 6 (pricing / fraud). Co-hosts sessions 1 and 8 with Eduardo.
-- **Session 1** (methodological foundations) is co-taught by both; topic distribution pending.
-- **Session 3** stays on 6-May with Marcos. The proposed swap to 5-May with Eduardo was dropped because Eduardo confirmed unavailability May 6–9 (travel).
+- **Eduardo:** Sessions 4 (SCM / network design), 5 (logistics), 6 (HBI Global Supply Chain Management Simulation).
+- **Marcos:** Sessions 1 (methodological foundations), 2 (segmentation / CLV), 3 (sales / inventory, online), 7 (pricing / fraud), 8 (presentations + final exam).
+- Sessions are single-instructor (no co-teaching in this edition).
+- The official calendar is the one in `mt4035/README.md` (updated by Marcos, 20-sep-2026). The previous emerging-tech session was dropped from the calendar and archived in `mt4035/archivo/sesion-tecnologias-emergentes.md` (reference only).
 
 ## Course progression (MT4035)
 
@@ -91,7 +91,9 @@ The **weighting of each component** is a draft in each course's `syllabus.md` se
 
 **Phase 2 — Supply chain and operations (Sessions 4–5):** Network design, inventory models (EOQ/ROP), fulfillment, last-mile logistics.
 
-**Phase 3 — Commercial and emerging tech (Sessions 6–7):** Pricing, promotions, fraud detection, IoT, AI/ML, automation, blockchain.
+**Phase 3 — Supply chain simulation (Session 6):** Harvard Business Impact *Global Supply Chain Management Simulation V2* (Hammond, product 8623): forecasting, global sourcing (cost vs. lead time), capacity, inventory under uncertain demand. The Beer Game remains in Session 4. Alignment analysis in `mt4035/analisis-simuladores-scm.md`.
+
+**Phase 4 — Commercial analytics (Session 7):** Pricing, promotions, fraud detection. Emphasized in the final exam (not covered by any quiz).
 
 **Capstone (Session 8):** Team presentations + individual in-person final exam.
 

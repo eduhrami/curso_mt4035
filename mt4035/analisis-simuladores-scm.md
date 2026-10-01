@@ -13,7 +13,7 @@
 - 🟡 **Parcial:** el tema aparece de forma implícita o solo en el debrief.
 - ❌ **No cubre:** el tema no aparece.
 
-> ⚠ **Borrador preliminar.** La descripción de GSCM se basa en el folleto oficial de HBP y en la ficha del producto. Antes de cerrar la decisión, hay que verificar en el *Teaching Note* (#8625) qué métricas reporta el simulador (por ejemplo, si muestra *fill rate* explícito).
+> ⚠ **Borrador preliminar.** La descripción de GSCM se basa en el folleto oficial de HBP y en la ficha del producto. Antes de cerrar la decisión, hay que verificar en el *Teaching Note* del simulador (disponible para profesores en HBP) qué métricas reporta el simulador (por ejemplo, si muestra *fill rate* explícito).
 
 ---
 
