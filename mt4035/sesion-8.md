@@ -1,7 +1,7 @@
 # Sesión 8 — Presentaciones finales + examen final
 
-**Fecha:** 10 de junio de 2026  
-**Profesores:** Eduardo y Marcos  
+**Fecha:** 26 de noviembre de 2026  
+**Profesor:** Marcos  
 **Ancla del packet:** Sesión 7 incluye presentaciones finales y examen final
 
 ---
@@ -23,7 +23,7 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 ## Formato
 
 - **Presentaciones por equipo:** ~15 minutos cada una
-- **Examen final presencial:** individual, cubre todo el curso con énfasis especial en el contenido de la **Sesión 7** (tecnologías emergentes), que es el único bloque no evaluado por quiz durante el curso. Ver [`examen-final.md`](./examen-final.md) para el detalle de formato, cobertura y criterios.
+- **Examen final presencial:** individual, cubre todo el curso con énfasis especial en el contenido de la **Sesión 7** (precios, promociones y fraude), que es el único bloque no evaluado por quiz durante el curso. Ver [`examen-final.md`](./examen-final.md) para el detalle de formato, cobertura y criterios.
 - **Orden:** presentaciones y examen pueden correrse en cualquier orden a criterio del profesor.
 - **Nota:** la sesión 8 no tiene quiz inicial.
 
@@ -38,8 +38,9 @@ Al finalizar la sesión, las y los estudiantes serán capaces de:
 
 ## Fechas administrativas posteriores a la sesión
 
-- **Encuesta ECOA:** abierta del lun 8-jun-2026 al jue 11-jun-2026. La ventana está abierta durante esta sesión y cierra un día después — recordar a las y los estudiantes completarla antes de salir del aula.
-- **Envío de calificaciones finales (profesor):** del sáb 13-jun-2026 al mar 16-jun-2026 a las 15:00 hrs. Plazo interno para calificar el examen presencial, cerrar el proyecto integrador y capturar calificaciones en el sistema institucional.
+- ⚠ **Fechas por confirmar con coordinación.** Estimadas con la misma regla de la edición anterior.
+- **Encuesta ECOA:** abierta del mar 24-nov-2026 al vie 27-nov-2026. La ventana está abierta durante esta sesión y cierra un día después — recordar a las y los estudiantes completarla antes de salir del aula.
+- **Envío de calificaciones finales (profesor):** del dom 29-nov-2026 al mié 2-dic-2026 a las 15:00 hrs. Plazo interno para calificar el examen presencial, cerrar el proyecto integrador y capturar calificaciones en el sistema institucional.
 
 Referencia completa: sección VII del [`syllabus.md`](./syllabus.md#fechas-administrativas-institucionales).
 
