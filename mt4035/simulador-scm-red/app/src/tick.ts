@@ -46,11 +46,16 @@ export function demandMix(s: ScmState, p: Params): Record<Category, number> {
   return mix;
 }
 
+/** Claves de métricas por categoría precalculadas (evita armar cadenas en el lazo interno). */
+const CK = Object.fromEntries(
+  CATEGORIES.map((c) => [c, { demand: `demand_${c}`, sold: `sold_${c}`, waste: `waste_${c}`, received: `received_${c}`, fr: `fr_${c}`, wst: `waste_${c}`, osa: `osa_${c}`, stops: `stops_${c}`, hours: `routeHours_${c}`, life: `remainingLife_${c}` }]),
+) as Record<Category, Record<"demand" | "sold" | "waste" | "received" | "fr" | "wst" | "osa" | "stops" | "hours" | "life", string>>;
+
 const KEYS = [
   "stores", "demand", "sold", "lost", "subst", "waste", "excursion", "received", "invIni", "invFin",
   "revenue", "cogs", "gm", "wasteCost", "transport", "handling", "dcFixed", "receivingCost", "carrying", "itOpex",
   "deliveries", "otifDeliveries", "invValue", "dcInvValue", "ltWeighted", "ltSdWeighted", "bwrWeighted", "ofrProduct",
-  "freshRouteHoursW", "freshDeliveries", "freshRouteHours", "trucksPerStoreDay", "dcDistKmW", "dcDeliveries", "dcRoutes", "trustW", "dcUtilMax", "deltaDcMeanFresh", "ebitda",
+  "freshRouteHoursW", "freshDeliveries", "freshRouteHours", "trucksPerStoreDay", "dcDistKmW", "dcDeliveries", "dcRoutes", "trustW", "storeSsUnits", "dcSsUnits", "dcUtilMax", "deltaDcMeanFresh", "ebitda",
 ] as const;
 
 export function scmTick(ctx: Ctx): void {
@@ -61,14 +66,15 @@ export function scmTick(ctx: Ctx): void {
   const m = ctx.metrics;
   for (const k of KEYS) m[k] = 0;
   for (const c of CATEGORIES) {
-    m[`demand_${c}`] = 0;
-    m[`sold_${c}`] = 0;
-    m[`waste_${c}`] = 0;
-    m[`received_${c}`] = 0;
+    m[CK[c].demand] = 0;
+    m[CK[c].sold] = 0;
+    m[CK[c].waste] = 0;
+    m[CK[c].received] = 0;
   }
   m.ofrProduct = 1;
 
   const prev = s.flags;
+  s.highWaste = { fresh: [], chilled: [], ambient: [], frozen: [] };
   s.flags = { r01: false, r02: perCat(() => s.zones.map(() => false)), r04: false, r07: false };
   const sh = s.shocks;
 
@@ -103,18 +109,18 @@ export function scmTick(ctx: Ctx): void {
   const dcs = activeDcs(s, s.epoch);
   const assign = s.zones.map((z) => (z.stores > 0 ? assignDc(z, dcs, s.zones, p, r.sideKm) : null));
   const geo = s.zones.map((z) => zoneGeometry(z, p, r.sideKm));
-  const demandRate = s.zones.map((z, zi) =>
-    perCat((c) => {
-      if (z.stores <= 0) return 0;
-      const assortMult = (d.assortment.skus / p.assortment.refSkus) ** p.assortment.demandElasticity * (d.assortment.local && d.info !== "basic" ? 1 + p.assortment.localDemandGain : 1);
-      return (
-        r.visitsPerDay * r.unitsPerVisit * mix[c] * growth * (1 + amp * p.categories[c].seasonMult * season) * z.trust * z.competition *
-        densityDemandMult(geo[zi]!.rho, p) * assortMult * sh.demandMult[c]
-      );
-    }),
-  );
+  const assortMult = (d.assortment.skus / p.assortment.refSkus) ** p.assortment.demandElasticity * (d.assortment.local && d.info !== "basic" ? 1 + p.assortment.localDemandGain : 1);
+  const catFactor = perCat((c) => mix[c] * (1 + amp * p.categories[c].seasonMult * season) * sh.demandMult[c]);
+  const demandRate = s.zones.map((z, zi) => {
+    const base = z.stores > 0 ? r.visitsPerDay * r.unitsPerVisit * growth * z.trust * z.competition * densityDemandMult(geo[zi]!.rho, p) * assortMult : 0;
+    return { fresh: base * catFactor.fresh, chilled: base * catFactor.chilled, ambient: base * catFactor.ambient, frozen: base * catFactor.frozen };
+  });
   const usesDc = (zi: number, c: Category) => d.flows[c] === "dc" && assign[zi] !== null;
   const dcCases = new Map<string, number>();
+  const dcStores = new Map<string, number>();
+  s.zones.forEach((z, zi) => {
+    if (assign[zi]) dcStores.set(assign[zi]!.dc.dc.id, (dcStores.get(assign[zi]!.dc.dc.id) ?? 0) + z.stores);
+  });
   s.zones.forEach((z, zi) => {
     for (const c of CATEGORIES) {
       if (!usesDc(zi, c)) continue;
@@ -127,7 +133,9 @@ export function scmTick(ctx: Ctx): void {
   m.dcUtilMax = Math.max(0, ...dcUtil.values());
 
   // Costos fijos de CD
-  for (const a of dcs) m.dcFixed! += p.dc.fixedWeekly[a.size] * p.dc.typeMult[a.type] * r.realEstate;
+  // Solo la parte inmobiliaria del costo fijo escala con el índice regional; personal y operación no.
+  const reShare = p.dc.fixedRealEstateShare;
+  for (const a of dcs) m.dcFixed! += p.dc.fixedWeekly[a.size] * p.dc.typeMult[a.type] * (1 - reShare + reShare * r.realEstate);
 
   const freshDelta: number[] = [];
   const catInFull = perCat(() => ({ num: 0, den: 0 }));
@@ -269,7 +277,9 @@ export function scmTick(ctx: Ctx): void {
       const received = Math.max(0, sold + wasteUnits + excUnits + target - invIni);
       const invFin = invIni + received - sold - wasteUnits - excUnits;
       s.inventory[c][zi] = invFin;
-      s.lastWaste[c][zi] = received > 0 ? (wasteUnits + excUnits) / received : 0;
+      const lw = received > 0 ? (wasteUnits + excUnits) / received : 0;
+      s.lastWaste[c][zi] = lw;
+      if (lw > p.inventory.r02WasteThreshold) s.highWaste[c].push(zi);
 
       // Dinero
       const unitCost = cat.price * (1 - cat.margin);
@@ -281,11 +291,15 @@ export function scmTick(ctx: Ctx): void {
       if (viaDc) {
         m.handling! += (received / cat.unitsPerCase) * p.dc.handlingPerCase[type!] * (r.wage / 16);
         if (type === "stocking") {
-          const dcUnits = (p.dc.stockingCycleDays / 2 + d.dcSafetyDays) * mu * n;
-          m.dcInvValue! += dcUnits * unitCost;
+          // Pooling (R-11): el stock de seguridad del CD protege la demanda agregada de sus tiendas;
+          // con demandas independientes, σ crece con √n, así que por tienda se divide entre √n.
+          const pooled = d.dcSafetyDays * mu * n / Math.sqrt(Math.max(1, dcStores.get(dcA!.dc.id) ?? 1));
+          m.dcInvValue! += ((p.dc.stockingCycleDays / 2) * mu * n + pooled) * unitCost;
         }
       }
       m.invValue! += invFin * unitCost;
+      m.storeSsUnits! += n * ss;
+      if (viaDc && type === "stocking") m.dcSsUnits! += (d.dcSafetyDays * mu * n) / Math.sqrt(Math.max(1, dcStores.get(dcA!.dc.id) ?? 1));
       m.ltWeighted! += leadDays * demand;
       m.ltSdWeighted! += leadDays * ltCv * demand;
       m.bwrWeighted! += bwr[c] * demand;
@@ -299,19 +313,22 @@ export function scmTick(ctx: Ctx): void {
       m.received! += received;
       m.invIni! += invIni;
       m.invFin! += invFin;
-      m[`demand_${c}`]! += demand;
-      m[`sold_${c}`]! += sold;
-      m[`waste_${c}`]! += wasteUnits + excUnits;
-      m[`received_${c}`]! += received;
+      const ck = CK[c];
+      m[ck.demand]! += demand;
+      m[ck.sold]! += sold;
+      m[ck.waste]! += wasteUnits + excUnits;
+      m[ck.received]! += received;
       zoneDemand += demand;
       zoneSold += sold;
 
-      ctx.trace(`fr_${c}`, fr);
-      ctx.trace(`waste_${c}`, waste);
-      ctx.trace(`osa_${c}`, osa);
-      ctx.trace(`stops_${c}`, rt.stops);
-      ctx.trace(`routeHours_${c}`, rt.routeHours);
-      ctx.trace(`remainingLife_${c}`, remaining);
+      if (ctx.tracing) {
+        ctx.trace(ck.fr, fr);
+        ctx.trace(ck.wst, waste);
+        ctx.trace(ck.osa, osa);
+        ctx.trace(ck.stops, rt.stops);
+        ctx.trace(ck.hours, rt.routeHours);
+        ctx.trace(ck.life, remaining);
+      }
     }
 
     // Entregas directas no consolidables (revistas, tabaco)

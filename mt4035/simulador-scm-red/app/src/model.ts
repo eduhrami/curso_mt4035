@@ -22,14 +22,14 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
   const r = p.regions[s.region];
 
   for (const dc of s.dcs) {
-    if (dc.activeFrom === e) ctx.log({ kind: "activation", id: "D-01", kpis: ["CTS_PCT", "OTIF", "OSA", "WASTE", "LT"], drivers: [{ label: `${dc.id} entra en operación (${dc.type}, ${dc.size})`, ref: "D-01" }] });
-    if (dc.typeFrom === e) ctx.log({ kind: "activation", id: "D-03", kpis: ["WASTE", "OSA", "ITR", "CTS_PCT"], drivers: [{ label: `${dc.id} opera como ${dc.type}`, ref: "D-03" }] });
-    if (dc.sizeFrom === e) ctx.log({ kind: "activation", id: "D-04", kpis: ["OTIF", "WASTE"], drivers: [{ label: `${dc.id} amplía a ${dc.size}`, ref: "D-04" }] });
+    if (dc.activeFrom === e) ctx.log({ kind: "activation", id: "D-01", kpis: ["CTS_PCT", "CTS_STORE", "OTIF", "OSA", "WASTE", "LT", "TRUCKS", "ITR", "BWR", "LOST_SALES", "SALES", "EBITDA_PCT"], drivers: [{ label: `${dc.id} entra en operación (${dc.type}, ${dc.size})`, ref: "D-01" }] });
+    if (dc.typeFrom === e) ctx.log({ kind: "activation", id: "D-03", kpis: ["WASTE", "OSA", "ITR", "CTS_PCT", "TRUCKS", "LOST_SALES", "EBITDA_PCT"], drivers: [{ label: `${dc.id} opera como ${dc.type}`, ref: "D-03" }] });
+    if (dc.sizeFrom === e) ctx.log({ kind: "activation", id: "D-04", kpis: ["OTIF", "WASTE", "OSA", "CTS_PCT", "EBITDA_PCT"], drivers: [{ label: `${dc.id} amplía a ${dc.size}`, ref: "D-04" }] });
   }
 
   // Madurez del sistema de información (D-30): 0 al implantarse, +0.5 por época.
   const maturity = s.dec.info === "basic" ? 1 : Math.min(1, Math.max(0, (e - s.infoSince) * p.info.maturityPerEpoch));
-  if (maturity !== s.infoMaturity) ctx.log({ kind: "trend", id: "D-30", kpis: ["OSA", "ITR", "WASTE", "LOST_SALES"], drivers: [{ label: "madurez del sistema de información", value: maturity, ref: "D-30" }] });
+  if (maturity !== s.infoMaturity) ctx.log({ kind: "trend", id: "D-30", kpis: ["OSA", "ITR", "WASTE", "LOST_SALES", "SALES", "EBITDA_PCT"], drivers: [{ label: "madurez del sistema de información", value: maturity, ref: "D-30" }] });
   s.infoMaturity = maturity;
 
   // Tiendas: ritmo anual (D-06) + lotes (D-08) que vencen esta época.
@@ -56,7 +56,7 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
     });
     if (byRate > 0) ctx.charge("capex", byRate * p.stores.capex * r.storeCapexMult, "D-06", "aperturas por ritmo anual");
     if (byRate < 0) ctx.charge("opex", -byRate * p.stores.closureCost, "D-06", "cierres por ritmo anual");
-    ctx.log({ kind: "trend", id: delta === lots ? "D-08" : "D-06", kpis: ["SALES", "DEMAND", "STORES", "CTS_STORE"], drivers: [{ label: "tiendas abiertas/cerradas", value: delta }] });
+    ctx.log({ kind: "trend", id: delta === lots ? "D-08" : "D-06", kpis: ["SALES", "DEMAND", "STORES", "CTS_STORE", "CTS_PCT", "EBITDA_PCT", "TRUCKS", "ITR"], drivers: [{ label: "tiendas abiertas/cerradas", value: delta }] });
   }
 
   // Dispersión (D-05): solo cambia con aperturas; las tiendas nuevas se ubican según la estrategia.
@@ -69,8 +69,20 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
   }
 
   if (s.market.demographics === "aging") s.mixShift += p.markets.agingFreshShiftPerYear / 4;
-  if (s.market.growth !== "stagnant" || s.market.seasonality === "marked") {
-    ctx.log({ kind: "trend", id: "E-20", kpis: ["DEMAND", "SALES"], drivers: [{ label: "crecimiento y estacionalidad del mercado", ref: "E-20" }] });
+  // Estacionalidad y crecimiento mueven la demanda y, con costos fijos, los KPIs relativos a ventas.
+  const amp = p.markets.seasonality[s.market.seasonality];
+  const growth = p.markets.growth[s.market.growth];
+  if (amp > 0 || growth > 0) {
+    const quarter = ["T1", "T2", "T3", "T4"][e % 4];
+    ctx.log({
+      kind: "trend",
+      id: "E-20",
+      kpis: ["DEMAND", "SALES", "CTS_PCT", "CTS_STORE", "EBITDA_PCT", "ITR", "LOST_SALES", "OSA", "WASTE"],
+      drivers: [
+        { label: `estacionalidad (${quarter}, amplitud ±${Math.round(amp * 100)}%)`, ref: "E-21" },
+        { label: `crecimiento anual de la demanda ${Math.round(growth * 100)}%`, ref: "E-20" },
+      ],
+    });
   }
 }
 

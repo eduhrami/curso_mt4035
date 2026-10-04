@@ -143,6 +143,8 @@ export interface ScmState {
   inventory: PerCat<number[]>;
   /** Merma de la semana anterior por categoría y zona (para R-02). */
   lastWaste: PerCat<number[]>;
+  /** Zonas con merma semanal > umbral de R-02 (las calcula el tick). */
+  highWaste: PerCat<number[]>;
   flags: { r01: boolean; r02: PerCat<boolean[]>; r04: boolean; r07: boolean };
   shocks: Shocks;
   mixShift: number;

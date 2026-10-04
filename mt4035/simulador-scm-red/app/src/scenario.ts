@@ -125,6 +125,7 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     pendingOpenings: [],
     inventory: perCat(() => zones.map(() => -1)), // -1: se inicializa al nivel objetivo en el primer tick
     lastWaste: perCat(() => zones.map(() => 0)),
+    highWaste: perCat(() => [] as number[]),
     flags: { r01: false, r02: perCat(() => zones.map(() => false)), r04: false, r07: false },
     shocks: emptyShocks(),
     mixShift: 0,

@@ -14,13 +14,25 @@ Implementación de la fase **F2** ([ruta](../../simuladores-comun/decisiones-arq
 | `src/kpis.ts` · `src/score.ts` | KPIs por época · puntaje por estrategia con guardrails | §7 |
 | `src/model.ts` | `ModelDef`, `createScmEngine()` y `scmConfig()` | — |
 
+## Auto-juego y calibración (F3)
+
+- `autoplay/bots.ts`: bots A–I (casos de prueba §11.1) y el espacio de búsqueda de BOT-H.
+- `autoplay/properties.ts`: propiedades SCM-AUT.
+- `autoplay/adapter.ts`: adaptador para [`@mt4035/sim-tools`](../../simuladores-comun/tools/README.md).
+
+```bash
+npm run autoplay -- --seeds 200 --search   # reporte en autoplay/reports/latest.md
+npm run replay -- corrida.json
+npm run aggregate -- carpeta/ --out resumen.csv
+```
+
 ## Pruebas
 
 ```bash
 npm install
-npm test          # casos P1: INV, CAU, ESC, REG, EVT, LAG, SCO, PER
+npm test          # casos P1, P2 y P3: INV, CAU, ESC, REG, EVT, LAG, SCO, PER
 npm run test:mc   # Monte Carlo de frecuencias de eventos (EVT-01, EVT-02)
 npm run diag      # imprime KPIs de corridas de referencia (calibración)
 ```
 
-Las pruebas siguen las claves de [casos-de-prueba.md](../casos-de-prueba.md). Las P2/P3 y las de auto-juego (AUT) quedan para la fase F3.
+Las pruebas siguen las claves de [casos-de-prueba.md](../casos-de-prueba.md). Las propiedades de auto-juego (AUT) se evalúan con `npm run autoplay`.

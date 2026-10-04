@@ -27,9 +27,14 @@ describe("SCM-REG (P1)", () => {
   it("REG-02 R-02: merma 5.9% no dispara; 6.1% dispara y la OSA de la categoría cae la semana siguiente", () => {
     const s = kaigan();
     const zi = s.zones.findIndex((z) => z.stores > 0);
-    s.lastWaste.fresh[zi] = 0.059;
+    // El tick marca en highWaste las zonas sobre el umbral; aquí se replica su criterio.
+    const mark = (w: number) => {
+      s.lastWaste.fresh[zi] = w;
+      s.highWaste.fresh = w > params.inventory.r02WasteThreshold ? [zi] : [];
+    };
+    mark(0.059);
     expect(rule("R-02").when(fakeCtx(s))).toBe(false);
-    s.lastWaste.fresh[zi] = 0.061;
+    mark(0.061);
     const ctx = fakeCtx(s);
     expect(rule("R-02").when(ctx)).toBe(true);
     rule("R-02").apply(ctx);

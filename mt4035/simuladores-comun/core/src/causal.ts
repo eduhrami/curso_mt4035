@@ -23,10 +23,17 @@ export interface CoverageResult {
 }
 
 /**
- * Proporción de cambios relevantes de KPI (|Δ| relativo > threshold entre épocas consecutivas)
- * que tienen al menos una causa registrada en la época del cambio. Criterio SCM-AUT-14 / LOG-AUT-16.
+ * Proporción de cambios relevantes de KPI que tienen al menos una causa registrada en la época del
+ * cambio. Criterio SCM-AUT-14 / LOG-AUT-16. Un cambio es relevante si |Δ| relativo > threshold
+ * entre épocas consecutivas y, si se da minAbs[kpi], también |Δ| absoluto > minAbs[kpi] (evita
+ * contar como "sin explicar" el ruido en KPIs de nivel bajo, p. ej. una merma de 1.2% → 1.4%).
  */
-export function explainabilityCoverage(history: readonly EpochReport[], threshold = 0.1, kpis?: readonly string[]): CoverageResult {
+export function explainabilityCoverage(
+  history: readonly EpochReport[],
+  threshold = 0.1,
+  kpis?: readonly string[],
+  minAbs: Readonly<Record<string, number>> = {},
+): CoverageResult {
   let total = 0;
   let explained = 0;
   const unexplained: UnexplainedChange[] = [];
@@ -38,7 +45,7 @@ export function explainabilityCoverage(history: readonly EpochReport[], threshol
       const b = cur.kpis[kpi];
       if (a === undefined || b === undefined || !Number.isFinite(a) || !Number.isFinite(b)) continue;
       const rel = Math.abs(b - a) / Math.max(Math.abs(a), 1e-9);
-      if (rel <= threshold) continue;
+      if (rel <= threshold || Math.abs(b - a) <= (minAbs[kpi] ?? 0)) continue;
       total++;
       if (explainKpi(cur, kpi).length > 0) explained++;
       else unexplained.push({ epoch: cur.epoch, label: cur.label, kpi, from: a, to: b, relChange: rel });

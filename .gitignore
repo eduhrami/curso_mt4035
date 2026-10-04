@@ -20,3 +20,7 @@ mt4035/references/
 node_modules/
 dist/
 coverage/
+
+# Reportes de auto-juego con fecha (se conserva autoplay/reports/latest.md)
+mt4035/**/autoplay/reports/coherencia-*
+mt4035/**/autoplay/reports/registros-*

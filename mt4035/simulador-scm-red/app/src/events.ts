@@ -19,7 +19,7 @@ const totalSuppliers = (ctx: Ctx) => CATEGORIES.reduce((a, c) => a + ctx.params.
 export const events: Ev[] = [
   {
     id: "X-01",
-    kpis: ["WASTE", "WASTE_FRESH", "OSA_FRESH", "OSA"],
+    kpis: ["WASTE", "WASTE_FRESH", "OSA_FRESH", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
     pBase: (ctx) => ev(ctx.params)["X-01"].pBase,
     modifiers: [
       { label: "rutas largas con frescos (R-01)", ref: "R-01", factor: (ctx) => ev(ctx.params)["X-01"].longRouteMult, when: (ctx) => ctx.state.flags.r01 },
@@ -45,7 +45,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-02",
-    kpis: ["OSA", "OTIF", "LOST_SALES"],
+    kpis: ["OSA", "OTIF", "LOST_SALES", "EBITDA_PCT", "SALES"],
     pBase: (ctx) => {
       const x = ev(ctx.params)["X-02"];
       const climate = ctx.params.regions[ctx.state.region].climate as keyof typeof x.season;
@@ -70,7 +70,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-03",
-    kpis: ["OSA", "OTIF", "CTS_PCT"],
+    kpis: ["OSA", "OTIF", "CTS_PCT", "EBITDA_PCT", "LOST_SALES", "SALES"],
     pBase: (ctx) => (ev(ctx.params)["X-03"].regions.includes(ctx.state.region) ? ev(ctx.params)["X-03"].pBase : 0),
     onStart: (ctx, e) => {
       const dcs = activeDcs(ctx.state, ctx.state.epoch);
@@ -91,7 +91,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-04",
-    kpis: ["OSA", "OTIF", "LOST_SALES"],
+    kpis: ["OSA", "OTIF", "LOST_SALES", "EBITDA_PCT", "SALES"],
     pBase: (ctx) => ev(ctx.params)["X-04"].pBase[ctx.state.market.supplierReliability],
     modifiers: [
       { label: "cross-dock sin amortiguador (R-06)", ref: "R-06", factor: (ctx) => ev(ctx.params)["X-04"].crossdockMult, when: (ctx) => usesDc(ctx) && activeDcs(ctx.state, ctx.state.epoch).every((d) => d.type !== "stocking") },
@@ -110,7 +110,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-05",
-    kpis: ["OSA", "LOST_SALES", "SALES"],
+    kpis: ["OSA", "LOST_SALES", "SALES", "EBITDA_PCT"],
     pBase: (ctx) => (ev(ctx.params)["X-05"].season.includes(quarter(ctx)) ? ev(ctx.params)["X-05"].pBase : 0),
     duration: () => 2,
     perTick: (ctx) => {
@@ -126,7 +126,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-06",
-    kpis: ["SALES", "DEMAND"],
+    kpis: ["SALES", "DEMAND", "EBITDA_PCT"],
     pBase: (ctx) => ev(ctx.params)["X-06"].pBase[ctx.state.market.competition],
     modifiers: [
       { label: "baja densidad propia (sin dominancia)", ref: "D-05", factor: (ctx) => ev(ctx.params)["X-06"].lowDensityMult, when: (ctx) => ctx.state.dec.openingStrategy !== "dominance" },
@@ -142,7 +142,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-07",
-    kpis: ["OTIF", "OSA"],
+    kpis: ["OTIF", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
     pBase: (ctx) => ev(ctx.params)["X-07"].pBase[ctx.state.market.labor],
     modifiers: [{ label: "3PL dedicado", ref: "D-13", factor: 0.6, when: (ctx) => ctx.state.dec.fleet === "dedicated" }],
     duration: (sev) => 2 + Math.round(2 * sev),
@@ -153,7 +153,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-08",
-    kpis: ["OSA", "LOST_SALES"],
+    kpis: ["OSA", "LOST_SALES", "EBITDA_PCT", "SALES"],
     pBase: (ctx) => ev(ctx.params)["X-08"].pBase,
     modifiers: [
       { label: "sistema nuevo (madurez < 50%)", ref: "D-30", factor: (ctx) => ev(ctx.params)["X-08"].immatureMult, when: (ctx) => ctx.state.dec.info !== "basic" && ctx.state.infoMaturity < 0.5 },
@@ -167,7 +167,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-09",
-    kpis: ["OSA", "SALES"],
+    kpis: ["OSA", "SALES", "EBITDA_PCT", "LOST_SALES"],
     pBase: (ctx) => ev(ctx.params)["X-09"].pBase,
     modifiers: [
       { label: "muchos proveedores pequeños", ref: "E-08", factor: (ctx) => ev(ctx.params)["X-09"].manySuppliersMult, when: (ctx) => totalSuppliers(ctx) > 40 },
@@ -194,7 +194,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-11",
-    kpis: ["OTIF", "WASTE", "CTS_PCT"],
+    kpis: ["OTIF", "WASTE", "CTS_PCT", "EBITDA_PCT"],
     pBase: (ctx) => (ev(ctx.params)["X-11"].regions.includes(ctx.state.region) ? ev(ctx.params)["X-11"].pBase : 0),
     modifiers: [{ label: "entregas en horas valle", ref: "D-15", factor: 0.6, when: (ctx) => ctx.state.dec.window === "offpeak" }],
     duration: (sev) => 2 + Math.round(2 * sev),
@@ -205,7 +205,7 @@ export const events: Ev[] = [
   },
   {
     id: "X-12",
-    kpis: ["CTS_PCT", "OTIF"],
+    kpis: ["CTS_PCT", "OTIF", "EBITDA_PCT"],
     pBase: (ctx) => (ctx.params.regions[ctx.state.region].regulatedLoading ? ev(ctx.params)["X-12"].pBase : 0),
     modifiers: [{ label: "entregas en horas valle", ref: "D-15", factor: 0.6, when: (ctx) => ctx.state.dec.window === "offpeak" }],
     duration: () => 4,
