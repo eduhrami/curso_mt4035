@@ -1,0 +1,47 @@
+{
+  "name": "@mt4035/sim-lastmile",
+  "version": "0.1.0",
+  "description": "Simulador Log\u00edstica y \u00daltima Milla (MT4035 S5): modelo Mercado Alba sobre sim-core.",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run --exclude test/**/*.mc.test.ts",
+    "test:mc": "vitest run .mc.test.ts",
+    "test:all": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "diag": "vitest run --config vitest.diag.config.ts",
+    "autoplay": "tsx autoplay/cli.ts autoplay",
+    "replay": "tsx autoplay/cli.ts replay",
+    "aggregate": "tsx autoplay/cli.ts aggregate",
+    "perf": "tsx scripts/perf.ts",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "e2e": "vite build && playwright test"
+  },
+  "dependencies": {
+    "@mt4035/sim-core": "file:../../simuladores-comun/core",
+    "@preact/signals": "^2.11.3",
+    "chart.js": "^4.5.1",
+    "preact": "^10.29.8",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@mt4035/sim-tools": "file:../../simuladores-comun/tools",
+    "@mt4035/ui-kit": "file:../../simuladores-comun/ui-kit",
+    "@playwright/test": "^1.63.0",
+    "@preact/preset-vite": "^2.10.6",
+    "@testing-library/preact": "^3.2.4",
+    "@types/node": "^20.19.43",
+    "fast-check": "^4.10.2",
+    "happy-dom": "^20.14.5",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.2",
+    "vite-plugin-singlefile": "^2.3.3",
+    "vitest": "^4.1.11"
+  }
+}

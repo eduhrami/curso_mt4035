@@ -1,0 +1,1215 @@
+{
+  "version": "p1",
+  "note": "⚠ Calibración preliminar (F5). Se ajusta con auto-juego en F6. Montos en USD; tiempos en horas salvo indicación.",
+  "epochs": 36,
+  "daysPerMonth": [
+    31,
+    28,
+    31,
+    30,
+    31,
+    30,
+    31,
+    31,
+    30,
+    31,
+    30,
+    31
+  ],
+  "operatingHours": 12,
+  "shiftHours": 8,
+  "kTsp": 0.75,
+  "weekdayMult": [
+    1.25,
+    1.0,
+    0.95,
+    0.95,
+    1.0,
+    0.9,
+    0.95
+  ],
+  "quincena": {
+    "days": [
+      14,
+      15,
+      29,
+      30
+    ],
+    "mult": 1.1
+  },
+  "peaks": [
+    {
+      "id": "hotsale",
+      "name": "Hot Sale",
+      "month": 4,
+      "startDay": 22,
+      "days": 9
+    },
+    {
+      "id": "school",
+      "name": "Regreso a clases",
+      "month": 7,
+      "startDay": 10,
+      "days": 14
+    },
+    {
+      "id": "buenfin",
+      "name": "Buen Fin",
+      "month": 10,
+      "startDay": 14,
+      "days": 4
+    },
+    {
+      "id": "xmas",
+      "name": "Navidad",
+      "month": 11,
+      "startDay": 1,
+      "days": 23
+    }
+  ],
+  "peakMagnitude": {
+    "min": 1.3,
+    "max": 2.5
+  },
+  "levels": {
+    "express": {
+      "label": "Express (< 2 h)",
+      "promiseHours": 1.5,
+      "pref": 0.15,
+      "speed": 1.0
+    },
+    "sameday": {
+      "label": "Mismo día",
+      "promiseHours": 6,
+      "pref": 0.3,
+      "speed": 0.7
+    },
+    "nextday": {
+      "label": "Día siguiente",
+      "promiseHours": 24,
+      "pref": 0.4,
+      "speed": 0.4
+    },
+    "standard": {
+      "label": "Estándar (2–4 días)",
+      "promiseHours": 72,
+      "pref": 0.15,
+      "speed": 0.0
+    }
+  },
+  "windows": {
+    "1h": {
+      "count": 12,
+      "hours": 1,
+      "presenceGain": 0.13
+    },
+    "2h": {
+      "count": 6,
+      "hours": 2,
+      "presenceGain": 0.1
+    },
+    "4h": {
+      "count": 3,
+      "hours": 4,
+      "presenceGain": 0.06
+    },
+    "day": {
+      "count": 1,
+      "hours": 12,
+      "presenceGain": 0.0
+    }
+  },
+  "windowFragmentationExp": 0.6,
+  "cutoff": {
+    "12": {
+      "demand": 0.0,
+      "pmLoad": 0.0
+    },
+    "14": {
+      "demand": 0.03,
+      "pmLoad": 0.05
+    },
+    "16": {
+      "demand": 0.06,
+      "pmLoad": 0.12
+    }
+  },
+  "segmentation": {
+    "none": 1.0,
+    "customer": 0.9,
+    "category": 0.9,
+    "zone": 0.8
+  },
+  "nodes": {
+    "cd": {
+      "pickCost": 1.4,
+      "inFull": 0.985,
+      "capacity": {
+        "low": 2000,
+        "mid": 3500,
+        "high": 5000
+      },
+      "fixedMonthly": {
+        "low": 0,
+        "mid": 15000,
+        "high": 35000
+      },
+      "capitalPerOrder": 0.4
+    },
+    "store": {
+      "pickCost": 2.6,
+      "inFull": 0.93,
+      "ordersPerPickerHour": 8,
+      "pickers": {
+        "2": 2,
+        "4": 4,
+        "6": 6
+      },
+      "staffHours": 120,
+      "pickErrorBase": 0.01,
+      "pickErrorOverload": 0.04,
+      "osaBase": 0.95,
+      "osaTheta": 0.25,
+      "capitalPerOrder": 0.6
+    },
+    "dark": {
+      "pickCost": 1.6,
+      "inFull": 0.97,
+      "capacity": 900,
+      "fixedMonthly": 20000,
+      "capex": 600000,
+      "lag": 3,
+      "capitalPerOrder": 0.5,
+      "coverZones": 2,
+      "neighborKm": 5
+    },
+    "mfc": {
+      "pickCost": 0.9,
+      "inFull": 0.985,
+      "capacity": 2500,
+      "fixedMonthly": 30000,
+      "capex": 4000000,
+      "lag": 6,
+      "capitalPerOrder": 0.45,
+      "coverZones": 4,
+      "neighborKm": 6
+    },
+    "locker": {
+      "capex": 8000,
+      "fixedMonthly": 250,
+      "ordersPerDay": 60,
+      "stopMinutes": 10,
+      "lag": 1
+    },
+    "hub": {
+      "capex": 150000,
+      "fixedMonthly": 12000,
+      "linehaulPerOrder": 0.6,
+      "localKm": 8,
+      "lag": 2
+    }
+  },
+  "pickWaitBase": 0.5,
+  "highUtil": 0.85,
+  "bopisShare": {
+    "urban": 0.12,
+    "suburban": 0.15,
+    "city2": 0.2,
+    "rural": 0.1
+  },
+  "lockerPref": 0.3,
+  "vehicles": {
+    "van": {
+      "label": "Camioneta de combustión",
+      "capacity": 55,
+      "costPerKm": 0.22,
+      "dayCost": 60,
+      "emission": 0.25,
+      "speedMult": 1.0,
+      "restricted": true,
+      "rangeKm": 9999,
+      "coldThreshold": 0
+    },
+    "ev": {
+      "label": "Camioneta eléctrica",
+      "capacity": 50,
+      "costPerKm": 0.06,
+      "dayCost": 80,
+      "emission": 0.05,
+      "speedMult": 1.0,
+      "restricted": false,
+      "rangeKm": 160,
+      "coldThreshold": 0
+    },
+    "moto": {
+      "label": "Moto",
+      "capacity": 6,
+      "costPerKm": 0.06,
+      "dayCost": 25,
+      "emission": 0.08,
+      "speedMult": 1.3,
+      "restricted": false,
+      "rangeKm": 9999,
+      "coldThreshold": 0
+    },
+    "bike": {
+      "label": "Bici de carga",
+      "capacity": 12,
+      "costPerKm": 0.0,
+      "dayCost": 20,
+      "emission": 0.0,
+      "speedMult": 0.6,
+      "restricted": false,
+      "rangeKm": 30,
+      "coldThreshold": 0
+    },
+    "reefer": {
+      "label": "Refrigerada",
+      "capacity": 45,
+      "costPerKm": 0.3,
+      "dayCost": 90,
+      "emission": 0.32,
+      "speedMult": 1.0,
+      "restricted": true,
+      "rangeKm": 9999,
+      "coldThreshold": 6
+    }
+  },
+  "cold": {
+    "none": {
+      "threshold": 0.5,
+      "lambdaMult": 1.0,
+      "costPerOrder": 0.0
+    },
+    "coolers": {
+      "threshold": 2.0,
+      "lambdaMult": 0.6,
+      "costPerOrder": 0.25
+    },
+    "reefer": {
+      "threshold": 6.0,
+      "lambdaMult": 0.3,
+      "costPerOrder": 0.0
+    },
+    "multi": {
+      "threshold": 8.0,
+      "lambdaMult": 0.25,
+      "costPerOrder": 0.0
+    }
+  },
+  "spoilLambda": 0.012,
+  "heatMult": 2.0,
+  "freshFirstRouteFactor": 0.5,
+  "fleet": {
+    "mixes": {
+      "3pl": {
+        "own": 0,
+        "3pl": 1,
+        "crowd": 0
+      },
+      "own": {
+        "own": 1,
+        "3pl": 0,
+        "crowd": 0
+      },
+      "own_3pl": {
+        "own": 0.6,
+        "3pl": 0.4,
+        "crowd": 0
+      },
+      "own_crowd": {
+        "own": 0.6,
+        "3pl": 0,
+        "crowd": 0.4
+      },
+      "crowd": {
+        "own": 0,
+        "3pl": 0,
+        "crowd": 1
+      }
+    },
+    "threePlMarkup": 1.25,
+    "threePlElastic": 1.15,
+    "crowdPerDrop": 3.2,
+    "crowdReliability": 0.93,
+    "ownBuffer": {
+      "lean": 0.9,
+      "standard": 1.0,
+      "ample": 1.25
+    },
+    "peak": {
+      "none": {
+        "extra": 0.0,
+        "costMult": 1.0,
+        "reliability": 1.0
+      },
+      "advance": {
+        "extra": 0.6,
+        "costMult": 1.1,
+        "reliability": 1.0
+      },
+      "spot": {
+        "extra": 0.6,
+        "costMult": 1.6,
+        "reliability": 0.7
+      }
+    },
+    "pay": {
+      "fixed": {
+        "stopMult": 1.0,
+        "fakeAttempt": 0.0,
+        "accidentMult": 1.0,
+        "costMult": 1.0
+      },
+      "per_stop": {
+        "stopMult": 0.85,
+        "fakeAttempt": 0.03,
+        "accidentMult": 1.6,
+        "costMult": 0.95
+      },
+      "mixed": {
+        "stopMult": 0.92,
+        "fakeAttempt": 0.005,
+        "accidentMult": 1.0,
+        "costMult": 1.03
+      }
+    },
+    "shiftOvertimeMult": 1.15,
+    "weekendCostMult": 1.05
+  },
+  "zoning": {
+    "fixed": 1.08,
+    "kmeans": 1.04,
+    "balanced": 1.0,
+    "capacitated": 0.98,
+    "dynamic": 0.97,
+    "dynamicNoData": 1.05,
+    "kCurve": 0.15,
+    "kOptimumPerOrders": 25
+  },
+  "rezoning": {
+    "never": 1.0,
+    "quarterly": 1.0,
+    "monthly": 0.92,
+    "daily": 0.7,
+    "dailyMature": 0.92
+  },
+  "familiarityStopGain": 0.15,
+  "routing": {
+    "manual": {
+      "kmMult": 1.15,
+      "sigmaMult": 1.0,
+      "etaGain": 0.0
+    },
+    "heuristic": {
+      "kmMult": 1.05,
+      "sigmaMult": 0.9,
+      "etaGain": 0.03
+    },
+    "vrptw": {
+      "kmMult": 1.0,
+      "sigmaMult": 0.8,
+      "etaGain": 0.06
+    },
+    "ai": {
+      "kmMult": 0.95,
+      "sigmaMult": 0.65,
+      "etaGain": 0.1
+    },
+    "aiBasicDataShare": 0.3
+  },
+  "costFunction": {
+    "euclid": 0.06,
+    "avgtime": 0.03,
+    "timedep": 0.0
+  },
+  "data": {
+    "maturity": {
+      "basic": 0.3,
+      "gps": 0.7,
+      "full": 1.0
+    },
+    "monthlyCost": {
+      "basic": 0,
+      "gps": 3000,
+      "full": 9000
+    },
+    "lag": {
+      "basic": 0,
+      "gps": 1,
+      "full": 2
+    }
+  },
+  "eta": {
+    "none": {
+      "presence": 0.0,
+      "accuracy": 0.0,
+      "costPerOrder": 0.0
+    },
+    "sms": {
+      "presence": 0.04,
+      "accuracy": 0.05,
+      "costPerOrder": 0.02
+    },
+    "live": {
+      "presence": 0.08,
+      "accuracy": 0.12,
+      "costPerOrder": 0.05
+    }
+  },
+  "address": {
+    "none": 0.0,
+    "capture": 0.5,
+    "geocode": 0.8,
+    "costPerOrder": {
+      "none": 0.0,
+      "capture": 0.01,
+      "geocode": 0.04
+    }
+  },
+  "absent": {
+    "retry_same": {
+      "success": 0.7,
+      "delayDays": 0,
+      "costShare": 1.0,
+      "exception": 0.0
+    },
+    "retry_next": {
+      "success": 0.85,
+      "delayDays": 1,
+      "costShare": 1.0,
+      "exception": 0.0
+    },
+    "divert": {
+      "success": 0.95,
+      "delayDays": 0,
+      "costShare": 0.3,
+      "exception": 0.0
+    },
+    "neighbor": {
+      "success": 0.9,
+      "delayDays": 0,
+      "costShare": 0.1,
+      "exception": 0.02
+    }
+  },
+  "cod": {
+    "allow": 1.0,
+    "limit": 0.4,
+    "remove": 0.0,
+    "rejectRate": 0.15,
+    "demandLossShare": 0.5
+  },
+  "returns": {
+    "costDedicated": 6.0,
+    "costBackhaul": 2.0,
+    "costStore": 1.0,
+    "costLocker": 1.5,
+    "backhaulRouteTime": 0.05,
+    "csat": {
+      "store": -0.05,
+      "pickup": 0.05,
+      "locker": 0.03,
+      "mixed": 0.05
+    }
+  },
+  "damageRate": 0.01,
+  "docOk": 0.995,
+  "late": {
+    "sigmaPerHour": 0.2,
+    "planBiasScale": 1.0
+  },
+  "csat": {
+    "otd": 2.5,
+    "fads": 2.0,
+    "exception": 4.0,
+    "spoil": 3.0,
+    "eta": 0.5,
+    "speed": 0.3,
+    "fee": 0.08,
+    "base": 4.6
+  },
+  "trust": {
+    "speed": 0.15,
+    "start": 1.0,
+    "csatRef": 4.0,
+    "sensitivity": 0.08,
+    "min": 0.6,
+    "max": 1.15,
+    "r06Drop": 0.003
+  },
+  "markets": {
+    "growth": {
+      "slow": 0.1,
+      "medium": 0.25,
+      "explosive": 0.5
+    },
+    "speedElasticity": {
+      "low": 0.1,
+      "mid": 0.25,
+      "high": 0.45
+    },
+    "feeElasticity": {
+      "low": 0.05,
+      "mid": 0.12,
+      "high": 0.25
+    },
+    "freshShare": {
+      "low": 0.2,
+      "mid": 0.35,
+      "high": 0.5
+    },
+    "returnRate": {
+      "low": 0.02,
+      "mid": 0.06,
+      "fashion": 0.2
+    },
+    "fuel": {
+      "stable": 1.0,
+      "volatile": 1.0
+    }
+  },
+  "basketMargin": 0.25,
+  "feeBase": 3.0,
+  "freeThresholdBasketGain": 0.002,
+  "slotting": {
+    "none": 99,
+    "100": 1.0,
+    "110": 1.1
+  },
+  "strategyChangePenalty": 50000,
+  "security": {
+    "none": 1.0,
+    "gps": 0.6,
+    "full": 0.35,
+    "monthlyCost": {
+      "none": 0,
+      "gps": 2000,
+      "full": 6000
+    }
+  },
+  "maintenance": {
+    "corrective": {
+      "breakdown": 1.4,
+      "cold": 1.3,
+      "cost": 0
+    },
+    "preventive": {
+      "breakdown": 1.0,
+      "cold": 1.0,
+      "cost": 2500
+    }
+  },
+  "territories": {
+    "megalopolis": {
+      "label": "Megalópolis Centro",
+      "ordersPerDay": 2500,
+      "basket": 40,
+      "linehaulSpeed": 23,
+      "speed": {
+        "urban": 13,
+        "suburban": 20,
+        "city2": 25,
+        "rural": 45
+      },
+      "congestionSd": 0.25,
+      "presence": {
+        "urban": 0.84,
+        "suburban": 0.88,
+        "city2": 0.9,
+        "rural": 0.92
+      },
+      "address": {
+        "urban": 0.95,
+        "suburban": 0.96,
+        "city2": 0.97,
+        "rural": 0.9
+      },
+      "access": 0.98,
+      "stopMinutes": 6,
+      "cod": 0.15,
+      "security": 0.05,
+      "crowdAvailability": 1.5,
+      "driverWage": 7,
+      "restriction": true,
+      "climate": "rain",
+      "competition": "qcommerce",
+      "cdCapacity": "high",
+      "zones": [
+        {
+          "id": 0,
+          "name": "Centro 1",
+          "kind": "urban",
+          "area": 20,
+          "distCd": 35,
+          "share": 0.1,
+          "stores": 4
+        },
+        {
+          "id": 1,
+          "name": "Centro 2",
+          "kind": "urban",
+          "area": 20,
+          "distCd": 34,
+          "share": 0.1,
+          "stores": 4
+        },
+        {
+          "id": 2,
+          "name": "Centro 3",
+          "kind": "urban",
+          "area": 22,
+          "distCd": 36,
+          "share": 0.1,
+          "stores": 4
+        },
+        {
+          "id": 3,
+          "name": "Centro 4",
+          "kind": "urban",
+          "area": 20,
+          "distCd": 33,
+          "share": 0.1,
+          "stores": 4
+        },
+        {
+          "id": 4,
+          "name": "Centro 5",
+          "kind": "urban",
+          "area": 24,
+          "distCd": 37,
+          "share": 0.1,
+          "stores": 4
+        },
+        {
+          "id": 5,
+          "name": "Centro 6",
+          "kind": "urban",
+          "area": 21,
+          "distCd": 35,
+          "share": 0.1,
+          "stores": 4
+        },
+        {
+          "id": 6,
+          "name": "Periferia 1",
+          "kind": "suburban",
+          "area": 70,
+          "distCd": 16,
+          "share": 0.07,
+          "stores": 4
+        },
+        {
+          "id": 7,
+          "name": "Periferia 2",
+          "kind": "suburban",
+          "area": 75,
+          "distCd": 18,
+          "share": 0.07,
+          "stores": 3
+        },
+        {
+          "id": 8,
+          "name": "Periferia 3",
+          "kind": "suburban",
+          "area": 68,
+          "distCd": 20,
+          "share": 0.07,
+          "stores": 4
+        },
+        {
+          "id": 9,
+          "name": "Periferia 4",
+          "kind": "suburban",
+          "area": 72,
+          "distCd": 22,
+          "share": 0.06,
+          "stores": 3
+        },
+        {
+          "id": 10,
+          "name": "Periferia 5",
+          "kind": "suburban",
+          "area": 80,
+          "distCd": 19,
+          "share": 0.07,
+          "stores": 4
+        },
+        {
+          "id": 11,
+          "name": "Periferia 6",
+          "kind": "suburban",
+          "area": 78,
+          "distCd": 21,
+          "share": 0.06,
+          "stores": 3
+        }
+      ]
+    },
+    "bajio": {
+      "label": "Ciudad Bajío",
+      "ordersPerDay": 600,
+      "basket": 35,
+      "linehaulSpeed": 40,
+      "speed": {
+        "urban": 25,
+        "suburban": 35,
+        "city2": 35,
+        "rural": 55
+      },
+      "congestionSd": 0.12,
+      "presence": {
+        "urban": 0.9,
+        "suburban": 0.92,
+        "city2": 0.92,
+        "rural": 0.94
+      },
+      "address": {
+        "urban": 0.985,
+        "suburban": 0.985,
+        "city2": 0.98,
+        "rural": 0.95
+      },
+      "access": 0.99,
+      "stopMinutes": 4,
+      "cod": 0.1,
+      "security": 0.02,
+      "crowdAvailability": 1.0,
+      "driverWage": 6,
+      "restriction": false,
+      "climate": "mild",
+      "competition": "marketplace",
+      "cdCapacity": "low",
+      "zones": [
+        {
+          "id": 0,
+          "name": "Centro 1",
+          "kind": "urban",
+          "area": 35,
+          "distCd": 12,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 1,
+          "name": "Centro 2",
+          "kind": "urban",
+          "area": 35,
+          "distCd": 11,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 2,
+          "name": "Centro 3",
+          "kind": "urban",
+          "area": 38,
+          "distCd": 13,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 3,
+          "name": "Centro 4",
+          "kind": "urban",
+          "area": 36,
+          "distCd": 12,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 4,
+          "name": "Periferia 1",
+          "kind": "suburban",
+          "area": 80,
+          "distCd": 15,
+          "share": 0.1,
+          "stores": 2
+        },
+        {
+          "id": 5,
+          "name": "Periferia 2",
+          "kind": "suburban",
+          "area": 85,
+          "distCd": 17,
+          "share": 0.1,
+          "stores": 1
+        }
+      ]
+    },
+    "norte": {
+      "label": "Región Norte",
+      "ordersPerDay": 400,
+      "basket": 30,
+      "linehaulSpeed": 75,
+      "speed": {
+        "urban": 30,
+        "suburban": 40,
+        "city2": 30,
+        "rural": 40
+      },
+      "congestionSd": 0.06,
+      "presence": {
+        "urban": 0.93,
+        "suburban": 0.94,
+        "city2": 0.94,
+        "rural": 0.95
+      },
+      "address": {
+        "urban": 0.96,
+        "suburban": 0.95,
+        "city2": 0.93,
+        "rural": 0.85
+      },
+      "access": 0.995,
+      "stopMinutes": 3,
+      "cod": 0.3,
+      "security": 0.05,
+      "crowdAvailability": 0.6,
+      "driverWage": 6.5,
+      "restriction": false,
+      "climate": "heat",
+      "competition": "none",
+      "cdCapacity": "low",
+      "zones": [
+        {
+          "id": 0,
+          "name": "Ciudad principal 1",
+          "kind": "urban",
+          "area": 45,
+          "distCd": 15,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 1,
+          "name": "Ciudad principal 2",
+          "kind": "urban",
+          "area": 45,
+          "distCd": 14,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 2,
+          "name": "Ciudad principal 3",
+          "kind": "urban",
+          "area": 48,
+          "distCd": 16,
+          "share": 0.2,
+          "stores": 3
+        },
+        {
+          "id": 3,
+          "name": "Ciudad A",
+          "kind": "city2",
+          "area": 60,
+          "distCd": 80,
+          "share": 0.07,
+          "stores": 2
+        },
+        {
+          "id": 4,
+          "name": "Ciudad B",
+          "kind": "city2",
+          "area": 60,
+          "distCd": 120,
+          "share": 0.07,
+          "stores": 2
+        },
+        {
+          "id": 5,
+          "name": "Ciudad C",
+          "kind": "city2",
+          "area": 55,
+          "distCd": 180,
+          "share": 0.07,
+          "stores": 2
+        },
+        {
+          "id": 6,
+          "name": "Ciudad D",
+          "kind": "city2",
+          "area": 65,
+          "distCd": 250,
+          "share": 0.07,
+          "stores": 2
+        },
+        {
+          "id": 7,
+          "name": "Rural 1",
+          "kind": "rural",
+          "area": 3000,
+          "distCd": 70,
+          "share": 0.06,
+          "stores": 1
+        },
+        {
+          "id": 8,
+          "name": "Rural 2",
+          "kind": "rural",
+          "area": 3500,
+          "distCd": 80,
+          "share": 0.06,
+          "stores": 2
+        }
+      ]
+    },
+    "minicaso": {
+      "label": "Mini-caso S5 (fixture de calibración)",
+      "fixture": true,
+      "ordersPerDay": 171,
+      "basket": 60,
+      "linehaulSpeed": 70,
+      "speed": {
+        "urban": 16,
+        "suburban": 30,
+        "city2": 30,
+        "rural": 50
+      },
+      "congestionSd": 0.0,
+      "presence": {
+        "urban": 0.88,
+        "suburban": 0.9,
+        "city2": 0.9,
+        "rural": 0.9
+      },
+      "address": {
+        "urban": 0.98,
+        "suburban": 0.98,
+        "city2": 0.98,
+        "rural": 0.95
+      },
+      "access": 0.99,
+      "stopMinutes": 8,
+      "cod": 0.0,
+      "security": 0.0,
+      "crowdAvailability": 1.0,
+      "driverWage": 7,
+      "restriction": false,
+      "climate": "mild",
+      "competition": "none",
+      "cdCapacity": "low",
+      "zones": [
+        {
+          "id": 0,
+          "name": "Urbano denso",
+          "kind": "urban",
+          "area": 30,
+          "distCd": 100,
+          "share": 0.7,
+          "stores": 5
+        },
+        {
+          "id": 1,
+          "name": "Suburbano",
+          "kind": "suburban",
+          "area": 120,
+          "distCd": 110,
+          "share": 0.3,
+          "stores": 3
+        }
+      ]
+    }
+  },
+  "events": {
+    "X-01": {
+      "pBase": 0.08,
+      "loss": 0.25
+    },
+    "X-02": {
+      "pBase": 0.3,
+      "months": [
+        5,
+        6,
+        7,
+        8
+      ],
+      "territories": [
+        "megalopolis"
+      ],
+      "closedShare": 0.4
+    },
+    "X-03": {
+      "pBase": 0.2,
+      "territories": [
+        "megalopolis"
+      ],
+      "timeMult": 1.4
+    },
+    "X-04": {
+      "pBase": 0.15,
+      "months": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "territories": [
+        "megalopolis"
+      ],
+      "capacityCut": 0.2
+    },
+    "X-05": {
+      "pBase": 0.1,
+      "demandMult": 1.5
+    },
+    "X-06": {
+      "pBase": {
+        "loose": 0.04,
+        "tight": 0.15
+      },
+      "capacityCut": 0.15
+    },
+    "X-07": {
+      "pBase": {
+        "peak": 0.25,
+        "norte": 0.2,
+        "other": 0.08
+      },
+      "crowdCut": 0.5
+    },
+    "X-08": {
+      "lossOrders": 40,
+      "cost": 8000
+    },
+    "X-09": {
+      "pBase": 0.03,
+      "lossRoutes": 3
+    },
+    "X-10": {
+      "pBase": 0.03
+    },
+    "X-11": {
+      "pBase": 0.1,
+      "territories": [
+        "megalopolis"
+      ],
+      "demandMult": 0.9
+    },
+    "X-12": {
+      "pBase": 0.35,
+      "months": [
+        4,
+        5,
+        6,
+        7
+      ],
+      "territories": [
+        "norte"
+      ]
+    },
+    "X-13": {
+      "pBase": 0.08,
+      "territories": [
+        "bajio",
+        "norte"
+      ],
+      "fadsHit": 0.05
+    },
+    "X-14": {
+      "pBase": 0.03
+    },
+    "X-15": {
+      "pBase": {
+        "stable": 0.0,
+        "volatile": 0.1
+      },
+      "fuelMult": 1.2
+    }
+  },
+  "score": {
+    "weights": {
+      "speed": {
+        "CYCLE_HOURS": 0.25,
+        "OTD_P95": 0.15,
+        "FADS": 0.1,
+        "CPD_P95": 0.1,
+        "CSAT": 0.25,
+        "MARGIN_PCT": 0.15
+      },
+      "reliability": {
+        "CYCLE_HOURS": 0.05,
+        "OTD_P95": 0.3,
+        "FADS": 0.15,
+        "CPD_P95": 0.15,
+        "CSAT": 0.25,
+        "MARGIN_PCT": 0.1
+      },
+      "efficiency": {
+        "CYCLE_HOURS": 0.05,
+        "OTD_P95": 0.15,
+        "FADS": 0.15,
+        "CPD_P95": 0.35,
+        "CSAT": 0.15,
+        "MARGIN_PCT": 0.15
+      }
+    },
+    "ranges": {
+      "CYCLE_HOURS": {
+        "direction": "lower",
+        "worst": 48,
+        "best": 4
+      },
+      "OTD_P95": {
+        "direction": "higher",
+        "worst": 0.6,
+        "best": 0.97
+      },
+      "FADS": {
+        "direction": "higher",
+        "worst": 0.75,
+        "best": 0.97
+      },
+      "CPD_P95": {
+        "direction": "lower",
+        "worst": 14,
+        "best": 3
+      },
+      "CSAT": {
+        "direction": "higher",
+        "worst": 3.2,
+        "best": 4.6
+      },
+      "MARGIN_PCT": {
+        "direction": "higher",
+        "worst": 0.0,
+        "best": 0.18
+      }
+    },
+    "guardrails": [
+      {
+        "kpi": "OTD_P95",
+        "op": ">=",
+        "value": 0.8,
+        "penalty": 0.4
+      },
+      {
+        "kpi": "VEHICLE_UTIL",
+        "op": ">=",
+        "value": 0.6,
+        "penalty": 0.3
+      },
+      {
+        "kpi": "CSAT",
+        "op": ">=",
+        "value": 3.5,
+        "penalty": 0.4
+      },
+      {
+        "kpi": "EXCEPTION_RATE",
+        "op": "<=",
+        "value": 0.08,
+        "penalty": 0.4
+      }
+    ],
+    "territories": {}
+  },
+  "backlogCancel": 0.3,
+  "stopMultByKind": {
+    "urban": 1.0,
+    "suburban": 1.0,
+    "city2": 1.2,
+    "rural": 3.5
+  }
+}

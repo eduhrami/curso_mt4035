@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": false,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "types": [
+      "node",
+      "vite/client"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "paths": {
+      "preact": [
+        "./node_modules/preact"
+      ],
+      "preact/*": [
+        "./node_modules/preact/*"
+      ],
+      "@preact/signals": [
+        "./node_modules/@preact/signals"
+      ],
+      "chart.js": [
+        "./node_modules/chart.js"
+      ],
+      "@mt4035/sim-core": [
+        "./node_modules/@mt4035/sim-core/src/index.ts"
+      ],
+      "@mt4035/sim-core/testing": [
+        "./node_modules/@mt4035/sim-core/src/testing.ts"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    "test",
+    "scripts",
+    "autoplay",
+    "ui",
+    "e2e",
+    "vitest.config.ts",
+    "vite.config.ts"
+  ]
+}

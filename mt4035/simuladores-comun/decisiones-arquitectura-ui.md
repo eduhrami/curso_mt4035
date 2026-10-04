@@ -294,8 +294,8 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 | **F2** ✔ | Modelo SCM (sin UI) + `params.v1` ([app/README.md](../simulador-scm-red/app/README.md)) | Casos SCM P1 en verde. Cumplido el 3-oct-2026: 56 pruebas (52 rápidas + 4 Monte Carlo) |
 | **F3** ✔ | Auto-juego SCM y calibración ([tools/README.md](./tools/README.md), [reporte](../simulador-scm-red/app/autoplay/reports/latest.md)) | Reporte de coherencia sin alarmas P1. Cumplido el 4-oct-2026: P1 y P2 de auto-juego en verde, más 84 pruebas SCM (P1, P2 y P3) |
 | **F4** ✔ | UI SCM ([ui-kit/README.md](./ui-kit/README.md), [app/README.md](../simulador-scm-red/app/README.md)) | Flujo *end-to-end* de 20 épocas + exportación. Cumplido el 4-oct-2026: 7 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, CD irreversible, validación, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de componentes |
-| **F5** | Modelo logística + `params.v1` | Casos LOG P1 en verde |
-| **F6** | Auto-juego logística y calibración (incluye el fixture del mini-caso de S5) | Reporte sin alarmas P1 |
+| **F5** ✔ | Modelo logística + `params.v1` ([app/README.md](../simulador-logistica-ultima-milla/app/README.md); notas en la §6.3b de la [especificación](../simulador-logistica-ultima-milla/especificacion.md)) | Casos LOG P1 en verde. Cumplido el 4-oct-2026: 66 pruebas (63 rápidas + 3 Monte Carlo), con el fixture del mini-caso de S5 calibrado (LOG-ESC-04) |
+| **F6** | Auto-juego logística y calibración (incluye normalizar el puntaje por territorio, LOG-SCO-05) | Reporte sin alarmas P1 |
 | **F7** | UI logística | Flujo *end-to-end* de 36 épocas |
 | **F8** | Publicación en GitHub Pages + piloto con un grupo pequeño | Feedback incorporado antes de S4 (15-oct-2026) y S5 (5-nov-2026) |
 
