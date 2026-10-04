@@ -14,6 +14,7 @@ const ev = (p: Params) => p.events;
 const storeZones = (ctx: Ctx) => ctx.state.zones.filter((z) => z.stores > 0).map((z) => z.id);
 const pick = <T>(xs: readonly T[], u: number): T | undefined => xs[Math.min(xs.length - 1, Math.floor(u * xs.length))];
 const usesDc = (ctx: Ctx) => Object.values(ctx.state.dec.flows).includes("dc") && activeDcs(ctx.state, ctx.state.epoch).length > 0;
+const catLabel = (ctx: Ctx, c: unknown) => ctx.params.categories[c as (typeof CATEGORIES)[number]]?.label.toLowerCase() ?? String(c);
 const totalSuppliers = (ctx: Ctx) => CATEGORIES.reduce((a, c) => a + ctx.params.regions[ctx.state.region].suppliers[c], 0);
 
 export const events: Ev[] = [
@@ -106,7 +107,7 @@ export const events: Ev[] = [
       const c = ctx.state.memo["X-04.cat"] as (typeof CATEGORIES)[number];
       ctx.state.shocks.supplierFrMult[c] = ev(ctx.params)["X-04"].frMult;
     },
-    message: (ctx) => ({ title: "Proveedor clave no entrega", body: `El fill rate de proveedores de ${ctx.state.memo["X-04.cat"]} cae 40% durante algunas semanas.`, severity: "critico" }),
+    message: (ctx) => ({ title: "Proveedor clave no entrega", body: `El fill rate de proveedores de ${catLabel(ctx, ctx.state.memo["X-04.cat"])} cae 40% durante algunas semanas.`, severity: "critico" }),
   },
   {
     id: "X-05",
@@ -180,7 +181,7 @@ export const events: Ev[] = [
     perTick: (ctx) => {
       ctx.state.shocks.supplierFrMult[ctx.state.memo["X-09.cat"] as "fresh" | "chilled"] = 0.3;
     },
-    message: (ctx) => ({ title: "Retiro sanitario", body: `Se retira una línea de ${ctx.state.memo["X-09.cat"]} durante una semana; la confianza baja.`, severity: "critico" }),
+    message: (ctx) => ({ title: "Retiro sanitario", body: `Se retira una línea de ${catLabel(ctx, ctx.state.memo["X-09.cat"])} durante una semana; la confianza baja.`, severity: "critico" }),
   },
   {
     id: "X-10",

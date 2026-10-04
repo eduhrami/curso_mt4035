@@ -1,0 +1,4 @@
+/* Acento de marca de Hoshi Mart (azul noche) sobre los tokens del ui-kit. */
+:root { --accent: #1f3b73; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #9db8ff; } }
+:root[data-theme="dark"] { --accent: #9db8ff; }

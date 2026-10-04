@@ -24,3 +24,7 @@ coverage/
 # Reportes de auto-juego con fecha (se conserva autoplay/reports/latest.md)
 mt4035/**/autoplay/reports/coherencia-*
 mt4035/**/autoplay/reports/registros-*
+
+# Salidas de Playwright
+mt4035/**/app/test-results/
+mt4035/**/app/playwright-report/

@@ -38,7 +38,7 @@ export const rules: Rule[] = [
     when: (ctx) => CATEGORIES.some((c) => highWasteZones(ctx, c).length > 0),
     explain: (ctx) =>
       CATEGORIES.filter((c) => highWasteZones(ctx, c).length > 0).map((c) => ({
-        label: `zonas con merma semanal de ${c} > 6% (máx. ${pct(Math.max(...ctx.state.lastWaste[c]))})`,
+        label: `zonas con merma semanal de ${ctx.params.categories[c].label.toLowerCase()} > 6% (máx. ${pct(Math.max(...ctx.state.lastWaste[c]))})`,
         value: highWasteZones(ctx, c).length,
         ref: "R-02",
       })),

@@ -271,6 +271,14 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - **Tokens de diseño en CSS:** paleta neutra y un color de acento por empresa (Hoshi Mart: azul noche; Mercado Alba: naranja amanecer). Modo oscuro con `prefers-color-scheme`.
 - **Accesibilidad:** navegación por teclado, foco visible, contraste AA y textos alternativos en gráficas (tabla de datos accesible).
 
+### AD-28b ✔ Notas de implementación de F4 (4-oct-2026)
+
+- **Dependencias del ui-kit:** Preact, Chart.js y zod son *peer dependencies* resueltas desde la app (`resolve.dedupe` en Vite y `paths` en TypeScript) para que haya una sola copia.
+- **Panel de decisiones:** lee la estructura de los esquemas zod 4 (`type`, `options`, `minValue`/`maxValue`, `shape`). Los grupos de botones no van dentro de `<label>`: un `<label>` se asocia a su primer control y un clic en el texto elegía siempre la primera opción.
+- **Proyectos en curso:** incluyen las decisiones con retraso del motor y los CD en obra, conversión o ampliación, cuyo retraso maneja el modelo por CD. El diálogo de confirmación indica cuándo opera cada CD.
+- **JSON de parámetros:** se importa con `with { type: "json" }` para que el modelo también cargue en Node ESM (Playwright, tsx).
+- **Guardado:** se guarda la exportación (semilla + decisiones) y, al continuar, la partida se reconstruye por replay (~65 ms).
+
 ### AD-29 ✔ Etiquetas de época
 
 - SCM: `A1-T1 … A5-T4`. Logística: `A1-M01 … A3-M12` con el nombre del mes y marcadores de temporada pico en la línea de tiempo.
@@ -285,7 +293,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 | **F1** ✔ | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas ([core/README.md](./core/README.md)) | INV genéricas en verde; replay idéntico. Cumplido el 3-oct-2026: 65 pruebas (64 rápidas + 1 Monte Carlo) |
 | **F2** ✔ | Modelo SCM (sin UI) + `params.v1` ([app/README.md](../simulador-scm-red/app/README.md)) | Casos SCM P1 en verde. Cumplido el 3-oct-2026: 56 pruebas (52 rápidas + 4 Monte Carlo) |
 | **F3** ✔ | Auto-juego SCM y calibración ([tools/README.md](./tools/README.md), [reporte](../simulador-scm-red/app/autoplay/reports/latest.md)) | Reporte de coherencia sin alarmas P1. Cumplido el 4-oct-2026: P1 y P2 de auto-juego en verde, más 84 pruebas SCM (P1, P2 y P3) |
-| **F4** | UI SCM (ui-kit + pantallas) | Flujo *end-to-end* de 20 épocas + exportación |
+| **F4** ✔ | UI SCM ([ui-kit/README.md](./ui-kit/README.md), [app/README.md](../simulador-scm-red/app/README.md)) | Flujo *end-to-end* de 20 épocas + exportación. Cumplido el 4-oct-2026: 7 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, CD irreversible, validación, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de componentes |
 | **F5** | Modelo logística + `params.v1` | Casos LOG P1 en verde |
 | **F6** | Auto-juego logística y calibración (incluye el fixture del mini-caso de S5) | Reporte sin alarmas P1 |
 | **F7** | UI logística | Flujo *end-to-end* de 36 épocas |
