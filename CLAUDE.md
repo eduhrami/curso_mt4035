@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working in this
 
 ## Project Overview
 
-Multi-course curriculum documentation repository for university courses taught by Eduardo and Marcos at EGADE. All content is in Spanish. There is no source code, build system, or test suite — this is a pure markdown documentation project.
+Multi-course curriculum documentation repository for university courses taught by Eduardo and Marcos at EGADE. All content is in Spanish. Apart from the MT4035 simulator sub-projects (see "Simulators (MT4035)"), there is no source code, build system, or test suite — the rest is a pure markdown documentation project.
 
 Currently hosts two courses:
 - **MT4035** — *Aplicaciones de la analítica de datos: comercio minorista, e-commerce y cadena de suministro.* 2026 edition (24-sep – 26-nov, Thursdays), taught by Marcos (S1, S2, S3, S7, S8) and Eduardo (S4, S5, S6). Content is mature.
@@ -37,6 +37,9 @@ Inside each course directory (`mt4035/`, `mt4034/`, ...):
 
 **Reference (per course):**
 - `curso_anterior/` — Reference-only archive of the previous edition. Each course has its own.
+- `mt4035/references/` — Local-only teaching materials (Kellogg/Ivey cases, teaching notes, books, Eduardo's previous slides) converted to markdown. **Git-ignored on purpose: the repo is public and the cases are copyrighted ("Do Not Copy or Post"). Never commit, publish or bundle anything from this folder.** When the user says "los casos" they usually mean these business cases, not test cases.
+
+**Simulators (MT4035 only):** `mt4035/simuladores-comun/`, `mt4035/simulador-scm-red/`, `mt4035/simulador-logistica-ultima-milla/` — see "Simulators (MT4035)" below.
 
 ## Document hierarchy and single source of truth
 
@@ -102,6 +105,32 @@ Session 1 is deliberately methodological. It establishes the conceptual toolbox 
 ## In-class activity convention (MT4035)
 
 **Do NOT use a "Preparación del estudiante" / pre-class prep section** — the MT4035 convention is that nothing is prepared before class; any case or reading happens during class time. Activities are case-based by default (either a case already referenced in the session's bibliography, or a mini-case presented by the professor).
+
+## Simulators (MT4035)
+
+Eduardo is building two browser simulators for his sessions. Documents are the source of truth; read them before doing any simulator work:
+
+| Path | Content |
+|---|---|
+| `mt4035/simulador-scm-red/especificacion.md` | SCM + network design simulator (S4). Fictional company **Hoshi Mart** (inspired by Seven-Eleven Japan); regions Kaigan (dense, Japan-like), Red River (dispersed, US-like), Valle Metropolitano (mixed, MX-like) |
+| `mt4035/simulador-logistica-ultima-milla/especificacion.md` | Logistics + last-mile simulator (S5). Fictional company **Mercado Alba** (Mexican omnichannel supermarket); territories Megalópolis Centro, Ciudad Bajío, Región Norte |
+| `*/casos-de-prueba.md` (one per simulator) | Test cases (invariants, paired causal tests, calibration scenarios, rule thresholds, events, lags, scoring, persistence) + **auto-play protocol** with reference bots and coherence criteria |
+| `mt4035/simuladores-comun/decisiones-arquitectura-ui.md` | Shared architecture & UI decision record (AD-xx) and the **implementation roadmap (F0–F8)** |
+
+**Fixed decisions (do not change without explicit instruction):**
+- **Manual mode only** — no automatic or mixed modes, no auto-adjust rules; every epoch is explicitly confirmed by the player.
+- **SCM:** 5 years × 4 quarters = **20 epochs** (labels A1-T1 … A5-T4), weekly internal ticks. **Logistics:** **36 monthly epochs** (A1-M01 … A3-M12), daily internal ticks.
+- Single player per browser, no server; runs saved in `localStorage`, exported as JSON (seed + decisions + checksum, replayable) and CSV.
+- Rule-based + probabilistic engine with explicit cause→effect rules and a causal log that explains every event/KPI change to the student.
+- Companies and regions are fictional; no copyrighted material from `mt4035/references/` goes into the simulators.
+
+**Working conventions:**
+- Every scenario, decision, rule, KPI and event has a stable ID (`E-xx`, `D-xx`, `R-xx`, `K-xx`, `X-xx`); test cases use `SCM-…`/`LOG-…` IDs; architecture decisions use `AD-xx`. When a change touches an ID, update the spec, the test cases and the architecture doc together so they stay in sync.
+- KPIs are named with their **English acronym** plus formula on first use (course convention); all UI text in Spanish; currency USD.
+- Numeric values are calibration drafts marked ⚠; calibration happens through auto-play (see test-case docs §11), not by hand-tuning to one run.
+- Each doc ends with a "Decisiones pendientes" checklist — tick items off there when resolved.
+
+**Status (as of 3-oct-2026):** phase **F0 complete** (specs, test cases, architecture doc committed). Next step is **F1** (`sim-core`) per the roadmap; SCM goes first because S4 (15-oct-2026) comes before S5 (5-nov-2026). Update this status line when a phase completes.
 
 ## Previous course version — MT4035 (`mt4035/curso_anterior/`)
 
