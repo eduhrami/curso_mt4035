@@ -61,6 +61,27 @@ export interface Engine<S, P> {
 
 const sameValue = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
 
+/**
+ * Copia de trabajo del estado: clona en profundidad solo lo que el motor muta (modelo, pendientes,
+ * eventos activos) y copia superficialmente las listas de solo-anexar (historial, ledger, log de
+ * decisiones). Los reportes de épocas pasadas son inmutables y se comparten: así el costo por época
+ * no crece con la longitud de la partida.
+ */
+function workingCopy<S>(s: GameState<S>): GameState<S> {
+  return {
+    config: s.config,
+    phase: s.phase,
+    epoch: s.epoch,
+    model: structuredClone(s.model),
+    staged: structuredClone(s.staged),
+    pending: structuredClone(s.pending),
+    decisionLog: [...s.decisionLog],
+    history: [...s.history],
+    ledger: [...s.ledger],
+    activeEvents: structuredClone(s.activeEvents),
+  };
+}
+
 export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engine<S, P> {
   const specs = new Map<string, DecisionSpec<S, P, any>>(model.decisions.map((d) => [d.id, d]));
   if (specs.size !== model.decisions.length) throw new Error(`Modelo ${model.id}: IDs de decisión duplicados`);
@@ -126,8 +147,7 @@ export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engin
   function stage(state: GameState<S>, changes: DecisionChanges) {
     const v = validate(state, changes);
     if (!v.ok) return { state, errors: v.errors };
-    const next = structuredClone(state);
-    next.staged = {};
+    const next: GameState<S> = { ...state, staged: {} };
     // Orden canónico (el del modelo) y sin cambios que no cambian nada.
     for (const spec of model.decisions) {
       if (!Object.prototype.hasOwnProperty.call(changes, spec.id)) continue;
@@ -160,7 +180,7 @@ export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engin
     const v = validate(input, input.staged);
     if (!v.ok) throw new Error(`Decisiones preparadas inválidas: ${v.errors.map((e) => `${e.id}: ${e.message}`).join(" | ")}`);
 
-    const state = structuredClone(input);
+    const state = workingCopy(input);
     const e = state.epoch;
     const label = model.calendar.label(e);
     const ticks = model.calendar.ticksPerEpoch(e);
@@ -243,6 +263,7 @@ export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engin
         metrics: { value: metrics },
         activeEvents: { get: () => active },
         isActive: { value: (id: string) => active.find((a) => a.id === id) },
+        tracing: { value: traceOn },
         trace: {
           value: (key: string, value: number) => {
             if (traceOn) trace[key] = value;

@@ -251,6 +251,15 @@ El objetivo es validar que **el modelo enseña lo que debe enseñar**: decisione
 | SCM-AUT-13 | Robustez de la calibración | Al perturbar ±20% cada constante de `params` (una a la vez), el orden BOT-C > BOT-B en Red River se mantiene en ≥ 90% de las perturbaciones | P2 |
 | SCM-AUT-14 | **Explicabilidad** | En cada corrida, todo cambio de KPI > 10% entre épocas tiene ≥ 1 causa registrada (cambio de decisión, evento, regla o tendencia de escenario). Cobertura ≥ 95% | P1 |
 
+**Estado de implementación (F3, 4-oct-2026):**
+
+- Implementadas en `app/autoplay/properties.ts`: AUT-01 a AUT-09, AUT-11, AUT-12 y AUT-14.
+- Se agregó **BOT-I** ("solo información": D-30 POS diario + D-31 compartido) para AUT-11.
+- Pendientes:
+  - AUT-10 (resiliencia, p5 con ≥ 2 CD por zona): requiere bots de redundancia.
+  - AUT-13 (sensibilidad ±20% por constante): requiere correr con parámetros perturbados.
+- Casos P2/P3 sin prueba automatizada: EVT-13 (compras de pánico antes del tifón), porque no está modelado.
+
 ### 11.3 Reporte de coherencia (salida de cada sesión de auto-juego)
 
 1. Tabla de puntaje medio, p5 y p95 por bot × región × estrategia.

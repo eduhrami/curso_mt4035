@@ -149,6 +149,8 @@ La prueba Monte Carlo de eventos de F2 detectó un leve sesgo en la cola baja de
 
 ### AD-13 ✔ Herramientas de línea de comandos (`simuladores-comun/tools`)
 
+**Implementación (F3):** `@mt4035/sim-tools` es una librería genérica: runner paralelo con `worker_threads`, reporte de coherencia y búsqueda BOT-H. Cada simulador tiene su adaptador y su CLI en `app/autoplay/`, ejecutado con `tsx`. En Node 20 los procesos de trabajo registran `tsx` con un arranque `.mjs`, porque no lo heredan con `--import`. El motor ya no clona el historial completo en cada época (antes el costo era cuadrático): una partida SCM bajó de ~180 ms a ~65 ms.
+
 | Comando | Función |
 |---|---|
 | `autoplay --sim scm --bots A,B,C --seeds 200 --scenario all` | Corre los bots de referencia y genera el **reporte de coherencia** (Markdown + JSON) con las propiedades AUT y las alarmas de calibración |
@@ -282,7 +284,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 | **F0** ✔ | Especificaciones, casos de prueba y este documento | Publicados en el repo |
 | **F1** ✔ | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas ([core/README.md](./core/README.md)) | INV genéricas en verde; replay idéntico. Cumplido el 3-oct-2026: 65 pruebas (64 rápidas + 1 Monte Carlo) |
 | **F2** ✔ | Modelo SCM (sin UI) + `params.v1` ([app/README.md](../simulador-scm-red/app/README.md)) | Casos SCM P1 en verde. Cumplido el 3-oct-2026: 56 pruebas (52 rápidas + 4 Monte Carlo) |
-| **F3** | Auto-juego SCM y calibración | Reporte de coherencia sin alarmas P1 |
+| **F3** ✔ | Auto-juego SCM y calibración ([tools/README.md](./tools/README.md), [reporte](../simulador-scm-red/app/autoplay/reports/latest.md)) | Reporte de coherencia sin alarmas P1. Cumplido el 4-oct-2026: P1 y P2 de auto-juego en verde, más 84 pruebas SCM (P1, P2 y P3) |
 | **F4** | UI SCM (ui-kit + pantallas) | Flujo *end-to-end* de 20 épocas + exportación |
 | **F5** | Modelo logística + `params.v1` | Casos LOG P1 en verde |
 | **F6** | Auto-juego logística y calibración (incluye el fixture del mini-caso de S5) | Reporte sin alarmas P1 |
@@ -296,7 +298,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 ## 5. Decisiones pendientes
 
 - [ ] AD-25: visibilidad del puntaje durante el juego.
-- [ ] Normalización del puntaje por región o territorio (SCM-SCO-05, LOG-SCO-05).
+- [ ] Normalización del puntaje por región o territorio (SCM-SCO-05, LOG-SCO-05). En SCM está implementada como propuesta (rangos y guardrails por región en `params.v1.json`, especificación §6.3b); falta confirmarla.
 - [ ] Duración objetivo de una partida (20 y 36 épocas manuales): ¿solo en clase o clase + casa?
 - [ ] Confirmar GitHub Pages como canal de publicación frente a solo subir el archivo a Canvas.
 

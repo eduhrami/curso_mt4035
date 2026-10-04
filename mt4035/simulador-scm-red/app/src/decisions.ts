@@ -103,7 +103,7 @@ export const decisions: Spec<any>[] = [
       return null;
     },
     apply: (s, v, p) => applyNetwork(s, v, p),
-    kpis: ["CTS_PCT", "CTS_STORE", "OTIF", "OSA", "WASTE", "LT", "ITR", "EBITDA_PCT"],
+    kpis: ["CTS_PCT", "CTS_STORE", "OTIF", "OSA", "WASTE", "LT", "ITR", "EBITDA_PCT", "LOST_SALES", "SALES", "TRUCKS", "BWR"],
   } satisfies Spec<DcSpec[]>,
   {
     id: "D-05",
@@ -114,7 +114,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.openingStrategy = v;
     },
-    kpis: ["CTS_STORE", "SALES"],
+    kpis: ["CTS_STORE", "SALES", "EBITDA_PCT"],
   },
   {
     id: "D-06",
@@ -126,7 +126,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.openingRate = v;
     },
-    kpis: ["SALES", "CTS_STORE"],
+    kpis: ["SALES", "CTS_STORE", "EBITDA_PCT"],
   },
   {
     id: "D-07",
@@ -139,7 +139,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.dedicated = { ...v };
     },
-    kpis: ["WASTE", "LT", "OSA"],
+    kpis: ["WASTE", "LT", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-08",
@@ -151,7 +151,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v, p) => {
       if (v > 0) s.pendingOpenings.push({ stores: v, epoch: s.epoch + p.stores.lagEpochs });
     },
-    kpis: ["SALES", "CTS_STORE"],
+    kpis: ["SALES", "CTS_STORE", "EBITDA_PCT"],
   },
   {
     id: "D-10",
@@ -164,7 +164,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.flows = { ...v };
     },
-    kpis: ["TRUCKS", "CTS_PCT", "OSA", "OTIF", "LT", "WASTE"],
+    kpis: ["TRUCKS", "CTS_PCT", "OSA", "OTIF", "LT", "WASTE", "ITR", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-11",
@@ -180,7 +180,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.freq = { ...v };
     },
-    kpis: ["CTS_PCT", "CTS_STORE", "WASTE", "OSA", "ITR", "TRUCKS"],
+    kpis: ["CTS_PCT", "CTS_STORE", "WASTE", "OSA", "ITR", "TRUCKS", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-12",
@@ -193,7 +193,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.consolidation = v;
     },
-    kpis: ["TRUCKS", "CTS_PCT"],
+    kpis: ["TRUCKS", "CTS_PCT", "EBITDA_PCT"],
   },
   {
     id: "D-13",
@@ -204,7 +204,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.fleet = v;
     },
-    kpis: ["CTS_PCT", "OTIF"],
+    kpis: ["CTS_PCT", "OTIF", "EBITDA_PCT"],
   },
   {
     id: "D-14",
@@ -215,7 +215,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.vehicle = { ...v };
     },
-    kpis: ["WASTE", "CTS_PCT"],
+    kpis: ["WASTE", "CTS_PCT", "EBITDA_PCT"],
   },
   {
     id: "D-15",
@@ -226,7 +226,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.window = v;
     },
-    kpis: ["CTS_PCT", "OTIF", "WASTE"],
+    kpis: ["CTS_PCT", "OTIF", "WASTE", "EBITDA_PCT"],
   },
   {
     id: "D-16",
@@ -237,7 +237,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.maintenance = v;
     },
-    kpis: ["WASTE", "OSA"],
+    kpis: ["WASTE", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-20",
@@ -249,7 +249,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.policy = v;
     },
-    kpis: ["OSA", "WASTE", "ITR"],
+    kpis: ["OSA", "WASTE", "ITR", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-21",
@@ -260,7 +260,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.csl = { ...v };
     },
-    kpis: ["OSA", "ITR", "WASTE", "LOST_SALES"],
+    kpis: ["OSA", "ITR", "WASTE", "LOST_SALES", "EBITDA_PCT", "SALES"],
   },
   {
     id: "D-22",
@@ -271,7 +271,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.assortment = { ...v };
     },
-    kpis: ["SALES", "WASTE", "ITR", "OSA"],
+    kpis: ["SALES", "WASTE", "ITR", "OSA", "EBITDA_PCT", "LOST_SALES"],
   },
   {
     id: "D-23",
@@ -283,7 +283,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.receiving = v;
     },
-    kpis: ["OSA", "CTS_PCT", "OTIF"],
+    kpis: ["OSA", "CTS_PCT", "OTIF", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-24",
@@ -296,7 +296,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.dcSafetyDays = v;
     },
-    kpis: ["OSA", "ITR", "WASTE"],
+    kpis: ["OSA", "ITR", "WASTE", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-25",
@@ -324,7 +324,7 @@ export const decisions: Spec<any>[] = [
         s.infoMaturity = v === "basic" ? 1 : 0;
       }
     },
-    kpis: ["OSA", "ITR", "WASTE", "LOST_SALES"],
+    kpis: ["OSA", "ITR", "WASTE", "LOST_SALES", "EBITDA_PCT", "SALES"],
   },
   {
     id: "D-31",
@@ -336,7 +336,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.sharing = v;
     },
-    kpis: ["BWR", "OTIF", "OSA"],
+    kpis: ["BWR", "OTIF", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-32",
@@ -348,7 +348,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.forecast = v;
     },
-    kpis: ["OSA", "ITR", "BWR", "WASTE"],
+    kpis: ["OSA", "ITR", "BWR", "WASTE", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-33",
@@ -361,7 +361,7 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.collaboration = v;
     },
-    kpis: ["LT", "OTIF", "OSA"],
+    kpis: ["LT", "OTIF", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-34",
@@ -373,6 +373,6 @@ export const decisions: Spec<any>[] = [
     apply: (s, v) => {
       s.dec.training = v;
     },
-    kpis: ["OSA", "WASTE"],
+    kpis: ["OSA", "WASTE", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
 ];

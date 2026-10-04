@@ -244,6 +244,16 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
 - **Confianza (R-03):** baja 0.02 por semana mientras la OSA de la zona esté < 90% dos semanas seguidas. Se recupera 0.002 por semana con OSA ≥ 95%, así que el efecto llega al trimestre siguiente.
 - **X-01:** la falla de refrigeración golpea la zona de mayor exposición (la que tiene más tiendas recibiendo frescos).
 
+**Ajustes de la calibración por auto-juego (F3, 4-oct-2026):**
+
+- **Puntaje normalizado por región (§7.3, SCO-05):** cada región tiene sus propios rangos de normalización y guardrails, calibrados a su frontera alcanzable. Así el *as-is* puntúa en una banda comparable: Kaigan ~53, Valle ~40, Red River ~31. ⚠ Propuesta pendiente de confirmar.
+- **Costo fijo del CD:** solo la mitad escala con el índice inmobiliario regional; personal y operación no. Con esto, el número óptimo de CD por tienda es menor en Red River que en Kaigan (CAU-02), como en los datos reales.
+- **Densidad:** la curva de demanda combina reconocimiento de marca (+30%, saturación a ρ ≈ 0.8) y canibalización (k = 0.1). Da un óptimo interior de densidad (CAU-17) y deja la demanda de Kaigan igual.
+- **Pooling en el CD (R-11):** el stock de seguridad del CD protege la demanda agregada; por tienda se divide entre √(tiendas atendidas).
+- **Horas valle sin escaneo:** la parada tarda 1.5× porque el chofer espera a que alguien reciba. Eso anula el beneficio de la menor congestión nocturna (CAU-12).
+- **Pronóstico estacional:** captura la mitad del efecto estacional; el causal, todo (CAU-20).
+- **X-10:** el combustible encarece el costo por km +25%, lo que equivale a ~+10% del transporte total.
+
 ### 6.4 Reglas de causa–efecto explícitas (catálogo inicial)
 
 Cada regla se registra en el log y alimenta los mensajes. El alumno siempre puede ver **por qué** pasó algo.

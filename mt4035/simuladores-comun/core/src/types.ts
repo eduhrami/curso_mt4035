@@ -186,6 +186,8 @@ export interface TickContext<S, P> extends BaseContext<S, P> {
   /** Eventos activos en este tick (incluye los que empezaron en épocas previas). */
   readonly activeEvents: readonly ActiveEvent[];
   isActive(eventId: string): ActiveEvent | undefined;
+  /** true si config.test.trace está activo: el modelo puede saltarse el costo de preparar trazas. */
+  readonly tracing: boolean;
   trace(key: string, value: number): void;
 }
 

@@ -15,13 +15,12 @@ const r1 = (x: number) => Math.round(x * 10) / 10;
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 const dcTypes = (ctx: Ctx) => activeDcs(ctx.state, ctx.state.epoch).map((d) => d.type);
 const usesDcFlows = (ctx: Ctx) => Object.values(ctx.state.dec.flows).includes("dc");
-const highWasteZones = (ctx: Ctx, c: (typeof CATEGORIES)[number]) =>
-  ctx.state.lastWaste[c].flatMap((w, zi) => (ctx.state.zones[zi]!.stores > 0 && w > ctx.params.inventory.r02WasteThreshold ? [zi] : []));
+const highWasteZones = (ctx: Ctx, c: (typeof CATEGORIES)[number]) => ctx.state.highWaste?.[c] ?? [];
 
 export const rules: Rule[] = [
   {
     id: "R-01",
-    kpis: ["WASTE", "WASTE_FRESH", "OSA_FRESH"],
+    kpis: ["WASTE", "WASTE_FRESH", "OSA_FRESH", "EBITDA_PCT"],
     when: (ctx) => (ctx.metrics.freshRouteHours ?? 0) > ctx.params.excursion.longRouteHours,
     explain: (ctx) => [{ label: "tiempo medio hasta la última entrega de frescos (h)", value: r1(ctx.metrics.freshRouteHours ?? 0), ref: "R-01" }],
     apply: (ctx) => {
@@ -35,7 +34,7 @@ export const rules: Rule[] = [
   },
   {
     id: "R-02",
-    kpis: ["OSA", "OSA_FRESH", "LOST_SALES"],
+    kpis: ["OSA", "OSA_FRESH", "LOST_SALES", "EBITDA_PCT", "SALES"],
     when: (ctx) => CATEGORIES.some((c) => highWasteZones(ctx, c).length > 0),
     explain: (ctx) =>
       CATEGORIES.filter((c) => highWasteZones(ctx, c).length > 0).map((c) => ({
@@ -50,7 +49,7 @@ export const rules: Rule[] = [
   },
   {
     id: "R-03",
-    kpis: ["OSA", "SALES", "DEMAND", "LOST_SALES"],
+    kpis: ["OSA", "SALES", "DEMAND", "LOST_SALES", "EBITDA_PCT"],
     when: (ctx) => ctx.state.zones.some((z) => z.stores > 0 && z.lowOsaWeeks >= 2),
     explain: (ctx) => {
       const zs = ctx.state.zones.filter((z) => z.stores > 0 && z.lowOsaWeeks >= 2);
@@ -64,7 +63,7 @@ export const rules: Rule[] = [
   },
   {
     id: "R-04",
-    kpis: ["CTS_PCT", "OSA"],
+    kpis: ["CTS_PCT", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
     when: (ctx) => Object.values(ctx.state.dec.flows).includes("dsd") && (ctx.metrics.maxDeliveriesPerStoreDay ?? 0) > ctx.params.receiving.overloadDeliveries,
     explain: (ctx) => [{ label: "entregas por tienda al día (máx.)", value: r1(ctx.metrics.maxDeliveriesPerStoreDay ?? 0), ref: "R-04" }],
     apply: (ctx) => {
@@ -74,7 +73,7 @@ export const rules: Rule[] = [
   },
   {
     id: "R-05",
-    kpis: ["CTS_PCT", "CTS_STORE"],
+    kpis: ["CTS_PCT", "CTS_STORE", "EBITDA_PCT"],
     when: (ctx) => ctx.state.dec.flows.fresh === "dc" && ctx.state.dec.freq.fresh >= 21 && (ctx.metrics.deltaDcMeanFresh ?? 0) > 10,
     explain: (ctx) => [
       { label: "frecuencia de frescos (entregas/semana)", value: ctx.state.dec.freq.fresh, ref: "D-11" },
@@ -89,7 +88,7 @@ export const rules: Rule[] = [
   },
   {
     id: "R-06",
-    kpis: ["OSA", "OTIF"],
+    kpis: ["OSA", "OTIF", "EBITDA_PCT", "LOST_SALES", "SALES"],
     when: (ctx) => ctx.state.market.supplierReliability === "low" && usesDcFlows(ctx) && dcTypes(ctx).some((t) => t !== "stocking"),
     explain: () => [{ label: "cross-dock sin inventario con proveedores poco confiables", ref: "R-06" }],
     apply: () => {},
@@ -97,7 +96,7 @@ export const rules: Rule[] = [
   },
   {
     id: "R-07",
-    kpis: ["OTIF", "WASTE", "OSA"],
+    kpis: ["OTIF", "WASTE", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
     when: (ctx) => (ctx.metrics.dcUtilMax ?? 0) > ctx.params.dc.highUtil,
     explain: (ctx) => [{ label: "utilización máxima de CD", value: pct(ctx.metrics.dcUtilMax ?? 0), ref: "R-07" }],
     apply: (ctx) => {
@@ -107,14 +106,14 @@ export const rules: Rule[] = [
   },
   {
     id: "R-08",
-    kpis: ["LT", "LT_SD", "OTIF"],
+    kpis: ["LT", "LT_SD", "OTIF", "EBITDA_PCT"],
     when: (ctx) => ctx.state.dec.collaboration === "cpfr" && ctx.state.dec.sharing === "daily",
     explain: () => [{ label: "POS diario + CPFR: lead time −20%, variabilidad −30%", ref: "R-08" }],
     apply: () => {},
   },
   {
     id: "R-09",
-    kpis: ["OSA", "WASTE"],
+    kpis: ["OSA", "WASTE", "EBITDA_PCT", "LOST_SALES", "SALES"],
     when: (ctx) => ctx.state.dec.policy === "tanpin" && ctx.state.dec.training === "low",
     explain: () => [{ label: "tanpin kanri con capacitación baja: la mitad del beneficio", ref: "R-09" }],
     apply: () => {},
@@ -122,21 +121,21 @@ export const rules: Rule[] = [
   },
   {
     id: "R-10",
-    kpis: ["CTS_STORE", "SALES"],
+    kpis: ["CTS_STORE", "SALES", "EBITDA_PCT"],
     when: (ctx) => ctx.state.dec.openingStrategy === "dominance",
     explain: () => [{ label: "clusters densos: más paradas por ruta y más canibalización", ref: "R-10" }],
     apply: () => {},
   },
   {
     id: "R-11",
-    kpis: ["ITR", "OSA"],
+    kpis: ["ITR", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
     when: (ctx) => ctx.state.dec.dcSafetyDays > 0 && dcTypes(ctx).includes("stocking"),
     explain: (ctx) => [{ label: "pooling de inventario en CD (días)", value: ctx.state.dec.dcSafetyDays, ref: "R-11" }],
     apply: () => {},
   },
   {
     id: "R-12",
-    kpis: ["CTS_PCT", "OTIF"],
+    kpis: ["CTS_PCT", "OTIF", "EBITDA_PCT"],
     when: (ctx) => ctx.state.dec.window === "offpeak",
     explain: (ctx) => [{ label: ctx.state.dec.receiving === "scan" ? "horas valle + escaneo: parada −30%" : "horas valle sin escaneo: el chofer espera", ref: "R-12" }],
     apply: () => {},

@@ -1,7 +1,7 @@
 {
   "name": "@mt4035/sim-scm",
   "version": "0.1.0",
-  "description": "Simulador SCM + Diseño de red (MT4035 S4): modelo Hoshi Mart sobre sim-core.",
+  "description": "Simulador SCM + Dise\u00f1o de red (MT4035 S4): modelo Hoshi Mart sobre sim-core.",
   "private": true,
   "type": "module",
   "exports": {
@@ -12,14 +12,21 @@
     "test:mc": "vitest run .mc.test.ts",
     "test:all": "vitest run",
     "typecheck": "tsc --noEmit",
-    "diag": "vitest run --config vitest.diag.config.ts"
+    "diag": "vitest run --config vitest.diag.config.ts",
+    "autoplay": "tsx autoplay/cli.ts autoplay",
+    "replay": "tsx autoplay/cli.ts replay",
+    "aggregate": "tsx autoplay/cli.ts aggregate",
+    "perf": "tsx scripts/perf.ts"
   },
   "dependencies": {
     "@mt4035/sim-core": "file:../../simuladores-comun/core",
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@mt4035/sim-tools": "file:../../simuladores-comun/tools",
+    "@types/node": "^20.19.43",
     "fast-check": "^4.10.2",
+    "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^4.1.11"
   }
