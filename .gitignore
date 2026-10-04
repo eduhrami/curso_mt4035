@@ -12,3 +12,6 @@
 # Temporary files
 *.tmp
 *.bak
+
+# Material con copyright (casos HBP/Ivey/Kellogg, libros): solo uso local, no publicar
+mt4035/references/
