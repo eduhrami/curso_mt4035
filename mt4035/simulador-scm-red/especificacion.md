@@ -5,6 +5,7 @@
 **Estado:** ⚠ borrador preliminar v0.1. En esta etapa se definen escenarios, decisiones, reglas de causa–efecto y KPIs. Los valores numéricos son de calibración inicial y deben validarse antes de programar.
 **Inspiración:** caso *Seven-Eleven Japan Co.* (Chopra, Kellogg KEL026) y *Walmart: Supply Chain Management* (Ivey W19317). La empresa y las regiones del juego son **ficticias**.
 **Casos de prueba:** [casos-de-prueba.md](./casos-de-prueba.md). Incluye los ganchos de prueba que el motor debe exponer (§2) y el protocolo de auto-juego (§11).
+**Arquitectura y UI (compartidas):** [decisiones-arquitectura-ui.md](../simuladores-comun/decisiones-arquitectura-ui.md).
 
 ---
 
