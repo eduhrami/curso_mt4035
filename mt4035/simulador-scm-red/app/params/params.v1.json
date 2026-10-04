@@ -1,0 +1,837 @@
+{
+  "version": "p1",
+  "note": "⚠ Calibración preliminar (F2). Se ajusta con auto-juego en F3. Montos en USD; tiempos en días u horas según el sufijo.",
+  "weeksPerEpoch": 13,
+  "grid": 6,
+  "shiftHours": 10,
+  "circuity": 1.3,
+  "vehicle": {
+    "capacityCases": {
+      "mono": 500,
+      "multi": 450
+    },
+    "kmCostMult": {
+      "mono": 1.0,
+      "multi": 1.15
+    },
+    "telemetryKmCost": 0.05,
+    "relayTeamPremium": 0.4
+  },
+  "fleet": {
+    "costMult": {
+      "own": 1.0,
+      "dedicated": 1.12,
+      "spot": 1.25
+    },
+    "lateAdd": {
+      "own": 0.0,
+      "dedicated": 0.005,
+      "spot": 0.02
+    },
+    "shortageHit": {
+      "own": 1.0,
+      "dedicated": 0.6,
+      "spot": 0.8
+    }
+  },
+  "stop": {
+    "baseHours": 0.4,
+    "factor": {
+      "peak_manual": 1.0,
+      "peak_scan": 0.9,
+      "offpeak_manual": 1.1,
+      "offpeak_scan": 0.7
+    },
+    "offpeakCongestionMult": 0.6
+  },
+  "receiving": {
+    "hoursPerDelivery": 0.4,
+    "scanMult": 0.7,
+    "overloadDeliveries": 15,
+    "overloadCostMult": 1.3,
+    "overloadErrAdd": 0.01,
+    "errRate": {
+      "manual": 0.02,
+      "scan": 0.005
+    }
+  },
+  "categories": {
+    "fresh": {
+      "label": "Frescos",
+      "price": 4.0,
+      "margin": 0.35,
+      "unitsPerCase": 20,
+      "shelfLifeDays": null,
+      "wasteBase": 0.02,
+      "perishable": true,
+      "seasonMult": 0.5,
+      "presentationDays": 0,
+      "maxStopsPerRoute": 8
+    },
+    "chilled": {
+      "label": "Refrigerado",
+      "price": 3.0,
+      "margin": 0.3,
+      "unitsPerCase": 24,
+      "shelfLifeDays": 12,
+      "wasteBase": 0.01,
+      "perishable": true,
+      "seasonMult": 1.0,
+      "presentationDays": 1,
+      "maxStopsPerRoute": 15
+    },
+    "ambient": {
+      "label": "Ambiente",
+      "price": 2.5,
+      "margin": 0.25,
+      "unitsPerCase": 24,
+      "shelfLifeDays": 180,
+      "wasteBase": 0.002,
+      "perishable": false,
+      "seasonMult": 1.5,
+      "presentationDays": 8,
+      "maxStopsPerRoute": 20
+    },
+    "frozen": {
+      "label": "Congelado",
+      "price": 5.0,
+      "margin": 0.28,
+      "unitsPerCase": 12,
+      "shelfLifeDays": 90,
+      "wasteBase": 0.003,
+      "perishable": true,
+      "seasonMult": 1.2,
+      "presentationDays": 10,
+      "maxStopsPerRoute": 20
+    }
+  },
+  "freshness": {
+    "wasteSlope": 0.9,
+    "wasteCap": 0.95,
+    "discountWasteMult": 0.7,
+    "discountMarginCut": 0.02
+  },
+  "excursion": {
+    "p0": 0.004,
+    "refHours": 2,
+    "alpha": 1.0,
+    "vehicle": {
+      "mono": 1.0,
+      "multi": 0.7
+    },
+    "telemetry": 0.5,
+    "maintenance": {
+      "corrective": 1.3,
+      "preventive": 1.0,
+      "predictive": 0.7
+    },
+    "longRouteMult": 1.5,
+    "longRouteHours": 4
+  },
+  "dc": {
+    "capacityCasesDay": {
+      "small": 15000,
+      "medium": 40000,
+      "large": 80000
+    },
+    "fixedWeekly": {
+      "small": 40000,
+      "medium": 80000,
+      "large": 140000
+    },
+    "capex": {
+      "small": 5000000,
+      "medium": 12000000,
+      "large": 20000000
+    },
+    "typeMult": {
+      "stocking": 1.1,
+      "crossdock": 1.0,
+      "combined": 1.25
+    },
+    "handlingPerCase": {
+      "stocking": 0.4,
+      "crossdock": 0.25,
+      "combined": 0.28
+    },
+    "dwellDays": {
+      "stocking": 0.5,
+      "crossdock": 0.1,
+      "combined": 0.1
+    },
+    "stockingCycleDays": 2.0,
+    "buildLagEpochs": {
+      "small": 2,
+      "medium": 3,
+      "large": 4
+    },
+    "convertLagEpochs": 1,
+    "expandLagEpochs": 2,
+    "closurePenaltyMult": 0.3,
+    "pickErrorRate": 0.003,
+    "highUtil": 0.9
+  },
+  "supplier": {
+    "frBase": {
+      "high": 0.98,
+      "mid": 0.95,
+      "low": 0.9
+    },
+    "ltCv": {
+      "high": 0.1,
+      "mid": 0.2,
+      "low": 0.35
+    },
+    "bwrBeta": 0.02,
+    "collabFrGain": {
+      "arms": 0.0,
+      "vmi": 0.01,
+      "cpfr": 0.02
+    },
+    "collabLtMult": {
+      "arms": 1.0,
+      "vmi": 0.9,
+      "cpfr": 0.8
+    },
+    "collabLtCvMult": {
+      "arms": 1.0,
+      "vmi": 0.85,
+      "cpfr": 0.7
+    },
+    "dedicatedLtMult": 0.5,
+    "dedicatedCapex": 3000000,
+    "shortfallToOos": 0.6,
+    "dsdFreqPerWeek": {
+      "fresh": 3,
+      "chilled": 2,
+      "ambient": 1,
+      "frozen": 1
+    },
+    "frFloor": 0.5
+  },
+  "info": {
+    "cvMult": {
+      "basic": 1.0,
+      "pos_daily": 0.85,
+      "pos_terminal": 0.75
+    },
+    "maturityPerEpoch": 0.5,
+    "lagEpochs": {
+      "basic": 0,
+      "pos_daily": 2,
+      "pos_terminal": 3
+    },
+    "capexPerStore": {
+      "basic": 0,
+      "pos_daily": 3000,
+      "pos_terminal": 8000
+    },
+    "opexPerStoreWeek": {
+      "basic": 0,
+      "pos_daily": 20,
+      "pos_terminal": 40
+    },
+    "sharing": {
+      "bwrMult": {
+        "no": 1.0,
+        "weekly": 0.5,
+        "daily": 0.15
+      },
+      "opexPerStoreWeek": {
+        "no": 0,
+        "weekly": 3,
+        "daily": 5
+      }
+    },
+    "forecast": {
+      "window": {
+        "moving_avg": 7,
+        "seasonal": 14,
+        "causal": 28
+      },
+      "seasonPenalty": {
+        "moving_avg": 2.0,
+        "seasonal": 0.0,
+        "causal": 0.0
+      },
+      "cvMult": {
+        "moving_avg": 1.0,
+        "seasonal": 1.0,
+        "causal": 0.9
+      },
+      "opexPerStoreWeek": {
+        "moving_avg": 0,
+        "seasonal": 2,
+        "causal": 5
+      }
+    },
+    "policy": {
+      "rop": {
+        "cvMult": 1.0,
+        "seasonPenalty": 1.0
+      },
+      "periodic": {
+        "cvMult": 1.0,
+        "seasonPenalty": 0.0
+      },
+      "tanpin": {
+        "cvMult": 0.85,
+        "seasonPenalty": 0.0
+      }
+    },
+    "training": {
+      "tanpinBenefitShare": {
+        "low": 0.5,
+        "mid": 0.75,
+        "high": 1.0
+      },
+      "opexPerStoreWeek": {
+        "low": 0,
+        "mid": 10,
+        "high": 25
+      }
+    }
+  },
+  "assortment": {
+    "refSkus": 3000,
+    "demandElasticity": 0.3,
+    "localDemandGain": 0.03,
+    "localCvMult": 1.05
+  },
+  "inventory": {
+    "carryRateYear": 0.25,
+    "unmetLostShare": 0.5,
+    "substituteMarginMult": 0.5,
+    "wasteOsaImpact": 0.5,
+    "r02WasteThreshold": 0.06,
+    "r02OsaMult": 0.95
+  },
+  "trust": {
+    "lowOsa": 0.9,
+    "drop": 0.02,
+    "min": 0.6,
+    "recoverOsa": 0.95,
+    "recover": 0.002
+  },
+  "density": {
+    "brandGain": 0.15,
+    "brandRho": 2.0,
+    "cannibalK": 0.04,
+    "spreadStep": 0.15,
+    "spreadTarget": {
+      "dominance": 0.2,
+      "dispersed": 1.0,
+      "mixed": 0.5
+    }
+  },
+  "stores": {
+    "capex": 400000,
+    "closureCost": 100000,
+    "lagEpochs": 1
+  },
+  "late": {
+    "base": 0.01,
+    "congestionK": 0.25,
+    "utilPenalty": 0.05
+  },
+  "strategyChangePenalty": 2000000,
+  "markets": {
+    "growth": {
+      "stagnant": 0.0,
+      "moderate": 0.03,
+      "boom": 0.08
+    },
+    "seasonality": {
+      "soft": 0.05,
+      "marked": 0.15
+    },
+    "volatility": {
+      "low": 0.15,
+      "mid": 0.3,
+      "high": 0.5
+    },
+    "fuel": {
+      "stable": 1.0,
+      "volatile": 1.0,
+      "rising": 1.0
+    },
+    "fuelTrendPerYear": {
+      "stable": 0.0,
+      "volatile": 0.0,
+      "rising": 0.06
+    },
+    "agingFreshShiftPerYear": 0.01
+  },
+  "regions": {
+    "kaigan": {
+      "label": "Kaigan",
+      "sideKm": 122,
+      "stores": 1800,
+      "pattern": "coastal",
+      "spread": 0.15,
+      "visitsPerDay": 1000,
+      "unitsPerVisit": 2.2,
+      "speedKmh": 30,
+      "congestionMean": 0.3,
+      "congestionSd": 0.05,
+      "kmCost": 1.5,
+      "hourCost": 32,
+      "wage": 16,
+      "realEstate": 1.0,
+      "storeCapexMult": 1.5,
+      "supplierDistKm": 30,
+      "supplierLtDays": {
+        "fresh": 0.3,
+        "chilled": 1,
+        "ambient": 2,
+        "frozen": 2
+      },
+      "suppliers": {
+        "fresh": 6,
+        "chilled": 10,
+        "ambient": 20,
+        "frozen": 4
+      },
+      "dsdSharedDensity": 4,
+      "mix": {
+        "fresh": 0.3,
+        "chilled": 0.2,
+        "ambient": 0.42,
+        "frozen": 0.08
+      },
+      "freshShelfLifeDays": 1.0,
+      "otherDirectPerDay": 1.5,
+      "climate": "typhoon",
+      "regulatedLoading": true,
+      "initial": {
+        "dcs": {
+          "count": 12,
+          "type": "combined",
+          "size": "medium"
+        },
+        "flows": {
+          "fresh": "dc",
+          "chilled": "dc",
+          "ambient": "dc",
+          "frozen": "dc"
+        },
+        "freq": {
+          "fresh": 21,
+          "chilled": 21,
+          "ambient": 7,
+          "frozen": 3
+        },
+        "consolidation": "combined",
+        "fleet": "dedicated",
+        "vehicle": {
+          "type": "multi",
+          "telemetry": true
+        },
+        "window": "offpeak",
+        "maintenance": "preventive",
+        "policy": "tanpin",
+        "csl": {
+          "fresh": 0.95,
+          "chilled": 0.96,
+          "ambient": 0.97,
+          "frozen": 0.96
+        },
+        "assortment": {
+          "skus": 3000,
+          "local": true
+        },
+        "receiving": "scan",
+        "dcSafetyDays": 0,
+        "retirement": "fifo",
+        "info": "pos_terminal",
+        "sharing": "daily",
+        "forecast": "seasonal",
+        "collaboration": "vmi",
+        "training": "high",
+        "dedicated": {
+          "fresh": true,
+          "chilled": false
+        }
+      },
+      "dsdFeePerDelivery": 20,
+      "supplierFrAdj": 0.03,
+      "presentationMult": 1.0
+    },
+    "redriver": {
+      "label": "Red River",
+      "sideKm": 632,
+      "stores": 1200,
+      "pattern": "uniform",
+      "spread": 1.0,
+      "visitsPerDay": 350,
+      "unitsPerVisit": 2.0,
+      "speedKmh": 65,
+      "congestionMean": 0.08,
+      "congestionSd": 0.03,
+      "kmCost": 1.1,
+      "hourCost": 30,
+      "wage": 15,
+      "realEstate": 0.45,
+      "storeCapexMult": 0.8,
+      "supplierDistKm": 80,
+      "supplierLtDays": {
+        "fresh": 2.0,
+        "chilled": 3,
+        "ambient": 5,
+        "frozen": 5
+      },
+      "suppliers": {
+        "fresh": 4,
+        "chilled": 6,
+        "ambient": 16,
+        "frozen": 3
+      },
+      "dsdSharedDensity": 8,
+      "mix": {
+        "fresh": 0.1,
+        "chilled": 0.18,
+        "ambient": 0.64,
+        "frozen": 0.08
+      },
+      "freshShelfLifeDays": 5.0,
+      "otherDirectPerDay": 0,
+      "climate": "snow",
+      "regulatedLoading": false,
+      "initial": {
+        "dcs": {
+          "count": 0,
+          "type": "stocking",
+          "size": "medium"
+        },
+        "flows": {
+          "fresh": "dsd",
+          "chilled": "dsd",
+          "ambient": "dsd",
+          "frozen": "dsd"
+        },
+        "freq": {
+          "fresh": 7,
+          "chilled": 7,
+          "ambient": 7,
+          "frozen": 2
+        },
+        "consolidation": "supplier",
+        "fleet": "spot",
+        "vehicle": {
+          "type": "mono",
+          "telemetry": false
+        },
+        "window": "peak",
+        "maintenance": "corrective",
+        "policy": "rop",
+        "csl": {
+          "fresh": 0.92,
+          "chilled": 0.92,
+          "ambient": 0.92,
+          "frozen": 0.92
+        },
+        "assortment": {
+          "skus": 3000,
+          "local": false
+        },
+        "receiving": "manual",
+        "dcSafetyDays": 0,
+        "retirement": "fifo",
+        "info": "basic",
+        "sharing": "no",
+        "forecast": "moving_avg",
+        "collaboration": "arms",
+        "training": "low",
+        "dedicated": {
+          "fresh": false,
+          "chilled": false
+        }
+      },
+      "dsdFeePerDelivery": 35,
+      "supplierFrAdj": 0.0,
+      "presentationMult": 1.6
+    },
+    "valle": {
+      "label": "Valle Metropolitano",
+      "sideKm": 182,
+      "stores": 600,
+      "pattern": "core-periphery",
+      "spread": 0.5,
+      "visitsPerDay": 700,
+      "unitsPerVisit": 2.0,
+      "speedKmh": 22,
+      "congestionMean": 0.35,
+      "congestionSd": 0.12,
+      "kmCost": 0.9,
+      "hourCost": 10,
+      "wage": 4,
+      "realEstate": 0.6,
+      "storeCapexMult": 0.6,
+      "supplierDistKm": 40,
+      "supplierLtDays": {
+        "fresh": 0.5,
+        "chilled": 2,
+        "ambient": 3,
+        "frozen": 3
+      },
+      "suppliers": {
+        "fresh": 6,
+        "chilled": 10,
+        "ambient": 16,
+        "frozen": 4
+      },
+      "dsdSharedDensity": 5,
+      "mix": {
+        "fresh": 0.2,
+        "chilled": 0.2,
+        "ambient": 0.52,
+        "frozen": 0.08
+      },
+      "freshShelfLifeDays": 3.5,
+      "otherDirectPerDay": 0.5,
+      "climate": "rain",
+      "regulatedLoading": true,
+      "initial": {
+        "dcs": {
+          "count": 2,
+          "type": "stocking",
+          "size": "medium"
+        },
+        "flows": {
+          "fresh": "dsd",
+          "chilled": "dc",
+          "ambient": "dc",
+          "frozen": "dc"
+        },
+        "freq": {
+          "fresh": 7,
+          "chilled": 7,
+          "ambient": 3,
+          "frozen": 2
+        },
+        "consolidation": "supplier",
+        "fleet": "dedicated",
+        "vehicle": {
+          "type": "mono",
+          "telemetry": false
+        },
+        "window": "peak",
+        "maintenance": "corrective",
+        "policy": "periodic",
+        "csl": {
+          "fresh": 0.93,
+          "chilled": 0.93,
+          "ambient": 0.94,
+          "frozen": 0.93
+        },
+        "assortment": {
+          "skus": 3000,
+          "local": false
+        },
+        "receiving": "manual",
+        "dcSafetyDays": 3,
+        "retirement": "fifo",
+        "info": "basic",
+        "sharing": "no",
+        "forecast": "moving_avg",
+        "collaboration": "arms",
+        "training": "mid",
+        "dedicated": {
+          "fresh": false,
+          "chilled": false
+        }
+      },
+      "dsdFeePerDelivery": 10,
+      "supplierFrAdj": -0.01,
+      "presentationMult": 1.2
+    }
+  },
+  "events": {
+    "X-01": {
+      "pBase": 0.25,
+      "longRouteMult": 1.5,
+      "lossShare": 0.3
+    },
+    "X-02": {
+      "season": {
+        "typhoon": [
+          2
+        ],
+        "snow": [
+          0,
+          3
+        ],
+        "rain": [
+          1,
+          2
+        ]
+      },
+      "pBase": {
+        "typhoon": 0.25,
+        "snow": 0.2,
+        "rain": 0.15
+      },
+      "offSeason": 0.0,
+      "closedShare": 0.3
+    },
+    "X-03": {
+      "pBase": 0.01,
+      "regions": [
+        "kaigan"
+      ],
+      "minWeeks": 4,
+      "maxWeeks": 8
+    },
+    "X-04": {
+      "pBase": {
+        "high": 0.04,
+        "mid": 0.04,
+        "low": 0.1
+      },
+      "frMult": 0.6,
+      "crossdockMult": 1.5,
+      "dedicatedMult": 0.6,
+      "cpfrMult": 0.7
+    },
+    "X-05": {
+      "pBase": 0.1,
+      "season": [
+        2
+      ],
+      "demandMult": 1.4,
+      "cvMultNoCausal": 1.5
+    },
+    "X-06": {
+      "pBase": {
+        "passive": 0.0,
+        "aggressive": 0.15
+      },
+      "demandMult": 0.92,
+      "lowDensityMult": 1.5,
+      "lowOsaMult": 1.5
+    },
+    "X-07": {
+      "pBase": {
+        "loose": 0.0,
+        "tight": 0.12
+      },
+      "capacityCut": 0.15
+    },
+    "X-08": {
+      "pBase": 0.03,
+      "immatureMult": 2.0,
+      "matureMult": 0.5
+    },
+    "X-09": {
+      "pBase": 0.02,
+      "manySuppliersMult": 1.5,
+      "dedicatedMult": 0.5,
+      "trustHit": 0.02
+    },
+    "X-10": {
+      "pBase": {
+        "stable": 0.0,
+        "volatile": 0.1,
+        "rising": 0.05
+      },
+      "fuelMult": 1.25
+    },
+    "X-11": {
+      "pBase": 0.15,
+      "regions": [
+        "valle"
+      ],
+      "congestionMult": 1.3
+    },
+    "X-12": {
+      "pBase": 0.05,
+      "stopMult": 1.15
+    }
+  },
+  "score": {
+    "weights": {
+      "freshness": {
+        "OSA": 0.25,
+        "WASTE": 0.2,
+        "CTS_PCT": 0.1,
+        "ITR": 0.15,
+        "LOST_SALES": 0.15,
+        "EBITDA_PCT": 0.15
+      },
+      "lowcost": {
+        "OSA": 0.15,
+        "WASTE": 0.1,
+        "CTS_PCT": 0.3,
+        "ITR": 0.15,
+        "LOST_SALES": 0.1,
+        "EBITDA_PCT": 0.2
+      },
+      "convenience": {
+        "OSA": 0.25,
+        "WASTE": 0.1,
+        "CTS_PCT": 0.15,
+        "ITR": 0.05,
+        "LOST_SALES": 0.25,
+        "EBITDA_PCT": 0.2
+      }
+    },
+    "ranges": {
+      "OSA": {
+        "direction": "higher",
+        "worst": 0.85,
+        "best": 0.99
+      },
+      "WASTE": {
+        "direction": "lower",
+        "worst": 0.1,
+        "best": 0.01
+      },
+      "CTS_PCT": {
+        "direction": "lower",
+        "worst": 0.15,
+        "best": 0.03
+      },
+      "ITR": {
+        "direction": "higher",
+        "worst": 10,
+        "best": 60
+      },
+      "LOST_SALES": {
+        "direction": "lower",
+        "worst": 0.08,
+        "best": 0.005
+      },
+      "EBITDA_PCT": {
+        "direction": "higher",
+        "worst": 0.1,
+        "best": 0.26
+      }
+    },
+    "guardrails": [
+      {
+        "kpi": "OSA",
+        "op": ">=",
+        "value": 0.95,
+        "penalty": 0.5
+      },
+      {
+        "kpi": "CTS_PCT",
+        "op": "<=",
+        "value": 0.1,
+        "penalty": 0.5
+      },
+      {
+        "kpi": "OTIF",
+        "op": ">=",
+        "value": 0.93,
+        "penalty": 0.5
+      },
+      {
+        "kpi": "LOST_SALES",
+        "op": "<=",
+        "value": 0.03,
+        "penalty": 0.5
+      }
+    ]
+  }
+}

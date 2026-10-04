@@ -65,11 +65,15 @@ export interface Stream {
 
 class CounterStream implements Stream {
   private counter = 0;
-  constructor(private readonly key: number) {}
+  constructor(
+    private readonly key: number,
+    private readonly key2: number,
+  ) {}
 
+  /** Salida i del flujo: dos claves independientes y doble finalizador (avalancha completa). */
   private u32(): number {
     const i = this.counter++;
-    return fmix(mix(mix(this.key, i), 0x2545f491));
+    return fmix(fmix((this.key + Math.imul(i + 1, 0x9e3779b9)) | 0) ^ this.key2);
   }
 
   next(): number {
@@ -136,7 +140,8 @@ export function createRng(seed: number): Rng {
     seed: s,
     stream(subsystem, epoch, tick, entity = 0) {
       const e = typeof entity === "number" ? entity | 0 : hashString(entity);
-      return new CounterStream(hashInts(s, hashString(subsystem), epoch, tick, e));
+      const sub = hashString(subsystem);
+      return new CounterStream(hashInts(s, sub, epoch, tick, e), hashInts(e, tick, epoch, sub, s ^ 0x5bd1e995));
     },
   };
 }

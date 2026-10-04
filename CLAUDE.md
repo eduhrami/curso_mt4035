@@ -130,7 +130,7 @@ Eduardo is building two browser simulators for his sessions. Documents are the s
 - Numeric values are calibration drafts marked ⚠; calibration happens through auto-play (see test-case docs §11), not by hand-tuning to one run.
 - Each doc ends with a "Decisiones pendientes" checklist — tick items off there when resolved.
 
-**Status (as of 3-oct-2026):** phases **F0** (specs, test cases, architecture doc) and **F1** (`mt4035/simuladores-comun/core/` = `@mt4035/sim-core`, 65 tests green; see its README) complete. Next step is **F2**: the SCM model in `mt4035/simulador-scm-red/app/` implementing `ModelDef` from sim-core, with `params.v1.json` and the P1 SCM test cases. SCM goes first because S4 (15-oct-2026) comes before S5 (5-nov-2026). Run `npm install && npm test` inside a package before changing it. Update this status line when a phase completes.
+**Status (as of 3-oct-2026):** phases **F0** (specs, test cases, architecture doc), **F1** (`mt4035/simuladores-comun/core/` = `@mt4035/sim-core`, 65 tests) and **F2** (`mt4035/simulador-scm-red/app/` = `@mt4035/sim-scm`, SCM model + `params.v1.json`, 56 P1 tests incl. Monte Carlo; implementation notes in spec §6.3b) complete. Next step is **F3**: auto-play tooling in `mt4035/simuladores-comun/tools/` (bots of casos-de-prueba §11, coherence report) and SCM calibration until no P1 alarms; then P2/P3 SCM cases. SCM goes first because S4 (15-oct-2026) comes before S5 (5-nov-2026). Run `npm install && npm test` inside a package before changing it. Update this status line when a phase completes.
 
 ## Previous course version — MT4035 (`mt4035/curso_anterior/`)
 

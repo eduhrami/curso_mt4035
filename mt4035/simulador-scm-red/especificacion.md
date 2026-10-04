@@ -131,6 +131,7 @@ Las decisiones van en cuatro capas que **se pueden cambiar a distinta velocidad*
 | D-05 | Estrategia de apertura de tiendas | **Dominancia de mercado** (*clusters* de 50–60 tiendas por CD) · **Dispersa / oportunista** · **Mixta** | 1 trimestre por lote | Capex por tienda | Cerrar tiendas cuesta |
 | D-06 | Ritmo de apertura/cierre | −10% a +15% de tiendas por año | 1 trimestre | Igual | Igual |
 | D-07 | Proveedores dedicados cerca de los CD | Sí/No por categoría de frescos (como las plantas de *vendors* de SEJ) | 3–4 trimestres | Co-inversión | Baja |
+| D-08 | Lote de apertura de tiendas | 0–500 tiendas que abren la época siguiente (necesario en *greenfield*) | 1 trimestre | Capex por tienda | Cerrar tiendas cuesta |
 
 ### 5.3 Flujo y transporte: táctico (efecto el siguiente trimestre, reversible)
 
@@ -226,6 +227,23 @@ Cluster (D-05) ──► paradas por ruta (+), reconocimiento de marca (+), cani
 
 **Finanzas por época:** ventas · margen bruto − merma − margen perdido − costo de transporte − costo fijo de CD − costo de recepción en tienda − costo de inventario (h% × inventario promedio) − opex de TI − amortización del capex.
 
+### 6.3b Notas de implementación (F2, 3-oct-2026)
+
+La implementación en `app/` concreta la §6.3 así. Los valores están en `app/params/params.v1.json` (⚠ calibración preliminar).
+
+- **Geometría:** la región es una rejilla de 6×6 zonas. Cada zona tiene tiendas y un factor de dispersión (fracción del área que ocupan); de ahí salen ρ y δ.
+- **D-01 es la lista de CD:** cada CD lleva su zona (D-02), su tipo (D-03) y su tamaño (D-04). Cada CD tiene su propio retraso: construir 2–4 trimestres según el tamaño, convertir el tipo 1, ampliar 2. Un CD no se puede mover de zona ni reducir de tamaño.
+- **Categorías:** frescos, refrigerado, ambiente y congelado (las clases de temperatura de D-03).
+- **Rutas:**
+  - hay un tope operativo de paradas por categoría (frescos 8, por las ventanas de comida);
+  - si la troncal ida y vuelta no cabe en medio turno, se hace con relevo y el lazo local usa un turno completo.
+- **DSD:** el proveedor cobra una tarifa por entrega incluida en el precio, porque reparte en rutas compartidas con otros clientes. Las frecuencias son por categoría: frescos 3×/semana, refrigerado 2×, ambiente y congelado 1×.
+- **Inventario de tienda:** stock de seguridad + stock de ciclo + **inventario de exhibición** (días por categoría, multiplicado por región según el tamaño de tienda). La exhibición de perecederos cuenta en la cobertura de frescura.
+- **CD con inventario:** guarda stock de ciclo (2 días) más los días de seguridad de D-24. Ambos amortiguan las fallas del proveedor; el cross-dock no amortigua (R-06).
+- **Fill rate:** se usa la fórmula de revisión periódica de la §6.3. Con el CSL fijo, reponer más seguido baja un poco el fill rate de los no perecederos; en los perecederos lo domina la reducción de merma.
+- **Confianza (R-03):** baja 0.02 por semana mientras la OSA de la zona esté < 90% dos semanas seguidas. Se recupera 0.002 por semana con OSA ≥ 95%, así que el efecto llega al trimestre siguiente.
+- **X-01:** la falla de refrigeración golpea la zona de mayor exposición (la que tiene más tiendas recibiendo frescos).
+
 ### 6.4 Reglas de causa–efecto explícitas (catálogo inicial)
 
 Cada regla se registra en el log y alimenta los mensajes. El alumno siempre puede ver **por qué** pasó algo.
@@ -233,7 +251,7 @@ Cada regla se registra en el log y alimenta los mensajes. El alumno siempre pued
 | ID | Si… | Entonces… |
 |---|---|---|
 | R-01 | Duración de ruta > 4 h en categoría fresca | P(spoilage) ×1.5 y la merma sube por menor VU_rem |
-| R-02 | Merma de frescos > 6% en una semana | P(out-of-stock de frescos) sube la semana siguiente; si persiste, baja la confianza de la zona |
+| R-02 | Merma > 6% en una semana **en una zona** (por categoría) | P(out-of-stock) de esa categoría en esa zona sube la semana siguiente; si persiste, baja la confianza de la zona |
 | R-03 | OSA < 90% dos semanas seguidas | Baja la demanda base de la zona el siguiente trimestre (los clientes "dejan de volver") |
 | R-04 | DSD activo y > 15 entregas por tienda al día | Costo de recepción +; P(error de recepción) +; personal fuera de piso, OSA − |
 | R-05 | Frecuencia 3×/día en región con δ > 10 km | El costo de transporte se dispara y el motor emite una alerta de modelo no alineado con la geografía |
