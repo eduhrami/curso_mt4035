@@ -289,6 +289,15 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
 - **Cadena de frío:** `λ = 0.012` por hora fuera de umbral. En Megalópolis *as-is* da spoilage ≈ 7%; en Bajío y Norte, ≈ 4–5%.
 - **R-06:** se dispara en picos del calendario y en el pico viral (X-05). Resta 0.003 de confianza por día en todas las zonas.
 - **Mini-caso S5 (fixture `minicaso`, no se ofrece al jugador):** reproduce los costos de la lámina 22: SFS ≈ USD 7.75 y SFD ≈ 9.65 por pedido urbano.
+- **Calibración por auto-juego (F6, 4-oct-2026):**
+  - R-08 mide el beneficio de la IA contra el ruteo manual: con datos básicos obtiene ~30% y rinde menos que un VRPTW.
+  - La telemetría y el tráfico (D-60) cuestan por vehículo en operación: USD 40 (GPS) o 120 (completo) al mes.
+  - El mes siguiente a un pico se registra la recuperación del servicio (E-21) en el log causal.
+  - **Puntaje por territorio:**
+    - Bajío: CPD p95 de USD 2–8 y FADS de 80–98%.
+    - Norte: CPD p95 de USD 5–16 y guardrail de utilización de vehículo de 50%.
+    - Con esto la operación *as-is* puntúa en una banda comparable (~35–55).
+  - Reporte de coherencia en `app/autoplay/reports/latest.md`.
 - **Desviaciones conocidas** (también anotadas en los casos de prueba):
   - El costo fijo de una dark store empieza cuando opera, no al decidir. El capex sí se carga al decidir.
   - La flota es de un solo tipo de vehículo; no hay flota mixta 50% EV.
@@ -462,11 +471,11 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 ## 13. Decisiones pendientes
 
 - [ ] Confirmar la duración objetivo de una partida: 36 épocas manuales (≈2 min por época en ~75 min). Valorar si se juega en clase + casa.
-- [ ] Validar las constantes de la §6.3 contra el ejemplo resuelto de S5 (SFS USD 8.00 vs. SFD USD 9.60 por pedido).
+- [x] Validar las constantes de la §6.3 contra el ejemplo resuelto de S5 (SFS USD 8.00 vs. SFD USD 9.60 por pedido). Fixture `minicaso`, LOG-ESC-04.
 - [ ] Decidir si el territorio Norte incluye el tramo carretero entre ciudades o solo la última milla dentro de cada ciudad.
 - [ ] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos).
-- [ ] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común.
-- [ ] Herramienta del profesor para volver a correr y agregar los JSON del grupo.
+- [x] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común. Sí: `@mt4035/sim-core`.
+- [x] Herramienta del profesor para volver a correr y agregar los JSON del grupo. `npm run replay` y `npm run aggregate` (F6); el modo profesor en la UI llega en F7.
 
 ---
 

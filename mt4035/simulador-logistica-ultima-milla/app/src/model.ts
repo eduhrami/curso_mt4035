@@ -42,6 +42,11 @@ function onEpochStart(ctx: EpochContext<LmState, Params>): void {
     kpis: ["ORDERS", "DELIVERED", "REVENUE", "CPD", "CPD_P95", "MARGIN_PCT", "SHIP_PCT", "VEHICLE_UTIL", "STOPS_ROUTE", "BACKLOG", "NODE_UTIL", "OWN_FLEET"],
     drivers: [{ label: `crecimiento anual del canal en línea ${Math.round(growth * 100)}%`, ref: "E-20" }, ...peaks.map((pk) => ({ label: `pico programado: ${pk.name}`, ref: "E-21" }))],
   });
+  // El mes siguiente a un pico el servicio se recupera: se registra para explicar el cambio.
+  if (e > 0 && isPeakMonth(p, e - 1)) {
+    const prev = p.peaks.filter((pk) => pk.month === monthOf(e - 1));
+    ctx.log({ kind: "trend", id: "E-21", kpis: ["OTD", "OTD_P95", "FADS", "FADS_P95", "BACKLOG", "CSAT", "CSAT_P95", "CYCLE_HOURS", "EXCEPTION_RATE", "FLEET_SHORT", "PERFECT", "OTIF", "VEHICLE_UTIL", "CPD", "CPD_P95", "ORDERS"], drivers: prev.map((pk) => ({ label: `termina ${pk.name}: la demanda vuelve a su nivel y se limpia el backlog`, ref: "E-21" })) });
+  }
   if (isPeakMonth(p, e)) {
     ctx.log({ kind: "trend", id: "E-21", kpis: ["OTD", "OTD_P95", "FADS", "FADS_P95", "BACKLOG", "CSAT", "CSAT_P95", "CYCLE_HOURS", "EXCEPTION_RATE", "FLEET_SHORT", "PERFECT", "OTIF", "SPOIL_RATE", "ETA_ACC"], drivers: peaks.map((pk) => ({ label: `${pk.name}: demanda ×1.3–×2.5 durante ${pk.days} días`, ref: "E-21" })) });
   }

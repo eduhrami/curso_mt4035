@@ -29,7 +29,8 @@ export interface CoherenceReport {
 export function evaluate(adapter: AutoplayAdapter, records: readonly RunRecord[], generatedAt: string, search: readonly SearchOutcome[] = []): CoherenceReport {
   const res = new Results(records, adapter.strategies, search);
   const properties: PropertyOutcome[] = adapter.properties.map((p) => {
-    const missing = p.needs.filter((b) => (b === "H" ? search.length === 0 : !res.has(b)));
+    // El bot buscador no deja registros propios: cuenta como presente si hubo búsqueda.
+    const missing = p.needs.filter((b) => (b === adapter.search?.bot ? search.length === 0 : !res.has(b)));
     if (missing.length) return { id: p.id, label: p.label, priority: p.priority, pass: false, skipped: true, detail: `omitida: faltan ${missing.join(", ")}` };
     try {
       return { id: p.id, label: p.label, priority: p.priority, ...p.check(res) };
@@ -116,7 +117,7 @@ export function toMarkdown(rep: CoherenceReport, failures: readonly RunRecord[] 
   );
   if (rep.search.length) {
     const keys = Object.keys(rep.search[0]!.best);
-    lines.push("## Óptimos del buscador (BOT-H)", "", `| Escenario | Estrategia | Puntaje | En extremo | ${keys.join(" | ")} |`, `|---|---|---|---|${keys.map(() => "---|").join("")}`);
+    lines.push("## Óptimos del bot buscador", "", `| Escenario | Estrategia | Puntaje | En extremo | ${keys.join(" | ")} |`, `|---|---|---|---|${keys.map(() => "---|").join("")}`);
     for (const s of rep.search) lines.push(`| ${s.scenario} | ${s.strategy} | ${f1(s.score)} | ${s.atBounds.join(", ") || "—"} | ${keys.map((k) => String(s.best[k])).join(" | ")} |`);
     lines.push("");
   }

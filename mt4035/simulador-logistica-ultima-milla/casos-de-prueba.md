@@ -181,7 +181,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-SCO-02 | La misma corrida (express, CPD alto, Order Cycle Time bajo) evaluada con las tres estrategias | Puntaje velocidad > confiabilidad > eficiencia. ⚠ Implementación: se fija el perfil (Order Cycle Time en su mejor valor y CPD p95 en el peor) sobre la corrida *as-is* para aislar el efecto de los pesos | §7.3 | P1 |
 | LOG-SCO-03 | Violaciones de guardrail > N días | El puntaje decrece de forma estricta con días de violación | §7.3 | P1 |
 | LOG-SCO-04 | Corrida con reporte promedio vs. p95 | Puntaje idéntico (usa p95) | LOG-INV-13 | P1 |
-| LOG-SCO-05 | *As-is* por territorio | Puntajes en banda comparable (p. ej. 35–55) | §7.3 | P2 |
+| LOG-SCO-05 | *As-is* por territorio | Puntajes en banda comparable (p. ej. 35–55). ⚠ Implementación: rangos de CPD p95 y FADS por territorio y guardrail de utilización de vehículo de 50% en Norte; la prueba acepta [33, 58] | §7.3 | P2 |
 
 ---
 
@@ -213,8 +213,9 @@ Los mismos casos que SCM-PER-01…07, con estos cambios: el CSV tiene **36 filas
 | **BOT-E Express rural ingenuo** | En Norte: express < 2 h sin micro-hubs | Debe perder en Norte |
 | **BOT-F Aleatorio** | Decisiones válidas aleatorias cada mes | Robustez |
 | **BOT-G Reactivo** | Si utilización > 90%, suma *crowdsourced*; si OTD < 90%, sube el buffer 10%; si CPD sube > 5% MoM, quita un nivel de servicio | Alumno táctico |
-| **BOT-H Aprendiz** | Igual que A en el año 1; después del primer Buen Fin/Navidad contrata flota de pico, agrega slotting y buffer en los picos de los años 2 y 3 | Valida que los 36 meses permiten aprender de un ciclo a otro |
+| **BOT-H Aprendiz** | Igual que A en el año 1; después del primer Buen Fin/Navidad contrata flota de pico, agrega slotting y buffer en los picos de los años 2 y 3. Al iniciar el año 3, si el CD pasó de 85% de utilización en el año 2, suma SFS (30%) con umbral dinámico para liberar capacidad | Valida que los 36 meses permiten aprender de un ciclo a otro |
 | **BOT-I Buscador** | Búsqueda aleatoria + *hill climbing* por territorio × estrategia | Explotaciones y óptimos en límites |
+| **BOT-J / BOT-K** | BOT-C con ruteo por IA y datos básicos (J) o con VRPTW y datos completos (K) | La IA necesita datos (LOG-AUT-13) |
 
 ### 11.2 Propiedades esperadas (modo estocástico, MC N = 200)
 
@@ -227,14 +228,14 @@ Los mismos casos que SCM-PER-01…07, con estos cambios: el CSV tiene **36 filas
 | LOG-AUT-05 | Eficiencia coherente | BOT-D tiene el mejor CPD entre A–E en Megalópolis y Bajío en ≥ 80% de semillas | P2 |
 | LOG-AUT-06 | Se aprende entre ciclos | BOT-H: OTD p95 en noviembre–diciembre del año 2 > año 1 en ≥ 90% de semillas; y el año 3 ≥ año 2 | P1 |
 | LOG-AUT-07 | Ningún extremo domina | Ninguna configuración de BOT-I es óptima en las 9 combinaciones territorio × estrategia; ≥ 3 óptimos distintos | P2 |
-| LOG-AUT-08 | Óptimos interiores | k de zonas, ancho de ventana, buffer y % SFS óptimos no están en los límites en ≥ 7 de 9 combinaciones | P2 |
+| LOG-AUT-08 | Óptimos interiores | k de zonas, ancho de ventana, buffer y % SFS óptimos no están en los límites en ≥ 7 de 9 combinaciones. ⚠ Implementación: solo cuentan los extremos *activos* (3 o 30 zonas, ventana de 1 h, holgura de 30%, SFS de 100%); apagar la palanca (0% SFS, sin holgura, ventana de todo el día) es una respuesta legítima | P2 |
 | LOG-AUT-09 | Urbano ≠ rural | El óptimo de BOT-I en Norte usa más consolidación (lockers, micro-hubs, ventanas amplias) que en Megalópolis | P2 |
 | LOG-AUT-10 | Habilidad > suerte | CV del puntaje de BOT-A < 15%; diferencia media BOT-C − BOT-A > 2 desviaciones estándar | P1 |
 | LOG-AUT-11 | Los picos son el examen | Para BOT-A, ≥ 50% de los días de violación de guardrail ocurren en meses pico | P2 |
 | LOG-AUT-12 | Medir importa | En BOT-A, la diferencia entre OTD promedio y OTD p95 en Megalópolis es ≥ 10 pp (justifica la lección de D-61) | P2 |
-| LOG-AUT-13 | La IA necesita datos | El mejor puntaje con IA y datos básicos < mejor puntaje con VRPTW y datos completos | P2 |
+| LOG-AUT-13 | La IA necesita datos | El mejor puntaje con IA y datos básicos < mejor puntaje con VRPTW y datos completos. ⚠ Implementación: se compara BOT-J vs. BOT-K (≥ 80% de semillas) | P2 |
 | LOG-AUT-14 | Estabilidad del reactivo | BOT-G no genera costos explosivos ni KPIs fuera de rango; se registran oscilaciones | P3 |
-| LOG-AUT-15 | Robustez de la calibración | Al perturbar ±20% cada constante, el orden BOT-C > BOT-A en Megalópolis se mantiene en ≥ 90% de las perturbaciones | P2 |
+| LOG-AUT-15 | Robustez de la calibración | Al perturbar ±20% cada constante, el orden BOT-C > BOT-A en Megalópolis se mantiene en ≥ 90% de las perturbaciones. ⚠ Pendiente: aún no implementada en el auto-juego | P2 |
 | LOG-AUT-16 | **Explicabilidad** | Todo cambio de KPI > 10% entre meses tiene ≥ 1 causa registrada (decisión, evento, regla, pico o tendencia). Cobertura ≥ 95% | P1 |
 
 ### 11.3 Reporte de coherencia y alarmas

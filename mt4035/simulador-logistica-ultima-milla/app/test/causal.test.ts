@@ -105,13 +105,15 @@ describe("LOG-CAU (P1)", () => {
 
   it("CAU-17 IA con datos básicos obtiene ≤ 30% de la mejora de la IA con datos completos (R-08)", () => {
     // Ventana de 1 h: la precisión del ETA no satura en su tope.
-    const base = kpis("megalopolis", { window: "1h", routing: "vrptw", data: "full" });
+    const base = kpis("megalopolis", { window: "1h" }); // ruteo manual
+    const vrptw = kpis("megalopolis", { window: "1h", routing: "vrptw", data: "full" });
     const basic = kpis("megalopolis", { window: "1h", routing: "ai", data: "basic" });
     const full = kpis("megalopolis", { window: "1h", routing: "ai", data: "full" });
     const gainFull = full.ROUTE_EFF! - base.ROUTE_EFF!;
     expect(gainFull).toBeGreaterThan(0);
     expect(basic.ROUTE_EFF! - base.ROUTE_EFF!).toBeLessThanOrEqual(0.3 * gainFull + 1e-12);
     expect(full.ETA_ACC! - base.ETA_ACC!).toBeGreaterThan(basic.ETA_ACC! - base.ETA_ACC!);
+    expect(basic.ROUTE_EFF).toBeLessThan(vrptw.ROUTE_EFF!); // la IA sin datos rinde menos que un VRPTW
   });
 
   it("CAU-22 quitar el pago contra entrega: menos fallas en ambos; la caída de pedidos es mayor en Norte", () => {
