@@ -15,3 +15,8 @@
 
 # Material con copyright (casos HBP/Ivey/Kellogg, libros): solo uso local, no publicar
 mt4035/references/
+
+# Simuladores (Node/TypeScript)
+node_modules/
+dist/
+coverage/
