@@ -4,7 +4,7 @@ Núcleo común, sin DOM, de los simuladores MT4035. Implementa la fase **F1** de
 
 | Módulo | Contenido | Decisión |
 |---|---|---|
-| `src/rng.ts` | PRNG basado en contador con **números aleatorios comunes**: cada sorteo depende de (semilla, subsistema, época, tick, entidad) | AD-06 |
+| `src/rng.ts` | PRNG basado en contador con **números aleatorios comunes**: cada sorteo depende de (semilla, subsistema, época, tick, entidad); dos claves y doble finalizador por sorteo (AD-12c) | AD-06 |
 | `src/types.ts` | Contrato `ModelDef` que implementa cada simulador: calendario, decisiones, `init`, `tick`, reglas, eventos, `aggregate` | AD-05, AD-07 |
 | `src/engine.ts` | Motor puro: `createGame`, `validate`, `stage` (preparar/deshacer), `confirmEpoch` (única forma de avanzar), retrasos, capex, eventos y reglas por tick | AD-05, AD-20 |
 | `src/causal.ts` | Consultas al log causal y cobertura de explicabilidad | AD-08 |

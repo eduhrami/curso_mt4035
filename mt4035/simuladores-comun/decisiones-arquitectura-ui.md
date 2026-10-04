@@ -143,6 +143,10 @@ type Event = { id: "X-01"; pBase(scn, period): number;
 - **Replay entre navegadores:** se compara con tolerancia relativa 1e-9 porque `Math.exp/log/cos` puede variar en el último bit entre motores de JavaScript.
 - **Paquete:** `exports` apunta a las fuentes TypeScript (`src/index.ts`); las apps de Vite y Vitest las compilan directamente, sin paso de build propio del core.
 
+### AD-12c ✔ PRNG reforzado (F2, 3-oct-2026)
+
+La prueba Monte Carlo de eventos de F2 detectó un leve sesgo en la cola baja del PRNG: z = 2.1 en P(u < 0.0016) con 1.3 millones de muestras. Cada sorteo ahora usa dos claves independientes y un doble finalizador de MurmurHash3, y la cola queda en z = −0.25. El cambio altera las secuencias aleatorias, así que las corridas exportadas antes de este cambio no se pueden repetir con exactitud. No hubo corridas publicadas.
+
 ### AD-13 ✔ Herramientas de línea de comandos (`simuladores-comun/tools`)
 
 | Comando | Función |
@@ -277,7 +281,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 |---|---|---|
 | **F0** ✔ | Especificaciones, casos de prueba y este documento | Publicados en el repo |
 | **F1** ✔ | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas ([core/README.md](./core/README.md)) | INV genéricas en verde; replay idéntico. Cumplido el 3-oct-2026: 65 pruebas (64 rápidas + 1 Monte Carlo) |
-| **F2** | Modelo SCM (sin UI) + `params.v1` | Casos SCM P1 en verde |
+| **F2** ✔ | Modelo SCM (sin UI) + `params.v1` ([app/README.md](../simulador-scm-red/app/README.md)) | Casos SCM P1 en verde. Cumplido el 3-oct-2026: 56 pruebas (52 rápidas + 4 Monte Carlo) |
 | **F3** | Auto-juego SCM y calibración | Reporte de coherencia sin alarmas P1 |
 | **F4** | UI SCM (ui-kit + pantallas) | Flujo *end-to-end* de 20 épocas + exportación |
 | **F5** | Modelo logística + `params.v1` | Casos LOG P1 en verde |

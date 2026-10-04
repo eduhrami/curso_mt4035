@@ -124,7 +124,7 @@ Modo determinista, decisiones *as-is* salvo que se indique. Los rangos son ⚠ y
 | SCM-ESC-03 | Valle *as-is* | KPIs intermedios entre Kaigan y Red River en OSA y CTS | E-06 | P2 |
 | SCM-ESC-04 | **Trasplante ingenuo:** Red River con 3×/día, cross-dock combinado, sin densificar | CTS % ventas ≥ 2× el de Kaigan *as-is*; se dispara R-05; puntaje < SCM-ESC-05 bajo **todas** las estrategias | R-05, §11 | P1 |
 | SCM-ESC-05 | **Adaptado:** Red River con CD con inventario para ambiente, frescos 1×/día, consolidación, POS compartido y densificación gradual | CTS ↓ y OSA ↑ frente a *as-is* a partir de A2 | §11 | P1 |
-| SCM-ESC-06 | Mismo paquete de decisiones aplicado a las tres regiones | Orden de CTS por tienda: Kaigan < Valle < Red River | E-03, E-04 | P1 |
+| SCM-ESC-06 | Mismo paquete de decisiones aplicado a las tres regiones | Orden de costo logístico relativo (CTS % de ventas): Kaigan < Valle < Red River. Se usa el porcentaje porque el costo absoluto por tienda depende del volumen, que en Kaigan es tres veces mayor | E-03, E-04 | P1 |
 | SCM-ESC-07 | *Greenfield* | Ventas = 0 hasta que abre el primer lote (retraso de 1 trimestre); en la época 0 solo hay capex | §4.1 | P2 |
 | SCM-ESC-08 | Kaigan con volatilidad alta vs. baja (E-22), mismo CSL | Inventario ↑ con volatilidad alta; FR ≤ | E-22 | P2 |
 | SCM-ESC-09 | Perfil de envejecimiento (E-26) | La participación de frescos en la demanda sube de forma monótona a lo largo de las 20 épocas | E-26 | P3 |
