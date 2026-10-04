@@ -107,7 +107,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 |---|---|---|---|---|
 | LOG-ESC-01 | Megalópolis *as-is* | FADS ∈ [78%, 85%] ("1 de cada 5 falla"); spoilage de frescos notable (> 3%); CSAT < 4.0 | Storytelling §2 | P1 |
 | LOG-ESC-02 | Paradas por ruta por territorio *as-is* | Urbano denso: 25–70 paradas/día; rural disperso: 8–15 | K-10, slide 19 de S5 | P1 |
-| LOG-ESC-03 | CPD por territorio con la misma política | Rural ≈ 4–5× urbano; todos dentro de USD 1.40–12 por paquete (Pahwa & Jaller, 2022) | K-05, §6.3 | P1 |
+| LOG-ESC-03 | CPD por territorio con la misma política | Rural ≈ 4–5× urbano; todos dentro de USD 1.40–12 por paquete (Pahwa & Jaller, 2022). ⚠ Implementación: rural/urbano ∈ [3.5, 6.5]; urbano ∈ [1.40, 12]; rural *as-is* ≤ 25 (la zona rural de Norte está a 70–80 km del CD); los micro-hubs bajan el rural | K-05, §6.3 | P1 |
 | LOG-ESC-04 | `fixture("mini-caso-S5")`: SFS vs. SFD en la zona urbana | Costo por pedido ≈ USD 8.00 (SFS) vs. 9.60 (SFD), ±10% | §13 especificación, slide 22 | P1 |
 | LOG-ESC-05 | Mismo fixture con la recomendación segmentada (SFS urbano + SFD suburbano) | OTIF urbano ≈ +6 pp frente a solo SFD; CPD total ↓ | Slide 23 | P2 |
 | LOG-ESC-06 | Bajío *as-is* | Mejor FADS que Megalópolis (direcciones de calidad, presencia media) | E-06, E-07 | P2 |
@@ -125,7 +125,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-REG-03 | R-03 (ventana de todo el día con E-07 bajo) | E-07 medio → FADS ≥ 80% | E-07 bajo → FADS < 80% | P1 |
 | LOG-REG-04 | R-04 (express con baja densidad) | Densidad alta → sin alerta | Densidad baja → utilización < 50% y alerta | P1 |
 | LOG-REG-05 | R-05 (SFS sobre el tope) | En el tope → OSA de tienda sin cambio | Sobre el tope → OSA de tienda ↓ ∝ exceso | P1 |
-| LOG-REG-06 | R-06 (sin buffer + pico) | Buffer ≥ 10% → backlog se limpia en ≤ 2 días | Buffer 0% + pico ×2 → backlog arrastrado ≥ 3 días y OTD p95 < 80% | P1 |
+| LOG-REG-06 | R-06 (sin buffer + pico) | Buffer ≥ 10% → backlog se limpia en ≤ 2 días. ⚠ Implementación: la holgura no agrega capacidad; con ≥ 10% en pico la promesa incluye un día más, así que lo arrastrado no cuenta como tarde y R-06 no se dispara | Buffer 0% + pico ×2 → backlog arrastrado ≥ 3 días y OTD p95 < 80% | P1 |
 | LOG-REG-07 | R-07 (re-zonificación diaria sin datos) | Datos maduros → sin penalización | Datos básicos → paradas/hora −10% | P2 |
 | LOG-REG-08 | R-08 (IA con datos básicos) | Ver LOG-CAU-17 | — | P1 |
 | LOG-REG-09 | R-09 (pago por parada) | Ver LOG-CAU-21 | — | P2 |
@@ -144,7 +144,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-EVT-01 | MC N = 1,000, *as-is* por territorio | Frecuencia mensual de cada X-xx dentro del IC 95% de `p_base × Π modificadores` | §8 | P1 |
 | LOG-EVT-02 | Estacionalidad | X-02 (inundación en Megalópolis) solo de junio a septiembre; X-12 (calor en Norte) solo de mayo a agosto; X-04 (contingencia) solo en temporada seca | §8, E-11 | P1 |
 | LOG-EVT-03 | Picos programados | Los picos ocurren **siempre** en su mes (no es probabilístico); su magnitud varía por semilla en [1.3, 2.5] | E-21 | P1 |
-| LOG-EVT-04 | X-04 forzado con flota mixta 50% EV | Solo la parte de combustión pierde capacidad | X-04, R-13 | P1 |
+| LOG-EVT-04 | X-04 forzado con flota mixta 50% EV | Solo la parte de combustión pierde capacidad. ⚠ Implementación: la flota es de un solo tipo de vehículo; se prueba camioneta/refrigerada (pierden 20%) vs. eléctrica/moto (sin pérdida) | X-04, R-13 | P1 |
 | LOG-EVT-05 | X-08 (robo) en MC: con COD alto y sin GPS vs. sin COD y con D-62 | Frecuencia ↓ en el segundo caso, dentro del IC esperado | X-08 | P2 |
 | LOG-EVT-06 | X-07 forzado con *crowdsourced* 70% vs. 20% | Rutas sin cubrir ∝ dependencia | X-07 | P2 |
 | LOG-EVT-07 | X-14 forzado (cierre de tienda-nodo) con asignación "más cercano" vs. "umbral dinámico" | La regla dinámica reasigna con menor caída de OTD | X-14, D-10 | P2 |
@@ -161,7 +161,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 
 | ID | Condición | Resultado esperado | Traza | Prio |
 |---|---|---|---|---|
-| LOG-LAG-01 | Dark store decidida en A1-M01 | Opera desde A1-M04 (retraso de 3 meses); el costo fijo empieza al decidir | D-04 | P1 |
+| LOG-LAG-01 | Dark store decidida en A1-M01 | Opera desde A1-M04 (retraso de 3 meses); el costo fijo empieza al decidir. ⚠ Implementación: el capex se carga al decidir y el costo fijo mensual empieza cuando opera | D-04 | P1 |
 | LOG-LAG-02 | MFC decidido en A1-M01 | Opera desde A1-M07 | D-05 | P1 |
 | LOG-LAG-03 | SFS y BOPIS activados en el mes *t* | Operan en *t+1* | D-02, D-03 | P1 |
 | LOG-LAG-04 | Lockers | Operan en *t+1* o *t+2* según los parámetros | D-06 | P2 |
@@ -178,7 +178,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | ID | Condición | Resultado esperado | Traza | Prio |
 |---|---|---|---|---|
 | LOG-SCO-01 | Tabla de pesos | Suman 1.00 por estrategia | §7.3 | P1 |
-| LOG-SCO-02 | La misma corrida (express, CPD alto, Order Cycle Time bajo) evaluada con las tres estrategias | Puntaje velocidad > confiabilidad > eficiencia | §7.3 | P1 |
+| LOG-SCO-02 | La misma corrida (express, CPD alto, Order Cycle Time bajo) evaluada con las tres estrategias | Puntaje velocidad > confiabilidad > eficiencia. ⚠ Implementación: se fija el perfil (Order Cycle Time en su mejor valor y CPD p95 en el peor) sobre la corrida *as-is* para aislar el efecto de los pesos | §7.3 | P1 |
 | LOG-SCO-03 | Violaciones de guardrail > N días | El puntaje decrece de forma estricta con días de violación | §7.3 | P1 |
 | LOG-SCO-04 | Corrida con reporte promedio vs. p95 | Puntaje idéntico (usa p95) | LOG-INV-13 | P1 |
 | LOG-SCO-05 | *As-is* por territorio | Puntajes en banda comparable (p. ej. 35–55) | §7.3 | P2 |

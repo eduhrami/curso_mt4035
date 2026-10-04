@@ -256,6 +256,45 @@ Flota insuficiente en pico ─► crowdsourced spot (costo +, confiabilidad −)
 - `pedidos_t+1 = base · f_crec · f_estac · (1 + ε_velocidad·Δpromesa − ε_tarifa·Δtarifa) · f(CSAT_t−1, reputación)`.
 - `CSAT = 5 − a·(1−OTD) − b·(1−FADS) − c·tasa_excepción − d·spoilage + e·ETA_accuracy`, acotada entre 1 y 5.
 
+### 6.3b Notas de implementación (F5, 4-oct-2026)
+
+La implementación en `app/` concreta la §6.3 así. Los valores están en `app/params/params.v1.json` (⚠ calibración preliminar; se ajusta con auto-juego en F6).
+
+- **Tick diario en tres pasadas:**
+  1. **Por zona:** demanda, reparto entre recoger en tienda, lockers y domicilio, asignación de nodo según D-10, y rutas.
+  2. **Flota:** propia, 3PL, *crowdsourced* y contratos de pico.
+  3. **Por zona:** puntualidad, primer intento, frío, excepciones, costos, CSAT y confianza.
+- **Rutas (Daganzo):**
+  - Fórmula: `δ = k_TSP·√(A/n_ef)`, con `n_ef = paradas / fragmentación`.
+  - Fragmentación: `#ventanas^0.6 · (1 + 0.35·(niveles − 1)) · f(D-24)`.
+  - El método de ruteo multiplica solo el recorrido local, en km y en tiempo; la troncal es directa.
+  - El express tiene su propio tope de paradas: lo que cabe en la promesa de 1.5 h.
+  - Un locker cuenta como una sola parada (R-14).
+- **Nodos de cercanía:**
+  - Cada dark store surte su zona y una zona densa vecina, a 5 km.
+  - Cada MFC surte su zona y tres vecinas, a 6 km.
+  - La capacidad de cada nodo es compartida entre las zonas que atiende.
+  - Con cualquier % de SFS > 0 surte al menos una tienda por zona.
+  - La utilización de tienda es `pedidos / capacidad de sus surtidores`.
+- **Flota:**
+  - El 3PL y los contratos de pico se dimensionan con la **necesidad típica**: el promedio del mes anterior, × 1.15 de holgura.
+  - En un pico, la flota contratada se queda corta y los pedidos pasan a backlog.
+  - Cada día se cancela 30% del backlog.
+- **Puntualidad:**
+  - Fórmula: `OTD = Φ((ventana/2 · (1 + 2·buffer) − sesgo) / σ)`.
+  - `σ = 0.2 · f_ruteo · √(T_ruta/2) · (1 + σ_congestión)`.
+  - `sesgo = b(D-44) · T_ruta/2 + espera de picking`.
+  - Es decir, el desvío se acumula hasta la parada promedio: la mitad de la ruta.
+  - Los pedidos de ayer llegan tarde, salvo en pico con holgura ≥ 10% (la promesa ya incluía un día más).
+- **Cadena de frío:** `λ = 0.012` por hora fuera de umbral. En Megalópolis *as-is* da spoilage ≈ 7%; en Bajío y Norte, ≈ 4–5%.
+- **R-06:** se dispara en picos del calendario y en el pico viral (X-05). Resta 0.003 de confianza por día en todas las zonas.
+- **Mini-caso S5 (fixture `minicaso`, no se ofrece al jugador):** reproduce los costos de la lámina 22: SFS ≈ USD 7.75 y SFD ≈ 9.65 por pedido urbano.
+- **Desviaciones conocidas** (también anotadas en los casos de prueba):
+  - El costo fijo de una dark store empieza cuando opera, no al decidir. El capex sí se carga al decidir.
+  - La flota es de un solo tipo de vehículo; no hay flota mixta 50% EV.
+  - El CPD rural *as-is* de Norte (~USD 22) supera el máximo de Pahwa & Jaller (12). Esos datos son de EE. UU. con densidad suburbana; aquí la zona rural está a 70–80 km del CD y mide 3,000 km². Los micro-hubs lo reducen.
+  - Sin una dark store o un MFC en la zona, el express desde el CD de Megalópolis no cabe en la promesa.
+
 ### 6.4 Reglas de causa–efecto explícitas
 
 | ID | Si… | Entonces… |
