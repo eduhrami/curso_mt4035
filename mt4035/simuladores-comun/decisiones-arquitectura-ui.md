@@ -135,6 +135,14 @@ type Event = { id: "X-01"; pBase(scn, period): number;
 - El checksum detecta alteraciones accidentales, **no** es seguridad: un alumno podría recalcularlo. La verificación real es el **replay**: la herramienta del profesor vuelve a correr la semilla con las decisiones y compara los KPIs.
 - **Consecuencia:** se conservan los builds de cada `simVersion` publicada (tags de git) para poder repetir corridas viejas.
 
+### AD-12b ✔ Notas de implementación de F1 (3-oct-2026)
+
+- **Validación de dependencias:** la vista de validación expone `effective(id)` (incluye el cambio que se valida) y `previous(id)` (valor anterior: pendiente o vigente). Las restricciones "solo ampliar" o "no revertir" usan `previous`.
+- **Orden dentro del tick:** eventos → `model.tick()` → reglas. El efecto de una regla sobre el estado se ve desde el tick siguiente.
+- **Eventos:** `pBase` es probabilidad por época; el motor la convierte a probabilidad por tick para que P(≥1 ocurrencia en la época) = p. Un mismo evento no se apila mientras está activo.
+- **Replay entre navegadores:** se compara con tolerancia relativa 1e-9 porque `Math.exp/log/cos` puede variar en el último bit entre motores de JavaScript.
+- **Paquete:** `exports` apunta a las fuentes TypeScript (`src/index.ts`); las apps de Vite y Vitest las compilan directamente, sin paso de build propio del core.
+
 ### AD-13 ✔ Herramientas de línea de comandos (`simuladores-comun/tools`)
 
 | Comando | Función |
@@ -153,7 +161,7 @@ type Event = { id: "X-01"; pBase(scn, period): number;
 
 | Nivel | Herramienta | Cubre |
 |---|---|---|
-| Unitarias de fórmulas | Vitest | §6.3 de cada especificación |
+| Unitarias de fórmulas | Vitest 4 (Vitest 5 exige Node 22; el entorno usa Node 20) | §6.3 de cada especificación |
 | Propiedades | Vitest + **fast-check** | Invariantes (INV) y matriz de signos |
 | Pareadas causales | Vitest + números aleatorios comunes (AD-06) | CAU, REG |
 | Monte Carlo | Vitest, suite `test:mc` con semillas fijas 1…N | EVT y frecuencias. **Deterministas**, sin pruebas intermitentes |
@@ -268,7 +276,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 | Fase | Entregable | Criterio de salida |
 |---|---|---|
 | **F0** ✔ | Especificaciones, casos de prueba y este documento | Publicados en el repo |
-| **F1** | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas | INV genéricas en verde; replay idéntico |
+| **F1** ✔ | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas ([core/README.md](./core/README.md)) | INV genéricas en verde; replay idéntico. Cumplido el 3-oct-2026: 65 pruebas (64 rápidas + 1 Monte Carlo) |
 | **F2** | Modelo SCM (sin UI) + `params.v1` | Casos SCM P1 en verde |
 | **F3** | Auto-juego SCM y calibración | Reporte de coherencia sin alarmas P1 |
 | **F4** | UI SCM (ui-kit + pantallas) | Flujo *end-to-end* de 20 épocas + exportación |
