@@ -19,14 +19,40 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "types": [
-      "node"
-    ]
+      "node",
+      "vite/client"
+    ],
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
+    "paths": {
+      "preact": [
+        "./node_modules/preact"
+      ],
+      "preact/*": [
+        "./node_modules/preact/*"
+      ],
+      "@preact/signals": [
+        "./node_modules/@preact/signals"
+      ],
+      "chart.js": [
+        "./node_modules/chart.js"
+      ],
+      "@mt4035/sim-core": [
+        "./node_modules/@mt4035/sim-core/src/index.ts"
+      ],
+      "@mt4035/sim-core/testing": [
+        "./node_modules/@mt4035/sim-core/src/testing.ts"
+      ]
+    }
   },
   "include": [
     "src",
     "test",
     "scripts",
     "autoplay",
-    "vitest.config.ts"
+    "ui",
+    "e2e",
+    "vitest.config.ts",
+    "vite.config.ts"
   ]
 }

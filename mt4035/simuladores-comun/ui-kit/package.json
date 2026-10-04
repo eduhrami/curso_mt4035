@@ -1,0 +1,17 @@
+{
+  "name": "@mt4035/ui-kit",
+  "version": "0.1.0",
+  "description": "Componentes Preact compartidos de los simuladores MT4035 (AD-20 … AD-29).",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css"
+  },
+  "peerDependencies": {
+    "@mt4035/sim-core": "*",
+    "@preact/signals": "^2.11.0",
+    "chart.js": "^4.5.0",
+    "preact": "^10.29.0"
+  }
+}

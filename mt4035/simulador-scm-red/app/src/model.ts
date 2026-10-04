@@ -1,6 +1,6 @@
 /** Ensamblado del modelo SCM como ModelDef de sim-core. */
 import { createEngine, quarterLabel, type EpochContext, type GameConfig, type ModelDef } from "@mt4035/sim-core";
-import paramsJson from "../params/params.v1.json";
+import paramsJson from "../params/params.v1.json" with { type: "json" };
 import { decisions } from "./decisions.ts";
 import { events } from "./events.ts";
 import { aggregate } from "./kpis.ts";

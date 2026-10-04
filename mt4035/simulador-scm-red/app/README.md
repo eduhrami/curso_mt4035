@@ -1,6 +1,6 @@
 # @mt4035/sim-scm — modelo del Simulador SCM + Diseño de red
 
-Implementación de la fase **F2** ([ruta](../../simuladores-comun/decisiones-arquitectura-ui.md#4-ruta-de-implementación)): el modelo de la [especificación](../especificacion.md) sobre [`@mt4035/sim-core`](../../simuladores-comun/core/README.md). Todavía no tiene interfaz; la UI es la fase F4.
+Modelo (fase **F2**), auto-juego (**F3**) e interfaz (**F4**) del simulador de la [especificación](../especificacion.md), sobre [`@mt4035/sim-core`](../../simuladores-comun/core/README.md) y [`@mt4035/ui-kit`](../../simuladores-comun/ui-kit/README.md). Ver la [ruta de implementación](../../simuladores-comun/decisiones-arquitectura-ui.md#4-ruta-de-implementación).
 
 | Archivo | Contenido | Especificación |
 |---|---|---|
@@ -13,6 +13,29 @@ Implementación de la fase **F2** ([ruta](../../simuladores-comun/decisiones-arq
 | `src/rules.ts` · `src/events.ts` | R-01 … R-12 · X-01 … X-12 | §6.4, §8 |
 | `src/kpis.ts` · `src/score.ts` | KPIs por época · puntaje por estrategia con guardrails | §7 |
 | `src/model.ts` | `ModelDef`, `createScmEngine()` y `scmConfig()` | — |
+
+## Interfaz (F4)
+
+`ui/` contiene la app Preact. Se compila en **un solo `dist/index.html`** (~420 KB, ~140 KB comprimido) que funciona sin servidor ni conexión: se puede publicar en GitHub Pages, subir a Canvas o abrir local.
+
+| Archivo | Contenido |
+|---|---|
+| `ui/Setup.tsx` | Región, *greenfield*, estrategia declarada, condiciones de mercado, semilla y jugador |
+| `ui/App.tsx` | Barra superior (trimestre, inversión, proyectos en curso), layout de tres columnas y diálogo de confirmación |
+| `ui/Dashboard.tsx` | KPI con guardrail, trayectoria, «¿por qué cambió?», frontera servicio–costo, costos por trimestre y mapa |
+| `ui/NetworkMap.tsx` · `ui/DcEditor.tsx` | Mapa esquemático de la red y editor de CD (D-01 con zona, tipo y tamaño) |
+| `ui/FinalReport.tsx` | Puntaje según la estrategia declarada, desglose, guardrails, trayectoria, decisiones y eventos; exportación JSON/CSV e impresión |
+| `ui/Runs.tsx` | Corridas guardadas: continuar, exportar, borrar, importar y comparar hasta 4 |
+| `ui/labels.ts` | Textos en español, opciones y metadatos de KPI (sigla, nombre, fórmula, guardrail por región) |
+
+```bash
+npm run dev        # servidor de desarrollo de Vite
+npm run build      # dist/index.html autocontenido
+npm run e2e        # compila y corre las pruebas de punta a punta (Playwright, Chromium)
+node scripts/smoke.mjs <carpeta>   # capturas de pantalla para revisión visual
+```
+
+El modo profesor se activa con `?profesor=1`: muestra el puntaje parcial durante el juego y permite importar varias corridas de alumnos y verificarlas con replay.
 
 ## Auto-juego y calibración (F3)
 
