@@ -95,6 +95,19 @@ describe("LOG-SCO (P1)", () => {
   });
 });
 
+describe("LOG-SCO (P2)", () => {
+  it("SCO-05 as-is por territorio: puntajes en una banda comparable (~35–55, normalización por territorio)", () => {
+    for (const t of ["megalopolis", "bajio", "norte"] as const) {
+      const { reports } = playGame(engine, det(t));
+      for (const st of ["speed", "reliability", "efficiency"] as const) {
+        const sc = scoreRun(reports, st, params, t).score;
+        expect(sc, `${t}/${st}`).toBeGreaterThanOrEqual(33);
+        expect(sc, `${t}/${st}`).toBeLessThanOrEqual(58);
+      }
+    }
+  });
+});
+
 describe("LOG-PER (P1)", () => {
   const versions = { simVersion: SIM_VERSION, paramsVersion: PARAMS_VERSION };
   const opts = { runId: "r1", createdAt: "2026-11-05T00:00:00.000Z" };

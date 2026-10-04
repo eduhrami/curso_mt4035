@@ -17,7 +17,7 @@ export class Results {
   constructor(
     readonly records: readonly RunRecord[],
     readonly strategies: readonly string[],
-    /** Óptimos del buscador (BOT-H), si se corrió con --search. */
+    /** Óptimos del bot buscador, si se corrió con --search. */
     readonly search: readonly SearchOutcome[] = [],
   ) {
     for (const r of records) this.index.set(`${r.bot}|${r.scenario}|${r.seed}`, r);

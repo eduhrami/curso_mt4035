@@ -9,7 +9,7 @@ Herramientas de auto-juego de los simuladores MT4035 (fase **F3**, [AD-13](../de
 | `src/runner.ts` | `WorkerPool`: reparte tareas entre procesos de trabajo (`worker_threads`) y junta los registros en orden estable |
 | `src/worker-boot.mjs` · `src/worker.ts` | Arranque de cada proceso: registra `tsx` (en Node 20 no se hereda con `--import`) y carga el adaptador una vez |
 | `src/results.ts` | Consultas: resúmenes (media, σ, p5, p95, CV), posiciones por semilla, diferencias pareadas |
-| `src/search.ts` | **BOT-H**: búsqueda aleatoria + ascenso por coordenadas, con punto de partida *as-is*, grupos de parámetros acoplados y vector canónico |
+| `src/search.ts` | **Bot buscador** (BOT-H en SCM, BOT-I en logística): búsqueda aleatoria + ascenso por coordenadas, con punto de partida *as-is*, grupos de parámetros acoplados, vector canónico y extremos que alertan (`notBound` o `bounds`) |
 | `src/report.ts` | Reporte de coherencia (casos de prueba §11.3) en Markdown y JSON: alarmas P1, propiedades, tabla de puntajes, explicabilidad y óptimos |
 | `src/cli.ts` | `autoplayCli`, `replayCli` y `aggregateCli` |
 

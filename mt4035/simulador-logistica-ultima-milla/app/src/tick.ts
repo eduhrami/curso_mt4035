@@ -14,12 +14,15 @@ type Ctx = TickContext<LmState, Params>;
 
 export const dataMaturity = (s: LmState, p: Params) => p.data.maturity[s.dec.data];
 
-/** Eficiencia del ruteo: con IA y datos básicos solo se obtiene una parte del beneficio (R-08). */
+/**
+ * Eficiencia del ruteo: con IA y datos básicos solo se obtiene una parte (~30%) del beneficio que la
+ * IA logra sobre el ruteo manual (R-08); con telemetría sin tráfico, 70%.
+ */
 export function routingFactors(s: LmState, p: Params): { kmMult: number; sigmaMult: number; etaGain: number } {
   const r = p.routing[s.dec.routing];
   if (s.dec.routing !== "ai" || s.dec.data === "full") return r;
   const share = s.dec.data === "basic" ? p.routing.aiBasicDataShare : 0.7;
-  const base = p.routing.vrptw;
+  const base = p.routing.manual;
   return {
     kmMult: base.kmMult + (r.kmMult - base.kmMult) * share,
     sigmaMult: base.sigmaMult + (r.sigmaMult - base.sigmaMult) * share,
@@ -546,10 +549,10 @@ export function lmTick(ctx: Ctx): void {
     d.mfc * p.nodes.mfc.fixedMonthly +
     d.lockers * p.nodes.locker.fixedMonthly +
     d.hubs * p.nodes.hub.fixedMonthly +
-    p.data.monthlyCost[d.data] +
     p.security.monthlyCost[d.security] +
     p.maintenance[d.maintenance].cost;
-  const fixedDaily = fixedMonthly / daysInMonth;
+  // Telemetría y tráfico se pagan por vehículo en operación.
+  const fixedDaily = (fixedMonthly + need * p.data.costPerVehicleMonth[d.data]) / daysInMonth;
   const robberyCost = sh.lostOrders > 0 ? p.events["X-08"].cost : 0;
   const lastMile = routeCost + ownFixed + pickCost + capitalCost + reattemptCost + returnsCost + techCost + fixedDaily + robberyCost;
   const successful = firstOk + (attempts - firstOk) * absent.success;

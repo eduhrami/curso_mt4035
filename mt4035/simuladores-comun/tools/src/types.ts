@@ -25,6 +25,11 @@ export interface SearchSpec {
   ordinal: string[];
   /** Valores de un parámetro ordinal que no cuentan como extremo (p. ej. "conservar la red actual"). */
   notBound?: Record<string, readonly (string | number | boolean)[]>;
+  /**
+   * Valores extremos que sí indican un problema de calibración, si no son el primero y el último
+   * (p. ej. una ventana de 1 h sí, pero "todo el día" es apagar la palanca). Tiene prioridad sobre notBound.
+   */
+  bounds?: Record<string, readonly (string | number | boolean)[]>;
   /** Vector que reproduce la configuración as-is del escenario (punto de partida del ascenso). */
   baseline?(scenario: string): ParamVector;
   /** Parámetros acoplados que se exploran juntos (producto cartesiano) en cada ronda. */
@@ -64,7 +69,7 @@ export interface AutoplayAdapter<S = any, P = any> {
   /** KPIs cuya serie por época se guarda en cada registro (para propiedades que miran trayectorias). */
   trackKpis: string[];
   properties: PropertyDef[];
-  /** Opcional: espacio para el bot buscador (BOT-H). */
+  /** Opcional: espacio para el bot buscador (BOT-H en SCM, BOT-I en logística). */
   search?: SearchSpec;
 }
 

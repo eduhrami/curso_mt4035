@@ -429,15 +429,15 @@
       "gps": 0.7,
       "full": 1.0
     },
-    "monthlyCost": {
-      "basic": 0,
-      "gps": 3000,
-      "full": 9000
-    },
     "lag": {
       "basic": 0,
       "gps": 1,
       "full": 2
+    },
+    "costPerVehicleMonth": {
+      "basic": 0,
+      "gps": 40,
+      "full": 120
     }
   },
   "eta": {
@@ -1203,7 +1203,54 @@
         "penalty": 0.4
       }
     ],
-    "territories": {}
+    "territories": {
+      "bajio": {
+        "ranges": {
+          "CPD_P95": {
+            "worst": 8,
+            "best": 2
+          },
+          "FADS": {
+            "worst": 0.8,
+            "best": 0.98
+          }
+        }
+      },
+      "norte": {
+        "ranges": {
+          "CPD_P95": {
+            "worst": 16,
+            "best": 5
+          }
+        },
+        "guardrails": [
+          {
+            "kpi": "OTD_P95",
+            "op": ">=",
+            "value": 0.8,
+            "penalty": 0.4
+          },
+          {
+            "kpi": "VEHICLE_UTIL",
+            "op": ">=",
+            "value": 0.5,
+            "penalty": 0.3
+          },
+          {
+            "kpi": "CSAT",
+            "op": ">=",
+            "value": 3.5,
+            "penalty": 0.4
+          },
+          {
+            "kpi": "EXCEPTION_RATE",
+            "op": "<=",
+            "value": 0.08,
+            "penalty": 0.4
+          }
+        ]
+      }
+    }
   },
   "backlogCancel": 0.3,
   "stopMultByKind": {

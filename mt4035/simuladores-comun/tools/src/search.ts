@@ -76,6 +76,7 @@ export async function searchOptima(adapter: AutoplayAdapter, pool: WorkerPool, o
         if (!improved) break;
       }
       const atBounds = spec.ordinal.filter((p) => {
+        if (spec.bounds?.[p]) return spec.bounds[p]!.includes(best[p]!);
         const vals = spec.space[p]!.filter((v) => !(spec.notBound?.[p] ?? []).includes(v));
         return !(spec.notBound?.[p] ?? []).includes(best[p]!) && (best[p] === vals[0] || best[p] === vals[vals.length - 1]);
       });
