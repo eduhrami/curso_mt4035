@@ -7,7 +7,7 @@ import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
 import { engine, professor, projectsInProgress, regionOf, screen, store } from "./game.ts";
-import { describeValue, KPI_NAMES, LABELS, OPTIONS, REGION_TEXT, TABS } from "./labels.ts";
+import { describeValue, KPI_NAMES, LABELS, OPTIONS, REGION_TEXT, scenarioLabel, TABS } from "./labels.ts";
 import { params, type DcSpec, type ScmState } from "../src/index.ts";
 import type { GameState } from "@mt4035/sim-core";
 
@@ -40,6 +40,7 @@ function TopBar() {
             {s.phase === "FINAL" ? "Partida terminada" : `Trimestre ${engine.epochLabel(s.epoch)} · ${s.epoch + 1}/20`}
           </span>
           <span class="chip">Estrategia: {OPTIONS[s.model.strategy]}</span>
+          <span class="chip" data-testid="scenario-label">{scenarioLabel(s.config.scenario)}</span>
           <span class="chip" title="Inversión acumulada (capex y penalizaciones)">
             Inversión: {fmtMoney(capex)}
           </span>

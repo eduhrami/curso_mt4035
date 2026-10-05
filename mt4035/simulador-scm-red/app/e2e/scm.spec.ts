@@ -103,3 +103,22 @@ test("el modo profesor muestra el puntaje parcial durante el juego", async ({ pa
   await playEpoch(page);
   await expect(page.getByText("Modo profesor · puntaje parcial:")).toBeVisible();
 });
+
+test("los escenarios predefinidos fijan perfil y semilla; «Crear mi propio escenario» abre el perfil avanzado", async ({ page }) => {
+  await page.goto(url());
+  await page.getByTestId("preset-EM-02").click();
+  await expect(page.locator('input[type="number"]')).toHaveValue("4202");
+  await page.getByTestId("preset-custom").click();
+  await page.locator("details label", { hasText: "Combustible" }).locator("select").selectOption("rising");
+  await page.getByRole("radio", { name: /^Kaigan/ }).click();
+  await page.getByTestId("start").click();
+  await expect(page.getByTestId("scenario-label")).toHaveText("Escenario propio");
+});
+
+test("una corrida con escenario predefinido lo muestra en la barra superior", async ({ page }) => {
+  await page.goto(url());
+  await page.getByTestId("preset-EM-03").click();
+  await page.getByRole("radio", { name: /^Kaigan/ }).click();
+  await page.getByTestId("start").click();
+  await expect(page.getByTestId("scenario-label")).toContainText("EM-03");
+});

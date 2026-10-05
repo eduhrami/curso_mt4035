@@ -2,7 +2,7 @@
 import { download, fmt, LineChart } from "@mt4035/ui-kit";
 import type { GameState } from "@mt4035/sim-core";
 import { isPeakMonth, params, type LmState, type Strategy } from "../src/index.ts";
-import { describeValue, kpiMetaFor, MONTHS, OPTIONS, TERRITORY_TEXT } from "./labels.ts";
+import { describeValue, kpiMetaFor, MONTHS, OPTIONS, scenarioLabel, TERRITORY_TEXT } from "./labels.ts";
 import { engine, finalScore, screen, store, territoryOf } from "./game.ts";
 
 export function FinalReport({ state }: { state: GameState<LmState> }) {
@@ -27,7 +27,7 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
         <h1>Reporte final · {TERRITORY_TEXT[territory].title}</h1>
         <p class="muted">
           {state.config.player?.name ?? "Sin nombre"}
-          {state.config.player?.team ? ` · ${state.config.player.team}` : ""} · semilla {state.config.seed} · estrategia declarada: <strong>{OPTIONS[state.model.strategy]}</strong>
+          {state.config.player?.team ? ` · ${state.config.player.team}` : ""} · escenario {scenarioLabel(state.config.scenario)} · semilla {state.config.seed} · estrategia declarada: <strong>{OPTIONS[state.model.strategy]}</strong>
         </p>
         <div class="row" style={{ alignItems: "baseline" }}>
           <span style={{ fontSize: "2.4rem", fontWeight: 800 }} data-testid="final-score">

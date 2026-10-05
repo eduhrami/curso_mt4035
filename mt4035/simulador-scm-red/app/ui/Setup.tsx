@@ -1,6 +1,7 @@
-/** Pantalla de configuración: región, perfil de mercado, estrategia declarada, semilla y jugador. */
+/** Pantalla de configuración: región, escenario de mercado, estrategia declarada, semilla y jugador. */
 import { useState } from "preact/hooks";
-import { DEFAULT_MARKET, scmConfig, type MarketProfile, type RegionId, type Strategy } from "../src/index.ts";
+import { CUSTOM_SCENARIO, ScenarioPicker } from "@mt4035/ui-kit";
+import { DEFAULT_MARKET, PRESETS, scmConfig, type MarketProfile, type RegionId, type Strategy } from "../src/index.ts";
 import { MARKET_FIELDS, OPTIONS, REGION_TEXT, STRATEGY_TEXT } from "./labels.ts";
 import { screen, store } from "./game.ts";
 
@@ -9,13 +10,22 @@ const randomSeed = () => (globalThis.crypto?.getRandomValues?.(new Uint32Array(1
 export function Setup() {
   const [region, setRegion] = useState<RegionId>("redriver");
   const [strategy, setStrategy] = useState<Strategy>("freshness");
-  const [market, setMarket] = useState<MarketProfile>({ ...DEFAULT_MARKET });
+  const [preset, setPreset] = useState<string>(PRESETS[0]!.id);
+  const [market, setMarket] = useState<MarketProfile>({ ...PRESETS[0]!.market });
   const [greenfield, setGreenfield] = useState(false);
-  const [seed, setSeed] = useState(randomSeed());
+  const [seed, setSeed] = useState(PRESETS[0]!.seed);
   const [name, setName] = useState("");
   const [team, setTeam] = useState("");
+  const choosePreset = (id: string) => {
+    setPreset(id);
+    const p = PRESETS.find((x) => x.id === id);
+    if (p) {
+      setMarket({ ...p.market });
+      setSeed(p.seed);
+    }
+  };
   const start = () => {
-    store.start(scmConfig({ region, strategy, market, greenfield, seed, player: { ...(name ? { name } : {}), ...(team ? { team } : {}) } }));
+    store.start(scmConfig({ region, strategy, market, ...(preset !== CUSTOM_SCENARIO ? { preset } : {}), greenfield, seed, player: { ...(name ? { name } : {}), ...(team ? { team } : {}) } }));
     screen.value = "game";
   };
   return (
@@ -66,21 +76,17 @@ export function Setup() {
       </section>
 
       <section class="card stack" aria-labelledby="h-market">
-        <h2 id="h-market">3. Condiciones de mercado</h2>
-        <div class="field-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          {MARKET_FIELDS.map((f) => (
-            <label key={f.key}>
-              <span class="small muted">{f.label}</span>
-              <select value={(market as Record<string, string>)[f.key]} onChange={(e) => setMarket({ ...market, [f.key]: (e.target as HTMLSelectElement).value })}>
-                {Object.entries(f.options).map(([v, l]) => (
-                  <option value={v} key={v}>
-                    {l}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ))}
-        </div>
+        <h2 id="h-market">3. Escenario de mercado</h2>
+        <ScenarioPicker
+          headingId="h-market"
+          presets={PRESETS.map((p) => ({ ...p, bestWith: REGION_TEXT[p.bestWith].title }))}
+          fields={MARKET_FIELDS}
+          base={DEFAULT_MARKET}
+          selected={preset}
+          market={market}
+          onSelect={choosePreset}
+          onMarketChange={(m) => setMarket(m as MarketProfile)}
+        />
       </section>
 
       <section class="card stack" aria-labelledby="h-player">

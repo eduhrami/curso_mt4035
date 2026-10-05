@@ -34,6 +34,8 @@ export const DEFAULT_MARKET: Market = {
 export type Scenario = {
   territory: TerritoryId;
   market: Market;
+  /** Escenario de mercado predefinido (EM-xx, §4.3); ausente si el jugador armó su propio perfil. */
+  preset?: string;
   strategy: Strategy;
 };
 

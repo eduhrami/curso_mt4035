@@ -6,7 +6,7 @@ import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
 import { engine, EPOCHS, professor, projectsInProgress, screen, store, territoryOf } from "./game.ts";
-import { describeValue, KPI_NAMES, LABELS, MONTHS, OPTIONS, TABS, TERRITORY_TEXT } from "./labels.ts";
+import { describeValue, KPI_NAMES, LABELS, MONTHS, OPTIONS, scenarioLabel, TABS, TERRITORY_TEXT } from "./labels.ts";
 
 export function App() {
   const state = store.state.value;
@@ -38,6 +38,7 @@ function TopBar() {
             {s.phase === "FINAL" ? "Partida terminada" : `Mes ${engine.epochLabel(s.epoch)} (${MONTHS[s.epoch % 12]}) · ${s.epoch + 1}/${EPOCHS}`}
           </span>
           <span class="chip">Estrategia: {OPTIONS[s.model.strategy]}</span>
+          <span class="chip" data-testid="scenario-label">{scenarioLabel(s.config.scenario)}</span>
           <span class="chip" title="Inversión acumulada (capex y penalizaciones)">
             Inversión: {fmtMoney(capex)}
           </span>
