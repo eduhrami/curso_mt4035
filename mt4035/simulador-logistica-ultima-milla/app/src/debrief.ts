@@ -12,7 +12,7 @@ export interface DebriefQuestion {
 
 export const DEBRIEF_GENERAL: DebriefQuestion[] = [
   { id: "DB-01", question: "¿Desde dónde surtiste (CD, tiendas con SFS, dark stores) y qué promesa de servicio ofreciste? ¿Cuál fue tu decisión clave y por qué encaja con el territorio?", hint: "Menciona la estrategia de servicio declarada, nodos, niveles de servicio y mezcla de flota." },
-  { id: "DB-02", question: "¿Qué par primario–guardrail cuidaste (por ejemplo, OTD p95 y CPD)? Reporta sus valores al final y explica el trade-off entre ambos.", hint: "Cita valores del reporte final y del dashboard." },
+  { id: "DB-02", question: "¿Qué par primario–guardrail cuidaste? Reporta sus valores al final y explica el trade-off entre ambos.", hint: "Cita valores del reporte final y del dashboard." },
   { id: "DB-03", question: "¿Qué pico (Hot Sale, regreso a clases, Buen Fin, Navidad) fue el más difícil y qué hiciste antes y durante para sostener el servicio?", hint: "Ubica el mes y qué pasó con el OTD p95 y la utilización de flota y nodos." },
   { id: "DB-04", question: "¿Cuánto de tu OTD promedio era real? Compara el promedio con el p95 de los días críticos y explica qué revela la diferencia.", hint: "Usa el selector promedio / p95 del dashboard." },
 ];

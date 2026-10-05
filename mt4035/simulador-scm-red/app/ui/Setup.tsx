@@ -1,9 +1,9 @@
 /** Pantalla de configuración: región, escenario de mercado, estrategia declarada, semilla y jugador. */
 import { useState } from "preact/hooks";
-import { CUSTOM_SCENARIO, ScenarioPicker } from "@mt4035/ui-kit";
+import { CourseCredits, CUSTOM_SCENARIO, Gloss, ScenarioPicker } from "@mt4035/ui-kit";
 import { DEFAULT_MARKET, PRESETS, scmConfig, type MarketProfile, type RegionId, type Strategy } from "../src/index.ts";
 import { MARKET_FIELDS, OPTIONS, REGION_TEXT, STRATEGY_TEXT } from "./labels.ts";
-import { screen, store } from "./game.ts";
+import { glossaryOpen, screen, store } from "./game.ts";
 
 const randomSeed = () => (globalThis.crypto?.getRandomValues?.(new Uint32Array(1))[0] ?? Math.floor(Math.random() * 2 ** 32)) % 1_000_000;
 
@@ -37,6 +37,14 @@ export function Setup() {
           diseñar la red que la haga posible y demostrarlo con números. Cada trimestre revisas resultados, ajustas tus decisiones y confirmas.
         </p>
         <p class="small muted">Empresa y regiones ficticias, inspiradas en el caso Seven-Eleven Japan (Kellogg KEL026).</p>
+        <p class="small" style={{ margin: 0 }}>
+          ¿Dudas con alguna sigla? Abre el{" "}
+          <button type="button" class="btn-ghost small" onClick={() => (glossaryOpen.value = true)} data-testid="setup-glossary">
+            glosario
+          </button>{" "}
+          o pasa el mouse sobre los términos subrayados con puntos.
+        </p>
+        <CourseCredits />
       </div>
 
       <section class="card stack" aria-labelledby="h-region">
@@ -45,10 +53,14 @@ export function Setup() {
           {(Object.keys(REGION_TEXT) as RegionId[]).map((r) => (
             <button type="button" role="radio" aria-checked={region === r} class="card" style={{ textAlign: "left", outline: region === r ? "2px solid var(--accent)" : undefined }} onClick={() => setRegion(r)} key={r}>
               <h3>{REGION_TEXT[r].title}</h3>
-              <p class="small">{REGION_TEXT[r].tagline}</p>
+              <p class="small">
+                <Gloss text={REGION_TEXT[r].tagline} />
+              </p>
               <ul class="small" style={{ margin: 0, paddingLeft: "1.1rem" }}>
                 {REGION_TEXT[r].facts.map((f) => (
-                  <li key={f}>{f}</li>
+                  <li key={f}>
+                    <Gloss text={f} />
+                  </li>
                 ))}
               </ul>
             </button>
@@ -68,7 +80,9 @@ export function Setup() {
           {(["freshness", "lowcost", "convenience"] as Strategy[]).map((s) => (
             <button type="button" role="radio" aria-checked={strategy === s} class="card" style={{ textAlign: "left", outline: strategy === s ? "2px solid var(--accent)" : undefined }} onClick={() => setStrategy(s)} key={s}>
               <h3>{OPTIONS[s]}</h3>
-              <p class="small muted">{STRATEGY_TEXT[s]}</p>
+              <p class="small muted">
+                <Gloss text={STRATEGY_TEXT[s]} />
+              </p>
             </button>
           ))}
         </div>

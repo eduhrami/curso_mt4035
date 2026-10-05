@@ -33,5 +33,8 @@ export function projectsInProgress(s: GameState<LmState>): string[] {
   return s.pending.map((p) => `${label(p.decisionId)}: opera en ${engine.epochLabel(p.activateAt)}`);
 }
 
+/** Diálogo del glosario (AD-32), abierto desde la barra superior o la pantalla de inicio. */
+export const glossaryOpen = signal(false);
+
 /** Pantalla actual fuera del juego. */
 export const screen = signal<"setup" | "game" | "runs">("setup");

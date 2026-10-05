@@ -38,5 +38,8 @@ export function projectsInProgress(s: GameState<ScmState>): string[] {
   return [...fromEngine, ...dcs];
 }
 
+/** Diálogo del glosario (AD-32), abierto desde la barra superior o la pantalla de inicio. */
+export const glossaryOpen = signal(false);
+
 /** Pantalla actual fuera del juego. */
 export const screen = signal<"setup" | "game" | "runs">("setup");

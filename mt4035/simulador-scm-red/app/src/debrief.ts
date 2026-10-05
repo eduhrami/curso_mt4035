@@ -12,8 +12,8 @@ export interface DebriefQuestion {
 
 export const DEBRIEF_GENERAL: DebriefQuestion[] = [
   { id: "DB-01", question: "¿Qué propuesta de valor declaraste y qué decisiones de red y flujo (CD, cross-dock o inventario, DSD, frecuencia) tomaste para sostenerla? ¿Cuál fue tu decisión clave?", hint: "Menciona número y tipo de CD, flujo por categoría y frecuencia; explica por qué encaja con la región." },
-  { id: "DB-02", question: "¿Qué KPI trataste como primario y cuál como guardrail? Reporta sus valores al final y explica el trade-off entre ambos.", hint: "Por ejemplo, OSA como primario y CTS como guardrail; cita valores del reporte final." },
-  { id: "DB-03", question: "¿Qué decisión tardó en mostrar efecto? ¿En qué trimestre la tomaste, cuándo se notó y en qué KPI?", hint: "Piensa en CD nuevos, POS compartido o colaboración con proveedores." },
+  { id: "DB-02", question: "¿Qué KPI trataste como primario y cuál como guardrail? Reporta sus valores al final y explica el trade-off entre ambos.", hint: "Explica por qué ese par según tu propuesta de valor y cita valores del reporte final." },
+  { id: "DB-03", question: "¿Qué decisión tardó en mostrar efecto? ¿En qué trimestre la tomaste, cuándo se notó y en qué KPI?", hint: "El diálogo de confirmación indica cuándo surte efecto cada decisión." },
   { id: "DB-04", question: "¿Qué evento inesperado te afectó más y qué decisión previa lo agravó o lo amortiguó?", hint: "Usa «¿Por qué pasó esto?» en la bandeja de mensajes para rastrear la cadena causal." },
 ];
 

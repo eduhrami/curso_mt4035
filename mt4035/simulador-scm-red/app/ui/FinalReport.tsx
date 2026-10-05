@@ -1,5 +1,5 @@
 /** Reporte final (AD-26): puntaje según la estrategia declarada, desglose, guardrails, trayectoria, decisiones y eventos. */
-import { DebriefPanel, download, fmt, LineChart } from "@mt4035/ui-kit";
+import { DebriefPanel, download, fmt, Gloss, LineChart } from "@mt4035/ui-kit";
 import type { GameState } from "@mt4035/sim-core";
 import { debriefFor, type ScmState, type Strategy } from "../src/index.ts";
 import { describeValue, kpiMetaFor, OPTIONS, REGION_TEXT, scenarioLabel } from "./labels.ts";
@@ -80,7 +80,7 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
               const avg = state.history.reduce((a, h) => a + (h.kpis[b.kpi] ?? 0), 0) / state.history.length;
               return (
                 <tr key={b.kpi}>
-                  <td>{m ? `${m.acronym} · ${m.name}` : b.kpi}</td>
+                  <td>{m ? <Gloss text={`${m.acronym} · ${m.name}`} /> : b.kpi}</td>
                   <td>{fmt(avg, m?.format ?? "num2")}</td>
                   <td>{(b.normalized * 100).toFixed(0)}%</td>
                   <td>{b.contribution.toFixed(1)}</td>

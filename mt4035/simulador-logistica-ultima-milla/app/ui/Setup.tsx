@@ -1,9 +1,9 @@
 /** Pantalla de configuración: territorio, escenario de mercado, estrategia de servicio, semilla y jugador. */
 import { useState } from "preact/hooks";
-import { CUSTOM_SCENARIO, ScenarioPicker } from "@mt4035/ui-kit";
+import { CourseCredits, CUSTOM_SCENARIO, Gloss, ScenarioPicker } from "@mt4035/ui-kit";
 import { DEFAULT_MARKET, PRESETS, lmConfig, params, type Market, type Strategy, type TerritoryId } from "../src/index.ts";
 import { MARKET_FIELDS, MONTHS, OPTIONS, STRATEGY_TEXT, TERRITORY_TEXT } from "./labels.ts";
-import { screen, store } from "./game.ts";
+import { glossaryOpen, screen, store } from "./game.ts";
 
 type Playable = Exclude<TerritoryId, "minicaso">;
 const randomSeed = () => (globalThis.crypto?.getRandomValues?.(new Uint32Array(1))[0] ?? Math.floor(Math.random() * 2 ** 32)) % 1_000_000;
@@ -38,6 +38,14 @@ export function Setup() {
           demostrar con KPIs que el servicio mejora sin que el costo por pedido destruya el margen. Cada mes revisas resultados, ajustas tus decisiones y confirmas.
         </p>
         <p class="small muted">Empresa y territorios ficticios, con datos de referencia de la Sesión 5.</p>
+        <p class="small" style={{ margin: 0 }}>
+          ¿Dudas con alguna sigla? Abre el{" "}
+          <button type="button" class="btn-ghost small" onClick={() => (glossaryOpen.value = true)} data-testid="setup-glossary">
+            glosario
+          </button>{" "}
+          o pasa el mouse sobre los términos subrayados con puntos.
+        </p>
+        <CourseCredits />
       </div>
 
       <section class="card stack" aria-labelledby="h-territory">
@@ -46,10 +54,14 @@ export function Setup() {
           {(Object.keys(TERRITORY_TEXT) as Playable[]).map((t) => (
             <button type="button" role="radio" aria-checked={territory === t} class="card" style={{ textAlign: "left", outline: territory === t ? "2px solid var(--accent)" : undefined }} onClick={() => setTerritory(t)} key={t}>
               <h3>{TERRITORY_TEXT[t].title}</h3>
-              <p class="small">{TERRITORY_TEXT[t].tagline}</p>
+              <p class="small">
+                <Gloss text={TERRITORY_TEXT[t].tagline} />
+              </p>
               <ul class="small" style={{ margin: 0, paddingLeft: "1.1rem" }}>
                 {TERRITORY_TEXT[t].facts.map((f) => (
-                  <li key={f}>{f}</li>
+                  <li key={f}>
+                    <Gloss text={f} />
+                  </li>
                 ))}
               </ul>
             </button>
@@ -67,7 +79,9 @@ export function Setup() {
           {(["speed", "reliability", "efficiency"] as Strategy[]).map((s) => (
             <button type="button" role="radio" aria-checked={strategy === s} class="card" style={{ textAlign: "left", outline: strategy === s ? "2px solid var(--accent)" : undefined }} onClick={() => setStrategy(s)} key={s}>
               <h3>{OPTIONS[s]}</h3>
-              <p class="small muted">{STRATEGY_TEXT[s]}</p>
+              <p class="small muted">
+                <Gloss text={STRATEGY_TEXT[s]} />
+              </p>
             </button>
           ))}
         </div>

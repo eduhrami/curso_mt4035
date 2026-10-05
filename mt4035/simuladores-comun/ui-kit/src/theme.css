@@ -184,3 +184,9 @@ th { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
   .card { box-shadow: none; break-inside: avoid; }
   .layout { display: block; }
 }
+
+/* Glosario (AD-32) */
+abbr.gloss { text-decoration: underline dotted; text-underline-offset: 2px; cursor: help; }
+.glossary-list { margin: 0; }
+.glossary-list > div { padding: 0.35rem 0; border-bottom: 1px solid var(--border); }
+.glossary-list dd { margin: 0.1rem 0 0; font-size: 0.9rem; }

@@ -1,6 +1,7 @@
 /** Bandeja de mensajes con "¿Por qué pasó esto?" y explicación causal de un KPI (AD-24). */
 import { useState } from "preact/hooks";
 import { explainKpi, type CausalEntry, type Driver, type EpochReport, type Message } from "@mt4035/sim-core";
+import { Gloss } from "./glossary.tsx";
 
 const SEV_LABEL = { critico: "Crítico", alerta: "Alerta", info: "Info" } as const;
 const SEV_ICON = { critico: "●", alerta: "▲", info: "○" } as const;
@@ -19,9 +20,11 @@ export function MessageItem({ m, epochLabel, kpiNames, unit }: { m: Message; epo
           {m.tick >= 0 ? ` · ${unit} ${m.tick + 1}` : ""}
         </span>
       </div>
-      <h4 style={{ margin: "0.2rem 0" }}>{m.title}</h4>
+      <h4 style={{ margin: "0.2rem 0" }}>
+        <Gloss text={m.title} />
+      </h4>
       <p class="small" style={{ margin: 0 }}>
-        {m.body}
+        <Gloss text={m.body} />
       </p>
       {(m.drivers.length > 0 || m.mitigations.length > 0 || m.kpis.length > 0) && (
         <details>
