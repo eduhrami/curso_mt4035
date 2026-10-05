@@ -12,7 +12,7 @@ interface Instructor {
 
 export const INSTRUCTORS: Instructor[] = [
   {
-    name: "Eduardo Ramírez",
+    name: "Eduardo Ramírez, PhD",
     profiles: [
       { label: "LinkedIn", url: "https://www.linkedin.com/in/ehramirez/" },
       { label: "X", url: "https://x.com/eduhrami" },
