@@ -160,6 +160,8 @@ legend { font-weight: 600; padding: 0 0.25rem; }
 .msg.sev-critico { border-left-color: var(--bad); }
 .msg.sev-alerta { border-left-color: var(--warn); }
 .msg.sev-info { border-left-color: var(--info); }
+.scenario-custom summary { cursor: pointer; color: var(--accent); font-weight: 600; padding: 0.25rem 0; }
+.scenario-custom[open] { border-top: 1px solid var(--border); padding-top: 0.5rem; }
 .msg details summary { cursor: pointer; color: var(--accent); font-size: 0.85rem; margin-top: 0.25rem; }
 
 /* Diálogos */

@@ -3,7 +3,7 @@ import { useState } from "preact/hooks";
 import { download, fmt, LineChart } from "@mt4035/ui-kit";
 import type { EpochReport } from "@mt4035/sim-core";
 import { params, scoreRun, type Strategy, type TerritoryId } from "../src/index.ts";
-import { KPI_META, OPTIONS } from "./labels.ts";
+import { KPI_META, OPTIONS, scenarioLabel } from "./labels.ts";
 import { EPOCHS, professor, screen, store } from "./game.ts";
 
 export function Runs() {
@@ -128,6 +128,14 @@ export function Runs() {
                     })}
                   </tr>
                 ))}
+                <tr>
+                  <td>Escenario (semilla)</td>
+                  {chosen.map((r) => (
+                    <td key={r.id}>
+                      {scenarioLabel(r.data.export.config.scenario)} ({r.data.export.config.seed})
+                    </td>
+                  ))}
+                </tr>
                 <tr>
                   <td>Puntaje (estrategia declarada)</td>
                   {chosen.map((r) => {

@@ -1,6 +1,6 @@
 /** Textos de la interfaz de última milla: decisiones, opciones, KPIs y territorios (en español; KPIs con sigla en inglés). */
 import type { KpiMeta, LabelMap } from "@mt4035/ui-kit";
-import { params, type Strategy, type TerritoryId } from "../src/index.ts";
+import { params, presetOf, type Strategy, type TerritoryId } from "../src/index.ts";
 
 type PlayableTerritory = Exclude<TerritoryId, "minicaso">;
 
@@ -228,6 +228,12 @@ export const TERRITORY_TEXT: Record<PlayableTerritory, { title: string; tagline:
     tagline: "Ciudad principal + 4 ciudades lejanas + zona rural, con calor extremo.",
     facts: ["~400 pedidos/día; 60% en la ciudad principal", "Ciudades a 80–250 km; zona rural dispersa", "30% de pedidos con pago contra entrega", "Calor extremo (may–ago); pocos repartidores crowdsourced"],
   },
+};
+
+/** Nombre del escenario de mercado de una corrida: «EM-02 · Demanda incierta» o «Escenario propio». */
+export const scenarioLabel = (scenario: unknown) => {
+  const p = presetOf(scenario as Parameters<typeof presetOf>[0]);
+  return p ? `${p.id} · ${p.title}` : "Escenario propio";
 };
 
 export const MARKET_FIELDS: { key: string; label: string; options: Record<string, string> }[] = [

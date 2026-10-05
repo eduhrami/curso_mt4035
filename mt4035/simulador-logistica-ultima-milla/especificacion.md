@@ -99,6 +99,19 @@ Este simulador pone al alumno frente a la pregunta de negocio de S5: **¿cómo h
 | E-26 | Mercado laboral de choferes | Holgado · Escaso | Costo, rotación y ausentismo |
 | E-27 | Tasa base de devoluciones | Baja (abarrotes) · Media (mercancía general) | Volumen de logística inversa |
 
+### 4.3 Escenarios de mercado predefinidos (5-oct-2026)
+
+La pantalla de inicio ofrece cuatro escenarios cerrados en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
+
+| ID | Escenario | Perfil (factores que se apartan del neutro) | Concepto de clase | Contraste más claro en | Semilla ⚠ |
+|---|---|---|---|---|---|
+| EM-01 | **Mercado base** | Perfil neutro (por omisión): crecimiento medio, sensibilidades medias a velocidad y tarifa, frescos medios, gasolina estable, choferes holgados, devoluciones bajas | Línea base: frontera entre entrega a tiempo (OTD) y costo por pedido (CPD) | Megalópolis Centro | 5101 |
+| EM-02 | **Carrera por la velocidad** | Crecimiento explosivo (E-20), sensibilidad alta a la velocidad (E-23) y baja a la tarifa (E-24) | El costo de la velocidad: express y mismo día contra saturación de capacidad en los picos | Megalópolis Centro | 5202 |
+| EM-03 | **Margen apretado** | Crecimiento lento (E-20), sensibilidad baja a la velocidad y alta a la tarifa (E-23, E-24), gasolina volátil (E-25), choferes escasos (E-26) | Eficiencia: consolidación, BOPIS, lockers y segmentación del servicio por zona | Región Norte | 5303 |
+| EM-04 | **Canasta compleja** | Frescos altos (E-22), devoluciones altas de mercancía general (E-27) | Cadena de frío en la última milla y logística inversa por diseño | Ciudad Bajío | 5404 |
+
+La corrida guarda el id en `setup.preset` (`config.scenario.preset`); se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
+
 ---
 
 ## 5. Mapa de decisiones (acciones del jugador)
@@ -416,7 +429,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 
 ## 9. Interfaz
 
-1. **Setup:** territorio (ficha de factores E-01…E-14), perfil de mercado, estrategia de servicio y semilla. El calendario de picos se ve desde el inicio.
+1. **Setup:** territorio (ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre queda bajo «Crear mi propio escenario»), estrategia de servicio y semilla. El calendario de picos se ve desde el inicio.
 2. **Panel de decisiones por mes:** pestañas *Red · Asignación · Promesa · Flota · Zonas y ruteo · Cliente · Devoluciones · Datos y seguridad*. Cada control muestra costo, retraso y reversibilidad, más un previsualizador cualitativo (↑↓) de los KPIs afectados.
 3. **Mapa esquemático del territorio:** zonas como polígonos de una rejilla, nodos (CD, tiendas SFS, dark stores, MFC, lockers) como íconos y calor de demanda por zona. No es un mapa real ni hay vehículos animados.
 4. **Dashboard:**
@@ -434,7 +447,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 ## 10. Persistencia y exportación
 
 - **`localStorage`** con clave `mt4035.lastmile.runs.v1`. Toda lectura y escritura va en `try/catch`, con respaldo en memoria.
-- **Esquema de corrida (JSON):** igual que el del [simulador SCM](../simulador-scm-red/especificacion.md#10-persistencia-y-exportación), con `sim: "mt4035-lastmile"`, `setup.territory: "megalopolis|bajio|norte"`, `setup.strategy: "speed|reliability|efficiency"`. Los KPIs van por mes y por zona, con diarios agregados p50/p95.
+- **Esquema de corrida (JSON):** igual que el del [simulador SCM](../simulador-scm-red/especificacion.md#10-persistencia-y-exportación), con `sim: "mt4035-lastmile"`, `setup.territory: "megalopolis|bajio|norte"`, `setup.strategy: "speed|reliability|efficiency"`, `setup.preset: "EM-01…EM-04"` (omitido si es escenario propio, §4.3). Los KPIs van por mes y por zona, con diarios agregados p50/p95.
 - **Export:** JSON (completo y reproducible con semilla, decisiones y checksum) y CSV (KPIs por mes y zona).
 - **Import:** cargar un JSON para revisarlo o compararlo.
 
@@ -482,6 +495,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 - [x] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos). Rejilla de tarjetas por zona con calor de demanda, nodos y confianza (F7); la tabla por nivel de servicio queda pendiente.
 - [x] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común. Sí: `@mt4035/sim-core`.
 - [x] Herramienta del profesor para volver a correr y agregar los JSON del grupo. `npm run replay` y `npm run aggregate` (F6); el modo profesor en la UI llega en F7.
+- [ ] Revisar con auto-juego las semillas y la dificultad relativa de los escenarios EM-01…EM-04 (§4.3), y confirmar si el profesor asigna escenario y semilla por equipo.
 
 ---
 

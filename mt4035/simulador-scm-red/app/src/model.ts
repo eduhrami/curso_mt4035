@@ -111,6 +111,7 @@ export interface ScmConfigOptions {
   strategy?: Scenario["strategy"];
   market?: Partial<Scenario["market"]>;
   greenfield?: boolean;
+  preset?: string;
   test?: GameConfig["test"];
   player?: GameConfig["player"];
 }
@@ -126,6 +127,7 @@ export function scmConfig(o: ScmConfigOptions = {}): GameConfig<Scenario> {
       strategy: o.strategy ?? "freshness",
       market: { ...DEFAULT_MARKET, ...(o.market ?? {}) },
       ...(o.greenfield ? { greenfield: true } : {}),
+      ...(o.preset ? { preset: o.preset } : {}),
     },
     ...(o.test ? { test: o.test } : {}),
     ...(o.player ? { player: o.player } : {}),

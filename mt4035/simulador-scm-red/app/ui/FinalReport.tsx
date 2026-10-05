@@ -2,7 +2,7 @@
 import { download, fmt, LineChart } from "@mt4035/ui-kit";
 import type { GameState } from "@mt4035/sim-core";
 import type { ScmState, Strategy } from "../src/index.ts";
-import { describeValue, kpiMetaFor, OPTIONS, REGION_TEXT } from "./labels.ts";
+import { describeValue, kpiMetaFor, OPTIONS, REGION_TEXT, scenarioLabel } from "./labels.ts";
 import { engine, finalScore, regionOf, screen, store } from "./game.ts";
 
 export function FinalReport({ state }: { state: GameState<ScmState> }) {
@@ -26,7 +26,7 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
         <h1>Reporte final · {REGION_TEXT[region].title}</h1>
         <p class="muted">
           {state.config.player?.name ?? "Sin nombre"}
-          {state.config.player?.team ? ` · ${state.config.player.team}` : ""} · semilla {state.config.seed} · estrategia declarada: <strong>{OPTIONS[state.model.strategy]}</strong>
+          {state.config.player?.team ? ` · ${state.config.player.team}` : ""} · escenario {scenarioLabel(state.config.scenario)} · semilla {state.config.seed} · estrategia declarada: <strong>{OPTIONS[state.model.strategy]}</strong>
         </p>
         <div class="row" style={{ alignItems: "baseline" }}>
           <span style={{ fontSize: "2.4rem", fontWeight: 800 }} data-testid="final-score">

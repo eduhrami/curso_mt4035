@@ -1,6 +1,6 @@
 /** Textos de la interfaz SCM: decisiones, opciones, KPIs y regiones (en español; KPIs con sigla en inglés). */
 import type { KpiMeta, LabelMap } from "@mt4035/ui-kit";
-import { params, type RegionId, type Strategy } from "../src/index.ts";
+import { params, presetOf, type RegionId, type Strategy } from "../src/index.ts";
 
 export const TABS = [
   { id: "Estrategia", label: "Estrategia" },
@@ -146,6 +146,12 @@ export const REGION_TEXT: Record<RegionId, { title: string; tagline: string; fac
     tagline: "Núcleo urbano congestionado y periferia extendida (tipo México).",
     facts: ["600 tiendas: 70% en el núcleo", "2 CD con inventario", "Frescos por DSD", "Congestión alta y muy variable"],
   },
+};
+
+/** Nombre del escenario de mercado de una corrida: «EM-02 · Demanda incierta» o «Escenario propio». */
+export const scenarioLabel = (scenario: unknown) => {
+  const p = presetOf(scenario as Parameters<typeof presetOf>[0]);
+  return p ? `${p.id} · ${p.title}` : "Escenario propio";
 };
 
 export const MARKET_FIELDS: { key: string; label: string; options: Record<string, string> }[] = [

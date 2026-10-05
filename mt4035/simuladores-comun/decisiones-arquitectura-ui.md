@@ -283,6 +283,13 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 - SCM: `A1-T1 … A5-T4`. Logística: `A1-M01 … A3-M12` con el nombre del mes y marcadores de temporada pico en la línea de tiempo.
 
+### AD-30 ✔ Escenarios de mercado predefinidos (5-oct-2026)
+
+- El setup ya no muestra el panel libre de condiciones de mercado como opción principal: ofrece cuatro fichas **EM-01…EM-04** por simulador (perfil completo + semilla sugerida + concepto de clase + qué observar). El panel libre queda bajo «Crear mi propio escenario» (`<details>`).
+- Componente compartido `ScenarioPicker` en `ui-kit/src/components/scenarios.tsx`; los datos viven en el modelo de cada simulador (`app/src/presets.ts`, `PRESETS` y `presetOf`) para que pruebas y herramientas los usen sin la UI.
+- Elegir una ficha fija el perfil y la semilla; la corrida guarda `scenario.preset`. El campo es opcional y el motor no lo lee, así que el replay y las corridas anteriores no cambian. `presetOf` solo acepta el id si el perfil coincide, y reconoce corridas viejas por perfil.
+- El escenario se muestra en la barra superior, el reporte final y una fila «Escenario (semilla)» del comparador, para detectar corridas no comparables.
+
 ---
 
 ## 4. Ruta de implementación

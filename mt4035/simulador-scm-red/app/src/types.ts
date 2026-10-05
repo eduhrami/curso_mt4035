@@ -38,6 +38,8 @@ export type Scenario = {
   /** Región elegida con cero tiendas (§4.1 escenario greenfield). */
   greenfield?: boolean;
   market: MarketProfile;
+  /** Escenario de mercado predefinido (EM-xx, §4.3); ausente si el jugador armó su propio perfil. */
+  preset?: string;
   strategy: Strategy;
 };
 

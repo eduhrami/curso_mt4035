@@ -75,6 +75,7 @@ export interface LmConfigOptions {
   territory?: Scenario["territory"];
   strategy?: Scenario["strategy"];
   market?: Partial<Scenario["market"]>;
+  preset?: string;
   test?: GameConfig["test"];
   player?: GameConfig["player"];
 }
@@ -85,7 +86,7 @@ export function lmConfig(o: LmConfigOptions = {}): GameConfig<Scenario> {
     simVersion: SIM_VERSION,
     paramsVersion: PARAMS_VERSION,
     seed: o.seed ?? 1,
-    scenario: { territory: o.territory ?? "megalopolis", strategy: o.strategy ?? "reliability", market: { ...DEFAULT_MARKET, ...(o.market ?? {}) } },
+    scenario: { territory: o.territory ?? "megalopolis", strategy: o.strategy ?? "reliability", market: { ...DEFAULT_MARKET, ...(o.market ?? {}) }, ...(o.preset ? { preset: o.preset } : {}) },
     ...(o.test ? { test: o.test } : {}),
     ...(o.player ? { player: o.player } : {}),
   };
