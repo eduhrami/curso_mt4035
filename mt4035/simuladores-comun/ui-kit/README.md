@@ -13,6 +13,8 @@ Componentes Preact compartidos por los simuladores MT4035 (fase **F4**, [AD-20 �
 | `src/components/basics.tsx` | Pestañas, layout de tres columnas que pasa a pestañas en pantallas angostas, aviso de almacenamiento |
 | `src/theme.css` | Tokens de diseño, modo oscuro, layout responsivo e impresión |
 
+La época se nombra con la prop `period` (`"trimestre"` por omisión en SCM, `"mes"` en logística) en `ConfirmDialog`, `MessageInbox` y `KpiExplanation`; el tick, con `unit` / `unitPlural` (semana o día).
+
 ## Cómo se consume
 
 El paquete **no instala** Preact, Chart.js ni zod: los declara como `peerDependencies` y los resuelve desde la app del simulador. Así hay una sola copia de cada uno; con dos copias de Preact, los hooks fallan. Cada app necesita:

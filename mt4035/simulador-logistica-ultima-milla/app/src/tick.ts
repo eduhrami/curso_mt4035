@@ -46,6 +46,20 @@ export function zoningKmMult(s: LmState, p: Params, dailyOrders: number): number
   return curve * method;
 }
 
+/** Ganancia de presencia en casa para una ventana de h horas (interpolación logarítmica entre las ventanas ofrecidas). */
+export function windowPresenceGain(p: Params, hours: number): number {
+  const pts = Object.values(p.windows)
+    .map((w) => [w.hours, w.presenceGain] as const)
+    .sort((a, b) => a[0] - b[0]);
+  if (hours <= pts[0]![0]) return pts[0]![1];
+  for (let i = 1; i < pts.length; i++) {
+    const [h0, g0] = pts[i - 1]!;
+    const [h1, g1] = pts[i]!;
+    if (hours <= h1) return g0 + ((g1 - g0) * Math.log(hours / h0)) / Math.log(h1 / h0);
+  }
+  return pts[pts.length - 1]![1];
+}
+
 const NODE_ORDER: NodeKind[] = ["mfc", "dark", "store", "hub", "cd"];
 
 interface Candidate {
@@ -107,12 +121,14 @@ export function lmTick(ctx: Ctx): void {
   const quincena = p.quincena.days.includes(dayOfMonth + 1) ? p.quincena.mult : 1;
   const weekdayMult = p.weekdayMult[weekday]!;
   const spd = speedScore(d, p);
+  // La holgura alarga la promesa que ve el cliente: se percibe más lenta (E-23).
+  const spdPromised = spd * (1 - d.buffer);
   const shares = levelShares(d, p);
   const fastOffered = d.levels.express || d.levels.sameday;
   const demandService =
-    (1 + p.markets.speedElasticity[s.market.speedSensitivity] * (spd - 0.4)) *
+    (1 + p.markets.speedElasticity[s.market.speedSensitivity] * (spdPromised - 0.4)) *
     (1 + (fastOffered ? p.cutoff[d.cutoff].demand : 0)) *
-    (1 - 0.1 * d.buffer) *
+    (1 - p.markets.bufferDemandLoss[s.market.speedSensitivity] * d.buffer) *
     Math.max(0.3, 1 - (p.markets.feeElasticity[s.market.feeSensitivity] * (d.fee.fee - p.feeBase)) / p.feeBase / 2) *
     (1 - 0.0015 * d.fee.freeThreshold);
   const codShare = t.cod * p.cod[d.cod];
@@ -128,6 +144,9 @@ export function lmTick(ctx: Ctx): void {
   const fam = familiarity(s, p);
   const pay = p.fleet.pay[d.pay];
   const win = p.windows[d.window];
+  // Con holgura, la ventana que el cliente realmente debe esperar es más ancha: menos ganancia de presencia.
+  const effHours = win.hours * (1 + 2 * d.buffer);
+  const presenceGain = windowPresenceGain(p, effHours);
   const nLevels = LEVELS.filter((l) => d.levels[l]).length;
   const fragmentation = win.count ** p.windowFragmentationExp * (1 + 0.35 * Math.max(0, nLevels - 1)) * p.segmentation[d.segmentation];
   const batch = { "5": { cost: 1.04, cycle: -0.5 }, "15": { cost: 1.02, cycle: -0.3 }, "60": { cost: 1, cycle: 0 }, "240": { cost: 0.98, cycle: 1.5 } }[d.batching];
@@ -370,7 +389,7 @@ export function lmTick(ctx: Ctx): void {
   let capitalCost = 0;
 
   const csatOf = (otd: number, fads: number, exc: number, spoil: number, etaAcc: number) =>
-    clamp(p.csat.base - p.csat.otd * (1 - otd) - p.csat.fads * (1 - fads) - p.csat.exception * exc - p.csat.spoil * spoil + p.csat.eta * (etaAcc - 0.8) + p.csat.speed * (spd - 0.4) - p.csat.fee * (d.fee.fee - p.feeBase), 1, 5);
+    clamp(p.csat.base - p.csat.otd * (1 - otd) - p.csat.fads * (1 - fads) - p.csat.exception * exc - p.csat.spoil * spoil + p.csat.eta * (etaAcc - 0.8) + p.csat.speed * (spdPromised - 0.4) - p.csat.fee * (d.fee.fee - p.feeBase), 1, 5);
 
   for (const w of work) {
     const zp = t.zones[w.zi]!;
@@ -435,7 +454,7 @@ export function lmTick(ctx: Ctx): void {
     onTime += onTimeHere;
 
     // Primer intento
-    const presence = Math.min(0.99, t.presence[zp.kind as keyof typeof t.presence] + win.presenceGain + eta.presence);
+    const presence = Math.min(0.99, t.presence[zp.kind as keyof typeof t.presence] + presenceGain + eta.presence);
     const addrBase = t.address[zp.kind as keyof typeof t.address];
     const addressOk = addrBase + (1 - addrBase) * addrGain - (sh.fadsHitZone === zp.id ? p.events["X-13"].fadsHit : 0);
     const fads = presence * addressOk * t.access * (1 - codShare * p.cod.rejectRate) * (1 - pay.fakeAttempt);
@@ -568,7 +587,7 @@ export function lmTick(ctx: Ctx): void {
   // R-05: tiendas sobre el tope de picking
   s.flags.r05 = storeOver;
   // R-06: promesa sin holgura en día pico (calendario o pico viral X-05) con faltantes
-  s.flags.r06 = (!!peak || sh.demandMult > 1) && d.buffer === 0 && backlogOut > 0.05 * Math.max(ordersTotal, 1);
+  s.flags.r06 = (!!peak || sh.demandMult > 1) && d.buffer < 0.1 && backlogOut > 0.05 * Math.max(ordersTotal, 1);
 
   // OSA de la tienda física: baja si el picking en línea excede el tope (R-05) o si se reponen pedidos dañados (R-02).
   const storeOsa = clamp((storeCapTotal > 0 ? p.nodes.store.osaBase - p.nodes.store.osaTheta * Math.max(0, storeHoursTotal / (storeCapTotal / Math.max(d.sfsCap, 1e-9)) - d.sfsCap) : p.nodes.store.osaBase) - (prevFlags.r02 ? 0.02 : 0), 0, 1);

@@ -37,7 +37,8 @@ describe("LOG-CAU (P1)", () => {
     const b = kpis("megalopolis", { ...W2, buffer: 0.2 });
     expect(b.OTD).toBeGreaterThan(a.OTD!);
     expect(b.ORDERS).toBeLessThan(a.ORDERS!);
-    expect(b.ORDERS! / a.ORDERS!).toBeGreaterThan(0.95);
+    // La holgura alarga la promesa (E-23) y ensancha la ventana efectiva: ~−3% por demanda, más el efecto en presencia.
+    expect(b.ORDERS! / a.ORDERS!).toBeGreaterThan(0.93);
   });
 
   it("CAU-05 un nivel → tres niveles sin segmentar: paradas por ruta ↓ y CPD ↑", () => {

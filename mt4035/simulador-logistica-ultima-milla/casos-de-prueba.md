@@ -208,7 +208,7 @@ Los mismos casos que SCM-PER-01…07, con estos cambios: el CSV tiene **36 filas
 |---|---|---|
 | **BOT-A Estático** | *As-is* los 36 meses | Línea base |
 | **BOT-B Velocidad a toda costa** | Express en todos lados, ventanas de 1 h, motos, *crowdsourced* | Debe perder bajo eficiencia y confiabilidad |
-| **BOT-C Segmentado (mini-caso S5)** | SFS en urbano + SFD en periferia, umbral de costo dinámico, ventanas de 2 h, ETA en vivo, validación de dirección | Debe ganar a A en Megalópolis bajo las tres estrategias |
+| **BOT-C Segmentado (mini-caso S5)** | SFS en urbano + SFD en periferia, umbral de costo dinámico, ventanas de 2 h, ETA en vivo, validación de dirección; con plan de pico: tope de capacidad por ventana (D-26 = 110%) en noviembre y diciembre. ⚠ Sin plan de pico, las ventanas de 2 h se desploman en los picos (OTD p95 ≈ 0.38) y C apenas supera a A bajo confiabilidad | Debe ganar a A en Megalópolis bajo las tres estrategias |
 | **BOT-D Eficiencia** | Día siguiente, ventanas de 4 h, lockers, *backhaul*, k-means balanceado, VRPTW | Debe ganar bajo eficiencia |
 | **BOT-E Express rural ingenuo** | En Norte: express < 2 h sin micro-hubs | Debe perder en Norte |
 | **BOT-F Aleatorio** | Decisiones válidas aleatorias cada mes | Robustez |

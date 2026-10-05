@@ -567,6 +567,11 @@
     "fuel": {
       "stable": 1.0,
       "volatile": 1.0
+    },
+    "bufferDemandLoss": {
+      "low": 0.1,
+      "mid": 0.2,
+      "high": 0.4
     }
   },
   "basketMargin": 0.25,

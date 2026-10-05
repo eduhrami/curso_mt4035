@@ -293,6 +293,12 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
   - R-08 mide el beneficio de la IA contra el ruteo manual: con datos básicos obtiene ~30% y rinde menos que un VRPTW.
   - La telemetría y el tráfico (D-60) cuestan por vehículo en operación: USD 40 (GPS) o 120 (completo) al mes.
   - El mes siguiente a un pico se registra la recuperación del servicio (E-21) en el log causal.
+  - **Holgura de la promesa (D-23):** alarga la promesa que ve el cliente.
+    - Cuesta 1–4% de demanda por cada 10% de holgura, según la sensibilidad a la velocidad (E-23), y la CSAT percibe la promesa más lenta.
+    - La presencia en casa usa la ventana efectiva (ancho × (1 + 2·holgura)), interpolada entre las ventanas ofrecidas.
+    - R-06 se dispara con holgura < 10%.
+  - X-06 (ausentismo) solo ocurre con flota propia.
+  - X-11 (competidor *quick commerce*) quita 10% sostenido en zonas urbanas, o 3% si respondes con express y CSAT ≥ 4. Una nueva ocurrencia no vuelve a restar.
   - **Puntaje por territorio:**
     - Bajío: CPD p95 de USD 2–8 y FADS de 80–98%.
     - Norte: CPD p95 de USD 5–16 y guardrail de utilización de vehículo de 50%.
@@ -473,7 +479,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 - [ ] Confirmar la duración objetivo de una partida: 36 épocas manuales (≈2 min por época en ~75 min). Valorar si se juega en clase + casa.
 - [x] Validar las constantes de la §6.3 contra el ejemplo resuelto de S5 (SFS USD 8.00 vs. SFD USD 9.60 por pedido). Fixture `minicaso`, LOG-ESC-04.
 - [ ] Decidir si el territorio Norte incluye el tramo carretero entre ciudades o solo la última milla dentro de cada ciudad.
-- [ ] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos).
+- [x] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos). Rejilla de tarjetas por zona con calor de demanda, nodos y confianza (F7); la tabla por nivel de servicio queda para después del piloto.
 - [x] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común. Sí: `@mt4035/sim-core`.
 - [x] Herramienta del profesor para volver a correr y agregar los JSON del grupo. `npm run replay` y `npm run aggregate` (F6); el modo profesor en la UI llega en F7.
 

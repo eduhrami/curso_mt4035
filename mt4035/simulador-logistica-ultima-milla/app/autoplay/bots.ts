@@ -29,10 +29,15 @@ export function speedAtAllCost(): Policy<LmState> {
       : {};
 }
 
-/** BOT-C · Segmentado (mini-caso S5): SFS en zonas con tiendas + SFD en periferia, umbral dinámico, 2 h, ETA en vivo, geocodificación. */
+/**
+ * BOT-C · Segmentado (mini-caso S5): SFS en zonas con tiendas + SFD en periferia, umbral dinámico, 2 h,
+ * ETA en vivo, geocodificación; con plan de pico: tope de capacidad por ventana en noviembre y diciembre.
+ */
 export function segmented(variant: { routing?: Decisions["routing"]; data?: Decisions["data"] } = {}): Policy<LmState> {
-  return (_s, e) =>
-    e === 0
+  return (_s, e) => {
+    const month = e % 12;
+    const peakPlan: DecisionChanges = month === 10 ? { "D-26": "110" } : month === 0 && e > 0 ? { "D-26": "none" } : {};
+    return e === 0
       ? {
           "D-02": { share: 0.3, pickers: "4" },
           "D-10": "threshold",
@@ -42,7 +47,8 @@ export function segmented(variant: { routing?: Decisions["routing"]; data?: Deci
           ...(variant.routing ? { "D-43": variant.routing } : {}),
           ...(variant.data ? { "D-60": variant.data } : {}),
         }
-      : {};
+      : peakPlan;
+  };
 }
 
 /** BOT-D · Eficiencia: día siguiente, ventanas de 4 h, lockers, backhaul, zonas balanceadas, VRPTW. */
