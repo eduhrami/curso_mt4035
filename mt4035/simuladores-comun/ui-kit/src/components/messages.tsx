@@ -79,12 +79,10 @@ export function MessageInbox({ reports, epochLabel, kpiNames, unit = "semana", p
   for (const m of reports.slice(-1).flatMap((r) => r.messages)) counts[m.severity]++;
   return (
     <div class="card stack">
-      <h2>
-        Mensajes{" "}
-        <span class="muted small">
-          ({counts.critico} críticos · {counts.alerta} alertas · {counts.info} info en el último {period})
-        </span>
-      </h2>
+      <h2 style={{ marginBottom: 0 }}>Mensajes</h2>
+      <p class="muted small" style={{ margin: 0 }}>
+        {counts.critico} críticos · {counts.alerta} alertas · {counts.info} info en el último {period}
+      </p>
       <div class="row small no-print">
         <select aria-label="Filtrar por severidad" value={filter} onChange={(e) => setFilter((e.target as HTMLSelectElement).value as typeof filter)}>
           <option value="all">Todas</option>

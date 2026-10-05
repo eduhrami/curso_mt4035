@@ -27,6 +27,7 @@ export function Setup() {
   const start = () => {
     store.start(scmConfig({ region, strategy, market, ...(preset !== CUSTOM_SCENARIO ? { preset } : {}), greenfield, seed, player: { ...(name ? { name } : {}), ...(team ? { team } : {}) } }));
     screen.value = "game";
+    globalThis.scrollTo?.(0, 0);
   };
   return (
     <main class="stack" style={{ maxWidth: 1100, margin: "0 auto", padding: "1rem 16px" }}>

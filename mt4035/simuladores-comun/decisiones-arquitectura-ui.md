@@ -226,7 +226,8 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 └───────────────┴──────────────────────────────────┴───────────────┘
 ```
 
-- **Escritorio** (el uso principal es en laptop): tres columnas.
+- **Escritorio** (el uso principal es en laptop): tres columnas. Anchos (5-oct-2026, ampliados porque los controles de decisión no cabían): decisiones 450–570 px, dashboard flexible, mensajes 220–280 px; entre 761 y 1100 px, dos columnas (decisiones 380–510 px + dashboard) con mensajes debajo. La barra superior es compacta para caber en una línea desde 1280 px.
+- **Mapas:** en SCM cada celda lleva una etiqueta «Z#» en color de acento y el número de tiendas en grande (abajo a la derecha); en última milla, cada zona tiene etiqueta y borde de color según su tipo (urbana, periferia, ciudad foránea, rural) y el número de tiendas en grande.
 - **Pantallas angostas** (≥ 360 px): pestañas Decisiones / Dashboard / Mensajes, sin scroll horizontal.
 
 ### AD-23 ✔ Dashboard
