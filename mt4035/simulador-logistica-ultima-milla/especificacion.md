@@ -479,7 +479,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 - [ ] Confirmar la duración objetivo de una partida: 36 épocas manuales (≈2 min por época en ~75 min). Valorar si se juega en clase + casa.
 - [x] Validar las constantes de la §6.3 contra el ejemplo resuelto de S5 (SFS USD 8.00 vs. SFD USD 9.60 por pedido). Fixture `minicaso`, LOG-ESC-04.
 - [ ] Decidir si el territorio Norte incluye el tramo carretero entre ciudades o solo la última milla dentro de cada ciudad.
-- [x] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos). Rejilla de tarjetas por zona con calor de demanda, nodos y confianza (F7); la tabla por nivel de servicio queda para después del piloto.
+- [x] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos). Rejilla de tarjetas por zona con calor de demanda, nodos y confianza (F7); la tabla por nivel de servicio queda pendiente.
 - [x] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común. Sí: `@mt4035/sim-core`.
 - [x] Herramienta del profesor para volver a correr y agregar los JSON del grupo. `npm run replay` y `npm run aggregate` (F6); el modo profesor en la UI llega en F7.
 
