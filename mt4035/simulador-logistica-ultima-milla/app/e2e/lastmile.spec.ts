@@ -141,3 +141,15 @@ test("una corrida con escenario predefinido lo muestra en la barra superior", as
   await page.getByTestId("start").click();
   await expect(page.getByTestId("scenario-label")).toHaveText("Margen apretado");
 });
+
+test("el glosario se abre desde el inicio y los términos muestran su definición al pasar el mouse", async ({ page }) => {
+  await page.goto(url());
+  await page.getByTestId("setup-glossary").click();
+  const dialog = page.getByTestId("glossary");
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("textbox").fill("OTIF");
+  await expect(dialog.locator("dt")).toHaveCount(1);
+  await dialog.getByRole("button", { name: "Cerrar glosario" }).click();
+  await expect(dialog).toBeHidden();
+  await expect(page.locator("abbr.gloss").first()).toHaveAttribute("title", /.+: .+/);
+});

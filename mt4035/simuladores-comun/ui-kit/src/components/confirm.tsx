@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import type { DecisionSpec } from "@mt4035/sim-core";
 import type { GameStore } from "../store.ts";
 import { fmtMoney } from "../format.ts";
+import { Gloss } from "./glossary.tsx";
 
 export interface ChangeSummary {
   id: string;
@@ -70,7 +71,7 @@ export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describ
               {changes.map((c) => (
                 <tr key={c.id}>
                   <td>
-                    {c.label} <span class="muted mono small">{c.id}</span>
+                    <Gloss text={c.label} /> <span class="muted mono small">{c.id}</span>
                   </td>
                   <td class="small">{c.from}</td>
                   <td class="small">

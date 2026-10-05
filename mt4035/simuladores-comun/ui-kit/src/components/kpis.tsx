@@ -1,6 +1,8 @@
 /** Tarjetas de KPI con estado frente al guardrail (ícono + texto + color, AD-23). */
+import { useContext } from "preact/hooks";
 import type { EpochReport } from "@mt4035/sim-core";
 import { fmt, fmtDelta, type KpiFormat } from "../format.ts";
+import { GlossaryContext, glossaryTitle } from "./glossary.tsx";
 
 export interface KpiMeta {
   id: string;
@@ -27,12 +29,13 @@ export function guardrailStatus(meta: KpiMeta, v: number | undefined): Status {
 const STATUS_TEXT: Record<Status, string> = { ok: "✓ en guardrail", warn: "▲ al límite", bad: "✗ fuera de guardrail", none: "" };
 
 export function KpiCard({ meta, report, prev, onExplain, selected }: { meta: KpiMeta; report: EpochReport | null; prev: EpochReport | null; onExplain?: (kpi: string) => void; selected?: boolean }) {
+  const glossary = useContext(GlossaryContext);
   const v = report?.kpis[meta.id];
   const p = prev?.kpis[meta.id];
   const st = guardrailStatus(meta, v);
   const better = v !== undefined && p !== undefined ? (meta.higherIsBetter ? v > p : v < p) : undefined;
   return (
-    <button type="button" class="card kpi" style={{ textAlign: "left", outline: selected ? "2px solid var(--accent)" : undefined }} onClick={() => onExplain?.(meta.id)} title={`${meta.name}: ${meta.formula}`} aria-label={`${meta.acronym} ${fmt(v, meta.format)}. ${STATUS_TEXT[st]}. Ver causas`}>
+    <button type="button" class="card kpi" style={{ textAlign: "left", outline: selected ? "2px solid var(--accent)" : undefined }} onClick={() => onExplain?.(meta.id)} title={[`${meta.name}: ${meta.formula}`, glossaryTitle(meta.acronym, glossary)].filter(Boolean).join("\n")} aria-label={`${meta.acronym} ${fmt(v, meta.format)}. ${STATUS_TEXT[st]}. Ver causas`}>
       <div class="kpi-name">
         <span>
           <strong>{meta.acronym}</strong> · {meta.name}

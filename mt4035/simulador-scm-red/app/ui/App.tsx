@@ -1,12 +1,13 @@
 /** Raíz de la app SCM: barra superior, configuración, partida (3 columnas) y corridas. */
 import { useState } from "preact/hooks";
-import { ConfirmDialog, DecisionPanel, download, MessageInbox, StorageBanner, ThreeColumns, fmtMoney } from "@mt4035/ui-kit";
+import { ConfirmDialog, DecisionPanel, download, fmtMoney, GlossaryContext, GlossaryDialog, MessageInbox, StorageBanner, ThreeColumns } from "@mt4035/ui-kit";
+import { GLOSSARY } from "./glossary.ts";
 import { DcEditor } from "./DcEditor.tsx";
 import { Dashboard } from "./Dashboard.tsx";
 import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
-import { engine, professor, projectsInProgress, regionOf, screen, store } from "./game.ts";
+import { engine, glossaryOpen, professor, projectsInProgress, regionOf, screen, store } from "./game.ts";
 import { describeValue, KPI_NAMES, LABELS, OPTIONS, REGION_TEXT, scenarioLabel, TABS } from "./labels.ts";
 import { params, type DcSpec, type ScmState } from "../src/index.ts";
 import type { GameState } from "@mt4035/sim-core";
@@ -14,11 +15,14 @@ import type { GameState } from "@mt4035/sim-core";
 export function App() {
   const state = store.state.value;
   return (
-    <div class="app">
-      <TopBar />
-      <StorageBanner error={store.storageError.value} />
-      {screen.value === "runs" ? <Runs /> : screen.value === "game" && state ? <Game /> : <Setup />}
-    </div>
+    <GlossaryContext.Provider value={GLOSSARY}>
+      <div class="app">
+        <TopBar />
+        <StorageBanner error={store.storageError.value} />
+        {screen.value === "runs" ? <Runs /> : screen.value === "game" && state ? <Game /> : <Setup />}
+        <GlossaryDialog open={glossaryOpen.value} onClose={() => (glossaryOpen.value = false)} />
+      </div>
+    </GlossaryContext.Provider>
   );
 }
 
@@ -59,6 +63,9 @@ function TopBar() {
           Exportar JSON
         </button>
       )}
+      <button type="button" onClick={() => (glossaryOpen.value = true)} data-testid="open-glossary">
+        Glosario
+      </button>
       <button type="button" onClick={() => (screen.value = "runs")}>
         Corridas
       </button>

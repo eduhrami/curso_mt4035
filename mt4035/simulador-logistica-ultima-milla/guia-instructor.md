@@ -15,9 +15,9 @@ La guía tiene dos partes: **(A) introducción a la práctica**, para preparar y
 Los equipos dirigen la logística en línea de Mercado Alba durante 36 meses y comprueban con KPIs que el servicio puede mejorar sin que el costo destruya el margen. La práctica conecta cuatro ideas de la sesión:
 
 1. **La frontera servicio–costo:** entrega a tiempo (OTD, *On-Time Delivery Rate*: entregas a tiempo / entregas) contra costo por pedido (CPD, *Cost per Delivered order*: costo de última milla / entregas exitosas).
-2. **El primer intento:** FADS (*First Attempt Delivery Success*: entregas exitosas al primer intento / intentos) depende de ventanas, avisos y validación de dirección, no solo de la flota.
-3. **Promedio vs. días críticos:** el OTD promedio oculta los picos; el p95 los revela (R-12).
-4. **Pares primario–guardrail:** cumplir un KPI sin romper otro (OTD con CPD, CPD con CSAT, velocidad con spoilage).
+2. **El primer intento:** FADS (*First Attempt Delivery Success*: entregas exitosas al primer intento / intentos) como KPI que conecta operación y experiencia del cliente.
+3. **Promedio vs. días críticos:** la diferencia entre medir con el promedio mensual y con el p95 de los días críticos.
+4. **Pares primario–guardrail:** cumplir un KPI sin romper otro.
 
 ### A.2 Antes de la sesión (solo el instructor)
 
@@ -34,7 +34,7 @@ Los alumnos no preparan nada antes de clase: todo ocurre en la sesión.
 >
 > Antes de empezar eligen el **territorio**, el **escenario de mercado** que les asigné y la **estrategia de servicio** que van a defender (velocidad, confiabilidad o eficiencia). El puntaje se calcula según esa estrategia y siempre con los días críticos (p95).
 >
-> Usen la **semilla del escenario** tal como aparece: así todos los equipos con el mismo escenario enfrentan los mismos picos y eventos, y las diferencias se deben a sus decisiones. El calendario de picos (Hot Sale, regreso a clases, Buen Fin, Navidad y quincenas) se conoce desde el inicio; su magnitud no.
+> Al elegir el escenario, el simulador llena la **semilla** en la sección «Jugador y semilla». **No la cambien**: así todos los equipos con el mismo escenario enfrentan los mismos picos y eventos, y las diferencias se deben a sus decisiones.
 >
 > Cambien el reporte de promedio a **p95** en algún momento y comparen. Al terminar verán un reporte final con un **debrief de seis preguntas**. No podrán exportar la corrida hasta responderlo. Respondan con datos de su corrida: eso es lo que se califica, más que el puntaje.»
 
@@ -46,10 +46,12 @@ Cada ficha del setup indica el concepto que ilustra y el territorio donde el con
 
 | Escenario | Territorio sugerido | Concepto | Semilla |
 |---|---|---|---|
-| Mercado base | Megalópolis Centro | Frontera OTD–CPD, FADS | 5101 |
-| Carrera por la velocidad | Megalópolis Centro | El costo de la velocidad y la saturación en picos | 5202 |
-| Margen apretado | Región Norte | Eficiencia: consolidación, BOPIS, lockers, segmentación | 5303 |
+| Mercado base | Megalópolis Centro | Línea base: frontera OTD–CPD | 5101 |
+| Carrera por la velocidad | Megalópolis Centro | El costo de la velocidad | 5202 |
+| Margen apretado | Región Norte | Eficiencia con margen estrecho | 5303 |
 | Canasta compleja | Ciudad Bajío | Cadena de frío y logística inversa | 5404 |
+
+**Semillas y comparabilidad.** Las fichas del simulador no muestran la semilla; al elegir un escenario se llena sola con el valor de la tabla. Para comparar equipos o estrategias, todos deben usar el mismo escenario **y** esa semilla: así enfrentan la misma demanda y los mismos eventos, y la diferencia en KPIs se atribuye a las decisiones. Para variar entre grupos, puede asignar otra semilla (por ejemplo, una por grupo) y pedir que la escriban antes de comenzar. Las corridas con «Crear mi propio escenario» o con otra semilla no son comparables con las demás; la columna `semilla` del CSV agregado permite detectarlas.
 
 Asignaciones recomendadas:
 
@@ -88,7 +90,7 @@ Proyecte el CSV agregado y, si es posible, las fronteras OTD–CPD de dos equipo
 - ¿Qué par primario–guardrail fue el más difícil de sostener en Buen Fin?
 - ¿Cuánto del OTD «promedio» era real? ¿Qué vieron al cambiar a p95?
 - ¿Dónde sí valió la pena pagar por velocidad y dónde convenía segmentar?
-- ¿La IA en ruteo mejoró algo antes de invertir en datos? (R-08)
+- Si usaron ruteo con IA, ¿qué tanto mejoró y de qué dependió?
 - Entre equipos del mismo escenario: ¿qué decisión explica la diferencia en CPD?
 
 ---
@@ -104,45 +106,43 @@ Si no se cumplen, devuelva la entrega para corrección antes de calificar.
 
 ### B.2 Criterios y niveles (100 puntos)
 
-El puntaje del simulador **no** se califica directamente: se evalúa la calidad del razonamiento. Un equipo con puntaje bajo que diagnostica bien por qué le fue mal puede obtener la máxima calificación.
+El puntaje del simulador **no** se califica directamente: se evalúa la calidad del razonamiento. Un equipo con puntaje bajo que diagnostica bien por qué le fue mal puede obtener la máxima calificación. La rúbrica no tiene respuestas correctas predefinidas: califica la **evidencia** (datos de la propia corrida), la **causalidad** (decisión → mecanismo → KPI) y la **coherencia** con la estrategia de servicio y el territorio elegidos.
 
 | Pregunta | Pts | Excelente (100%) | Satisfactorio (75%) | En desarrollo (50%) | Insuficiente (0–25%) |
 |---|---|---|---|---|---|
-| **DB-01** Red de *fulfillment* y promesa; decisión clave | 15 | Describe nodos (SFD, SFS, dark stores, lockers), niveles de servicio y flota, y justifica su coherencia con la estrategia **y** con el territorio (densidad, presencia en casa) | Describe la red y la decisión clave con alguna justificación | Lista decisiones sin explicar por qué encajan | Genérica o sin relación con la corrida |
-| **DB-02** Par primario–guardrail con valores | 20 | Nombra el par (p. ej., OTD p95 y CPD), cita valores y explica cómo administró el *trade-off* | Cita el par y valores; el *trade-off* es superficial | Nombra KPIs sin valores o sin *trade-off* | Confunde KPIs o no responde |
-| **DB-03** Pico más difícil | 15 | Ubica el mes, cuantifica OTD p95 y utilización, y distingue lo que preparó **antes** (contratos de pico, slotting, buffer) de lo que hizo **durante** | Identifica el pico y una medida tomada | Describe el pico sin datos ni medidas | No responde |
-| **DB-04** Promedio vs. p95 | 15 | Compara valores promedio y p95 y explica qué oculta el promedio (R-12) y qué decisión cambió al verlo | Reporta la diferencia con una interpretación breve | Menciona el p95 sin valores | No distingue promedio de p95 |
-| **DB-05** Pregunta del escenario | 20 | Responde con evidencia cuantitativa y demuestra el concepto del escenario (B.3) | Usa el concepto correctamente con poca evidencia | Usa el concepto de forma vaga | No conecta con el escenario |
-| **DB-06** Qué cambiaría al repetir | 15 | Hipótesis explícita: decisión → mecanismo → KPI esperado, coherente con lo observado | Propone un cambio razonable con un mecanismo parcial | Cambio sin mecanismo | «Nada» o respuesta genérica |
+| **DB-01** Red de *fulfillment* y promesa; decisión clave | 15 | Describe con precisión desde dónde surtió, qué prometió y con qué flota, señala una decisión clave y argumenta su coherencia con la estrategia **y** con las características del territorio | Describe sus decisiones y la clave con una justificación parcial | Lista decisiones sin explicar por qué encajan | Genérica o sin relación con la corrida |
+| **DB-02** Par primario–guardrail con valores | 20 | Justifica la elección del par a partir de su estrategia, cita valores y explica cómo administró la tensión entre ambos | Nombra el par y cita valores; la explicación del *trade-off* es superficial | Nombra KPIs sin valores o sin *trade-off* | Confunde los KPIs o no responde |
+| **DB-03** Pico más difícil | 15 | Ubica el mes, cuantifica su efecto en servicio y capacidad, y distingue lo que preparó **antes** del pico de lo que hizo **durante** | Identifica el pico y una medida tomada | Describe el pico sin datos ni medidas | No responde |
+| **DB-04** Promedio vs. p95 | 15 | Compara valores promedio y p95 de su corrida, interpreta la diferencia y explica si cambió alguna decisión al verla | Reporta la diferencia con una interpretación breve | Menciona el p95 sin valores | No distingue promedio de p95 |
+| **DB-05** Pregunta del escenario | 20 | Responde todas las partes de la pregunta con evidencia cuantitativa y conecta el resultado con el concepto del escenario (B.3) | Responde con evidencia parcial o deja una parte sin atender | Responde de forma vaga, sin datos | No conecta con el escenario |
+| **DB-06** Qué cambiaría al repetir | 15 | Formula una hipótesis verificable (decisión → mecanismo → KPI esperado) que se desprende de lo observado | Propone un cambio razonable con mecanismo parcial | Cambio sin mecanismo | «Nada» o respuesta genérica |
 
-### B.3 Guía de respuesta para DB-05 por escenario
+### B.3 Qué buscar en DB-05 por escenario
 
-Una respuesta excelente suele incluir los elementos indicados. No son respuestas únicas: premie el razonamiento que se apoye en la evidencia de la corrida.
+Los criterios describen la **evidencia y el razonamiento** que debe contener una respuesta excelente, no su conclusión. Distintos equipos pueden llegar a conclusiones distintas con la misma semilla; califique si la conclusión se sostiene con sus datos.
 
-**Mercado base** — *¿Dónde quedó la corrida en la frontera OTD–CPD? ¿Qué decisión la acercó? ¿Cuánto subió el FADS?*
-- Ubica su punto en la gráfica de frontera y lo compara con el *as-is* o con otra corrida.
-- Distingue las decisiones que mueven la frontera (SFS en zonas densas, zonificación y ruteo) de las que solo se desplazan sobre ella (pagar más por velocidad).
-- Explica el FADS con ventanas angostas (D-21), aviso de ETA (D-50) y validación de dirección (D-51); con ventana «todo el día» y baja presencia en casa se dispara R-03.
+**Mercado base**
+- Ubica su corrida en la gráfica OTD–CPD con valores y la compara con el punto de partida o con otra corrida.
+- Identifica qué decisión movió su posición y distingue entre mejorar ambos KPIs a la vez y cambiar uno por otro.
+- Reporta el FADS al inicio y al final y lo atribuye a decisiones concretas.
 
-**Carrera por la velocidad** — *¿Dónde valió la pena pagar por velocidad y dónde segmentar? ¿Cómo se comportaron el OTD p95 y la utilización en los picos?*
-- Reconoce que el cliente premia la rapidez, pero que el express con densidad baja dispara R-04 (utilización < 50% y CPD alto).
-- Segmenta: express o mismo día en zonas densas y día siguiente o lockers en la periferia (D-24).
-- Reporta el OTD p95 en Hot Sale y Buen Fin y lo conecta con el buffer de promesa (D-23), el tope de capacidad (D-26) y los contratos de pico (D-36). Prometer sin buffer en pico activa R-06 (backlog de días).
-- Con un crecimiento explosivo, la capacidad de nodos y flota se satura antes: una buena respuesta muestra cuándo.
+**Carrera por la velocidad**
+- Distingue zonas o segmentos donde pagar por velocidad rindió de aquellos donde no, con datos de servicio y costo.
+- Reporta OTD p95, CPD y utilización en los meses pico que menciona la pregunta.
+- Explica cómo evolucionó la capacidad frente al crecimiento de la demanda y si llegó a saturarse.
 
-**Margen apretado** — *¿Qué palancas de eficiencia usó y cuánto movieron el CPD y el margen?*
-- Compara el CPD y el costo de envío como % de ingresos al inicio y al final.
-- Discute la tarifa y el mínimo de compra (D-25) frente a un cliente sensible a la tarifa: subirlos protege el margen pero reduce pedidos.
-- Menciona la consolidación: lockers (R-14, una parada para muchos pedidos), BOPIS (D-03), micro-hubs (D-07) y backhaul de devoluciones (R-11).
-- Relaciona la escasez de choferes (X-06) y la gasolina volátil (X-15) con la mezcla y el tipo de flota (D-30, D-31).
+**Margen apretado**
+- Enumera las palancas de eficiencia que usó y cuantifica el cambio en CPD y en margen del canal en línea.
+- Si modificó la tarifa o el mínimo de compra, cuantifica el efecto en el volumen de pedidos.
+- Muestra si el ahorro tuvo costo en servicio o en satisfacción del cliente.
 
-**Canasta compleja** — *¿Cómo protegió la cadena de frío y qué efecto tuvo en el CSAT? ¿Qué canal de devolución eligió y cuánto costó?*
-- Conecta el spoilage con la duración de ruta y el equipo de frío: rutas de más de 3 h con frescos y sin equipo disparan R-01, y luego R-02 (CSAT −, faltantes en piso). Menciona la secuencia de carga (D-45) y el equipo (D-32).
-- Reporta el costo de devolución por unidad y compara canales (D-55): tienda, lockers, recolección a domicilio; y la consolidación (D-56): el backhaul baja los km vacíos pero alarga la ruta (R-11).
-- Una respuesta excelente reconoce que la logística inversa se diseña desde el inicio, no como parche.
+**Canasta compleja**
+- Reporta el spoilage rate y el CSAT a lo largo de la partida y argumenta qué decisiones los movieron.
+- Reporta el costo de devolución por unidad y justifica su canal de devolución frente a las alternativas.
+- Explica si diseñó la logística inversa desde el inicio o reaccionó tarde, y qué le costó.
 
-**Escenario propio** — *¿Qué factores cambió, qué quería probar y qué confirmó o refutó?*
-- Plantea una hipótesis explícita sobre los factores de mercado y la contrasta con KPIs. Si es posible, compara contra una corrida en un escenario predefinido.
+**Escenario propio**
+- Plantea una hipótesis explícita sobre los factores de mercado que cambió y la contrasta con sus KPIs; idealmente, compara con una corrida en un escenario predefinido.
 
 ### B.4 Retroalimentación rápida
 

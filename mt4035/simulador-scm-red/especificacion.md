@@ -110,14 +110,14 @@ El jugador elige uno de los escenarios predefinidos (§4.3) o, en «Crear mi pro
 
 ### 4.3 Escenarios de mercado predefinidos (5-oct-2026)
 
-La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el perfil, el concepto de clase, la semilla y la región o territorio sugerido; las notas de «qué revisar» y la pregunta propia del escenario pasan al debrief final, §11) en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
+La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el perfil, el concepto de clase (redactado como tema, sin anticipar soluciones) y la región o territorio sugerido; la semilla no se muestra en la ficha, se llena sola en «Jugador y semilla»; las notas de «qué revisar» y la pregunta propia del escenario pasan al debrief final, §11) en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
 
 | ID | Escenario | Perfil (factores que se apartan del neutro) | Concepto de clase | Contraste más claro en | Semilla ⚠ |
 |---|---|---|---|---|---|
 | EM-01 | **Mercado estable** | Perfil neutro (por omisión): moderado, suave, volatilidad media, combustible estable, competencia pasiva, choferes holgados, demografía estable, proveedores medios | Línea base: costo de servir (CTS) vs. disponibilidad en anaquel (OSA) sin ruido externo | Kaigan | 4101 |
-| EM-02 | **Demanda incierta** | Estacionalidad marcada (E-21), volatilidad alta (E-22), proveedores de confiabilidad baja (E-27) | Efecto látigo: inventario de seguridad, POS compartido, VMI/CPFR; cross-dock sin amortiguador (R-06) | Valle Metropolitano | 4202 |
-| EM-03 | **Presión de costos** | Demanda estancada (E-20), combustible al alza (E-23), competencia agresiva (E-24), choferes escasos (E-25) | Eficiencia vs. capacidad de respuesta: densidad, consolidación, costo por entrega | Red River | 4303 |
-| EM-04 | **Crecimiento acelerado** | Boom (E-20), estacionalidad marcada (E-21), envejecimiento (E-26) | Planeación de capacidad con retrasos (un CD tarda 2–4 trimestres) y mezcla que se desplaza a frescos | Valle Metropolitano | 4404 |
+| EM-02 | **Demanda incierta** | Estacionalidad marcada (E-21), volatilidad alta (E-22), proveedores de confiabilidad baja (E-27) | Efecto látigo con demanda volátil y proveedores poco confiables | Valle Metropolitano | 4202 |
+| EM-03 | **Presión de costos** | Demanda estancada (E-20), combustible al alza (E-23), competencia agresiva (E-24), choferes escasos (E-25) | Eficiencia vs. capacidad de respuesta cuando suben los costos | Red River | 4303 |
+| EM-04 | **Crecimiento acelerado** | Boom (E-20), estacionalidad marcada (E-21), envejecimiento (E-26) | Planeación de capacidad cuando la demanda crece rápido y cambia su mezcla | Valle Metropolitano | 4404 |
 
 Los ids EM-xx son internos (no se muestran al jugador). La corrida guarda el id en `setup.preset` (`config.scenario.preset`) y el nombre del escenario se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
 
@@ -361,7 +361,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 
 ## 9. Interfaz
 
-1. **Setup:** selector de región (con ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre E-20…E-27 queda bajo «Crear mi propio escenario»), estrategia declarada y semilla.
+1. **Setup:** selector de región (con ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre E-20…E-27 queda bajo «Crear mi propio escenario»), estrategia declarada y semilla. Incluye los créditos del curso (profesores y perfiles) y acceso al **glosario**.
 2. **Panel de decisiones por época:** pestañas *Red · Flujo · Inventario · Información*. Cada control muestra costo, retraso y reversibilidad. Hay un previsualizador "qué esperar" con flechas ↑↓ por KPI según el grafo causal, cualitativo y sin revelar números.
 3. **Mapa esquemático de la red:** SVG con la región como rejilla, *clusters* como manchas de densidad, CD como nodos y flujos como líneas cuyo grosor es el volumen. No es un mapa geográfico real.
 4. **Dashboard de KPIs:**
@@ -371,6 +371,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
    - Desglose de costos en cascada (*waterfall*).
    - Merma por categoría.
 5. **Bandeja de mensajes:** eventos (§8) y alertas de reglas (§6.4), con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con los valores que la activaron.
+- **Glosario (AD-32):** botón «Glosario» en la barra superior y en el inicio, con todas las siglas y conceptos agrupados y un buscador. En toda la interfaz, los términos del glosario aparecen subrayados con puntos y muestran su definición al pasar el mouse (`<abbr title>`); las opciones y etiquetas de KPI la muestran como tooltip. Entradas en [`app/ui/glossary.ts`](app/ui/glossary.ts).
 6. **Comparador de corridas:** 2–4 corridas guardadas, KPI por KPI, con el diff de decisiones.
 7. **Reporte final:** scorecard, trayectoria de 5 años, decisiones clave y eventos enfrentados.. Cierra con el **debrief** (§11): notas del escenario y seis preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 

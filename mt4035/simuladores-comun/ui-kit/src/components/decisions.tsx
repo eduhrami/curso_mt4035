@@ -3,11 +3,12 @@
  * (como la red de CD) usan un editor propio del simulador vía `custom`.
  */
 import type { ComponentChildren, VNode } from "preact";
-import { useState } from "preact/hooks";
+import { useContext, useState } from "preact/hooks";
 import type { DecisionSpec, GameState } from "@mt4035/sim-core";
 import type { GameStore } from "../store.ts";
 import { fmt, fmtMoney, type KpiFormat } from "../format.ts";
 import { Tabs, type TabDef } from "./basics.tsx";
+import { Gloss, GlossaryContext, glossaryTitle } from "./glossary.tsx";
 
 export interface DecisionLabels {
   /** Texto de ayuda breve bajo el título de la decisión. */
@@ -41,6 +42,7 @@ export interface ControlProps {
 /** Control genérico según el tipo del esquema: enum, número, booleano u objeto. */
 export function SchemaControl({ schema, value, onChange, labels, globalOptions, name, disabled }: ControlProps): VNode {
   const optLabel = (v: unknown) => labels.options?.[String(v)] ?? globalOptions[String(v)] ?? String(v);
+  const glossary = useContext(GlossaryContext);
   switch (schema.type) {
     case "enum": {
       const opts = (schema.options ?? []) as string[];
@@ -48,7 +50,7 @@ export function SchemaControl({ schema, value, onChange, labels, globalOptions, 
         return (
           <div class="row" role="radiogroup" aria-label={name}>
             {opts.map((o) => (
-              <button type="button" role="radio" aria-checked={value === o} class={value === o ? "btn-primary" : ""} onClick={() => onChange(o)} disabled={disabled} key={o}>
+              <button type="button" role="radio" aria-checked={value === o} class={value === o ? "btn-primary" : ""} onClick={() => onChange(o)} disabled={disabled} key={o} title={glossaryTitle(optLabel(o), glossary)}>
                 {optLabel(o)}
               </button>
             ))}
@@ -56,7 +58,7 @@ export function SchemaControl({ schema, value, onChange, labels, globalOptions, 
         );
       }
       return (
-        <select aria-label={name} value={String(value)} onChange={(e) => onChange((e.target as HTMLSelectElement).value)} disabled={disabled}>
+        <select aria-label={name} title={glossaryTitle(opts.map(optLabel).join(" "), glossary)} value={String(value)} onChange={(e) => onChange((e.target as HTMLSelectElement).value)} disabled={disabled}>
           {opts.map((o) => (
             <option value={o} key={o}>
               {optLabel(o)}
@@ -94,7 +96,11 @@ export function SchemaControl({ schema, value, onChange, labels, globalOptions, 
         <div class="field-grid">
           {Object.entries(shape).map(([k, child]) => {
             const control = <SchemaControl schema={child} value={obj[k]} onChange={(v) => onChange({ ...obj, [k]: v })} labels={labels} globalOptions={globalOptions} name={`${name}: ${labels.fields?.[k] ?? k}`} disabled={disabled} />;
-            const caption = <span class="small muted">{labels.fields?.[k] ?? k}</span>;
+            const caption = (
+              <span class="small muted">
+                <Gloss text={labels.fields?.[k] ?? k} />
+              </span>
+            );
             // Un <label> se asocia a su primer control: para grupos de botones se usa un <div> (el grupo ya tiene aria-label).
             const isButtonGroup = child.type === "enum" && (child.options?.length ?? 0) <= 4;
             return isButtonGroup ? (
@@ -165,12 +171,13 @@ function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, cust
   const pending = state.pending.filter((p) => p.decisionId === spec.id);
   const lag = changed ? (spec.lag?.(value, state.model, params) ?? 0) : 0;
   const cost = changed ? (spec.cost?.(value, state.model, params) ?? 0) : 0;
+  const glossary = useContext(GlossaryContext);
   const onChange = (v: unknown) => store.setDecision(spec.id, v);
   return (
     <div class={`decision${changed ? " changed" : ""}`} data-decision={spec.id}>
       <h4>
         <span>
-          {spec.label} <span class="muted small mono">{spec.id}</span>
+          <Gloss text={spec.label} /> <span class="muted small mono">{spec.id}</span>
         </span>
         {changed && (
           <button type="button" class="btn-ghost small" onClick={() => store.resetDecision(spec.id)} aria-label={`Deshacer ${spec.label}`}>
@@ -178,7 +185,7 @@ function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, cust
           </button>
         )}
       </h4>
-      {(labels.help ?? spec.help) && <p class="small muted">{labels.help ?? spec.help}</p>}
+      {(labels.help ?? spec.help) && <p class="small muted"><Gloss text={labels.help ?? spec.help} /></p>}
       {custom ? custom({ value, onChange, state, disabled }) : <SchemaControl schema={spec.schema as unknown as AnySchema} value={value} onChange={onChange} labels={labels} globalOptions={globalOptions} name={spec.label} disabled={disabled} />}
       <div class="meta row">
         {spec.maxChanges !== undefined && <span>Cambios permitidos en la partida: {spec.maxChanges}</span>}
@@ -193,7 +200,7 @@ function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, cust
         <div class="row small" aria-label="KPIs que mueve">
           <span class="muted">Mueve:</span>
           {spec.kpis.slice(0, 6).map((k) => (
-            <span class="chip" key={k}>
+            <span class="chip" key={k} title={glossaryTitle(kpiNames[k] ?? k, glossary)}>
               {kpiNames[k] ?? k}
             </span>
           ))}

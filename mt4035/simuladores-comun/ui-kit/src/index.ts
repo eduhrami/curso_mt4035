@@ -8,3 +8,5 @@ export * from "./components/messages.tsx";
 export * from "./components/confirm.tsx";
 export * from "./components/scenarios.tsx";
 export * from "./components/debrief.tsx";
+export * from "./components/credits.tsx";
+export * from "./components/glossary.tsx";

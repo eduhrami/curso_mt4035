@@ -1,12 +1,12 @@
 /** Selector de escenario de mercado: fichas predefinidas y, aparte, el perfil avanzado «Crear mi propio escenario». */
 import { useRef } from "preact/hooks";
+import { Gloss } from "./glossary.tsx";
 
 export interface ScenarioCard {
   id: string;
   title: string;
   tagline: string;
   market: Record<string, string>;
-  seed: number;
   concept: string;
   /** Texto de la región o territorio sugerido. */
   bestWith: string;
@@ -52,7 +52,7 @@ export function ScenarioPicker({
           <button type="button" role="radio" aria-checked={selected === p.id} class="card stack" style={{ textAlign: "left", gap: "0.4rem", outline: selected === p.id ? "2px solid var(--accent)" : undefined }} onClick={() => onSelect(p.id)} key={p.id} data-testid={`preset-${p.id}`}>
             <h3 style={{ margin: 0 }}>{p.title}</h3>
             <p class="small" style={{ margin: 0 }}>
-              {p.tagline}
+              <Gloss text={p.tagline} />
             </p>
             <ul class="small" style={{ margin: 0, paddingLeft: "1.1rem" }}>
               {fields.map((f) => {
@@ -65,17 +65,14 @@ export function ScenarioPicker({
               })}
             </ul>
             <p class="small" style={{ margin: 0 }}>
-              <strong>Concepto:</strong> {p.concept}
+              <strong>Concepto:</strong> <Gloss text={p.concept} />
             </p>
             <p class="small muted" style={{ margin: 0 }}>
-              Semilla {p.seed} · contraste más claro en {p.bestWith}
+              Contraste más claro en {p.bestWith}
             </p>
           </button>
         ))}
       </div>
-      <p class="small muted">
-        Para comparar equipos o estrategias, usen el mismo escenario y su semilla: así todos enfrentan la misma demanda y los mismos eventos, y la diferencia en KPIs se debe a las decisiones.
-      </p>
       <details class="scenario-custom" open={custom} onToggle={(e) => (e.currentTarget as HTMLDetailsElement).open !== custom && onSelect((e.currentTarget as HTMLDetailsElement).open ? CUSTOM_SCENARIO : last.current)}>
         <summary data-testid="preset-custom">Crear mi propio escenario</summary>
         <p class="small muted">Combina libremente cada factor. Úsalo para explorar; las corridas con perfiles distintos no son comparables entre sí.</p>

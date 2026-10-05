@@ -1,6 +1,7 @@
 /** Debrief al final de la partida (AD-31): notas del escenario y preguntas que el jugador responde antes de exportar su corrida. */
 import type { ComponentChildren } from "preact";
 import type { DebriefQuestion } from "../store.ts";
+import { Gloss } from "./glossary.tsx";
 
 export function DebriefPanel({
   scenario,
@@ -34,7 +35,7 @@ export function DebriefPanel({
       <h2 id="h-debrief">Debrief · {scenario}</h2>
       {concept && (
         <p class="small" style={{ margin: 0 }}>
-          <strong>Concepto del escenario:</strong> {concept}
+          <strong>Concepto del escenario:</strong> <Gloss text={concept} />
         </p>
       )}
       {notes.length > 0 && (
@@ -42,7 +43,9 @@ export function DebriefPanel({
           <strong>Qué revisar en tu corrida</strong> (usa las gráficas, la bandeja de mensajes y «¿Por qué pasó esto?»):
           <ul style={{ margin: "0.25rem 0 0", paddingLeft: "1.1rem" }}>
             {notes.map((n) => (
-              <li key={n}>{n}</li>
+              <li key={n}>
+                <Gloss text={n} />
+              </li>
             ))}
           </ul>
         </div>
@@ -57,9 +60,13 @@ export function DebriefPanel({
         return (
           <label key={q.id} style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
             <span>
-              <strong>{i + 1}.</strong> {q.question}
+              <strong>{i + 1}.</strong> <Gloss text={q.question} />
             </span>
-            {q.hint && <span class="small muted">{q.hint}</span>}
+            {q.hint && (
+              <span class="small muted">
+                <Gloss text={q.hint} />
+              </span>
+            )}
             <textarea
               rows={4}
               value={text}

@@ -285,7 +285,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 ### AD-30 ✔ Escenarios de mercado predefinidos (5-oct-2026)
 
-- El setup ya no muestra el panel libre de condiciones de mercado como opción principal: ofrece cuatro fichas **EM-01…EM-04** por simulador (perfil completo + semilla sugerida + concepto de clase; los ids EM-xx no se muestran al jugador). El panel libre queda bajo «Crear mi propio escenario» (`<details>`).
+- El setup ya no muestra el panel libre de condiciones de mercado como opción principal: ofrece cuatro fichas **EM-01…EM-04** por simulador (perfil completo + concepto de clase + región sugerida; ni los ids EM-xx ni la semilla se muestran en la ficha: la semilla se llena sola en «Jugador y semilla» y su uso se explica en la guía del instructor). El panel libre queda bajo «Crear mi propio escenario» (`<details>`).
 - Componente compartido `ScenarioPicker` en `ui-kit/src/components/scenarios.tsx`; los datos viven en el modelo de cada simulador (`app/src/presets.ts`, `PRESETS` y `presetOf`) para que pruebas y herramientas los usen sin la UI.
 - Elegir una ficha fija el perfil y la semilla; la corrida guarda `scenario.preset`. El campo es opcional y el motor no lo lee, así que el replay y las corridas anteriores no cambian. `presetOf` solo acepta el id si el perfil coincide, y reconoce corridas viejas por perfil.
 - El escenario se muestra en la barra superior, el reporte final y una fila «Escenario (semilla)» del comparador, para detectar corridas no comparables.
@@ -297,6 +297,15 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - El botón «Exportar corrida con debrief (JSON)» del reporte final se habilita solo con el debrief completo. El «Exportar JSON» de la barra superior se oculta al terminar la partida para que no haya otra vía de exportación sin debrief.
 - `RunExport.debrief` (`{ complete, answers[{ id, question, answer }] }`) es opcional en el esquema, lo cubre el checksum y el replay lo ignora. `aggregate` lo agrega como columnas `debrief_completo` y `debrief_DB-xx`.
 - Guías del instructor por simulador (`guia-instructor.md`): introducción a la práctica y rúbrica de las preguntas.
+
+### AD-32 ✔ Glosario y definiciones al pasar el mouse (5-oct-2026)
+
+- Cada simulador define su glosario en `app/ui/glossary.ts` (sigla, nombre completo en inglés cuando aplica, definición, alias y categoría) y lo provee con `GlossaryContext.Provider` en `App`.
+- `GlossaryDialog` (ui-kit, `components/glossary.tsx`): diálogo con todas las entradas agrupadas por categoría y búsqueda sin acentos. Se abre desde el botón «Glosario» de la barra superior (siempre visible) y desde el texto del inicio.
+- `Gloss` marca en un texto la primera aparición de cada término con `<abbr class="gloss" title="…">` (subrayado punteado, cursor de ayuda). Coincidencia sin distinguir mayúsculas y sin letras pegadas, con el término más largo primero. Se usa en etiquetas y ayudas de decisiones, mensajes, confirmación, fichas de escenario, debrief, inicio y reporte final.
+- Donde no cabe marcado (botones de opción, `<select>`, chips «Mueve:» y tarjetas de KPI), `glossaryTitle` agrega las definiciones al atributo `title`.
+- Limitación: en pantallas táctiles no hay *hover*; el glosario completo cubre ese caso.
+- Créditos del curso en el inicio: `CourseCredits` (ui-kit, `components/credits.tsx`) con los profesores y sus perfiles públicos.
 
 ---
 

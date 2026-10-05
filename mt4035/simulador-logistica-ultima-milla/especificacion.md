@@ -101,14 +101,14 @@ Este simulador pone al alumno frente a la pregunta de negocio de S5: **¿cómo h
 
 ### 4.3 Escenarios de mercado predefinidos (5-oct-2026)
 
-La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el perfil, el concepto de clase, la semilla y la región o territorio sugerido; las notas de «qué revisar» y la pregunta propia del escenario pasan al debrief final, §11) en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
+La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el perfil, el concepto de clase (redactado como tema, sin anticipar soluciones) y la región o territorio sugerido; la semilla no se muestra en la ficha, se llena sola en «Jugador y semilla»; las notas de «qué revisar» y la pregunta propia del escenario pasan al debrief final, §11) en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
 
 | ID | Escenario | Perfil (factores que se apartan del neutro) | Concepto de clase | Contraste más claro en | Semilla ⚠ |
 |---|---|---|---|---|---|
 | EM-01 | **Mercado base** | Perfil neutro (por omisión): crecimiento medio, sensibilidades medias a velocidad y tarifa, frescos medios, gasolina estable, choferes holgados, devoluciones bajas | Línea base: frontera entre entrega a tiempo (OTD) y costo por pedido (CPD) | Megalópolis Centro | 5101 |
-| EM-02 | **Carrera por la velocidad** | Crecimiento explosivo (E-20), sensibilidad alta a la velocidad (E-23) y baja a la tarifa (E-24) | El costo de la velocidad: express y mismo día contra saturación de capacidad en los picos | Megalópolis Centro | 5202 |
-| EM-03 | **Margen apretado** | Crecimiento lento (E-20), sensibilidad baja a la velocidad y alta a la tarifa (E-23, E-24), gasolina volátil (E-25), choferes escasos (E-26) | Eficiencia: consolidación, BOPIS, lockers y segmentación del servicio por zona | Región Norte | 5303 |
-| EM-04 | **Canasta compleja** | Frescos altos (E-22), devoluciones altas de mercancía general (E-27) | Cadena de frío en la última milla y logística inversa por diseño | Ciudad Bajío | 5404 |
+| EM-02 | **Carrera por la velocidad** | Crecimiento explosivo (E-20), sensibilidad alta a la velocidad (E-23) y baja a la tarifa (E-24) | El costo de la velocidad cuando el cliente la premia y el volumen crece rápido | Megalópolis Centro | 5202 |
+| EM-03 | **Margen apretado** | Crecimiento lento (E-20), sensibilidad baja a la velocidad y alta a la tarifa (E-23, E-24), gasolina volátil (E-25), choferes escasos (E-26) | Eficiencia cuando el margen es estrecho y el cliente es sensible a la tarifa | Región Norte | 5303 |
+| EM-04 | **Canasta compleja** | Frescos altos (E-22), devoluciones altas de mercancía general (E-27) | Cadena de frío y logística inversa en la última milla | Ciudad Bajío | 5404 |
 
 Los ids EM-xx son internos (no se muestran al jugador). La corrida guarda el id en `setup.preset` (`config.scenario.preset`) y el nombre del escenario se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
 
@@ -429,7 +429,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 
 ## 9. Interfaz
 
-1. **Setup:** territorio (ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre queda bajo «Crear mi propio escenario»), estrategia de servicio y semilla. El calendario de picos se ve desde el inicio.
+1. **Setup:** territorio (ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre queda bajo «Crear mi propio escenario»), estrategia de servicio y semilla. El calendario de picos se ve desde el inicio. Incluye los créditos del curso (profesores y perfiles) y acceso al **glosario**.
 2. **Panel de decisiones por mes:** pestañas *Red · Asignación · Promesa · Flota · Zonas y ruteo · Cliente · Devoluciones · Datos y seguridad*. Cada control muestra costo, retraso y reversibilidad, más un previsualizador cualitativo (↑↓) de los KPIs afectados.
 3. **Mapa esquemático del territorio:** zonas como polígonos de una rejilla, nodos (CD, tiendas SFS, dark stores, MFC, lockers) como íconos y calor de demanda por zona. No es un mapa real ni hay vehículos animados.
 4. **Dashboard:**
@@ -439,6 +439,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
    - Desglose de CPD en cascada (troncal, ruta, picking, reintentos, devoluciones).
    - Tabla por zona y por nivel de servicio.
 5. **Bandeja de mensajes:** eventos y alertas de regla con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con valores. Ejemplo: *"Día 14-jul: 212 pedidos frescos en Zona 3 llegaron tibios (spoilage 6.1%). Causas: ruta media 3.4 h (R-01), ola de calor (X-12), hieleras en lugar de refrigerado (D-32). Efecto: 212 reembolsos, CSAT de la zona −0.3."*
+- **Glosario (AD-32):** botón «Glosario» en la barra superior y en el inicio, con todas las siglas y conceptos agrupados y un buscador. En toda la interfaz, los términos del glosario aparecen subrayados con puntos y muestran su definición al pasar el mouse (`<abbr title>`); las opciones y etiquetas de KPI la muestran como tooltip. Entradas en [`app/ui/glossary.ts`](app/ui/glossary.ts).
 6. **Comparador de corridas:** 2–4 corridas, KPIs y diff de decisiones.
 7. **Reporte final:** scorecard, trayectoria de 36 meses, picos enfrentados y decisiones clave.. Cierra con el **debrief** (§11): notas del escenario y seis preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 

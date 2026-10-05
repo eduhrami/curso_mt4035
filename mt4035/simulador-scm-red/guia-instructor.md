@@ -15,8 +15,8 @@ La guía tiene dos partes: **(A) introducción a la práctica**, para preparar y
 Los equipos dirigen la cadena de suministro de Hoshi Mart durante 5 años (20 trimestres) y comprueban con KPIs que el diseño de la red debe seguir a la propuesta de valor y a la geografía. La práctica conecta tres ideas de la sesión:
 
 1. **Diseño de red como *trade-off*:** costo de servir (CTS, *Cost-to-Serve*: costo logístico / tiendas) contra disponibilidad en anaquel (OSA, *On-Shelf Availability*: tiempo con stock / tiempo total).
-2. **Información y efecto látigo:** el bullwhip ratio (BWR, *Bullwhip Ratio*: Var(órdenes al proveedor) / Var(demanda en tienda)) baja al compartir POS y colaborar, igual que en el Beer Game, pero con retrasos.
-3. **Decisiones con retraso:** un CD tarda 2–4 trimestres y la colaboración madura en 2–3; quien no anticipa se satura.
+2. **Información y efecto látigo:** el bullwhip ratio (BWR, *Bullwhip Ratio*: Var(órdenes al proveedor) / Var(demanda en tienda)) como medida del efecto que los equipos ya vivieron en el Beer Game, ahora con decisiones de red e información.
+3. **Decisiones con retraso:** varias decisiones tardan uno o más trimestres en surtir efecto (el simulador lo indica al confirmar); el equipo debe descubrir cuáles importan en su escenario.
 
 ### A.2 Antes de la sesión (solo el instructor)
 
@@ -33,7 +33,7 @@ Los alumnos no preparan nada antes de clase: todo ocurre en la sesión.
 >
 > Antes de empezar eligen tres cosas: la **región**, el **escenario de mercado** que les asigné y la **propuesta de valor** que van a defender (frescura, bajo costo o conveniencia). Su puntaje se calcula según esa propuesta: el mismo KPI puede ser bueno o malo según lo que prometieron.
 >
-> Usen la **semilla del escenario** tal como aparece. Así todos los equipos con el mismo escenario enfrentan la misma demanda y los mismos eventos, y las diferencias se deben a sus decisiones.
+> Al elegir el escenario, el simulador llena la **semilla** en la sección «Jugador y semilla». **No la cambien**: así todos los equipos con el mismo escenario enfrentan la misma demanda y los mismos eventos, y las diferencias se deben a sus decisiones.
 >
 > Cuando un evento les pegue, abran **"¿Por qué pasó esto?"**: el simulador explica la cadena causal. Al terminar los 20 trimestres verán un reporte final con un **debrief de seis preguntas**. No podrán exportar la corrida hasta responderlo. Respondan con datos de su corrida: KPIs, trimestres y decisiones. Esa respuesta es lo que se califica, más que el puntaje.»
 
@@ -45,10 +45,12 @@ Cada ficha del setup indica el concepto que ilustra y la región donde el contra
 
 | Escenario | Región sugerida | Concepto | Semilla |
 |---|---|---|---|
-| Mercado estable | Kaigan | Línea base CTS vs. OSA | 4101 |
-| Demanda incierta | Valle Metropolitano | Efecto látigo, POS compartido, VMI/CPFR, cross-dock sin amortiguador | 4202 |
-| Presión de costos | Red River | Eficiencia vs. capacidad de respuesta, densidad, frecuencia | 4303 |
-| Crecimiento acelerado | Valle Metropolitano | Capacidad con retrasos, mezcla hacia frescos | 4404 |
+| Mercado estable | Kaigan | Línea base: CTS vs. OSA sin ruido externo | 4101 |
+| Demanda incierta | Valle Metropolitano | Efecto látigo con demanda volátil y proveedores poco confiables | 4202 |
+| Presión de costos | Red River | Eficiencia vs. capacidad de respuesta cuando suben los costos | 4303 |
+| Crecimiento acelerado | Valle Metropolitano | Planeación de capacidad con demanda creciente y cambiante | 4404 |
+
+**Semillas y comparabilidad.** Las fichas del simulador no muestran la semilla; al elegir un escenario se llena sola con el valor de la tabla. Para comparar equipos o estrategias, todos deben usar el mismo escenario **y** esa semilla: así enfrentan la misma demanda y los mismos eventos, y la diferencia en KPIs se atribuye a las decisiones. Para variar entre grupos, puede asignar otra semilla (por ejemplo, una por grupo) y pedir que la escriban antes de comenzar. Las corridas con «Crear mi propio escenario» o con otra semilla no son comparables con las demás; la columna `semilla` del CSV agregado permite detectarlas.
 
 Asignaciones recomendadas:
 
@@ -84,10 +86,10 @@ npm run aggregate -- /ruta/entregas/ --out /ruta/grupo.csv   # una fila por corr
 
 Proyecte el CSV agregado ordenado por escenario y compare pares de equipos con la misma semilla.
 
-- ¿Qué decisión de Seven-Eleven Japan depende de la geografía y cuál no? (La información sí se trasplanta; la frecuencia de 3 entregas al día no necesariamente.)
+- ¿Qué decisiones de Seven-Eleven Japan dependen de la geografía y cuáles no? ¿Qué evidencia de su corrida lo muestra?
 - Entre equipos del mismo escenario: ¿quién tuvo mejor OSA y a qué CTS? ¿Qué decisión explica la diferencia?
-- ¿Qué KPI mejoró primero al activar el POS compartido y por qué tardó?
-- ¿En qué punto la densificación (dominancia) dejó de rendir por canibalización?
+- ¿Qué decisión de información o colaboración tomaron, qué KPI se movió primero y cuánto tardó?
+- Si densificaron tiendas, ¿siguió rindiendo todo el tiempo? ¿Cómo lo saben?
 - ¿Qué evento les dolió más y qué decisión previa lo agravó?
 
 ---
@@ -103,44 +105,43 @@ Si no se cumplen, devuelva la entrega para corrección antes de calificar.
 
 ### B.2 Criterios y niveles (100 puntos)
 
-El puntaje del simulador **no** se califica directamente: se evalúa la calidad del razonamiento. Un equipo con puntaje bajo que diagnostica bien por qué le fue mal puede obtener la máxima calificación.
+El puntaje del simulador **no** se califica directamente: se evalúa la calidad del razonamiento. Un equipo con puntaje bajo que diagnostica bien por qué le fue mal puede obtener la máxima calificación. La rúbrica no tiene respuestas correctas predefinidas: califica la **evidencia** (datos de la propia corrida), la **causalidad** (decisión → mecanismo → KPI) y la **coherencia** con la propuesta de valor y el entorno elegidos.
 
 | Pregunta | Pts | Excelente (100%) | Satisfactorio (75%) | En desarrollo (50%) | Insuficiente (0–25%) |
 |---|---|---|---|---|---|
-| **DB-01** Propuesta de valor y decisiones de red y flujo; decisión clave | 15 | Describe red, flujo por categoría y frecuencia, y justifica su coherencia con la propuesta de valor **y** con la geografía de la región | Describe la red y la decisión clave con alguna justificación | Lista decisiones sin explicar por qué encajan | Genérica o sin relación con la corrida |
-| **DB-02** KPI primario y guardrail con valores y *trade-off* | 20 | Nombra el par (p. ej., OSA y CTS), cita valores del reporte y explica el mecanismo del *trade-off* y cómo lo administró | Cita el par y valores; el *trade-off* es superficial | Nombra KPIs sin valores o sin *trade-off* | Confunde KPIs o no responde |
-| **DB-03** Decisión con retraso | 15 | Ubica el trimestre de la decisión y el del efecto, el KPI afectado y por qué tardó (construcción de CD, curva de aprendizaje) | Identifica la decisión y el KPI con ubicación aproximada | Menciona un retraso sin evidencia de la corrida | No reconoce retrasos |
-| **DB-04** Evento crítico y decisión previa | 15 | Rastrea la cadena causal (evento → regla → KPI) con «¿Por qué pasó esto?» y señala qué decisión lo agravó o lo amortiguó | Identifica el evento y una decisión relacionada | Describe el evento sin causalidad | No responde o atribuye todo a la mala suerte |
-| **DB-05** Pregunta del escenario | 20 | Responde con evidencia cuantitativa y demuestra el concepto del escenario (B.3) | Usa el concepto correctamente con poca evidencia | Usa el concepto de forma vaga | No conecta con el escenario |
-| **DB-06** Qué cambiaría al repetir | 15 | Hipótesis explícita: decisión → mecanismo → KPI esperado, coherente con lo observado | Propone un cambio razonable con un mecanismo parcial | Cambio sin mecanismo | «Nada» o respuesta genérica |
+| **DB-01** Propuesta de valor y decisiones de red y flujo; decisión clave | 15 | Describe con precisión sus decisiones de red y flujo, señala una decisión clave y argumenta su coherencia con la propuesta de valor **y** con las características de la región | Describe sus decisiones y la clave con una justificación parcial | Lista decisiones sin explicar por qué encajan | Genérica o sin relación con la corrida |
+| **DB-02** KPI primario y guardrail con valores y *trade-off* | 20 | Justifica la elección del par a partir de su propuesta de valor, cita valores de su reporte y explica cómo administró la tensión entre ambos | Nombra el par y cita valores; la explicación del *trade-off* es superficial | Nombra KPIs sin valores o sin *trade-off* | Confunde los KPIs o no responde |
+| **DB-03** Decisión con retraso | 15 | Ubica el trimestre de la decisión y el del efecto observado, nombra el KPI afectado y propone una explicación del retraso | Identifica la decisión y el KPI con ubicación aproximada | Menciona un retraso sin evidencia de la corrida | No reconoce retrasos |
+| **DB-04** Evento crítico y decisión previa | 15 | Reconstruye la cadena causal del evento con la explicación del simulador y argumenta qué decisión previa cambió su impacto | Identifica el evento y una decisión relacionada | Describe el evento sin causalidad | No responde o lo atribuye todo a la mala suerte |
+| **DB-05** Pregunta del escenario | 20 | Responde todas las partes de la pregunta con evidencia cuantitativa y conecta el resultado con el concepto del escenario (B.3) | Responde con evidencia parcial o deja una parte sin atender | Responde de forma vaga, sin datos | No conecta con el escenario |
+| **DB-06** Qué cambiaría al repetir | 15 | Formula una hipótesis verificable (decisión → mecanismo → KPI esperado) que se desprende de lo observado | Propone un cambio razonable con mecanismo parcial | Cambio sin mecanismo | «Nada» o respuesta genérica |
 
-### B.3 Guía de respuesta para DB-05 por escenario
+### B.3 Qué buscar en DB-05 por escenario
 
-Una respuesta excelente suele incluir los elementos indicados. No son respuestas únicas: premie el razonamiento que se apoye en la evidencia de la corrida.
+Los criterios describen la **evidencia y el razonamiento** que debe contener una respuesta excelente, no su conclusión. Distintos equipos pueden llegar a conclusiones distintas con la misma semilla; califique si la conclusión se sostiene con sus datos.
 
-**Mercado estable** — *¿Cómo se repartió el CTS entre transporte, inventario y CD? ¿Qué inversión se pagó más rápido?*
-- Usa el desglose de costos en cascada; identifica el componente dominante según la región (en Kaigan, inmobiliario y laboral alto; transporte más bajo por densidad).
-- Distingue inversiones de red (CD: capex alto, 2–4 trimestres) de las de información (POS, pronóstico causal: más baratas y con retraso más corto).
-- Sin ruido externo, atribuye los cambios de KPI a sus decisiones, no al mercado.
+**Mercado estable**
+- Presenta la composición de su CTS con cifras del desglose de costos y cómo cambió a lo largo de la partida.
+- Compara al menos dos inversiones por su costo, su retraso y su efecto en KPIs, y argumenta cuál se recuperó antes.
+- Separa lo que se debe a sus decisiones de lo que se debe al mercado.
 
-**Demanda incierta** — *¿Cómo evolucionó el BWR y qué palanca lo redujo más? ¿Afectó el cross-dock ante fallas del proveedor?*
-- Reporta el BWR antes y después y lo conecta con el Beer Game: el efecto látigo nace de la falta de información y de los retrasos.
-- Compara las palancas: el inventario de seguridad amortigua pero no corrige la señal; el POS compartido (D-31) y VMI/CPFR (D-33) atacan la causa, con retraso. La regla R-08 (POS compartido + CPFR maduro) reduce el lead time −20% y su variabilidad −30%.
-- Reconoce R-06: cross-dock sin inventario con proveedores poco confiables transmite la falla completa a la tienda (evento X-04). Una buena respuesta discute si convenía un CD con inventario para las categorías expuestas.
+**Demanda incierta**
+- Reporta el BWR al inicio, en algún punto intermedio y al final, y ubica en el tiempo las decisiones que lo movieron.
+- Compara el efecto de las palancas que usó (o explica por qué no usó alguna) con datos de BWR y OSA.
+- Analiza si su configuración de red amplificó o amortiguó las fallas de proveedor, con algún evento concreto de su corrida.
 
-**Presión de costos** — *¿Siguió pagando la frecuencia de entregas? ¿Cómo contuvo el CTS sin perder OSA?*
-- Muestra el CTS al inicio y al final y lo vincula con el combustible al alza y la escasez de choferes (X-07).
-- Discute la frecuencia (D-11) frente a la distancia entre tiendas: en Red River, 3 entregas al día disparan R-05.
-- Menciona palancas de eficiencia: consolidación por temperatura (D-12), horas valle con escaneo (R-12), densificación (R-10) con su límite de canibalización, y el tipo de flota (D-13).
-- Cuida el guardrail: si bajó el CTS, ¿qué pasó con la OSA y las ventas perdidas, considerando la competencia agresiva (X-06)?
+**Presión de costos**
+- Muestra cómo evolucionó el CTS y qué parte atribuye a factores externos y qué parte a sus decisiones.
+- Evalúa sus decisiones de flujo y transporte con evidencia de costo y servicio, en lugar de afirmarlo.
+- Muestra qué pasó con la OSA y las ventas perdidas mientras contenía el costo.
 
-**Crecimiento acelerado** — *¿Cuándo anticipó capacidad y cuándo se saturó? ¿Cómo cambiaron la merma y la OSA de frescos?*
-- Ubica el trimestre de saturación (utilización de CD > 90%, R-07) y lo compara con el momento en que decidió ampliar o abrir CD, considerando el retraso de 2–4 trimestres.
-- Explica que el envejecimiento desplaza la mezcla hacia frescos: más merma si la frecuencia y la cadena fría no acompañan (R-01, R-02).
-- Una respuesta excelente reconoce el costo de anticipar demasiado (capex ocioso) frente al de llegar tarde (ventas perdidas).
+**Crecimiento acelerado**
+- Ubica en la trayectoria cuándo decidió ampliar capacidad, cuándo surtió efecto y si hubo saturación.
+- Discute el costo de su decisión de *timing* (anticipar o esperar) con datos de la corrida.
+- Muestra cómo evolucionaron la merma y la OSA de frescos y lo relaciona con sus decisiones.
 
-**Escenario propio** — *¿Qué factores cambió, qué quería probar y qué confirmó o refutó?*
-- Plantea una hipótesis explícita sobre los factores E-20…E-27 y la contrasta con KPIs. Si es posible, compara contra una corrida en un escenario predefinido.
+**Escenario propio**
+- Plantea una hipótesis explícita sobre los factores de mercado que cambió y la contrasta con sus KPIs; idealmente, compara con una corrida en un escenario predefinido.
 
 ### B.4 Retroalimentación rápida
 
