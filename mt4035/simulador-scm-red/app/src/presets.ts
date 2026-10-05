@@ -15,8 +15,12 @@ export interface MarketPreset {
   seed: number;
   /** Concepto de clase que el escenario hace visible. */
   concept: string;
-  /** Qué observar durante la partida. */
+  /** Qué revisar en la corrida (notas del debrief, AD-31). */
   watch: string[];
+  /** Pregunta de debrief propia del escenario (DB-05). */
+  question: string;
+  /** Pista de qué incluir en la respuesta. */
+  hint: string;
   /** Región donde el contraste es más claro (sugerencia, no restricción). */
   bestWith: RegionId;
 }
@@ -30,6 +34,8 @@ export const PRESETS: MarketPreset[] = [
     seed: 4101,
     concept: "Línea base: costo de servir (CTS) vs. disponibilidad en anaquel (OSA) sin ruido externo.",
     watch: ["Cómo se reparte el costo entre transporte, inventario y CD", "Qué tan rápido paga una inversión en red o información"],
+    question: "Sin ruido externo, ¿cómo se repartió tu costo de servir (CTS) entre transporte, inventario y CD? ¿Qué inversión (red, información o colaboración) se pagó más rápido y cómo lo sabes?",
+    hint: "Cita el desglose de costos y el trimestre en que la inversión empezó a rendir.",
     bestWith: "kaigan",
   },
   {
@@ -40,6 +46,8 @@ export const PRESETS: MarketPreset[] = [
     seed: 4202,
     concept: "Efecto látigo (bullwhip): inventario de seguridad, POS compartido y colaboración (VMI/CPFR).",
     watch: ["Bullwhip ratio (BWR) y error de pronóstico", "Cross-dock sin amortiguador ante fallas del proveedor (R-06)"],
+    question: "¿Cómo evolucionó tu bullwhip ratio (BWR) y qué palanca lo redujo más: inventario de seguridad, POS compartido o colaboración (VMI/CPFR)? ¿Te afectó tener cross-dock ante fallas del proveedor?",
+    hint: "Compara el BWR y la OSA antes y después de la decisión; menciona la regla R-06 si apareció.",
     bestWith: "valle",
   },
   {
@@ -50,6 +58,8 @@ export const PRESETS: MarketPreset[] = [
     seed: 4303,
     concept: "Eficiencia vs. capacidad de respuesta: densidad, consolidación y costo por entrega.",
     watch: ["CTS y costo de transporte por año", "Si la frecuencia alta de entregas sigue pagando"],
+    question: "Con combustible al alza, choferes escasos y un competidor agresivo, ¿siguió pagando tu frecuencia de entregas? ¿Qué hiciste para contener el CTS sin perder OSA?",
+    hint: "Reporta el CTS al inicio y al final y la decisión de flujo, frecuencia o densidad que más lo movió.",
     bestWith: "redriver",
   },
   {
@@ -60,6 +70,8 @@ export const PRESETS: MarketPreset[] = [
     seed: 4404,
     concept: "Planeación de capacidad con retrasos: un CD tarda 2–4 trimestres; anticipar antes de saturar.",
     watch: ["Utilización de CD y flota", "Merma y OSA de frescos conforme cambia la mezcla"],
+    question: "¿Cuándo anticipaste capacidad (CD, flota) y cuándo te saturaste? ¿Cómo cambiaron la merma y la OSA de frescos al desplazarse la mezcla hacia frescos?",
+    hint: "Recuerda que un CD tarda 2–4 trimestres; ubica en la trayectoria el trimestre de saturación.",
     bestWith: "valle",
   },
 ];

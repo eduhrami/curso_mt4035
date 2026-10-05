@@ -101,7 +101,7 @@ Este simulador pone al alumno frente a la pregunta de negocio de S5: **¿cómo h
 
 ### 4.3 Escenarios de mercado predefinidos (5-oct-2026)
 
-La pantalla de inicio ofrece cuatro escenarios cerrados en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
+La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el perfil, el concepto de clase, la semilla y la región o territorio sugerido; las notas de «qué revisar» y la pregunta propia del escenario pasan al debrief final, §11) en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
 
 | ID | Escenario | Perfil (factores que se apartan del neutro) | Concepto de clase | Contraste más claro en | Semilla ⚠ |
 |---|---|---|---|---|---|
@@ -110,7 +110,7 @@ La pantalla de inicio ofrece cuatro escenarios cerrados en lugar del panel libre
 | EM-03 | **Margen apretado** | Crecimiento lento (E-20), sensibilidad baja a la velocidad y alta a la tarifa (E-23, E-24), gasolina volátil (E-25), choferes escasos (E-26) | Eficiencia: consolidación, BOPIS, lockers y segmentación del servicio por zona | Región Norte | 5303 |
 | EM-04 | **Canasta compleja** | Frescos altos (E-22), devoluciones altas de mercancía general (E-27) | Cadena de frío en la última milla y logística inversa por diseño | Ciudad Bajío | 5404 |
 
-La corrida guarda el id en `setup.preset` (`config.scenario.preset`); se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
+Los ids EM-xx son internos (no se muestran al jugador). La corrida guarda el id en `setup.preset` (`config.scenario.preset`) y el nombre del escenario se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
 
 ---
 
@@ -440,14 +440,14 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
    - Tabla por zona y por nivel de servicio.
 5. **Bandeja de mensajes:** eventos y alertas de regla con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con valores. Ejemplo: *"Día 14-jul: 212 pedidos frescos en Zona 3 llegaron tibios (spoilage 6.1%). Causas: ruta media 3.4 h (R-01), ola de calor (X-12), hieleras en lugar de refrigerado (D-32). Efecto: 212 reembolsos, CSAT de la zona −0.3."*
 6. **Comparador de corridas:** 2–4 corridas, KPIs y diff de decisiones.
-7. **Reporte final:** scorecard, trayectoria de 36 meses, picos enfrentados y decisiones clave. Se puede exportar.
+7. **Reporte final:** scorecard, trayectoria de 36 meses, picos enfrentados y decisiones clave.. Cierra con el **debrief** (§11): notas del escenario y seis preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 
 ---
 
 ## 10. Persistencia y exportación
 
 - **`localStorage`** con clave `mt4035.lastmile.runs.v1`. Toda lectura y escritura va en `try/catch`, con respaldo en memoria.
-- **Esquema de corrida (JSON):** igual que el del [simulador SCM](../simulador-scm-red/especificacion.md#10-persistencia-y-exportación), con `sim: "mt4035-lastmile"`, `setup.territory: "megalopolis|bajio|norte"`, `setup.strategy: "speed|reliability|efficiency"`, `setup.preset: "EM-01…EM-04"` (omitido si es escenario propio, §4.3). Los KPIs van por mes y por zona, con diarios agregados p50/p95.
+- **Esquema de corrida (JSON):** igual que el del [simulador SCM](../simulador-scm-red/especificacion.md#10-persistencia-y-exportación), con `sim: "mt4035-lastmile"`, `setup.territory: "megalopolis|bajio|norte"`, `setup.strategy: "speed|reliability|efficiency"`, `setup.preset: "EM-01…EM-04"` (omitido si es escenario propio, §4.3) y `debrief` con las respuestas DB-01…DB-06 (§11). Los KPIs van por mes y por zona, con diarios agregados p50/p95.
 - **Export:** JSON (completo y reproducible con semilla, decisiones y checksum) y CSV (KPIs por mes y zona).
 - **Import:** cargar un JSON para revisarlo o compararlo.
 
@@ -461,15 +461,14 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 2. **Mini-caso de S5 en vivo:** activar SFS en el urbano denso y SFD en la periferia, con una regla de umbral de costo. Comparar contra la corrida 1 en la frontera OTD–CPD.
 3. **Territorio Norte:** probar express (y ver cómo explota el CPD) contra lockers, micro-hubs y consolidación. Comprobar que "urbano = VRPTW + estacionamiento; rural = TSP + consolidación".
 
-**Preguntas de debrief:**
+**Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y seis preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-06`.
 
-- ¿Qué par primario–guardrail fue el más difícil de sostener en Buen Fin?
-- ¿Cuánto del OTD "promedio" era real? ¿Qué vieron al cambiar a p95?
-- ¿Dónde sí valió la pena pagar por velocidad y dónde convenía segmentar?
-- ¿La IA en ruteo mejoró algo antes de invertir en datos?
-- De las 5 decisiones que cambian la historia, ¿cuál movió más su puntaje?
+- **DB-01…DB-04 y DB-06** son comunes a todos los escenarios; **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
+- Introducción a la práctica, asignación de escenarios, plenario y rúbrica: [guía del instructor](./guia-instructor.md).
 
-**Posible entregable:** JSON de la corrida 2 o 3 + una página con el baseline de KPIs, 2 hipótesis de mejora (≥ 1 de red o *fulfillment*) y el par primario–guardrail elegido. Se alinea con el checkpoint de proyecto de S5.
+**Preguntas para el plenario:** ver la [guía del instructor](./guia-instructor.md#a7-plenario-sugerido).
+
+**Entregable:** JSON de la corrida con el debrief completo. La rúbrica está en la [guía del instructor](./guia-instructor.md#b-rúbrica-del-debrief).
 
 ---
 

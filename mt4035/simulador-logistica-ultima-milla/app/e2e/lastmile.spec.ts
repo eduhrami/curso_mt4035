@@ -32,12 +32,20 @@ test("partida completa de 36 meses en Ciudad Bajío y exportación verificable c
   await expect(page.getByRole("heading", { name: "Picos enfrentados" })).toBeVisible();
   const score = Number(await page.getByTestId("final-score").textContent());
   expect(score).toBeGreaterThan(0);
+  // El JSON solo se exporta con el debrief completo (AD-31).
+  await expect(page.getByTestId("export-json")).toBeDisabled();
+  const boxes = page.getByTestId("debrief").locator("textarea");
+  await expect(boxes).toHaveCount(6);
+  for (let i = 0; i < 6; i++) await boxes.nth(i).fill(`Respuesta ${i + 1}: decisión, mecanismo y KPI observados en la corrida con datos concretos.`);
+  await expect(page.getByTestId("export-json")).toBeEnabled();
   const [dl] = await Promise.all([page.waitForEvent("download"), page.getByTestId("export-json").click()]);
   const parsed = parseExport(readFileSync((await dl.path())!, "utf8"), "mt4035-lastmile");
   expect(parsed.ok).toBe(true);
   if (!parsed.ok) return;
   expect(parsed.value.epochsPlayed).toBe(36);
   expect(parsed.value.finalScore).toBeCloseTo(score, 1);
+  expect(parsed.value.debrief?.complete).toBe(true);
+  expect(parsed.value.debrief?.answers.map((a) => a.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06"]);
   const r = await replay(createLastMileEngine(), parsed.value, { simVersion: SIM_VERSION, paramsVersion: PARAMS_VERSION });
   expect(r.ok).toBe(true);
   expect(errors).toEqual([]);
@@ -131,5 +139,5 @@ test("una corrida con escenario predefinido lo muestra en la barra superior", as
   await page.getByTestId("preset-EM-03").click();
   await page.getByRole("radio", { name: /^Ciudad Bajío/ }).click();
   await page.getByTestId("start").click();
-  await expect(page.getByTestId("scenario-label")).toContainText("EM-03");
+  await expect(page.getByTestId("scenario-label")).toHaveText("Margen apretado");
 });

@@ -1,4 +1,4 @@
-/** Selector de escenario de mercado: fichas predefinidas (EM-xx) y, aparte, el perfil avanzado «Crear mi propio escenario». */
+/** Selector de escenario de mercado: fichas predefinidas y, aparte, el perfil avanzado «Crear mi propio escenario». */
 import { useRef } from "preact/hooks";
 
 export interface ScenarioCard {
@@ -8,7 +8,6 @@ export interface ScenarioCard {
   market: Record<string, string>;
   seed: number;
   concept: string;
-  watch: string[];
   /** Texto de la región o territorio sugerido. */
   bestWith: string;
 }
@@ -68,11 +67,8 @@ export function ScenarioPicker({
             <p class="small" style={{ margin: 0 }}>
               <strong>Concepto:</strong> {p.concept}
             </p>
-            <p class="small" style={{ margin: 0 }}>
-              <strong>Qué observar:</strong> {p.watch.join(" · ")}
-            </p>
             <p class="small muted" style={{ margin: 0 }}>
-              {p.id} · semilla {p.seed} · contraste más claro en {p.bestWith}
+              Semilla {p.seed} · contraste más claro en {p.bestWith}
             </p>
           </button>
         ))}

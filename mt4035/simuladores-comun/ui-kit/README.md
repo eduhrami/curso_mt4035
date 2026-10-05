@@ -10,7 +10,8 @@ Componentes Preact compartidos por los simuladores MT4035 (fase **F4**, [AD-20 �
 | `src/components/kpis.tsx` | `KpiCard` con estado frente al guardrail (ícono + texto + color) |
 | `src/components/charts.tsx` | Gráficas Chart.js (línea, barras apiladas, dispersión) con colores tomados de los tokens CSS y tabla de datos accesible |
 | `src/components/messages.tsx` | Bandeja de mensajes con «¿Por qué pasó esto?» y explicación causal de un KPI |
-| `src/components/scenarios.tsx` | `ScenarioPicker`: fichas de escenarios de mercado predefinidos (EM-xx) y perfil libre bajo «Crear mi propio escenario» (AD-30) |
+| `src/components/scenarios.tsx` | `ScenarioPicker`: fichas de escenarios de mercado predefinidos y perfil libre bajo «Crear mi propio escenario» (AD-30) |
+| `src/components/debrief.tsx` | `DebriefPanel`: debrief obligatorio del reporte final (notas del escenario + preguntas; el store bloquea la exportación hasta completarlo, AD-31) |
 | `src/components/basics.tsx` | Pestañas, layout de tres columnas que pasa a pestañas en pantallas angostas, aviso de almacenamiento |
 | `src/theme.css` | Tokens de diseño, modo oscuro, layout responsivo e impresión |
 
