@@ -285,10 +285,18 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 ### AD-30 ✔ Escenarios de mercado predefinidos (5-oct-2026)
 
-- El setup ya no muestra el panel libre de condiciones de mercado como opción principal: ofrece cuatro fichas **EM-01…EM-04** por simulador (perfil completo + semilla sugerida + concepto de clase + qué observar). El panel libre queda bajo «Crear mi propio escenario» (`<details>`).
+- El setup ya no muestra el panel libre de condiciones de mercado como opción principal: ofrece cuatro fichas **EM-01…EM-04** por simulador (perfil completo + semilla sugerida + concepto de clase; los ids EM-xx no se muestran al jugador). El panel libre queda bajo «Crear mi propio escenario» (`<details>`).
 - Componente compartido `ScenarioPicker` en `ui-kit/src/components/scenarios.tsx`; los datos viven en el modelo de cada simulador (`app/src/presets.ts`, `PRESETS` y `presetOf`) para que pruebas y herramientas los usen sin la UI.
 - Elegir una ficha fija el perfil y la semilla; la corrida guarda `scenario.preset`. El campo es opcional y el motor no lo lee, así que el replay y las corridas anteriores no cambian. `presetOf` solo acepta el id si el perfil coincide, y reconoce corridas viejas por perfil.
 - El escenario se muestra en la barra superior, el reporte final y una fila «Escenario (semilla)» del comparador, para detectar corridas no comparables.
+
+### AD-31 ✔ Debrief obligatorio al final de la partida (5-oct-2026)
+
+- El reporte final termina con `DebriefPanel` (`ui-kit/src/components/debrief.tsx`): nombre y concepto del escenario, notas de «qué revisar en tu corrida» (antes «qué observar» en las fichas) y seis preguntas DB-01…DB-06. DB-05 depende del escenario. Las preguntas viven en el modelo (`app/src/debrief.ts`, `debriefFor`).
+- El store (`debriefQuestions`, `debrief`, `debriefComplete`) guarda el borrador con la corrida en `localStorage` al salir de cada campo y lo restaura al cargarla. Mínimo de 60 caracteres por respuesta.
+- El botón «Exportar corrida con debrief (JSON)» del reporte final se habilita solo con el debrief completo. El «Exportar JSON» de la barra superior se oculta al terminar la partida para que no haya otra vía de exportación sin debrief.
+- `RunExport.debrief` (`{ complete, answers[{ id, question, answer }] }`) es opcional en el esquema, lo cubre el checksum y el replay lo ignora. `aggregate` lo agrega como columnas `debrief_completo` y `debrief_DB-xx`.
+- Guías del instructor por simulador (`guia-instructor.md`): introducción a la práctica y rúbrica de las preguntas.
 
 ---
 

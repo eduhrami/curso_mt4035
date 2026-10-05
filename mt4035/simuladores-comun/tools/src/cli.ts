@@ -107,7 +107,7 @@ export async function replayCli<S, P>(engine: Engine<S, P>, files: readonly stri
   return failures ? 1 : 0;
 }
 
-/** Junta las corridas exportadas de un grupo en un CSV: una fila por corrida con promedio de KPIs y puntaje. */
+/** Junta las corridas exportadas de un grupo en un CSV: una fila por corrida con promedio de KPIs, puntaje y respuestas del debrief. */
 export function aggregateCli(dir: string, expectedSim: string, outFile?: string): number {
   const files = readdirSync(dir)
     .filter((f) => f.endsWith(".json"))
@@ -124,7 +124,8 @@ export function aggregateCli(dir: string, expectedSim: string, outFile?: string)
     const kr = kpiRows(e);
     const keys = Object.keys(kr[0] ?? {}).filter((k) => k !== "epoch" && k !== "label");
     const avg = Object.fromEntries(keys.map((k) => [k, kr.reduce((a, r) => a + Number(r[k]), 0) / kr.length]));
-    rows.push({ archivo: f, jugador: e.player?.name ?? "", equipo: e.player?.team ?? "", escenario: JSON.stringify(e.config.scenario), semilla: e.config.seed, epocas: e.epochsPlayed, puntaje: e.finalScore ?? "", ...avg });
+    const debrief = Object.fromEntries((e.debrief?.answers ?? []).map((a) => [`debrief_${a.id}`, a.answer]));
+    rows.push({ archivo: f, jugador: e.player?.name ?? "", equipo: e.player?.team ?? "", escenario: JSON.stringify(e.config.scenario), semilla: e.config.seed, epocas: e.epochsPlayed, puntaje: e.finalScore ?? "", ...avg, debrief_completo: e.debrief ? (e.debrief.complete ? "sí" : "no") : "", ...debrief });
   }
   const csv = toCSV(rows);
   if (outFile) writeFileSync(outFile, csv);

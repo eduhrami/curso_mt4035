@@ -148,10 +148,10 @@ export const REGION_TEXT: Record<RegionId, { title: string; tagline: string; fac
   },
 };
 
-/** Nombre del escenario de mercado de una corrida: «EM-02 · Demanda incierta» o «Escenario propio». */
+/** Nombre del escenario de mercado de una corrida, o «Escenario propio». */
 export const scenarioLabel = (scenario: unknown) => {
   const p = presetOf(scenario as Parameters<typeof presetOf>[0]);
-  return p ? `${p.id} · ${p.title}` : "Escenario propio";
+  return p?.title ?? "Escenario propio";
 };
 
 export const MARKET_FIELDS: { key: string; label: string; options: Record<string, string> }[] = [

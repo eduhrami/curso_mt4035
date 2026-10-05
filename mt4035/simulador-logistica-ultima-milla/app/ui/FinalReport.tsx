@@ -1,7 +1,7 @@
 /** Reporte final (AD-26): puntaje, desglose, guardrails, trayectoria de 36 meses, picos enfrentados, decisiones y eventos. */
-import { download, fmt, LineChart } from "@mt4035/ui-kit";
+import { DebriefPanel, download, fmt, LineChart } from "@mt4035/ui-kit";
 import type { GameState } from "@mt4035/sim-core";
-import { isPeakMonth, params, type LmState, type Strategy } from "../src/index.ts";
+import { debriefFor, isPeakMonth, params, type LmState, type Strategy } from "../src/index.ts";
 import { describeValue, kpiMetaFor, MONTHS, OPTIONS, scenarioLabel, TERRITORY_TEXT } from "./labels.ts";
 import { engine, finalScore, screen, store, territoryOf } from "./game.ts";
 
@@ -21,6 +21,13 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
   const peaks = state.history.map((h, e) => ({ h, e })).filter(({ e }) => isPeakMonth(params, e));
   const specLabel = (id: string) => engine.model.decisions.find((d) => d.id === id)?.label ?? id;
   const exportJson = async () => download(`mercado-alba-${territory}-${state.config.seed}.json`, JSON.stringify(await store.exportRun(), null, 2));
+  const debrief = debriefFor(state.config.scenario as Parameters<typeof debriefFor>[0]);
+  const complete = store.debriefComplete.value;
+  const exportButton = (testId: string) => (
+    <button type="button" class="btn-primary" onClick={exportJson} disabled={!complete} data-testid={testId}>
+      Exportar corrida con debrief (JSON) para el profesor
+    </button>
+  );
   return (
     <div class="stack">
       <div class="card stack" data-testid="final-report">
@@ -39,9 +46,7 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
           </span>
         </div>
         <div class="row no-print">
-          <button type="button" class="btn-primary" onClick={exportJson} data-testid="export-json">
-            Exportar corrida (JSON) para el profesor
-          </button>
+          {exportButton("export-json")}
           <button type="button" onClick={() => download(`mercado-alba-${territory}-${state.config.seed}.csv`, store.csv(), "text/csv")}>
             KPIs por mes (CSV)
           </button>
@@ -52,6 +57,11 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
             Nueva partida
           </button>
         </div>
+        {!complete && (
+          <p class="small no-print" style={{ margin: 0 }}>
+            Para exportar tu corrida, primero responde el <a href="#debrief">debrief</a> al final de este reporte.
+          </p>
+        )}
       </div>
 
       <div class="card stack">
@@ -164,6 +174,20 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
           </ul>
         )}
       </div>
+
+      <DebriefPanel
+        scenario={debrief.scenario}
+        concept={debrief.concept}
+        notes={debrief.notes}
+        questions={debrief.questions}
+        answers={store.debrief.value}
+        minChars={store.debriefMinChars}
+        complete={complete}
+        onInput={store.setDebriefAnswer}
+        onCommit={() => void store.saveDebrief()}
+      >
+        <div class="row no-print">{exportButton("export-json-debrief")}</div>
+      </DebriefPanel>
     </div>
   );
 }

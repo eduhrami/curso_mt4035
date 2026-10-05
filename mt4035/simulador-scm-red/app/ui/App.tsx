@@ -53,8 +53,9 @@ function TopBar() {
         </>
       )}
       <span class="spacer" />
-      {inGame && (
-        <button type="button" onClick={exportJson}>
+      {/* Al terminar, la exportación pasa por el debrief del reporte final (AD-31). */}
+      {inGame && s.phase !== "FINAL" && (
+        <button type="button" onClick={exportJson} title="Guarda la partida en curso para continuarla en otro equipo">
           Exportar JSON
         </button>
       )}

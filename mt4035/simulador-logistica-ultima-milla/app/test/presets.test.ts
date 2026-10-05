@@ -1,7 +1,10 @@
 /** Escenarios de mercado predefinidos EM-01…EM-04 (especificación §4.3). */
 import { describe, expect, it } from "vitest";
-import { DEFAULT_MARKET, PRESETS, presetOf, lmConfig } from "../src/index.ts";
+import { DEBRIEF_CUSTOM, DEFAULT_MARKET, debriefFor, PRESETS, presetOf, lmConfig } from "../src/index.ts";
 import { MARKET_FIELDS } from "../ui/labels.ts";
+
+/** Un cambio que convierte el perfil EM-02 en un escenario propio. */
+const CHANGE = { feeSensitivity: "high" } as const;
 
 describe("Escenarios de mercado (EM-xx)", () => {
   it("son cuatro, con id y semilla únicos", () => {
@@ -24,5 +27,23 @@ describe("Escenarios de mercado (EM-xx)", () => {
     expect(presetOf({ market: { ...DEFAULT_MARKET } })?.id).toBe("EM-01");
     // Un `preset` que ya no coincide con el perfil no se acepta.
     expect(presetOf({ preset: "EM-02", market: { ...DEFAULT_MARKET } })?.id).toBe("EM-01");
+  });
+});
+
+describe("Debrief (AD-31)", () => {
+  it("cada escenario tiene seis preguntas DB-01…DB-06 y DB-05 es la suya", () => {
+    for (const p of PRESETS) {
+      const d = debriefFor({ preset: p.id, market: p.market });
+      expect(d.questions.map((q) => q.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06"]);
+      expect(d.questions[4]!.question).toBe(p.question);
+      expect(d.notes).toEqual(p.watch);
+    }
+    expect(new Set(PRESETS.map((p) => p.question)).size).toBe(PRESETS.length);
+  });
+
+  it("un escenario propio recibe la pregunta genérica", () => {
+    const d = debriefFor({ market: { ...PRESETS[1]!.market, ...CHANGE } });
+    expect(d.scenario).toBe("Escenario propio");
+    expect(d.questions[4]).toEqual(DEBRIEF_CUSTOM);
   });
 });

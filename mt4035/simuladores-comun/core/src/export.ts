@@ -7,6 +7,15 @@ export const EXPORT_SCHEMA_VERSION = 1;
 
 const finite = z.number().refine(Number.isFinite, "número no finito");
 
+/** Respuestas del debrief del jugador (AD-31): viajan dentro de la corrida y las cubre el checksum. */
+export const RunDebriefSchema = z.object({
+  /** true cuando todas las respuestas cumplen el mínimo; el reporte final solo exporta así. */
+  complete: z.boolean(),
+  answers: z.array(z.object({ id: z.string(), question: z.string(), answer: z.string() })),
+});
+
+export type RunDebrief = z.infer<typeof RunDebriefSchema>;
+
 export const RunExportSchema = z.object({
   format: z.literal(EXPORT_FORMAT),
   schemaVersion: z.literal(EXPORT_SCHEMA_VERSION),
@@ -26,6 +35,7 @@ export const RunExportSchema = z.object({
   kpis: z.array(z.object({ epoch: z.number().int().nonnegative(), label: z.string(), values: z.record(z.string(), finite) })),
   events: z.array(z.object({ epoch: z.number().int(), tick: z.number().int(), id: z.string(), severity: finite, forced: z.boolean() })),
   finalScore: finite.optional(),
+  debrief: RunDebriefSchema.optional(),
   checksum: z.string(),
 });
 
@@ -66,6 +76,7 @@ export interface ExportOptions {
   /** ISO-8601; se pasa desde fuera para que el motor no dependa del reloj. */
   createdAt: string;
   finalScore?: number;
+  debrief?: RunDebrief;
 }
 
 export async function buildExport<S>(state: GameState<S>, opts: ExportOptions): Promise<RunExport> {
@@ -89,6 +100,7 @@ export async function buildExport<S>(state: GameState<S>, opts: ExportOptions): 
     kpis: state.history.map((h) => ({ epoch: h.epoch, label: h.label, values: h.kpis })),
     events: state.history.flatMap((h) => h.events.map((e) => ({ epoch: e.epoch, tick: e.tick, id: e.id, severity: e.severity, forced: e.forced }))),
     ...(opts.finalScore !== undefined ? { finalScore: opts.finalScore } : {}),
+    ...(opts.debrief ? { debrief: opts.debrief } : {}),
   };
   // Pasa por JSON para que el objeto devuelto sea idéntico a uno re-importado.
   const normalized = JSON.parse(JSON.stringify(body)) as Omit<RunExport, "checksum">;

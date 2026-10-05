@@ -2,7 +2,7 @@
 import { signal } from "@preact/signals";
 import { createGameStore } from "@mt4035/ui-kit";
 import type { GameState } from "@mt4035/sim-core";
-import { createLastMileEngine, params, PARAMS_VERSION, scoreRun, SIM_VERSION, type LmState, type Strategy, type TerritoryId } from "../src/index.ts";
+import { createLastMileEngine, debriefFor, params, PARAMS_VERSION, scoreRun, SIM_VERSION, type LmState, type Strategy, type TerritoryId } from "../src/index.ts";
 import { OPTIONS, TERRITORY_TEXT } from "./labels.ts";
 
 export const engine = createLastMileEngine();
@@ -24,6 +24,7 @@ export const store = createGameStore({
   paramsVersion: PARAMS_VERSION,
   title: (s) => `${TERRITORY_TEXT[territoryOf(s)].title} · ${OPTIONS[s.model.strategy]} · ${s.config.player?.name || "sin nombre"} · ${s.history.length}/${EPOCHS}`,
   finalScore: (s) => finalScore(s).score,
+  debriefQuestions: (s) => debriefFor(s.config.scenario as Parameters<typeof debriefFor>[0]).questions,
 });
 
 /** Proyectos que aún no surten efecto (decisiones con retraso: nodos en obra, SFS, datos, contratos). */

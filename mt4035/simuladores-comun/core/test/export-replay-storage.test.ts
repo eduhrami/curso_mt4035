@@ -26,6 +26,17 @@ describe("exportación y checksum", () => {
     ]);
   });
 
+  it("el debrief viaja en la corrida, lo cubre el checksum y no afecta el replay (AD-31)", async () => {
+    const { state } = playGame(engine, toyConfig(21), policy);
+    const debrief = { complete: true, answers: [{ id: "DB-01", question: "¿Qué decidiste?", answer: "Abrir un CD." }] };
+    const exp = await buildExport(state, { ...opts, debrief });
+    expect(parseExport(JSON.stringify(exp), "toy")).toEqual({ ok: true, value: exp });
+    expect((await replay(engine, exp, versions)).ok).toBe(true);
+    const tampered = structuredClone(exp);
+    tampered.debrief!.answers[0]!.answer = "Otra cosa.";
+    expect(await verifyChecksum(tampered)).toBe(false);
+  });
+
   it("canonicalJson no depende del orden de llaves", () => {
     expect(canonicalJson({ b: 1, a: { d: 2, c: [3, { f: 1, e: 0 }] } })).toBe(canonicalJson({ a: { c: [3, { e: 0, f: 1 }], d: 2 }, b: 1 }));
   });

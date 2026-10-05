@@ -7,3 +7,4 @@ export * from "./components/charts.tsx";
 export * from "./components/messages.tsx";
 export * from "./components/confirm.tsx";
 export * from "./components/scenarios.tsx";
+export * from "./components/debrief.tsx";

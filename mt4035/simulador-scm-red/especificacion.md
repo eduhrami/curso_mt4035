@@ -110,7 +110,7 @@ El jugador elige uno de los escenarios predefinidos (§4.3) o, en «Crear mi pro
 
 ### 4.3 Escenarios de mercado predefinidos (5-oct-2026)
 
-La pantalla de inicio ofrece cuatro escenarios cerrados en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
+La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el perfil, el concepto de clase, la semilla y la región o territorio sugerido; las notas de «qué revisar» y la pregunta propia del escenario pasan al debrief final, §11) en lugar del panel libre de la §4.2, para que distintos equipos y estrategias se comparen en las mismas condiciones y cada escenario ilustre un concepto de clase. Cada uno fija el perfil completo y propone una semilla: **mismo escenario + misma semilla = misma demanda y mismos eventos**, así la diferencia en KPIs se atribuye a las decisiones. La semilla se puede cambiar (por ejemplo, una por grupo). El panel libre sigue disponible bajo **«Crear mi propio escenario»**; esas corridas se marcan como «Escenario propio».
 
 | ID | Escenario | Perfil (factores que se apartan del neutro) | Concepto de clase | Contraste más claro en | Semilla ⚠ |
 |---|---|---|---|---|---|
@@ -119,7 +119,7 @@ La pantalla de inicio ofrece cuatro escenarios cerrados en lugar del panel libre
 | EM-03 | **Presión de costos** | Demanda estancada (E-20), combustible al alza (E-23), competencia agresiva (E-24), choferes escasos (E-25) | Eficiencia vs. capacidad de respuesta: densidad, consolidación, costo por entrega | Red River | 4303 |
 | EM-04 | **Crecimiento acelerado** | Boom (E-20), estacionalidad marcada (E-21), envejecimiento (E-26) | Planeación de capacidad con retrasos (un CD tarda 2–4 trimestres) y mezcla que se desplaza a frescos | Valle Metropolitano | 4404 |
 
-La corrida guarda el id en `setup.preset` (`config.scenario.preset`); se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
+Los ids EM-xx son internos (no se muestran al jugador). La corrida guarda el id en `setup.preset` (`config.scenario.preset`) y el nombre del escenario se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
 
 ---
 
@@ -372,7 +372,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
    - Merma por categoría.
 5. **Bandeja de mensajes:** eventos (§8) y alertas de reglas (§6.4), con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con los valores que la activaron.
 6. **Comparador de corridas:** 2–4 corridas guardadas, KPI por KPI, con el diff de decisiones.
-7. **Reporte final:** scorecard, trayectoria de 5 años, decisiones clave y eventos enfrentados. Se puede exportar.
+7. **Reporte final:** scorecard, trayectoria de 5 años, decisiones clave y eventos enfrentados.. Cierra con el **debrief** (§11): notas del escenario y seis preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 
 ---
 
@@ -388,7 +388,9 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
     "decisions": [{"epoch": 0, "changes": {"D-01": 14, "D-11": {"fresh": 3}}}],
     "events": [{"epoch": 3, "week": 7, "id": "X-01", "severity": 0.6, "drivers": ["R-01"]}],
     "kpis": [{"epoch": 1, "OTIF": 0.94, "OSA": 0.96, "...": 0}],
-    "final_score": 72.4, "checksum": "sha256(...)"
+    "final_score": 72.4,
+    "debrief": {"complete": true, "answers": [{"id": "DB-01", "question": "…", "answer": "…"}]},
+    "checksum": "sha256(...)"
   }
   ```
 - **Export:** JSON (completo) y CSV (KPIs por época). El **checksum** y la semilla permiten que una herramienta del profesor **vuelva a correr** las decisiones y verifique que los KPIs coinciden.
@@ -404,14 +406,14 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 2. **Trasplante ingenuo:** Red River copiando el modelo Kaigan (3×/día, cross-dock, sin densificar). Ver cómo explota el CTS.
 3. **Diseño propio:** Red River o Valle con estrategia y red elegidas por el alumno, ajustando trimestre a trimestre.
 
-**Preguntas de debrief:**
+**Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y seis preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-06`.
 
-- ¿Qué decisión de SEJ depende de la geografía y cuál no? (información sí se trasplanta; frecuencia 3×/día no necesariamente)
-- ¿Qué KPI mejoró primero al activar el POS compartido y por qué tardó?
-- ¿Qué evento les dolió más y qué decisión previa lo agravó?
-- ¿En qué punto la densificación (dominancia) dejó de rendir por canibalización?
+- **DB-01…DB-04 y DB-06** son comunes a todos los escenarios; **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
+- Introducción a la práctica, asignación de escenarios, plenario y rúbrica: [guía del instructor](./guia-instructor.md).
 
-**Posible entregable:** JSON de la corrida 3 + reflexión de una página (estrategia, decisión clave, evento crítico, KPI que cuidaron como guardrail). Se conecta con el diagrama de red *as-is* del proyecto final.
+**Preguntas para el plenario:** ver la [guía del instructor](./guia-instructor.md#a7-plenario-sugerido).
+
+**Entregable:** JSON de la corrida con el debrief completo. La rúbrica está en la [guía del instructor](./guia-instructor.md#b-rúbrica-del-debrief).
 
 ---
 
