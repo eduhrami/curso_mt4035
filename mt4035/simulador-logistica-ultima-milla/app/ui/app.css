@@ -1,0 +1,7 @@
+/* Acento de marca de Mercado Alba (naranja amanecer) sobre los tokens del ui-kit. */
+:root { --accent: #b4490f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --accent: #ffad6b; } }
+:root[data-theme="dark"] { --accent: #ffad6b; }
+.zone-grid { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.zone { border: 1px solid var(--border); border-radius: 8px; padding: 0.45rem 0.55rem; font-size: 0.82rem; }
+.zone .icons { letter-spacing: 0.1em; }

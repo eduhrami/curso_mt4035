@@ -28,7 +28,7 @@ export function summarizeChanges<S, P>(store: GameStore<S, P>, describe: (id: st
     });
 }
 
-export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describe, epochName, effect }: { store: GameStore<S, P>; open: boolean; onClose: () => void; onConfirmed: () => void; describe: (id: string, v: unknown) => string; epochName: string; /** Nota propia del simulador sobre cuándo surte efecto (p. ej. CD que tardan en construirse). */ effect?: (id: string, to: unknown) => string | undefined }) {
+export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describe, epochName, effect, period = "trimestre" }: { store: GameStore<S, P>; /** Nombre de la época ("trimestre", "mes"). */ period?: string; open: boolean; onClose: () => void; onConfirmed: () => void; describe: (id: string, v: unknown) => string; epochName: string; /** Nota propia del simulador sobre cuándo surte efecto (p. ej. CD que tardan en construirse). */ effect?: (id: string, to: unknown) => string | undefined }) {
   const ref = useRef<HTMLDialogElement>(null);
   const [ack, setAck] = useState(false);
   const changes = open ? summarizeChanges(store, describe) : [];
@@ -53,7 +53,7 @@ export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describ
     <dialog ref={ref} onClose={onClose} aria-labelledby="confirm-title">
       <h2 id="confirm-title">Confirmar {epochName}</h2>
       {changes.length === 0 ? (
-        <p>No cambiaste ninguna decisión: el trimestre correrá con la configuración vigente.</p>
+        <p>No cambiaste ninguna decisión: el {period} correrá con la configuración vigente.</p>
       ) : (
         <div class="table-scroll">
           <table>
@@ -77,7 +77,7 @@ export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describ
                     <strong>{c.to}</strong>
                   </td>
                   <td>{c.cost ? fmtMoney(c.cost) : "—"}</td>
-                  <td class="small">{effect?.(c.id, store.draft.value[c.id]) ?? (c.lag > 0 && s ? store.engine.epochLabel(s.epoch + c.lag) : "este trimestre")}</td>
+                  <td class="small">{effect?.(c.id, store.draft.value[c.id]) ?? (c.lag > 0 && s ? store.engine.epochLabel(s.epoch + c.lag) : `este ${period}`)}</td>
                 </tr>
               ))}
             </tbody>
@@ -102,7 +102,7 @@ export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describ
           Seguir decidiendo
         </button>
         <button type="button" class="btn-primary" disabled={store.busy.value || (irreversible.length > 0 && !ack)} onClick={confirm} data-testid="confirm-run">
-          Confirmar y correr el trimestre
+          Confirmar y correr el {period}
         </button>
       </div>
     </dialog>

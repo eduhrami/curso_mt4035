@@ -58,7 +58,7 @@ export const rules: Rule[] = [
     kpis: ["OTD", "OTD_P95", "CSAT", "BACKLOG", "ORDERS"],
     when: (ctx) => ctx.state.flags.r06,
     explain: (ctx) => [
-      { label: "holgura de la promesa", value: "0%", ref: "D-23" },
+      { label: "holgura de la promesa", value: `${Math.round(ctx.state.dec.buffer * 100)}%`, ref: "D-23" },
       { label: "pedidos que pasan al día siguiente", value: Math.round(ctx.metrics.backlogOut ?? 0), ref: "R-06" },
     ],
     apply: (ctx) => {

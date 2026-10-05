@@ -96,7 +96,8 @@ export const events: Ev[] = [
   {
     id: "X-06",
     kpis: ["BACKLOG", "OTD", "OTD_P95", "CPD"],
-    pBase: (ctx) => ev(ctx.params)["X-06"].pBase[ctx.state.market.labor],
+    // Solo afecta a los choferes propios: con 3PL o crowdsourced el problema es del proveedor.
+    pBase: (ctx) => (ctx.params.fleet.mixes[ctx.state.dec.fleetMix].own > 0 ? ev(ctx.params)["X-06"].pBase[ctx.state.market.labor] : 0),
     modifiers: [
       { label: "pago por parada", ref: "D-35", factor: 1.3, when: (ctx) => ctx.state.dec.pay === "per_stop" },
       { label: "bono por calidad (pago mixto)", ref: "D-35", factor: 0.7, when: (ctx) => ctx.state.dec.pay === "mixed" },
@@ -158,7 +159,9 @@ export const events: Ev[] = [
     pBase: (ctx) => (inTerritory(ctx, ev(ctx.params)["X-11"].territories) ? ev(ctx.params)["X-11"].pBase : 0),
     onStart: (ctx) => {
       const respond = ctx.state.dec.levels.express && ctx.state.lastCsat >= 4;
-      for (const z of zones(ctx)) if (z.kind === "urban") ctx.state.zones[z.id]!.competition *= respond ? 0.97 : ev(ctx.params)["X-11"].demandMult;
+      // La pérdida es sostenida pero no se acumula: un competidor más no vuelve a quitar el 10%.
+      const floor = respond ? 0.97 : ev(ctx.params)["X-11"].demandMult;
+      for (const z of zones(ctx)) if (z.kind === "urban") ctx.state.zones[z.id]!.competition = Math.min(ctx.state.zones[z.id]!.competition, floor);
       ctx.state.memo["X-11.respond"] = respond ? 1 : 0;
     },
     message: (ctx) => ({ title: "Competidor con entrega en 30 min", body: Number(ctx.state.memo["X-11.respond"]) ? "Tu express y tu CSAT alta contienen la fuga: −3% en zonas densas." : "Sin respuesta express, pierdes 10% de la demanda en zonas densas.", severity: "alerta" }),
