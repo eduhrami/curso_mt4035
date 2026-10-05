@@ -181,6 +181,7 @@ La prueba Monte Carlo de eventos de F2 detectó un leve sesgo en la cola baja de
 
 - Una GitHub Action compila los dos `dist/index.html` y los publica en **GitHub Pages** del repositorio.
 - Los HTML también se pueden descargar para subirlos a Canvas o abrirlos sin conexión.
+- Implementación (F8): la rama huérfana `gh-pages` contiene `scm/index.html`, `ultima-milla/index.html` (los `dist/index.html` de cada app), la portada `index.html` y `.nojekyll`. La portada (enlaces a ambos simuladores, profesores y nota de entrega) se versiona en [`portada/index.html`](./portada/index.html); al republicar se copia junto con los simuladores. Si la versión de la portada cambia, se actualiza ahí primero.
 - El repositorio es **público**: los simuladores solo contienen empresas y regiones ficticias. El material con copyright de `mt4035/references/` (casos Kellogg/Ivey, libros) **nunca** se importa ni se empaqueta.
 
 ### AD-17 ✔ Privacidad
