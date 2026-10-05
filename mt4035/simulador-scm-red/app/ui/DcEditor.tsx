@@ -57,7 +57,7 @@ export function DcEditor({ value, onChange, state, disabled }: CustomControlProp
                     <select aria-label={`Zona de ${d.id}`} value={d.zone} disabled={disabled || !!old} onChange={(e) => update(i, { zone: Number((e.target as HTMLSelectElement).value) })}>
                       {zones.map((z) => (
                         <option value={z.id} key={z.id}>
-                          {z.id} ({z.stores} tiendas)
+                          Z{z.id} ({z.stores} tiendas)
                         </option>
                       ))}
                     </select>
@@ -94,7 +94,7 @@ export function DcEditor({ value, onChange, state, disabled }: CustomControlProp
       </div>
       <div class="row">
         <button type="button" onClick={add} disabled={disabled || dcs.length >= 20}>
-          + Agregar CD{selected !== undefined ? ` en la zona ${selected}` : ""}
+          + Agregar CD{selected !== undefined ? ` en la zona Z${selected}` : ""}
         </button>
         <span class="small muted">{dcs.length}/20 CD</span>
       </div>

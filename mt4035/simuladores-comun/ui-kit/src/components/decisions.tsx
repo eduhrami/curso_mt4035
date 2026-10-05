@@ -197,7 +197,7 @@ function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, cust
         ))}
       </div>
       {spec.kpis && spec.kpis.length > 0 && (
-        <div class="row small" aria-label="KPIs que mueve">
+        <div class="row small kpi-tags" aria-label="KPIs que mueve">
           <span class="muted">Mueve:</span>
           {spec.kpis.slice(0, 6).map((k) => (
             <span class="chip" key={k} title={glossaryTitle(kpiNames[k] ?? k, glossary)}>

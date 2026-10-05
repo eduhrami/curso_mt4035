@@ -3,6 +3,8 @@ import { activeDcs, params, type ScmState } from "../src/index.ts";
 import { OPTIONS } from "./labels.ts";
 
 const SIZE = 300;
+/** Ancho de la etiqueta «Z#» según los dígitos del id. */
+const zoneTagWidth = (id: number) => 9 + 4.5 * String(id).length;
 
 export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state: ScmState; epoch: number; selectedZone?: number; onSelectZone?: (z: number) => void }) {
   const g = params.grid;
@@ -45,11 +47,13 @@ export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state
               <rect x={x - cell / 2 + 1} y={y - cell / 2 + 1} width={cell - 2} height={cell - 2} rx={3} fill="var(--info)" fill-opacity={z.stores ? 0.08 + 0.62 * (z.stores / maxStores) : 0.03} stroke={selectedZone === z.id ? "var(--accent)" : "var(--border)"} stroke-width={selectedZone === z.id ? 2.5 : 1}>
                 <title>{`Zona ${z.id}: ${z.stores} tiendas, confianza ${(z.trust * 100).toFixed(0)}%`}</title>
               </rect>
-              <text x={x - cell / 2 + 4} y={y - cell / 2 + 11} font-size="8" fill="var(--text-muted)">
-                {z.id}
+              {/* Etiqueta de zona en color de acento (Z#) para no confundirla con el número de tiendas. */}
+              <rect x={x - cell / 2 + 3} y={y - cell / 2 + 3} width={zoneTagWidth(z.id)} height={10} rx={2} fill="var(--accent)" />
+              <text x={x - cell / 2 + 3 + zoneTagWidth(z.id) / 2} y={y - cell / 2 + 10.5} font-size="7" font-weight="700" text-anchor="middle" fill="var(--accent-contrast)">
+                Z{z.id}
               </text>
               {z.stores > 0 && (
-                <text x={x} y={y + cell / 2 - 5} font-size="8" text-anchor="middle" fill="var(--text)">
+                <text x={x + cell / 2 - 4} y={y + cell / 2 - 4} font-size="13" font-weight="700" text-anchor="end" fill="var(--text)" stroke="var(--surface)" stroke-width="2.5" paint-order="stroke">
                   {z.stores}
                 </text>
               )}
@@ -64,7 +68,7 @@ export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state
         })}
       </svg>
       <figcaption class="small muted" style={{ textAlign: "center" }}>
-        Zonas de {Math.round(side / g)} km por lado · intensidad = tiendas · ● con inventario ▲ cross-dock ■ combinado · contorno punteado = en obra
+        <span class="chip" style={{ background: "var(--accent)", color: "var(--accent-contrast)", fontWeight: 700 }}>Z#</span> = número de zona · número grande (abajo a la derecha) = tiendas en la zona · Zonas de {Math.round(side / g)} km por lado · intensidad = tiendas · ● con inventario ▲ cross-dock ■ combinado · contorno punteado = en obra
       </figcaption>
     </figure>
   );

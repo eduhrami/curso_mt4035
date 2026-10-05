@@ -5,3 +5,5 @@
 .zone-grid { display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .zone { border: 1px solid var(--border); border-radius: 8px; padding: 0.45rem 0.55rem; font-size: 0.82rem; }
 .zone .icons { letter-spacing: 0.1em; }
+.zone-kind { display: inline-block; padding: 0.05rem 0.45rem; border-radius: 999px; color: #fff; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+.zone-stores { font-size: 1.35rem; font-weight: 800; line-height: 1.1; }

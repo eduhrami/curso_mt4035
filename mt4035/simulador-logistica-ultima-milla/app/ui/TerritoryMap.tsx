@@ -5,6 +5,8 @@
 import { params, placeNodes, type LmState } from "../src/index.ts";
 
 const KIND: Record<string, string> = { urban: "Urbana", suburban: "Periferia", city2: "Ciudad foránea", rural: "Rural" };
+/** Código de color por tipo de zona (etiqueta y borde izquierdo de cada celda). */
+const KIND_COLOR: Record<string, string> = { urban: "#1d5fbf", suburban: "#2e7d32", city2: "#7b3fa0", rural: "#8a6100" };
 
 export function TerritoryMap({ state }: { state: LmState }) {
   const t = params.territories[state.territory];
@@ -31,10 +33,18 @@ export function TerritoryMap({ state }: { state: LmState }) {
             ...(sfs > 0 ? [`🏬 ${sfs} tiendas SFS`] : []),
           ];
           return (
-            <div role="listitem" class="zone" key={z.id} style={{ background: `color-mix(in srgb, var(--accent) ${Math.round(6 + 34 * (z.share / maxShare))}%, transparent)` }}>
-              <strong>{z.name}</strong>
+            <div role="listitem" class="zone" key={z.id} style={{ background: `color-mix(in srgb, var(--accent) ${Math.round(6 + 34 * (z.share / maxShare))}%, transparent)`, borderLeft: `5px solid ${KIND_COLOR[z.kind]}` }}>
+              <div class="row" style={{ justifyContent: "space-between", gap: "0.25rem" }}>
+                <strong>{z.name}</strong>
+                <span class="zone-kind" style={{ background: KIND_COLOR[z.kind] }}>
+                  {KIND[z.kind]}
+                </span>
+              </div>
+              <div>
+                <span class="zone-stores">{z.stores}</span> <span class="muted">tiendas</span>
+              </div>
               <div class="muted">
-                {KIND[z.kind]} · {Math.round(z.share * 100)}% de la demanda · {z.distCd} km del CD · {z.stores} tiendas
+                {Math.round(z.share * 100)}% de la demanda · {z.distCd} km del CD
               </div>
               <div class="icons">{icons.length ? icons.join(" · ") : <span class="muted">Solo desde el CD</span>}</div>
               <div class="muted">
@@ -44,7 +54,14 @@ export function TerritoryMap({ state }: { state: LmState }) {
           );
         })}
       </div>
-      <figcaption class="small muted">Intensidad del color = participación en la demanda · ⚙ MFC · ■ dark store · ⇄ micro-hub · ▣ lockers · 🏬 tiendas que surten (SFS)</figcaption>
+      <p class="row small" style={{ margin: 0 }} aria-label="Tipos de zona">
+        {[...new Set(t.zones.map((z) => z.kind))].map((k) => (
+          <span class="zone-kind" style={{ background: KIND_COLOR[k] }} key={k}>
+            {KIND[k]}
+          </span>
+        ))}
+      </p>
+      <figcaption class="small muted">Etiqueta y borde = tipo de zona · número grande = tiendas en la zona · intensidad del fondo = participación en la demanda · ⚙ MFC · ■ dark store · ⇄ micro-hub · ▣ lockers · 🏬 tiendas que surten (SFS)</figcaption>
     </figure>
   );
 }
