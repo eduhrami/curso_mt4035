@@ -29,6 +29,7 @@ async function captureForecast(page: Page) {
   await expect(page.getByTestId("review")).toBeEnabled();
 }
 
+/** Juega un turno (un trimestre = 3 meses del motor). */
 async function playEpoch(page: Page) {
   const before = await page.getByTestId("epoch-label").textContent();
   if (await page.getByTestId("review").isDisabled()) await captureForecast(page);
@@ -37,14 +38,14 @@ async function playEpoch(page: Page) {
   await expect(page.getByTestId("epoch-label")).not.toHaveText(before ?? "");
 }
 
-test("partida completa de 36 meses en Ciudad Bajío y exportación verificable con replay", async ({ page }) => {
+test("partida completa de 12 trimestres en Ciudad Bajío y exportación verificable con replay", async ({ page }) => {
   const errors = await begin(page, "Ciudad Bajío");
-  for (let i = 0; i < 36; i++) await playEpoch(page);
+  for (let i = 0; i < 12; i++) await playEpoch(page);
   await expect(page.getByTestId("epoch-label")).toHaveText("Partida terminada");
   await expect(page.getByTestId("final-report")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Picos enfrentados" })).toBeVisible();
-  const score = Number(await page.getByTestId("final-score").textContent());
-  expect(score).toBeGreaterThan(0);
+  const score = Number(await page.getByTestId("final-score").getAttribute("data-value"));
+  expect(Number.isFinite(score)).toBe(true);
   // El JSON solo se exporta con el debrief completo (AD-31).
   await expect(page.getByTestId("export-json")).toBeDisabled();
   const boxes = page.getByTestId("debrief").locator("textarea");
@@ -77,7 +78,7 @@ test("abrir una dark store pide confirmar lo irreversible y queda como proyecto 
   await dialog.getByRole("checkbox").check();
   await page.getByTestId("confirm-run").click();
   await expect(page.getByText(/Proyectos en curso: 1/)).toBeVisible();
-  await expect(page.getByText(/Inversión: US\$ 600,000/)).toBeVisible();
+  await expect(page.getByTestId("profit-chip")).toHaveAttribute("title", /US\$ 600,000/);
 });
 
 test("una decisión incompatible muestra el error y bloquea la confirmación", async ({ page }) => {
@@ -94,7 +95,8 @@ test("con el reporte en p95 las tarjetas muestran los días críticos y la serie
   await page.getByRole("radiogroup", { name: /reporte/ }).getByRole("radio", { name: /p95/ }).click();
   await playEpoch(page);
   await expect(page.getByRole("list", { name: "Indicadores del mes" }).getByText("OTD p95", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /^Días de A1-M01/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /^Días de A1-M03/ })).toBeVisible();
+  await expect(page.getByTestId("pnl")).toBeVisible();
 });
 
 test("al recargar, la corrida guardada se puede continuar", async ({ page }) => {
@@ -104,7 +106,7 @@ test("al recargar, la corrida guardada se puede continuar", async ({ page }) => 
   await page.reload();
   await page.getByRole("button", { name: /Corridas guardadas/ }).click();
   await page.getByRole("button", { name: "Continuar" }).first().click();
-  await expect(page.getByTestId("epoch-label")).toContainText("3/36");
+  await expect(page.getByTestId("epoch-label")).toContainText("3/12");
 });
 
 test("si el navegador bloquea localStorage, avisa y el juego sigue en memoria", async ({ page }) => {
@@ -118,7 +120,7 @@ test("si el navegador bloquea localStorage, avisa y el juego sigue en memoria", 
   await begin(page, "Ciudad Bajío");
   await expect(page.getByRole("status").first()).toContainText("exporta tu corrida");
   await playEpoch(page);
-  await expect(page.getByTestId("epoch-label")).toContainText("2/36");
+  await expect(page.getByTestId("epoch-label")).toContainText("2/12");
 });
 
 test("en móvil (360 px) no hay scroll horizontal y las vistas se cambian con pestañas", async ({ page }) => {
@@ -178,8 +180,8 @@ test("el pronóstico es obligatorio en enero de cada año y los datos de demanda
   expect(lines[0]).toMatch(/^dia,anio,mes,dia_mes,dia_semana,evento,.*,total$/);
   expect(lines).toHaveLength(1 + 730);
   await captureForecast(page);
-  for (let i = 0; i < 12; i++) await playEpoch(page);
-  await expect(page.getByTestId("epoch-label")).toContainText("13/36");
+  for (let i = 0; i < 4; i++) await playEpoch(page);
+  await expect(page.getByTestId("epoch-label")).toContainText("5/12");
   await expect(page.getByTestId("review")).toBeDisabled();
   await page.getByRole("tab", { name: "Pronóstico" }).click();
   const [dl2] = await Promise.all([page.waitForEvent("download"), page.getByTestId("download-demand").click()]);

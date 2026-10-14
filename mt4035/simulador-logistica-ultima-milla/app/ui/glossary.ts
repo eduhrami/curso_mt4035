@@ -92,6 +92,13 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "Sesgo", full: "Bias", def: "(Σ pronóstico − Σ real) / Σ real. Positivo: pronosticaste de más; negativo: de menos.", category: FC },
   { term: "Compromiso mínimo", def: "Parte de la flota contratada al 3PL que se paga aunque no se use. Pronosticar de más cuesta capacidad ociosa.", aliases: ["capacidad ociosa"], category: FC },
 
+  // Dinero
+  { term: "Utilidad", def: "Puntaje definitivo: margen de la canasta + tarifas − costo de última milla − reembolsos − compensaciones por entregas tarde − inversión (capex), acumulado en los 12 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },
+  { term: "Utilidad operativa", def: "Utilidad antes de inversiones: lo que dejan los pedidos entregados menos lo que cuesta entregarlos y compensar los retrasos.", category: "Dinero" },
+  { term: "Capex", full: "Capital Expenditure", def: "Inversión en activos: dark stores, MFC, lockers, micro-hubs, sistemas de datos. Se carga en el mes en que se decide.", aliases: ["inversión"], category: "Dinero" },
+  { term: "Compensación por retraso", def: "Cupón que se da al cliente por cada pedido entregado fuera de la promesa.", aliases: ["compensaciones"], category: "Dinero" },
+  { term: "Margen de la canasta", def: "Parte del valor del pedido que queda después del costo de la mercancía (25% de la canasta).", category: "Dinero" },
+
   // Conceptos generales
   { term: "Trade-off", def: "Disyuntiva: mejorar un objetivo empeora otro (p. ej., velocidad contra costo).", category: GEN },
   { term: "Frontera OTD–CPD", def: "Curva de las mejores combinaciones posibles de puntualidad y costo por pedido: mejorar una exige sacrificar la otra.", aliases: ["frontera"], category: GEN },

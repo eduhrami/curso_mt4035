@@ -89,7 +89,7 @@ export function ForecastEditor({ value, onChange, state, disabled }: CustomContr
       <div class="stack" style={{ gap: "0.35rem" }}>
         <p class="small" style={{ margin: 0 }}>
           Descarga la demanda diaria del mercado ({HISTORY_YEARS} años de historia{e > 0 ? " y los meses que ya jugaste" : ""}), analízala por fuera (Excel, Python, R) y captura los parámetros que estimes. Tu pronóstico{" "}
-          <strong>dimensiona la flota contratada y los contratos de pico</strong>, y su precisión es el <strong>{Math.round(params.forecast.score.weight * 100)}% de tu puntaje</strong>.
+          <strong>dimensiona la flota contratada y los contratos de pico</strong>: quedarte corto o pasarte baja tu <strong>utilidad</strong>. Su precisión es además el {Math.round(params.forecast.score.weight * 100)}% del índice de desempeño.
         </p>
         <div class="row">
           <button type="button" onClick={csv} data-testid="download-demand">
@@ -98,12 +98,12 @@ export function ForecastEditor({ value, onChange, state, disabled }: CustomContr
         </div>
         <p class="small" role="status" style={{ margin: 0 }}>
           {captured ? (
-            <span>✓ Pronóstico de A{year + 1} capturado{open ? " (puedes ajustarlo antes de confirmar enero)" : ""}.</span>
+            <span>✓ Pronóstico de A{year + 1} capturado{open ? " (puedes ajustarlo antes de confirmar el trimestre)" : ""}.</span>
           ) : open ? (
-            <span style={{ color: "var(--warn)" }}>Captura tu pronóstico de A{year + 1} para poder confirmar enero.
+            <span style={{ color: "var(--warn)" }}>Captura tu pronóstico de A{year + 1} para poder confirmar el primer trimestre del año.
               {missing.length > 0 && missing.length <= 4 ? ` Falta: ${missing.join(", ")}.` : missing.length > 4 ? ` Faltan ${missing.length} de 15 campos.` : ""}</span>
           ) : (
-            <span class="muted">El pronóstico se captura en enero de cada año. Próxima captura: A{year + 2}-M01.</span>
+            <span class="muted">El pronóstico se captura al inicio de cada año (primer trimestre). Próxima captura: A{year + 2}-T1.</span>
           )}
         </p>
       </div>

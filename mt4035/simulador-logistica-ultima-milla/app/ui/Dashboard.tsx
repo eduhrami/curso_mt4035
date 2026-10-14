@@ -3,7 +3,7 @@
  * OTD–CPD, desglose del costo por entrega y mapa del territorio.
  */
 import { useState } from "preact/hooks";
-import { DataTable, fmt, KpiCard, KpiExplanation, LineChart, ScatterChart, StackedBar, type ScatterGroup } from "@mt4035/ui-kit";
+import { DataTable, fmt, fmtMoney, KpiCard, KpiExplanation, LineChart, ScatterChart, StackedBar, type ScatterGroup } from "@mt4035/ui-kit";
 import type { EpochReport, GameState } from "@mt4035/sim-core";
 import { params, scoreRun, type LmState, type Strategy } from "../src/index.ts";
 import { KPI_NAMES, kpiMetaFor, LABELS, OPTIONS, P95_OF, TERRITORY_TEXT } from "./labels.ts";
@@ -43,10 +43,10 @@ export function Dashboard({ state }: { state: GameState<LmState> }) {
     return (
       <div class="stack">
         <div class="card stack">
-          <h2>Antes del primer mes</h2>
+          <h2>Antes del primer trimestre</h2>
           <p>
             Revisa la operación <em>as-is</em> de {TERRITORY_TEXT[territory].title}: solo surtido desde el CD, camionetas de un 3PL, día siguiente con ventana de todo el día, sin ETA ni
-            validación de direcciones. Ajusta las decisiones que quieras en el panel izquierdo y confirma <strong>A1-M01</strong>. Puedes confirmar sin cambios para ver cómo opera hoy.
+            validación de direcciones. Ajusta las decisiones que quieras en el panel izquierdo y confirma el trimestre <strong>A1-T1</strong>: corre enero, febrero y marzo con esas decisiones. Puedes confirmar sin cambios para ver cómo opera hoy.
           </p>
         </div>
         <div class="card">
@@ -106,6 +106,8 @@ export function Dashboard({ state }: { state: GameState<LmState> }) {
       </div>
 
       <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} period="mes" unitPlural="días" />
+
+      <ProfitCard reports={reports} />
 
       <ForecastCard reports={reports} labels={labels} />
 
@@ -206,6 +208,59 @@ function ForecastCard({ reports, labels }: { reports: EpochReport[]; labels: str
         format={(v) => fmt(v, "num0")}
         ariaLabel="Demanda del mercado contra pronóstico por mes"
       />
+    </div>
+  );
+}
+
+/** Renglones del estado de resultados del canal en línea (§7.5), con su signo. */
+export const PNL: [string, string, 1 | -1][] = [
+  ["REVENUE", "Ventas en línea (pedidos entregados)", 1],
+  ["GROSS_MARGIN", "Margen de la canasta", 1],
+  ["FEES", "Tarifas de envío cobradas", 1],
+  ["LAST_MILE_COST", "Costo de última milla (rutas, picking, nodos, reintentos, devoluciones, capacidad ociosa)", -1],
+  ["REFUNDS", "Reembolsos (frescos dañados)", -1],
+  ["LATE_COST", "Compensaciones por entregas tarde", -1],
+  ["PROFIT_OP", "Utilidad operativa", 1],
+  ["CAPEX", "Inversión (capex y penalizaciones)", -1],
+  ["PROFIT", "Utilidad", 1],
+];
+
+/** Estado de resultados: último trimestre y acumulado de la partida. */
+function ProfitCard({ reports }: { reports: EpochReport[] }) {
+  const lastTurn = reports.slice(-3);
+  const sum = (rs: EpochReport[], k: string) => rs.reduce((a, r) => a + (r.kpis[k] ?? 0), 0);
+  const row = (k: string) => (k === "PROFIT_OP" || k === "PROFIT" ? { fontWeight: 700 } : undefined);
+  const total = sum(reports, "PROFIT");
+  return (
+    <div class="card stack" data-testid="pnl">
+      <h2>Estado de resultados del canal en línea</h2>
+      <p class="small muted">
+        La utilidad acumulada es tu <strong>puntaje definitivo</strong>: lo que dejan los pedidos entregados (margen de canasta + tarifas) menos lo que cuesta entregarlos, las compensaciones por llegar tarde
+        (US$ {params.money.lateCoupon.toFixed(2)} por pedido) y lo que inviertes. Las ventas se muestran como referencia; no se suman dos veces.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Concepto (US$)</th>
+              <th>Último trimestre</th>
+              <th>Acumulado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PNL.map(([k, label, sign]) => (
+              <tr key={k} style={row(k)}>
+                <td>{label}</td>
+                <td>{fmtMoney(sign * sum(lastTurn, k) || 0)}</td>
+                <td>{fmtMoney(sign * sum(reports, k) || 0)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style={{ margin: 0 }}>
+        Utilidad acumulada: <strong data-testid="profit-total">{fmtMoney(total)}</strong> · margen operativo sobre ventas {fmt(sum(reports, "PROFIT_OP") / Math.max(1, sum(reports, "REVENUE")), "pct1")}
+      </p>
     </div>
   );
 }

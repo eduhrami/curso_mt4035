@@ -70,13 +70,13 @@ export function MessageItem({ m, epochLabel, kpiNames, unit }: { m: Message; epo
   );
 }
 
-export function MessageInbox({ reports, epochLabel, kpiNames, unit = "semana", period = "trimestre" }: { reports: EpochReport[]; epochLabel: (e: number) => string; kpiNames: Record<string, string>; unit?: string; /** Nombre de la época ("trimestre", "mes"). */ period?: string }) {
+export function MessageInbox({ reports, epochLabel, kpiNames, unit = "semana", period = "trimestre", lastCount = 1 }: { reports: EpochReport[]; epochLabel: (e: number) => string; kpiNames: Record<string, string>; unit?: string; /** Nombre del periodo que ve el jugador ("trimestre", "mes"). */ period?: string; /** Épocas que forman el último periodo (p. ej. 3 meses en un turno trimestral). */ lastCount?: number }) {
   const [filter, setFilter] = useState<"all" | Message["severity"]>("all");
   const [scope, setScope] = useState<"last" | "all">("last");
-  const source = scope === "last" ? reports.slice(-1) : [...reports].reverse();
+  const source = scope === "last" ? [...reports.slice(-lastCount)].reverse() : [...reports].reverse();
   const msgs = source.flatMap((r) => [...r.messages].reverse()).filter((m) => filter === "all" || m.severity === filter);
   const counts = { critico: 0, alerta: 0, info: 0 };
-  for (const m of reports.slice(-1).flatMap((r) => r.messages)) counts[m.severity]++;
+  for (const m of reports.slice(-lastCount).flatMap((r) => r.messages)) counts[m.severity]++;
   return (
     <div class="card stack">
       <h2 style={{ marginBottom: 0 }}>Mensajes</h2>

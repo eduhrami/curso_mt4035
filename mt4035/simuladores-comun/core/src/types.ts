@@ -194,6 +194,8 @@ export interface TickContext<S, P> extends BaseContext<S, P> {
 export interface EpochContext<S, P> extends BaseContext<S, P> {
   readonly tickMetrics: readonly Record<string, number>[];
   readonly history: readonly EpochReport[];
+  /** Cargos (capex, penalizaciones) registrados en esta época hasta el momento. */
+  readonly ledger: readonly LedgerEntry[];
 }
 
 // ---------------------------------------------------------------------------

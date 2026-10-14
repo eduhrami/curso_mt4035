@@ -39,6 +39,8 @@ export interface GameStoreOptions<S, P> {
   debriefQuestions?(state: GameState<S>): DebriefQuestion[];
   /** Caracteres mínimos por respuesta para dar el debrief por completo (60 por omisión). */
   debriefMinChars?: number;
+  /** Épocas que corre cada confirmación (turno). 1 por omisión; 3 = turno trimestral sobre un motor mensual. */
+  epochsPerTurn?: number;
   /** Para pruebas: almacenamiento alternativo. */
   storage?: StorageHandle;
   /** Para pruebas: generador de ids y reloj. */
@@ -197,7 +199,10 @@ export function createGameStore<S, P>(o: GameStoreOptions<S, P>): GameStore<S, P
       }
       busy.value = true;
       try {
-        const r = engine.confirmEpoch(staged.state);
+        // El turno corre hasta la siguiente época múltiplo de epochsPerTurn; las decisiones se aplican en la primera.
+        const per = Math.max(1, o.epochsPerTurn ?? 1);
+        let r = engine.confirmEpoch(staged.state);
+        while (r.state.phase !== "FINAL" && r.state.epoch % per !== 0) r = engine.confirmEpoch(r.state);
         state.value = r.state;
         draft.value = {};
         errors.value = {};

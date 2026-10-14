@@ -1318,5 +1318,9 @@
         "p95": 0.2
       }
     }
+  },
+  "money": {
+    "lateCoupon": 1.5,
+    "note": "Compensación por pedido entregado fuera de la promesa (cupón), USD. Solo entra a la utilidad, no al CPD ni al margen del canal."
   }
 }

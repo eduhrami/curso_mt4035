@@ -1,6 +1,6 @@
 /** LOG-FC: proceso de demanda oculto, datos históricos y pronóstico F-01 (casos de prueba §9.1). */
 import { describe, expect, it } from "vitest";
-import { demandCsv, forecastScore, params, scoreRun, truthForecast, type Forecast } from "../src/index.ts";
+import { calendarDays, demandCsv, forecastScore, params, scoreRun, truthForecast, type Forecast } from "../src/index.ts";
 import { det, engine, run, start, sto, sumMetric, withOverrides } from "./helpers/run.ts";
 
 const scaled = (f: Forecast, k: number): Forecast => ({ ...f, level: f.level * k, p95: f.p95 * k, peaks: Object.fromEntries(Object.entries(f.peaks).map(([id, m]) => [id, 1 + (m - 1) * k])) as Forecast["peaks"] });
@@ -27,6 +27,15 @@ describe("LOG-FC (P1)", () => {
     const jan = rows.slice(0, 31).reduce((a, r) => a + Number(r.split(",").at(-1)), 0);
     // El CSV redondea por zona: la suma coincide con MARKET salvo el redondeo.
     expect(Math.abs(jan - reports[0]!.kpis.MARKET!)).toBeLessThan(31 * t.zones.length);
+  });
+
+  it("FC-03b el calendario de un año jugado empieza en su día absoluto y el p95 perfecto crece con la demanda", () => {
+    const g = start(det("megalopolis"));
+    expect(calendarDays(params, 12, 13)[0]!.day).toBe(365);
+    expect(calendarDays(params, -1, 0)[0]!.day).toBe(-31);
+    const [a1, a2, a3] = [0, 1, 2].map((y) => truthForecast(g.model, params, y).p95);
+    expect(a2!).toBeGreaterThan(a1!);
+    expect(a3!).toBeGreaterThan(a2!);
   });
 
   it("FC-05/06 pronosticar de menos deja flota faltante; de más, paga capacidad ociosa (pareadas)", () => {
@@ -61,5 +70,19 @@ describe("LOG-FC (P1)", () => {
       const sc = scoreRun(play(1), "reliability", params, t);
       expect(sc.score).toBeCloseTo(0.7 * sc.operational + 0.3 * sc.forecast, 9);
     }
+  });
+
+  it("MON-01 el estado de resultados cierra: utilidad = margen + tarifas − última milla − reembolsos − retrasos − capex", () => {
+    const g = start(det("megalopolis"));
+    const { reports } = run(g, 4, (_s, e) => (e === 0 ? { "D-04": 1 } : {}));
+    for (const r of reports) {
+      const k = r.kpis;
+      expect(k.PROFIT_OP!).toBeCloseTo(k.GROSS_MARGIN! + k.FEES! - k.LAST_MILE_COST! - k.REFUNDS! - k.LATE_COST!, 4);
+      expect(k.PROFIT!).toBeCloseTo(k.PROFIT_OP! - k.CAPEX!, 6);
+      expect(k.LATE_COST!).toBeCloseTo(k.LATE_ORDERS! * params.money.lateCoupon, 6);
+    }
+    // La dark store se paga en el mes en que se decide.
+    expect(reports[0]!.kpis.CAPEX).toBe(params.nodes.dark.capex);
+    expect(reports[1]!.kpis.CAPEX).toBe(0);
   });
 });

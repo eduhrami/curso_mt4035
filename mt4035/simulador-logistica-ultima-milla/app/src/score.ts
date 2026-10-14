@@ -29,7 +29,12 @@ export function forecastScore(history: readonly EpochReport[], p: Params): { sco
   return { score: years.length ? years.reduce((a, y) => a + y.score, 0) / years.length : 0, years };
 }
 
+/** Utilidad acumulada del canal en línea (USD, §7.5): Σ (margen − compensaciones por retraso − capex). Puntaje definitivo. */
+export const profitOf = (history: readonly EpochReport[]) => history.reduce((a, h) => a + (h.kpis.PROFIT ?? 0), 0);
+
 export interface LmScore extends ScoreResult {
+  /** Utilidad acumulada (USD): puntaje definitivo de la partida. */
+  profit: number;
   /** Puntaje de la operación (KPIs según la estrategia, con guardrails), 0–100. */
   operational: number;
   /** Calidad del pronóstico, 0–100, y detalle por año. */
@@ -42,7 +47,7 @@ export function scoreRun(history: readonly EpochReport[], strategy: Strategy, p:
   const op = operationalScore(history, strategy, p, territory);
   const fc = forecastScore(history, p);
   const w = p.forecast.score.weight;
-  return { ...op, score: (1 - w) * op.score + w * 100 * fc.score, operational: op.score, forecast: 100 * fc.score, forecastYears: fc.years };
+  return { ...op, score: (1 - w) * op.score + w * 100 * fc.score, operational: op.score, forecast: 100 * fc.score, forecastYears: fc.years, profit: profitOf(history) };
 }
 
 export function operationalScore(history: readonly EpochReport[], strategy: Strategy, p: Params, territory?: TerritoryId): ScoreResult {

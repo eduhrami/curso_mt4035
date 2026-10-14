@@ -7,6 +7,16 @@ import { OPTIONS, TERRITORY_TEXT } from "./labels.ts";
 
 export const engine = createLastMileEngine();
 export const EPOCHS = params.epochs;
+/** Turno del jugador: un trimestre (3 meses del motor). La partida son 12 turnos. */
+export const TURN_MONTHS = 3;
+export const TURNS = EPOCHS / TURN_MONTHS;
+const SHORT = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+/** «A1-T1 (ene–mar)» para la época (mes) en que empieza o cae el trimestre. */
+export function turnLabel(epoch: number): string {
+  const q = Math.floor((epoch % 12) / 3);
+  return `A${Math.floor(epoch / 12) + 1}-T${q + 1} (${SHORT[q * 3]}–${SHORT[q * 3 + 2]})`;
+}
+export const turnOf = (epoch: number) => Math.floor(epoch / TURN_MONTHS) + 1;
 
 /** Modo profesor (AD-27): ?profesor=1 muestra el puntaje durante el juego y habilita herramientas. */
 export const professor = typeof location !== "undefined" && new URLSearchParams(location.search).get("profesor") === "1";
@@ -22,8 +32,10 @@ export const store = createGameStore({
   storageKey: "mt4035.lastmile.runs.v1",
   simVersion: SIM_VERSION,
   paramsVersion: PARAMS_VERSION,
-  title: (s) => `${TERRITORY_TEXT[territoryOf(s)].title} · ${OPTIONS[s.model.strategy]} · ${s.config.player?.name || "sin nombre"} · ${s.history.length}/${EPOCHS}`,
-  finalScore: (s) => finalScore(s).score,
+  title: (s) => `${TERRITORY_TEXT[territoryOf(s)].title} · ${OPTIONS[s.model.strategy]} · ${s.config.player?.name || "sin nombre"} · ${Math.floor(s.history.length / TURN_MONTHS)}/${TURNS}`,
+  // Puntaje definitivo: utilidad acumulada en USD (§7.5).
+  finalScore: (s) => finalScore(s).profit,
+  epochsPerTurn: TURN_MONTHS,
   debriefQuestions: (s) => debriefFor(s.config.scenario as Parameters<typeof debriefFor>[0]).questions,
 });
 

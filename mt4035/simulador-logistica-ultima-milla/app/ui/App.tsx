@@ -7,9 +7,9 @@ import { ForecastEditor } from "./ForecastEditor.tsx";
 import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
-import { engine, glossaryOpen, EPOCHS, professor, projectsInProgress, screen, store, territoryOf } from "./game.ts";
+import { engine, glossaryOpen, professor, projectsInProgress, screen, store, territoryOf, TURN_MONTHS, TURNS, turnLabel, turnOf } from "./game.ts";
 import { describeValue, KPI_NAMES, LABELS, MONTHS, OPTIONS, scenarioLabel, TABS, TERRITORY_TEXT } from "./labels.ts";
-import type { Forecast } from "../src/index.ts";
+import { profitOf, type Forecast } from "../src/index.ts";
 
 export function App() {
   const state = store.state.value;
@@ -29,10 +29,11 @@ function TopBar() {
   const s = store.state.value;
   const inGame = screen.value === "game" && s;
   const capex = s ? s.ledger.reduce((a, l) => a + (l.kind === "capex" || l.kind === "penalty" ? l.amount : 0), 0) : 0;
+  const profit = s ? profitOf(s.history) : 0;
   const projects = s ? projectsInProgress(s) : [];
   const exportJson = async () => {
     if (!s) return;
-    download(`mercado-alba-${territoryOf(s)}-${s.config.seed}-${s.history.length}de${EPOCHS}.json`, JSON.stringify(await store.exportRun(), null, 2));
+    download(`mercado-alba-${territoryOf(s)}-${s.config.seed}-T${Math.floor(s.history.length / TURN_MONTHS)}de${TURNS}.json`, JSON.stringify(await store.exportRun(), null, 2));
   };
   return (
     <header class="topbar">
@@ -41,12 +42,12 @@ function TopBar() {
         <>
           <span>{TERRITORY_TEXT[territoryOf(s)].title}</span>
           <span class="chip" data-testid="epoch-label">
-            {s.phase === "FINAL" ? "Partida terminada" : `Mes ${engine.epochLabel(s.epoch)} (${MONTHS[s.epoch % 12]}) · ${s.epoch + 1}/${EPOCHS}`}
+            {s.phase === "FINAL" ? "Partida terminada" : `Trimestre ${turnLabel(s.epoch)} · ${turnOf(s.epoch)}/${TURNS}`}
           </span>
           <span class="chip">Estrategia: {OPTIONS[s.model.strategy]}</span>
           <span class="chip" data-testid="scenario-label">{scenarioLabel(s.config.scenario)}</span>
-          <span class="chip" title="Inversión acumulada (capex y penalizaciones)">
-            Inversión: {fmtMoney(capex)}
+          <span class="chip" title={`Utilidad acumulada = margen del canal − compensaciones por retraso − inversión (capex y penalizaciones: ${fmtMoney(capex)})`} data-testid="profit-chip">
+            Utilidad: {fmtMoney(profit)}
           </span>
           {projects.length > 0 && (
             <span class="chip badge-info" title={projects.join("\n")}>
@@ -96,11 +97,11 @@ function Game() {
       )}
       {needsForecast && (
         <p class="small" role="alert" style={{ color: "var(--warn)", margin: 0 }}>
-          Captura tu pronóstico de A{fcYear + 1} en la pestaña «Pronóstico» para confirmar enero.
+          Captura tu pronóstico de A{fcYear + 1} en la pestaña «Pronóstico» para confirmar el primer trimestre del año.
         </p>
       )}
       <button type="button" class="btn-primary" disabled={hasErrors || needsForecast || store.busy.value} onClick={() => setOpen(true)} data-testid="review">
-        Revisar y confirmar {engine.epochLabel(s.epoch)} {pendingChanges ? `(${pendingChanges} cambios)` : "(sin cambios)"}
+        Revisar y confirmar {turnLabel(s.epoch)} {pendingChanges ? `(${pendingChanges} cambios)` : "(sin cambios)"}
       </button>
       {pendingChanges > 0 && (
         <button type="button" class="btn-ghost small" onClick={() => store.clearDraft()}>
@@ -114,9 +115,9 @@ function Game() {
       <ThreeColumns
         left={<DecisionPanel store={store} tabs={TABS} labels={LABELS} globalOptions={OPTIONS} kpiNames={KPI_NAMES} custom={{ "F-01": ForecastEditor }} footer={footer} />}
         center={final ? <FinalReport state={s} /> : <Dashboard state={s} />}
-        right={<MessageInbox reports={s.history} epochLabel={(e) => engine.epochLabel(e)} kpiNames={KPI_NAMES} unit="día" period="mes" />}
+        right={<MessageInbox reports={s.history} epochLabel={(e) => engine.epochLabel(e)} kpiNames={KPI_NAMES} unit="día" period="trimestre" lastCount={TURN_MONTHS} />}
       />
-      <ConfirmDialog store={store} open={open} onClose={() => setOpen(false)} onConfirmed={() => window.scrollTo({ top: 0, behavior: "smooth" })} describe={describeValue} epochName={engine.epochLabel(s.epoch)} period="mes" />
+      <ConfirmDialog store={store} open={open} onClose={() => setOpen(false)} onConfirmed={() => window.scrollTo({ top: 0, behavior: "smooth" })} describe={describeValue} epochName={`el trimestre ${turnLabel(s.epoch)}`} period="trimestre" />
     </>
   );
 }

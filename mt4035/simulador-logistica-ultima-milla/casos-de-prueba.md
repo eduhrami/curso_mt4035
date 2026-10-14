@@ -197,6 +197,15 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-FC-07 | Pronóstico perfecto (`truthForecast`) | Calidad del pronóstico ≥ 0.9 en modo estocástico | P1 |
 | LOG-FC-08 | Las pruebas de mecanismos | Usan pronóstico perfecto (helper `start`), para no depender de pronosticar | — |
 
+### 9.2 Utilidad y turno trimestral (§3, §7.5)
+
+| ID | Condición | Resultado esperado | Prio |
+|---|---|---|---|
+| LOG-MON-01 | Cualquier mes | `PROFIT_OP` = margen de canasta + tarifas − última milla − reembolsos − compensaciones; `PROFIT` = `PROFIT_OP` − `CAPEX`; `LATE_COST` = entregas tarde × cupón | P1 |
+| LOG-MON-02 | Abrir una dark store en enero | El capex se carga en ese mes y no en los siguientes | P1 |
+| LOG-MON-03 | Turno trimestral (store con `epochsPerTurn = 3`) | Una confirmación corre 3 meses, el registro de decisiones solo tiene la época 0 y el replay del JSON coincide | P1 |
+| LOG-MON-04 | Partida completa en la UI | 12 turnos; el reporte final muestra la utilidad acumulada y el JSON la exporta como `finalScore` (punta a punta) | P1 |
+
 ---
 
 ## 10. Persistencia y exportación

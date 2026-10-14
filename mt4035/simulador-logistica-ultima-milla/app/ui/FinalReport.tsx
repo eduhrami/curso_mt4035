@@ -1,5 +1,6 @@
 /** Reporte final (AD-26): puntaje, desglose, guardrails, trayectoria de 36 meses, picos enfrentados, decisiones y eventos. */
-import { DebriefPanel, download, fmt, Gloss, LineChart } from "@mt4035/ui-kit";
+import { DebriefPanel, download, fmt, fmtMoney, Gloss, LineChart } from "@mt4035/ui-kit";
+import { PNL } from "./Dashboard.tsx";
 import type { GameState } from "@mt4035/sim-core";
 import { debriefFor, isPeakMonth, params, type LmState, type Strategy } from "../src/index.ts";
 import { describeValue, kpiMetaFor, MONTHS, OPTIONS, scenarioLabel, TERRITORY_TEXT } from "./labels.ts";
@@ -39,14 +40,15 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
           {state.config.player?.team ? ` · ${state.config.player.team}` : ""} · escenario {scenarioLabel(state.config.scenario)} · semilla {state.config.seed} · estrategia declarada: <strong>{OPTIONS[state.model.strategy]}</strong>
         </p>
         <div class="row" style={{ alignItems: "baseline" }}>
-          <span style={{ fontSize: "2.4rem", fontWeight: 800 }} data-testid="final-score">
-            {result.score.toFixed(1)}
-          </span>
-          <span class="muted">/ 100</span>
-          <span class="small muted" style={{ marginLeft: "1rem" }}>
-            Con otra estrategia: {others.map((s) => `${OPTIONS[s]} ${finalScore(state, s).score.toFixed(1)}`).join(" · ")}
+          <span class="muted">Utilidad acumulada (puntaje definitivo):</span>
+          <span style={{ fontSize: "2.4rem", fontWeight: 800 }} data-testid="final-score" data-value={result.profit}>
+            {fmtMoney(result.profit)}
           </span>
         </div>
+        <p class="small muted" style={{ margin: 0 }}>
+          Índice de desempeño {result.score.toFixed(1)}/100 (operación según tu estrategia 70% + precisión del pronóstico 30%) · con otra estrategia:{" "}
+          {others.map((s) => `${OPTIONS[s]} ${finalScore(state, s).score.toFixed(1)}`).join(" · ")}
+        </p>
         <div class="row no-print">
           {exportButton("export-json")}
           <button type="button" onClick={() => download(`mercado-alba-${territory}-${state.config.seed}.csv`, store.csv(), "text/csv")}>
@@ -67,9 +69,40 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
       </div>
 
       <div class="card stack">
-        <h2>Cómo se formó el puntaje</h2>
+        <h2>Estado de resultados de los 12 trimestres</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Concepto (US$)</th>
+                {[0, 1, 2].map((y) => (
+                  <th key={y}>A{y + 1}</th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PNL.map(([k, label, sign]) => {
+                const of = (y?: number) => (sign * state.history.filter((h) => y === undefined || Math.floor(h.epoch / 12) === y).reduce((a, h) => a + (h.kpis[k] ?? 0), 0)) || 0;
+                return (
+                  <tr key={k} style={k === "PROFIT" || k === "PROFIT_OP" ? { fontWeight: 700 } : undefined}>
+                    <td>{label}</td>
+                    {[0, 1, 2].map((y) => (
+                      <td key={y}>{fmtMoney(of(y))}</td>
+                    ))}
+                    <td>{fmtMoney(of())}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card stack">
+        <h2>Índice de desempeño (referencia)</h2>
         <p data-testid="score-split">
-          <strong>{result.score.toFixed(1)}</strong> = {Math.round((1 - FC_W) * 100)}% × operación <strong>{result.operational.toFixed(1)}</strong> + {Math.round(FC_W * 100)}% × pronóstico{" "}
+          Además de la utilidad, el simulador calcula un índice 0–100 que compara tu operación con la estrategia que declaraste y califica tu pronóstico: <strong>{result.score.toFixed(1)}</strong> = {Math.round((1 - FC_W) * 100)}% × operación <strong>{result.operational.toFixed(1)}</strong> + {Math.round(FC_W * 100)}% × pronóstico{" "}
           <strong>{result.forecast.toFixed(1)}</strong>
         </p>
         <h3>Pronóstico (F-01)</h3>

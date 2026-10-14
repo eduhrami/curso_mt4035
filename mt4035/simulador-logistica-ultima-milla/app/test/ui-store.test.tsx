@@ -20,6 +20,31 @@ const mkStore = () =>
   });
 
 describe("UI última milla · store", () => {
+  it("con turno trimestral, confirmar corre 3 meses con las mismas decisiones y el replay coincide", async () => {
+    const st = createGameStore({
+      engine: createLastMileEngine(),
+      storageKey: "t3",
+      simVersion: SIM_VERSION,
+      paramsVersion: PARAMS_VERSION,
+      title: () => "t",
+      epochsPerTurn: 3,
+      storage: openStorage(() => new MemoryStorage()),
+      newId: () => "run-3",
+      now: () => "2026-11-05T00:00:00.000Z",
+    });
+    st.start(lmConfig({ territory: "bajio", seed: 5 }));
+    st.setDecision("D-21", "2h");
+    await st.confirm();
+    expect(st.state.value!.epoch).toBe(3);
+    expect(st.state.value!.history).toHaveLength(3);
+    expect(st.state.value!.decisionLog.map((d) => d.epoch)).toEqual([0]);
+    await st.confirm();
+    expect(st.state.value!.epoch).toBe(6);
+    const err = await st.load(await st.exportRun());
+    expect(err).toBeNull();
+    expect(st.state.value!.epoch).toBe(6);
+  });
+
   it("una decisión incompatible muestra error y se puede deshacer", () => {
     const st = mkStore();
     st.start(lmConfig({ territory: "megalopolis", test: { events: "off", noise: 0 } }));

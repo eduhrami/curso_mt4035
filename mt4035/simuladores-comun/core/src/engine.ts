@@ -243,7 +243,7 @@ export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engin
 
     // 3. Inicio de época
     const makeEpochCtx = (): EpochContext<S, P> =>
-      Object.defineProperties(base(-1), { tickMetrics: { value: tickMetrics }, history: { value: state.history } }) as EpochContext<S, P>;
+      Object.defineProperties(base(-1), { tickMetrics: { value: tickMetrics }, history: { value: state.history }, ledger: { value: ledger } }) as EpochContext<S, P>;
     model.onEpochStart?.(makeEpochCtx());
 
     // 4. Ticks

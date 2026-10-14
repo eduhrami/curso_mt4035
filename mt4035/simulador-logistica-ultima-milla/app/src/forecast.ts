@@ -4,7 +4,7 @@
  * La demanda del canal en línea sigue un proceso oculto propio de cada partida (nivel, crecimiento,
  * patrón semanal, quincena, magnitud típica de cada pico y ruido diario), sorteado con la semilla.
  * El equipo lo estima con datos históricos y captura su pronóstico (F-01) al inicio de cada año.
- * El pronóstico dimensiona la capacidad planeada y su precisión es el 30% del puntaje.
+ * El pronóstico dimensiona la capacidad planeada (y con ella la utilidad) y su precisión es el 30% del índice de desempeño.
  */
 import { createRng, type Rng } from "@mt4035/sim-core";
 import { monthOf } from "./network.ts";
@@ -90,11 +90,12 @@ export interface CalendarDay {
   day: number;
 }
 
-/** Días desde el inicio de la historia hasta el final de la época `untilEpoch` (exclusiva). */
+/** Días de las épocas [fromEpoch, untilEpoch), con su día absoluto (0 = 1 de enero de A1; negativo en la historia). */
 export function calendarDays(p: Params, fromEpoch: number, untilEpoch: number): CalendarDay[] {
   const out: CalendarDay[] = [];
   let day = 0;
   for (let e = 0; e > fromEpoch; e--) day -= p.daysPerMonth[(((e - 1) % 12) + 12) % 12]!;
+  for (let e = 0; e < fromEpoch; e++) day += p.daysPerMonth[e % 12]!;
   for (let e = fromEpoch; e < untilEpoch; e++) {
     const n = p.daysPerMonth[((e % 12) + 12) % 12]!;
     for (let dom = 0; dom < n; dom++) out.push({ epoch: e, dom, day: day++ });

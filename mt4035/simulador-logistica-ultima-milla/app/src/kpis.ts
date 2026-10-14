@@ -18,6 +18,10 @@ export function aggregate(ctx: EpochContext<LmState, Params>): Record<string, nu
   const revenue = tot("revenue");
   const lastMile = tot("lastMile");
   const csat = ratio(tot("csatW"), handled, 4);
+  const late = Math.max(0, handled - tot("onTime"));
+  const lateCost = late * p.money.lateCoupon;
+  // Capex y penalizaciones cargados en el mes (decisiones con costo inmediato).
+  const capex = ctx.ledger.filter((l) => l.kind === "capex" || l.kind === "penalty").reduce((a, l) => a + l.amount, 0);
   const t = p.territories[s.territory];
   // Eficiencia contra el mejor diseño posible (IA con datos completos y zonas óptimas).
   const routeEff = Math.min(p.routing.ai.kmMult * p.zoning.dynamic, 1) / (routingFactors(s, p).kmMult * zoningKmMult(s, p, t.ordersPerDay));
@@ -82,5 +86,15 @@ export function aggregate(ctx: EpochContext<LmState, Params>): Record<string, nu
     FC_BIAS: ratio(tot("fcDay") - tot("mkt"), tot("mkt")),
     FC_CVACC: Math.max(0, 1 - Math.abs(s.dec.forecast.cv - s.truth.cv) / s.truth.cv),
     IDLE_COST: tot("idleCost"),
+    // Estado de resultados del canal en línea (§7.5): utilidad = margen − compensaciones por retraso − capex.
+    GROSS_MARGIN: revenue * p.basketMargin,
+    FEES: tot("fees"),
+    LAST_MILE_COST: lastMile,
+    REFUNDS: tot("refunds"),
+    LATE_ORDERS: late,
+    LATE_COST: lateCost,
+    PROFIT_OP: tot("margin") - lateCost,
+    CAPEX: capex,
+    PROFIT: tot("margin") - lateCost - capex,
   };
 }

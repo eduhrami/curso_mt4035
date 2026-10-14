@@ -51,17 +51,17 @@ Este simulador pone al alumno frente a la pregunta de negocio de S5: **¿cómo h
 
 | Elemento | Definición |
 |---|---|
-| Horizonte | **36 meses = 36 épocas** (fijo), etiquetadas A1-M01 … A3-M12. Mensual porque la estacionalidad (Hot Sale en mayo, regreso a clases en agosto, Buen Fin en noviembre, Navidad en diciembre) es central en última milla; tres ciclos de picos permiten aprender y corregir |
-| Época de decisión | **Mes**. Al inicio de cada una de las 36 épocas el jugador decide (o confirma sin cambios). Las decisiones de picos (D-36, D-26) se toman el mes previo o al inicio del mes del pico |
+| Horizonte | **36 meses = 36 épocas del motor** (fijo), etiquetadas A1-M01 … A3-M12, que el jugador recorre en 12 turnos trimestrales. Mensual en el motor porque la estacionalidad (Hot Sale en mayo, regreso a clases en agosto, Buen Fin en noviembre, Navidad en diciembre) es central en última milla; tres ciclos de picos permiten aprender y corregir |
+| Turno de decisión | **Trimestre (12 turnos)**, desde el 13-oct-2026. El motor sigue simulando 36 meses con días internos, pero el jugador decide solo al inicio de cada trimestre (A1-T1 … A3-T4); al confirmar, corren 3 meses seguidos con esas decisiones. Los retrasos siguen contándose en meses (una dark store pedida en enero opera en abril). Las decisiones de picos se planean el trimestre anterior o al inicio del trimestre del pico |
 | Tick interno del motor | **Día**, con dos franjas (mañana y tarde) para capturar picos dentro del día. Cada zona se calcula en agregado, sin rutas individuales |
-| Modo de juego | **Manual, época por época.** El jugador revisa resultados y mensajes, ajusta y **confirma** sus decisiones, y el motor corre el mes. La siguiente época no avanza sin confirmación. No hay modo automático ni mixto: cada mes es un punto de decisión explícito |
+| Modo de juego | **Manual, turno por turno.** El jugador revisa resultados y mensajes, ajusta y **confirma** sus decisiones, y el motor corre el trimestre. El siguiente turno no avanza sin confirmación. No hay modo automático ni mixto: cada trimestre es un punto de decisión explícito |
 | Aleatoriedad | PRNG con **semilla**. Con la misma semilla y las mismas decisiones se obtiene la misma corrida |
 | Jugadores | Un jugador por navegador, sin servidor |
 | Persistencia | `localStorage`, con varias corridas |
 | Entrega al profesor | Exportar a JSON (reproducible) y a CSV (KPIs por mes y por zona) |
-| Puntaje | Índice compuesto por pares primario–guardrail, ponderado por la **estrategia de servicio** declarada (§7.3) |
+| Puntaje | **Utilidad acumulada del canal en línea (USD, §7.5)**: puntaje definitivo. Se reporta además un índice 0–100 de referencia (operación según la **estrategia de servicio** declarada, §7.3, y precisión del pronóstico, §7.4) |
 
-**Flujo:** setup → diseño inicial (época 0, desde la operación *as-is*) → ciclo mensual (decisiones → ~30 días simulados → eventos → KPIs → mensajes causales) → cierre con scorecard y exportación.
+**Flujo:** setup → diseño inicial (época 0, desde la operación *as-is*) → ciclo trimestral (decisiones → ~91 días simulados en 3 meses → eventos → KPIs mensuales → mensajes causales) → cierre con estado de resultados, scorecard y exportación.
 
 ---
 
@@ -143,7 +143,7 @@ Organizadas según las **5 decisiones que cambian la historia** de S5 más las o
 |---|---|---|---|
 | F-01 | Pronóstico de demanda del año | Nivel base (pedidos de un día típico al 1 de enero), crecimiento anual, 7 índices semanales (se normalizan a promedio 1), multiplicador de quincena, multiplicador de cada pico (Hot Sale, regreso a clases, Buen Fin, Navidad), CV del ruido diario y p95 de pedidos por día del año | Dimensiona la capacidad planeada (abajo) y es el 30% del puntaje (§7.4) |
 
-- **Cuándo:** solo en enero (A1-M01, A2-M01, A3-M01) y para el año en curso; la interfaz no deja confirmar enero sin capturarlo. En A2 y A3 el formulario parte del pronóstico anterior y el equipo lo ajusta con los datos nuevos.
+- **Cuándo:** solo en el primer trimestre de cada año (A1-T1, A2-T1, A3-T1) y para el año en curso; la interfaz no deja confirmar ese trimestre sin capturarlo. En A2 y A3 el formulario parte del pronóstico anterior y el equipo lo ajusta con los datos nuevos.
 - **Pronóstico del día:** `F(día) = nivel · (1 + g)^((día − 1 ene)/365) · índice(día)/promedio(índices) · quincena · pico`.
 - **Capacidad planeada con el pronóstico** (sustituye la necesidad reactiva del mes anterior):
   - **3PL contratado** = vehículos por pedido (mes anterior) × pedidos/demanda del mercado (mes anterior) × F(día) sin pico × holgura, con holgura = 1 + 1.65 · CV pronosticado (máx. 1.5). Se paga un **compromiso mínimo** del 90% de lo contratado aunque no se use (US$ 75 por vehículo-día ocioso × margen del 3PL).
@@ -431,9 +431,9 @@ Basados en el [scorecard de KPIs de S5](../references/sesion-5-scorecard-kpis-tr
 | CSAT / NPS | 0.25 | 0.25 | 0.15 |
 | Margen del canal en línea | 0.15 | 0.10 | 0.15 |
 
-### 7.4 Calidad del pronóstico y puntaje final (13-oct-2026)
+### 7.4 Calidad del pronóstico e índice de desempeño (13-oct-2026)
 
-**Puntaje final = 70% operación (§7.3) + 30% pronóstico.** Cada año se califica con el pronóstico vigente en él (0–1):
+**Índice de desempeño (referencia, 0–100) = 70% operación (§7.3) + 30% pronóstico.** Desde el turno trimestral, el puntaje definitivo es la utilidad (§7.5); el pronóstico la afecta a través de la capacidad contratada (§5.0). Cada año se califica con el pronóstico vigente en él (0–1):
 
 | Componente | Peso | Medida |
 |---|---|---|
@@ -442,6 +442,27 @@ Basados en el [scorecard de KPIs de S5](../references/sesion-5-scorecard-kpis-tr
 | Cobertura del p95 | 20% | 1 − \|días sobre el p95 pronosticado − 5%\| / 15% |
 
 El puntaje del pronóstico es el promedio de los años jugados. KPIs mensuales: `MARKET`, `FC_TOTAL`, `FC_WAPE`, `FC_BIAS`, `FC_ABS`, `FC_ORACLE`, `FC_EXCEED`, `FC_DAYS`, `FC_CVACC`, `IDLE_COST`. Con auto-juego (5 semillas por territorio): pronóstico perfecto ≈ 92/100 de calidad; ±10% en nivel y picos ≈ 76–80; ±20% ≈ 37–46. El puntaje total es máximo con el pronóstico correcto en 5 de 6 combinaciones territorio × contrato de pico (en Megalópolis sin contrato, sobreestimar 10% empata, porque el *as-is* tiene poca flota). ⚠ Calibración preliminar.
+
+### 7.5 Utilidad: puntaje definitivo (13-oct-2026)
+
+Estado de resultados mensual del canal en línea (KPIs en USD):
+
+| Renglón | KPI | Definición |
+|---|---|---|
+| Ventas en línea | `REVENUE` | Pedidos entregados × canasta (referencia; no se suma aparte) |
+| Margen de la canasta | `GROSS_MARGIN` | Ventas × margen de canasta (25%) |
+| Tarifas de envío | `FEES` | Tarifa cobrada por pedido según D-25 |
+| Costo de última milla | `LAST_MILE_COST` | Rutas y troncal, picking, inventario, reintentos (retrabajo), devoluciones, tecnología, fijos de nodos, robos y capacidad contratada ociosa (el mismo costo del CPD) |
+| Reembolsos | `REFUNDS` | Frescos dañados que se reembolsan |
+| Compensaciones por retraso | `LATE_COST` | Pedidos entregados fuera de la promesa (`LATE_ORDERS` = entregados − a tiempo) × cupón de US$ 1.50 ⚠ |
+| **Utilidad operativa** | `PROFIT_OP` | Margen + tarifas − última milla − reembolsos − compensaciones |
+| Inversión | `CAPEX` | Capex y penalizaciones cargados en el mes (dark stores, MFC, lockers, hubs, cambio de estrategia…) |
+| **Utilidad** | `PROFIT` | Utilidad operativa − inversión |
+
+- **Utilidad acumulada** = Σ `PROFIT` de los 36 meses. Es el puntaje definitivo (`finalScore` de la exportación, en USD) y se ve en la barra superior, en el dashboard («Estado de resultados»: último trimestre y acumulado), en el reporte final (por año) y en el comparador de corridas.
+- Los pedidos no entregados no generan ingreso: cancelaciones, rechazos por capacidad publicada y backlog perdido reducen la utilidad sin costo explícito. La insatisfacción también baja la confianza y, con ella, la demanda futura (§6).
+- Las compensaciones por retraso solo entran a la utilidad; no cambian el CPD ni el `MARGIN_PCT` del índice §7.3, así que la dinámica del juego no cambia.
+- Se compara entre equipos del mismo territorio, escenario y semilla (la escala depende del volumen del territorio).
 
 ---
 
@@ -476,7 +497,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 ## 9. Interfaz
 
 1. **Setup:** territorio (ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre queda bajo «Crear mi propio escenario»), estrategia de servicio y semilla. El calendario de picos se ve desde el inicio. Incluye los créditos del curso (profesores y perfiles) y acceso al **glosario**.
-2. **Panel de decisiones por mes:** pestañas *Pronóstico · Estrategia · Red · Asignación · Promesa · Flota · Zonas y ruteo · Cliente · Devoluciones · Datos y seguridad*. Cada control muestra costo, retraso y reversibilidad, más un previsualizador cualitativo (↑↓) de los KPIs afectados.
+2. **Panel de decisiones por trimestre:** pestañas *Pronóstico · Estrategia · Red · Asignación · Promesa · Flota · Zonas y ruteo · Cliente · Devoluciones · Datos y seguridad*. Cada control muestra costo, retraso y reversibilidad, más un previsualizador cualitativo (↑↓) de los KPIs afectados.
 3. **Mapa esquemático del territorio:** zonas como polígonos de una rejilla, nodos (CD, tiendas SFS, dark stores, MFC, lockers) como íconos y calor de demanda por zona. No es un mapa real ni hay vehículos animados.
 4. **Dashboard:**
    - Tarjetas de KPI con semáforo primario–guardrail.
@@ -484,12 +505,13 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
    - Series diarias y mensuales, con el selector promedio/p95 ligado a D-61.
    - Desglose de CPD en cascada (troncal, ruta, picking, reintentos, devoluciones).
    - Tabla por zona y por nivel de servicio.
+   - **Estado de resultados** del último trimestre y acumulado (§7.5); la barra superior muestra la utilidad acumulada.
    - **Pronóstico contra demanda** (F-01): demanda del mercado y pronóstico por mes, con WAPE, sesgo y días sobre el p95 del año en curso.
    - La pestaña «Pronóstico» tiene la descarga del CSV de demanda (§4.3b), el formulario de F-01 y una vista previa del promedio diario que implica. En modo profesor muestra el proceso verdadero.
 5. **Bandeja de mensajes:** eventos y alertas de regla con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con valores. Ejemplo: *"Día 14-jul: 212 pedidos frescos en Zona 3 llegaron tibios (spoilage 6.1%). Causas: ruta media 3.4 h (R-01), ola de calor (X-12), hieleras en lugar de refrigerado (D-32). Efecto: 212 reembolsos, CSAT de la zona −0.3."*
 - **Glosario (AD-32):** botón «Glosario» en la barra superior y en el inicio, con todas las siglas y conceptos agrupados y un buscador. En toda la interfaz, los términos del glosario aparecen subrayados con puntos y muestran su definición al pasar el mouse (`<abbr title>`); las opciones y etiquetas de KPI la muestran como tooltip. Entradas en [`app/ui/glossary.ts`](app/ui/glossary.ts).
 6. **Comparador de corridas:** 2–4 corridas, KPIs y diff de decisiones.
-7. **Reporte final:** puntaje separado en operación y pronóstico, tabla de precisión del pronóstico por año (WAPE, sesgo, días sobre el p95, exactitud del CV), demanda contra pronóstico, trayectoria de 36 meses, picos enfrentados y decisiones clave. Cierra con el **debrief** (§11): notas del escenario y siete preguntas obligatorias; el JSON solo se exporta con el debrief completo.
+7. **Reporte final:** utilidad acumulada como puntaje definitivo, estado de resultados por año, índice de desempeño separado en operación y pronóstico, tabla de precisión del pronóstico por año (WAPE, sesgo, días sobre el p95, exactitud del CV), demanda contra pronóstico, trayectoria de 36 meses, picos enfrentados y decisiones clave. Cierra con el **debrief** (§11): notas del escenario y siete preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 
 ---
 
@@ -539,7 +561,8 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 
 ## 13. Decisiones pendientes
 
-- [ ] Confirmar la duración objetivo de una partida: 36 épocas manuales (≈2 min por época en ~75 min). Valorar si se juega en clase + casa.
+- [x] Duración de la partida: 12 turnos trimestrales (13-oct-2026), ≈2–3 min por turno; 36 confirmaciones mensuales resultaron demasiadas en la prueba.
+- [ ] Validar en clase el cupón por entrega tarde (US$ 1.50) y si la utilidad debe ajustarse por el volumen del territorio para comparar entre territorios.
 - [x] Validar las constantes de la §6.3 contra el ejemplo resuelto de S5 (SFS USD 8.00 vs. SFD USD 9.60 por pedido). Fixture `minicaso`, LOG-ESC-04.
 - [ ] Decidir si el territorio Norte incluye el tramo carretero entre ciudades o solo la última milla dentro de cada ciudad.
 - [x] Definir el nivel de detalle del mapa esquemático (rejilla vs. polígonos). Rejilla de tarjetas por zona con calor de demanda, nodos y confianza (F7); la tabla por nivel de servicio queda pendiente.

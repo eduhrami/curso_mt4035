@@ -318,6 +318,13 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - **Puntaje:** `scoreRun` devuelve operación, pronóstico y final = 70/30 (`params.forecast.score`). La calidad por año se calcula con sumas mensuales en los KPIs `FC_*`; el WAPE se califica sobre el error del pronóstico perfecto (`FC_ORACLE`), para no castigar el ruido de la partida.
 - **Pruebas:** las de mecanismos usan pronóstico perfecto (`truthForecast` en el helper `start`); `test/forecast.test.ts` cubre LOG-FC; los bots de auto-juego pronostican perfecto salvo BOT-L (nominal), y LOG-AUT-17 exige que pronosticar bien pague. `params` pasa a `p2` y el simulador a 0.2.0: las corridas exportadas con `p1` ya no se reproducen idénticas.
 
+### AD-34 ✔ Turno trimestral y utilidad como puntaje (última milla, 13-oct-2026)
+
+- **Turno ≠ época:** el motor sigue con 36 épocas mensuales y ticks diarios (eventos, retrasos, picos, KPIs y pruebas sin cambios). El store del ui-kit acepta `epochsPerTurn`: una confirmación aplica las decisiones en la primera época y corre hasta la siguiente época múltiplo del turno. Última milla usa 3 → 12 turnos (A1-T1 … A3-T4). El registro de decisiones solo tiene épocas 0, 3, 6…, así que el replay es el mismo de siempre. SCM no cambia (turno = época).
+- La UI muestra el turno (`turnLabel`, `turnOf`), la bandeja de mensajes muestra el último trimestre (`lastCount`) y el pronóstico F-01 se captura en el primer trimestre de cada año.
+- **Utilidad:** KPIs mensuales del estado de resultados (`GROSS_MARGIN`, `FEES`, `LAST_MILE_COST`, `REFUNDS`, `LATE_COST`, `PROFIT_OP`, `CAPEX`, `PROFIT`). Para el capex, el `EpochContext` del núcleo expone ahora el `ledger` de la época (cambio compatible: SCM no lo usa). La compensación por retraso solo entra a la utilidad, no al CPD ni al margen del canal.
+- **Puntaje definitivo:** utilidad acumulada en USD (`scoreRun(...).profit`, `finalScore` de la exportación). El índice 0–100 (70% operación + 30% pronóstico) queda como referencia en el reporte final.
+
 ---
 
 ## 4. Ruta de implementación
