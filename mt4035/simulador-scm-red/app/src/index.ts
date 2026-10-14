@@ -1,8 +1,9 @@
 export * from "./types.ts";
 export * from "./model.ts";
 export * from "./score.ts";
+export { accuracyFrom, baseMix, mixAt, defaultForecast, demandCsv, expectedMarket, forecastWeek, HISTORY_YEARS, quarterIndex, quarterOf, truthForecast, WEEKS_PER_YEAR, type DemandTruth, type Forecast as DemandForecast } from "./forecast.ts";
 export { PRESETS, presetOf, type MarketPreset, type PresetId } from "./presets.ts";
-export { debriefFor, DEBRIEF_GENERAL, DEBRIEF_LAST, DEBRIEF_CUSTOM } from "./debrief.ts";
+export { debriefFor, DEBRIEF_GENERAL, DEBRIEF_LAST, DEBRIEF_CUSTOM, DEBRIEF_FORECAST } from "./debrief.ts";
 export { decisions, networkCost } from "./decisions.ts";
 export { rules } from "./rules.ts";
 export { events } from "./events.ts";

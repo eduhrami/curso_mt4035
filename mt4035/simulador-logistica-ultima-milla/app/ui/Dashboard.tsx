@@ -222,6 +222,7 @@ export const PNL: [string, string, 1 | -1][] = [
   ["LATE_COST", "Compensaciones por entregas tarde", -1],
   ["PROFIT_OP", "Utilidad operativa", 1],
   ["CAPEX", "Inversión (capex y penalizaciones)", -1],
+  ["SERVICE_PENALTY", "Penalizaciones por servicio (guardrails de tu estrategia)", -1],
   ["PROFIT", "Utilidad", 1],
 ];
 
@@ -236,7 +237,8 @@ function ProfitCard({ reports }: { reports: EpochReport[] }) {
       <h2>Estado de resultados del canal en línea</h2>
       <p class="small muted">
         La utilidad acumulada es tu <strong>puntaje definitivo</strong>: lo que dejan los pedidos entregados (margen de canasta + tarifas) menos lo que cuesta entregarlos, las compensaciones por llegar tarde
-        (US$ {params.money.lateCoupon.toFixed(2)} por pedido) y lo que inviertes. Las ventas se muestran como referencia; no se suman dos veces.
+        (US$ {params.money.lateCoupon.toFixed(2)} por pedido), lo que inviertes y las penalizaciones si rompes los guardrails de servicio de tu
+        estrategia ({fmt(params.money.servicePenaltyShare, "pct")} de las ventas del mes por cada uno). Las ventas se muestran como referencia; no se suman dos veces.
       </p>
       <div class="table-scroll">
         <table>

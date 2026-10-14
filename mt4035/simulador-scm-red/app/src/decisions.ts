@@ -65,7 +65,34 @@ export function applyNetwork(s: ScmState, next: readonly DcSpec[], p: Params): v
 
 const plannedDcs = (v: unknown): DcSpec[] => (Array.isArray(v) ? (v as DcSpec[]) : []);
 
+const positive = (max: number) => z.number().finite().positive().max(max);
+const forecastSchema = z.object({
+  year: z.number().int().min(-1).max(10),
+  level: positive(1e6),
+  growth: z.number().finite().min(-0.5).max(3),
+  quarters: z.array(z.number().finite().min(0.2).max(3)).length(4),
+  cv: z.number().finite().min(0).max(1),
+  p95: positive(1e7),
+});
+
 export const decisions: Spec<any>[] = [
+  {
+    id: "F-01",
+    label: "Pronóstico de demanda por tienda del año",
+    tab: "Pronóstico",
+    schema: forecastSchema,
+    current: (s) => structuredClone(s.dec.demandForecast),
+    apply: (s, v) => {
+      s.dec.demandForecast = v;
+    },
+    validate: (v, view) => {
+      const e = view.state.epoch;
+      if (e % 4 !== 0) return "El pronóstico solo se captura al inicio de cada año (T1)";
+      if (v.year !== Math.floor(e / 4)) return `El pronóstico debe ser del año A${Math.floor(e / 4) + 1}`;
+      return null;
+    },
+    kpis: ["FC_SCORE", "FC_WAPE", "OSA", "LOST_SALES", "WASTE", "ITR", "EBITDA_PCT"],
+  },
   {
     id: "D-00",
     label: "Propuesta de valor declarada",

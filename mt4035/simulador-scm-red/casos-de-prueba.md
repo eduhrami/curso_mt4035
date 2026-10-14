@@ -197,9 +197,25 @@ Cada regla se prueba **justo debajo** y **justo arriba** de su umbral, usando `o
 | SCM-SCO-02 | Misma trayectoria de KPIs evaluada con las tres estrategias | Una corrida de OSA alta y CTS alto puntúa más bajo *frescura* que bajo *bajo costo* | §7.3 | P1 |
 | SCM-SCO-03 | Se agregan violaciones de guardrail a una corrida | El puntaje es estrictamente decreciente con el número de violaciones | §7.2 | P1 |
 | SCM-SCO-04 | Cualquier corrida | Puntaje ∈ [0, 100] | §7.3 | P1 |
-| SCM-SCO-05 | *As-is* de cada región, estrategia por omisión | Los puntajes caen en una banda comparable (p. ej. 40–60) para que ninguna región sea injugable. ⚠ Depende de cómo se normalice por región (decisión pendiente) | §7.3 | P2 |
+| SCM-SCO-05 | *As-is* de cada región, estrategia por omisión | Los puntajes caen en una banda comparable (p. ej. 40–60) para que ninguna región sea injugable. ⚠ Depende de cómo se normalice por región (decisión pendiente). Desde AD-35 se mide sobre el puntaje de operación, con pronóstico perfecto | §7.3 | P2 |
 
 ---
+
+### 9.1 Pronóstico y datos de demanda (F-01, §4.4, §5.0)
+
+| ID | Condición | Resultado esperado | Prio |
+|---|---|---|---|
+| SCM-FC-01 | F-01 fuera de T1 o para otro año | Error de validación | P1 |
+| SCM-FC-02 | T1 sin pronóstico capturado (UI) | No se puede confirmar; aviso en el panel (punta a punta) | P1 |
+| SCM-FC-03 | CSV de demanda al inicio y en T1 de A2 | 104 semanas de historia; +52 por año jugado; encabezado `semana, anio, trimestre, semana_del_anio, frescos, refrigerado, ambiente, congelado, total` | P1 |
+| SCM-FC-04 | El CSV coincide con `MARKET` del motor | Misma suma por trimestre (salvo redondeo) | P1 |
+| SCM-FC-05 | Pronóstico de nivel × 0.8 | OSA menor y ventas perdidas mayores que con 1.0 (pareada) | P1 |
+| SCM-FC-06 | Pronóstico de nivel × 1.2 | Merma e inventario mayores e ITR menor que con 1.0 (pareada) | P1 |
+| SCM-FC-07 | Pronóstico perfecto (`truthForecast`) | Calidad ≥ 0.9 en modo estocástico; con nivel × 1.2, < 0.55; el puntaje pondera 70/30 | P1 |
+| SCM-FC-08 | Pruebas de mecanismos | Usan pronóstico perfecto (helper `start`) | — |
+| SCM-MON-01 | Cualquier trimestre | `EBITDA` = margen bruto − merma − rebajas − costos logísticos − TI; `PROFIT` = `EBITDA` − `CAPEX` − `SERVICE_PENALTY` | P1 |
+| SCM-MON-02 | Guardrails de servicio de la propuesta declarada | `SERVICE_BREACHES` = guardrails rotos; `SERVICE_PENALTY` = rotos × 2% × ventas del trimestre | P1 |
+| SCM-MON-03 | `npm run forecast-impact` | Reporta por región el peso del pronóstico en la brecha de utilidad (referencia: promedio ≈ 30–60%, sin forzar por región) | P2 |
 
 ## 10. Persistencia y exportación
 
@@ -231,6 +247,9 @@ El objetivo es validar que **el modelo enseña lo que debe enseñar**: decisione
 | **BOT-F Aleatorio** | Decisiones aleatorias válidas en cada época | Robustez e invariantes |
 | **BOT-G Reactivo** | Reglas simples: si OSA < 92%, sube frecuencia; si Waste > 8%, baja cobertura; si CTS > X, baja frecuencia | Comportamiento de un alumno "táctico" |
 | **BOT-H Buscador** | Búsqueda aleatoria + *hill climbing* sobre decisiones para maximizar el puntaje por región × estrategia | Detecta explotaciones y óptimos en los límites |
+| **BOT-L Estático sin pronosticar** | Como A, pero con el pronóstico nominal (no analiza datos) | Pronosticar paga (SCM-AUT-15) |
+
+Todos los bots salvo L capturan el pronóstico perfecto en cada T1, para que la calibración de la operación no dependa de pronosticar.
 
 ### 11.2 Propiedades esperadas (modo estocástico, MC N = 200 salvo indicación)
 
@@ -249,6 +268,7 @@ El objetivo es validar que **el modelo enseña lo que debe enseñar**: decisione
 | SCM-AUT-11 | La información tarda | BOT-A + solo D-30/D-31: OSA ↑ y BWR ↓, con efecto visible hasta 2–4 trimestres después de decidir | P2 |
 | SCM-AUT-12 | Estabilidad del reactivo | BOT-G no produce KPIs fuera de rango ni costos explosivos. Se registra si oscila (útil para el debrief sobre bullwhip autoinducido) | P3 |
 | SCM-AUT-13 | Robustez de la calibración | Al perturbar ±20% cada constante de `params` (una a la vez), el orden BOT-C > BOT-B en Red River se mantiene en ≥ 90% de las perturbaciones | P2 |
+| SCM-AUT-15 | Pronosticar paga | BOT-A (pronóstico perfecto) > BOT-L (nominal) en ≥ 80% de semillas en cada región × estrategia | P1 |
 | SCM-AUT-14 | **Explicabilidad** | En cada corrida, todo cambio de KPI > 10% entre épocas tiene ≥ 1 causa registrada (cambio de decisión, evento, regla o tendencia de escenario). Cobertura ≥ 95% | P1 |
 
 **Estado de implementación (F3, 4-oct-2026):**

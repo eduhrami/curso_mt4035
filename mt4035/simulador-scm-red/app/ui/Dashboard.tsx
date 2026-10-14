@@ -1,6 +1,6 @@
 /** Dashboard por época: KPI con guardrail, trayectoria, causas, frontera servicio–costo, costos y mapa. */
 import { useState } from "preact/hooks";
-import { DataTable, fmt, KpiCard, KpiExplanation, LineChart, ScatterChart, StackedBar, type ScatterGroup } from "@mt4035/ui-kit";
+import { DataTable, fmt, fmtMoney, KpiCard, KpiExplanation, LineChart, ScatterChart, StackedBar, type ScatterGroup } from "@mt4035/ui-kit";
 import type { EpochReport, GameState } from "@mt4035/sim-core";
 import { scoreRun, params, type ScmState, type Strategy } from "../src/index.ts";
 import { KPI_NAMES, kpiMetaFor, OPTIONS, REGION_TEXT } from "./labels.ts";
@@ -89,6 +89,10 @@ export function Dashboard({ state }: { state: GameState<ScmState> }) {
 
       <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} />
 
+      <ProfitCard reports={reports} />
+
+      <ForecastCard reports={reports} labels={labels} />
+
       <div class="card stack">
         <h2>Frontera servicio–costo</h2>
         <p class="small muted">Cada punto es un trimestre de esta corrida; los demás son tus corridas guardadas en esta región (promedio). Arriba a la izquierda es mejor.</p>
@@ -127,3 +131,91 @@ function ProfessorScore({ state }: { state: GameState<ScmState> }) {
 }
 
 export { engine };
+
+/** Pronóstico (F-01) contra la demanda por tienda del mercado, por trimestre, con el error del año en curso. */
+function ForecastCard({ reports, labels }: { reports: EpochReport[]; labels: string[] }) {
+  const year = Math.floor(reports[reports.length - 1]!.epoch / 4);
+  const ofYear = reports.filter((r) => Math.floor(r.epoch / 4) === year);
+  const sumK = (k: string) => ofYear.reduce((a, r) => a + (r.kpis[k] ?? 0), 0);
+  const wape = sumK("FC_ABS") / Math.max(1e-9, sumK("MARKET"));
+  const bias = (sumK("FC_TOTAL") - sumK("MARKET")) / Math.max(1e-9, sumK("MARKET"));
+  const exceed = sumK("FC_EXCEED") / Math.max(1, sumK("FC_WEEKS"));
+  const perDay = (r: EpochReport, k: string) => (r.kpis[k] ?? 0) / Math.max(1, r.kpis.FC_WEEKS ?? 0);
+  return (
+    <div class="card stack">
+      <h2>Pronóstico contra demanda</h2>
+      <p class="small muted">
+        Unidades por tienda por día (promedio de cada trimestre) del mercado contra tu pronóstico (F-01). En lo que va de A{year + 1}: WAPE {fmt(wape, "pct1")} · sesgo {bias >= 0 ? "+" : ""}
+        {fmt(bias, "pct1")} · semanas sobre tu p95 {fmt(exceed, "pct1")} (ideal 5%). Lo usarás para re-pronosticar en T1.
+      </p>
+      <LineChart
+        labels={labels}
+        series={[
+          { label: "Demanda por tienda (mercado)", data: reports.map((r) => perDay(r, "MARKET")) },
+          { label: "Tu pronóstico", data: reports.map((r) => perDay(r, "FC_TOTAL")) },
+        ]}
+        format={(v) => fmt(v, "num1")}
+        ariaLabel="Demanda por tienda contra pronóstico por trimestre"
+      />
+    </div>
+  );
+}
+
+/** Renglones del estado de resultados de la cadena (§7.5), con su signo. */
+export const PNL: [string, string, 1 | -1][] = [
+  ["SALES", "Ventas (referencia)", 1],
+  ["GM_USD", "Margen bruto de lo vendido", 1],
+  ["WASTE_COST", "Merma (frescos caducados y fallas de frío)", -1],
+  ["OVERSTOCK_COST", "Rebajas por comprar de más (pronóstico alto)", -1],
+  ["TRANSPORT_COST", "Transporte", -1],
+  ["HANDLING_COST", "Manejo en CD", -1],
+  ["DC_FIXED_COST", "Costo fijo de los CD", -1],
+  ["RECEIVING_COST", "Recepción en tienda", -1],
+  ["CARRYING_COST", "Costo de mantener inventario", -1],
+  ["IT_COST", "Tecnología y capacitación", -1],
+  ["EBITDA", "EBITDA logístico", 1],
+  ["CAPEX", "Inversión (CD, aperturas, cierres) y cargos", -1],
+  ["SERVICE_PENALTY", "Penalizaciones por servicio (guardrails de tu propuesta de valor)", -1],
+  ["PROFIT", "Utilidad", 1],
+];
+
+/** Estado de resultados: último trimestre y acumulado de la partida. */
+function ProfitCard({ reports }: { reports: EpochReport[] }) {
+  const last = reports.slice(-1);
+  const sum = (rs: EpochReport[], k: string) => rs.reduce((a, r) => a + (r.kpis[k] ?? 0), 0);
+  const bold = (k: string) => (k === "EBITDA" || k === "PROFIT" ? { fontWeight: 700 } : undefined);
+  const breaches = sum(reports, "SERVICE_BREACHES");
+  return (
+    <div class="card stack" data-testid="pnl">
+      <h2>Estado de resultados</h2>
+      <p class="small muted">
+        La utilidad acumulada es tu <strong>puntaje definitivo</strong>: el margen de lo que vendes menos lo que cuesta abastecer las tiendas, lo que inviertes y las penalizaciones si rompes los guardrails de servicio
+        de tu propuesta de valor ({fmt(params.money.servicePenaltyShare, "pct")} de las ventas del trimestre por cada guardrail roto).
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Concepto (US$)</th>
+              <th>Último trimestre</th>
+              <th>Acumulado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {PNL.map(([k, label, sign]) => (
+              <tr key={k} style={bold(k)}>
+                <td>{label}</td>
+                <td>{fmtMoney(sign * sum(last, k) || 0)}</td>
+                <td>{fmtMoney(sign * sum(reports, k) || 0)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p class="small" style={{ margin: 0 }}>
+        Utilidad acumulada: <strong data-testid="profit-total">{fmtMoney(sum(reports, "PROFIT"))}</strong>
+        {breaches > 0 ? ` · ${breaches} guardrail(s) de servicio roto(s) en la partida` : " · sin guardrails de servicio rotos"}
+      </p>
+    </div>
+  );
+}

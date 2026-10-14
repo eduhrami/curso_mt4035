@@ -3,6 +3,7 @@ import { createRng, type DecisionChanges, type EpochReport, type GameConfig, typ
 import { overrideState } from "@mt4035/sim-core/testing";
 import { createScmEngine, params as baseParams, scmConfig, type ScmConfigOptions } from "../../src/model.ts";
 import type { DcSpec, DcState, Params, RegionId, ScmState } from "../../src/types.ts";
+import { truthForecast } from "../../src/forecast.ts";
 
 export const engine = createScmEngine();
 
@@ -38,7 +39,12 @@ export function run(
   return { state: s, reports };
 }
 
-export const start = (cfg: GameConfig, eng = engine) => eng.createGame(cfg);
+/** Partida nueva con pronóstico perfecto (F-01 = proceso verdadero): las pruebas de mecanismos no dependen de pronosticar. */
+export function start(cfg: GameConfig, eng = engine) {
+  const g = eng.createGame(cfg);
+  g.model.dec.demandForecast = truthForecast(g.model, eng.params, 0);
+  return g;
+}
 
 /** Aplica varias sustituciones de estado (gancho overrideState). */
 export function withOverrides(state: GameState<ScmState>, overrides: Record<string, unknown>): GameState<ScmState> {

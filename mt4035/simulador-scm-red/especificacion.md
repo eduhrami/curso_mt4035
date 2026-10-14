@@ -57,7 +57,7 @@ Con este simulador el alumno vive la pregunta central del caso SEJ: **¿una cade
 | Jugadores | Un jugador por navegador. No hay juego simultáneo ni servidor |
 | Persistencia | `localStorage` del navegador, con varias corridas guardadas |
 | Entrega al profesor | Exportar a JSON (corrida completa y reproducible) y a CSV (KPIs por época) |
-| Puntaje | Índice compuesto **ponderado por la estrategia declarada** (ver §7.3) |
+| Puntaje | **Utilidad acumulada (USD, §7.5)**: puntaje definitivo, con penalizaciones si se rompen los guardrails de servicio de la propuesta de valor declarada. El índice compuesto ponderado por la estrategia (§7.3) y el pronóstico (§7.4) queda como diagnóstico |
 
 **Flujo de una partida:**
 
@@ -99,9 +99,9 @@ El jugador elige uno de los escenarios predefinidos (§4.3) o, en «Crear mi pro
 
 | ID | Factor | Opciones de perfil | Qué afecta |
 |---|---|---|---|
-| E-20 | Crecimiento de la demanda | Estancado (0%/año) · Moderado (+3%) · Boom (+8%) | Volumen y necesidad de capacidad |
-| E-21 | Estacionalidad | Suave · Marcada (verano y fin de año) | Picos de capacidad y error de pronóstico |
-| E-22 | Volatilidad de la demanda | Baja (CV 0.15) · Media (0.30) · Alta (0.50) | Inventario de seguridad (SS), OSA, bullwhip |
+| E-20 | Crecimiento de la demanda | Estancado · Moderado · Boom. Cada nivel es un **rango** (−1 a 1.5%, 2 a 4.5%, 6 a 10% anual) y la tasa exacta se sortea por partida y **no se muestra** (§4.4) | Volumen y necesidad de capacidad |
+| E-21 | Estacionalidad | Suave · Marcada. La forma por trimestre y la amplitud se sortean por partida y **se estiman con los datos** (§4.4) | Picos de capacidad y error de pronóstico |
+| E-22 | Volatilidad de la demanda | Baja (CV 0.15) · Media (0.30) · Alta (0.50) para la variabilidad de cada tienda; además, un choque semanal común con CV en un rango por nivel (§4.4) | Inventario de seguridad (SS), OSA, bullwhip |
 | E-23 | Precio del combustible | Estable · Volátil · Tendencia alcista | Costo de transporte |
 | E-24 | Competencia | Pasiva · Agresiva (un competidor abre tiendas cerca) | Demanda por tienda y sensibilidad a OSA |
 | E-25 | Mercado laboral | Holgado · Escaso (rotación alta de choferes) | Costo laboral y probabilidad de faltar a entregas |
@@ -121,11 +121,43 @@ La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el p
 
 Los ids EM-xx son internos (no se muestran al jugador). La corrida guarda el id en `setup.preset` (`config.scenario.preset`) y el nombre del escenario se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
 
+### 4.4 Proceso de demanda oculto y datos históricos (13-oct-2026)
+
+Igual que en el simulador de última milla (AD-33), la demanda ya no se describe en pantalla: cada partida sortea con su semilla un **proceso de demanda por tienda** y el equipo lo estima con datos. Implementación en [`app/src/forecast.ts`](app/src/forecast.ts).
+
+`demanda por tienda por día (semana w) = nivel · (1 + g)^(w/52) · Σ_c mezcla_c · (1 + amplitud · sensibilidad_c · forma_trimestre(w)) · (1 + choque_común(w))`
+
+La demanda de cada zona y categoría es esa base × confianza, competencia, densidad y surtido de la zona (sin cambios), con la variabilidad propia de cada tienda (E-22, sistema de información) además del choque común.
+
+| Componente | Sorteo por partida ⚠ | Qué estima el alumno |
+|---|---|---|
+| Nivel | visitas × unidades por visita de la región × U(0.95, 1.05) | Nivel base al inicio del año |
+| Crecimiento `g` | Rango según E-20 | Tasa anual (tendencia) |
+| Estacionalidad | Forma base por trimestre (−0.7, 0.3, 0.8, −0.4) ± 0.2, sin promedio; amplitud según E-21 × U(0.8, 1.2) | 4 índices trimestrales |
+| Choque semanal común | Normal con CV por E-22: baja 2–4%, media 4–7%, alta 7–11% | CV del residuo semanal y p95 semanal |
+
+- **Datos:** desde la pestaña «Pronóstico» el equipo descarga un CSV con **104 semanas de historia** (H1, H2) y, en T1 de A2…A5, también las semanas jugadas. Columnas: `semana, anio, trimestre, semana_del_anio, frescos, refrigerado, ambiente, congelado, total` (unidades por tienda por día). Es la demanda del **mercado** por tienda (ventas comparables), sin el efecto de las decisiones del equipo ni el número de tiendas. Con envejecimiento (E-26), la mezcla se desplaza hacia frescos igual que en el motor.
+- **Lo que ya no se muestra:** crecimiento, estacionalidad y volatilidad en las fichas de escenario; los mensajes de tendencia citan el pronóstico del equipo.
+- Sustituye la estacionalidad sinusoidal semanal del modelo anterior por índices trimestrales (escalonados), para que el pronóstico trimestral pueda ser exacto.
+
 ---
 
 ## 5. Mapa de decisiones (acciones del jugador)
 
 Las decisiones van en cuatro capas que **se pueden cambiar a distinta velocidad**. Cada decisión trae su costo, su tiempo de implementación y su reversibilidad. Esto obliga a pensar en compromisos de largo plazo.
+
+### 5.0 Pronóstico de demanda por tienda (F-01, T1 de cada año)
+
+| ID | Decisión | Campos | Efecto |
+|---|---|---|---|
+| F-01 | Pronóstico de demanda por tienda del año | Nivel base (unidades por tienda por día de un trimestre de índice 1, al inicio del año), crecimiento anual, 4 índices trimestrales (se normalizan a promedio 1), CV del residuo semanal y p95 semanal | Fija el inventario objetivo y el stock de seguridad de las tiendas; es el 30% del puntaje (§7.4) |
+
+- **Cuándo:** solo en T1 (A1-T1 … A5-T1) y para el año en curso; la interfaz no deja confirmar T1 sin capturarlo. Distinto de D-32 (método de pronóstico del sistema de tiendas, que reduce el CV operativo).
+- **Acoplamiento:** con `k` = 1 + s · (pronóstico / demanda esperada − 1), donde s = 0.4 × factor del sistema de información (POS básico 1.0, POS diario 0.55, POS + terminal 0.45: con POS diario la reposición corrige rápido), las tiendas piden con μ·k:
+  - **De menos (k < 1):** la disponibilidad se multiplica por k (falta mercancía en proporción al error): menos ventas y más ventas perdidas.
+  - **De más (k > 1):** lo comprado por encima de lo que se vende se rebaja con 45% de pérdida sobre su costo (`OVERSTOCK_COST`), y el inventario, la merma de perecederos y su costo suben. No mejora la disponibilidad (el exceso queda en bodega).
+  - **CV:** el stock de seguridad se escala con la razón entre el CV pronosticado y el real; subestimarlo baja la protección (z efectivo), sobreestimarlo solo cuesta inventario.
+  - Con pronóstico perfecto, el inventario es idéntico al del modelo anterior.
 
 ### 5.1 Estrategia (solo en el setup; se puede cambiar una vez, con penalización)
 
@@ -334,6 +366,30 @@ Siglas en inglés, con la fórmula en el primer uso. Cada KPI **primario** se le
 
 La lección: el mismo ITR puede dar buen o mal puntaje según la propuesta de valor. "Los KPIs son lenguaje, no objetivo".
 
+### 7.4 Calidad del pronóstico (13-oct-2026)
+
+**Índice de desempeño (diagnóstico) = 70% operación (§7.3) + 30% pronóstico.** Igual que en última milla (§7.4 de su especificación), con semanas en lugar de días: cada año se califica con su pronóstico, 60% WAPE semanal por encima del error del pronóstico perfecto, 20% exactitud del CV y 20% cobertura del p95 (ideal 5% de las semanas). KPIs por época: `MARKET`, `FC_TOTAL`, `FC_ABS`, `FC_ORACLE`, `FC_EXCEED`, `FC_WEEKS`, `FC_WAPE`, `FC_BIAS`, `FC_CVACC`. ⚠ Calibración preliminar.
+
+### 7.5 Utilidad: puntaje definitivo (13-oct-2026)
+
+Estado de resultados trimestral de la cadena (KPIs en USD): margen bruto de lo vendido (`GM_USD`) − merma (`WASTE_COST`) − rebajas por sobrecompra (`OVERSTOCK_COST`) − transporte − manejo en CD − costo fijo de CD − recepción − costo de mantener inventario − TI y capacitación = **EBITDA logístico** (`EBITDA`); − inversión y cargos del trimestre (`CAPEX`: CD, aperturas, cierres, cambio de estrategia) − **penalizaciones por servicio** (`SERVICE_PENALTY`) = **utilidad** (`PROFIT`).
+
+- **Penalizaciones por servicio:** cada trimestre con un guardrail roto de la propuesta de valor declarada resta 2% de las ventas del trimestre ⚠ (`SERVICE_BREACHES`). Umbral = guardrail calibrado de la región + ajuste: frescura: OSA ≥ base y OSA de frescos ≥ base − 2 pp; bajo costo: OSA ≥ base − 2 pp; conveniencia: OSA ≥ base + 1 pp y ventas perdidas ≤ base. La propuesta declarada define la promesa que hay que cumplir mientras se maximiza la utilidad (AD-36).
+- **Utilidad acumulada** = Σ `PROFIT` de los 20 trimestres: puntaje definitivo (`finalScore` de la exportación, en USD). Se ve en la barra superior, en el dashboard («Estado de resultados»), en el reporte final (por año) y en el comparador. Solo es comparable dentro de la misma región, escenario y semilla; entre regiones conviene la mejora contra la operación inicial (%).
+
+### 7.6 Peso del pronóstico en la utilidad (13-oct-2026)
+
+`npm run forecast-impact` ([`app/autoplay/forecast-impact.ts`](app/autoplay/forecast-impact.ts), reporte en [`app/autoplay/reports/forecast-impact.md`](app/autoplay/reports/forecast-impact.md)): qué parte de la brecha de utilidad entre la operación inicial (BOT-A) y la mejor operación encontrada (bots de referencia + 50 vectores aleatorios, por utilidad, pronóstico perfecto) se explica por pronosticar bien (pérdida media con −20% / +20%).
+
+| Región | Peso del pronóstico |
+|---|---|
+| Kaigan | ≈ 93% (la red inicial ya es la de Seven-Eleven: la operación casi no puede mejorar y el pronóstico es la palanca que queda; además, con OSA ≥ 96% el margen de error es mínimo) |
+| Red River | ≈ 32% |
+| Valle Metropolitano | ≈ 43% |
+| **Promedio** | **≈ 56%** |
+
+No se fuerza una brecha por región: en qué casos pesa más el pronóstico es parte del aprendizaje.
+
 ---
 
 ## 8. Catálogo de eventos inesperados
@@ -362,7 +418,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 ## 9. Interfaz
 
 1. **Setup:** selector de región (con ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre E-20…E-27 queda bajo «Crear mi propio escenario»), estrategia declarada y semilla. Incluye los créditos del curso (profesores y perfiles) y acceso al **glosario**.
-2. **Panel de decisiones por época:** pestañas *Red · Flujo · Inventario · Información*. Cada control muestra costo, retraso y reversibilidad. Hay un previsualizador "qué esperar" con flechas ↑↓ por KPI según el grafo causal, cualitativo y sin revelar números.
+2. **Panel de decisiones por época:** pestañas *Pronóstico · Estrategia · Red · Flujo · Inventario · Información*. La pestaña «Pronóstico» tiene la descarga del CSV (§4.4), el formulario de F-01 y una vista previa; en modo profesor muestra el proceso verdadero. Cada control muestra costo, retraso y reversibilidad. Hay un previsualizador "qué esperar" con flechas ↑↓ por KPI según el grafo causal, cualitativo y sin revelar números.
 3. **Mapa esquemático de la red:** SVG con la región como rejilla, *clusters* como manchas de densidad, CD como nodos y flujos como líneas cuyo grosor es el volumen. No es un mapa geográfico real.
 4. **Dashboard de KPIs:**
    - Tarjetas con semáforo contra el guardrail.
@@ -370,10 +426,12 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
    - Gráfica OSA vs. CTS, con la frontera de las corridas previas del jugador.
    - Desglose de costos en cascada (*waterfall*).
    - Merma por categoría.
+   - **Estado de resultados** del último trimestre y acumulado (§7.5); la barra superior muestra la utilidad acumulada.
+   - **Pronóstico contra demanda** por tienda, por trimestre, con WAPE, sesgo y semanas sobre el p95 del año en curso.
 5. **Bandeja de mensajes:** eventos (§8) y alertas de reglas (§6.4), con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con los valores que la activaron.
 - **Glosario (AD-32):** botón «Glosario» en la barra superior y en el inicio, con todas las siglas y conceptos agrupados y un buscador. En toda la interfaz, los términos del glosario aparecen subrayados con puntos y muestran su definición al pasar el mouse (`<abbr title>`); las opciones y etiquetas de KPI la muestran como tooltip. Entradas en [`app/ui/glossary.ts`](app/ui/glossary.ts).
 6. **Comparador de corridas:** 2–4 corridas guardadas, KPI por KPI, con el diff de decisiones.
-7. **Reporte final:** scorecard, trayectoria de 5 años, decisiones clave y eventos enfrentados.. Cierra con el **debrief** (§11): notas del escenario y seis preguntas obligatorias; el JSON solo se exporta con el debrief completo.
+7. **Reporte final:** puntaje separado en operación y pronóstico, precisión del pronóstico por año, demanda contra pronóstico, scorecard, trayectoria de 5 años, decisiones clave y eventos enfrentados. Cierra con el **debrief** (§11): notas del escenario y siete preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 
 ---
 
@@ -407,9 +465,9 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 2. **Trasplante ingenuo:** Red River copiando el modelo Kaigan (3×/día, cross-dock, sin densificar). Ver cómo explota el CTS.
 3. **Diseño propio:** Red River o Valle con estrategia y red elegidas por el alumno, ajustando trimestre a trimestre.
 
-**Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y seis preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-06`.
+**Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y siete preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-07`.
 
-- **DB-01…DB-04 y DB-06** son comunes a todos los escenarios; **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
+- **DB-01…DB-04, DB-06 y DB-07** son comunes a todos los escenarios (DB-07: método de pronóstico, WAPE y sesgo por año y qué corrigió al re-pronosticar); **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
 - Introducción a la práctica, asignación de escenarios, plenario y rúbrica: [guía del instructor](./guia-instructor.md).
 
 **Preguntas para el plenario:** ver la [guía del instructor](./guia-instructor.md#a7-plenario-sugerido).
@@ -438,6 +496,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 - [ ] Definir el stack: HTML/JS sin dependencias vs. librería de gráficas por CDN.
 - [ ] Herramienta del profesor para volver a correr y agregar los JSON de todo el grupo.
 - [ ] Revisar con auto-juego las semillas y la dificultad relativa de los escenarios EM-01…EM-04 (§4.3), y confirmar si el profesor asigna escenario y semilla por equipo.
+- [ ] Validar en clase los rangos del proceso de demanda (§4.4) y el peso del pronóstico (§7.4).
 
 ---
 

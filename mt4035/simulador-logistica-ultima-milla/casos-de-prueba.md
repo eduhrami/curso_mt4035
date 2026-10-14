@@ -204,6 +204,8 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-MON-01 | Cualquier mes | `PROFIT_OP` = margen de canasta + tarifas − última milla − reembolsos − compensaciones; `PROFIT` = `PROFIT_OP` − `CAPEX`; `LATE_COST` = entregas tarde × cupón | P1 |
 | LOG-MON-02 | Abrir una dark store en enero | El capex se carga en ese mes y no en los siguientes | P1 |
 | LOG-MON-03 | Turno trimestral (store con `epochsPerTurn = 3`) | Una confirmación corre 3 meses, el registro de decisiones solo tiene la época 0 y el replay del JSON coincide | P1 |
+| LOG-MON-05 | Estrategia «velocidad» con entrega al día siguiente | Rompe el guardrail de tiempo de ciclo cada mes: `SERVICE_PENALTY` = rotos × 2% × ventas; `PROFIT` = `PROFIT_OP` − `CAPEX` − `SERVICE_PENALTY` | P1 |
+| LOG-MON-06 | `npm run forecast-impact` | Reporta por territorio el peso del pronóstico en la brecha de utilidad (referencia: promedio ≈ 30–40%, sin forzar por territorio) | P2 |
 | LOG-MON-04 | Partida completa en la UI | 12 turnos; el reporte final muestra la utilidad acumulada y el JSON la exporta como `finalScore` (punta a punta) | P1 |
 
 ---
@@ -258,7 +260,7 @@ Todos los bots salvo L capturan el pronóstico perfecto cada enero, para que la 
 | LOG-AUT-09 | Urbano ≠ rural | El óptimo de BOT-I en Norte usa más consolidación (lockers, micro-hubs, ventanas amplias) que en Megalópolis | P2 |
 | LOG-AUT-10 | Habilidad > suerte | CV del puntaje de BOT-A < 15%; diferencia media BOT-C − BOT-A > 2 desviaciones estándar | P1 |
 | LOG-AUT-11 | Los picos son el examen | Para BOT-A, ≥ 50% de los días de violación de guardrail ocurren en meses pico | P2 |
-| LOG-AUT-12 | Medir importa | En BOT-A, la diferencia entre OTD promedio y OTD p95 en Megalópolis es ≥ 10 pp (justifica la lección de D-61) | P2 |
+| LOG-AUT-12 | Medir importa | En BOT-A, la diferencia entre OTD promedio y OTD p95 en Megalópolis es ≥ 8 pp (justifica la lección de D-61). ⚠ Antes ≥ 10 pp; desde AD-36 la flota spot de último momento rescata parte de los peores días fuera de los picos (en picos no hay spot) | P2 |
 | LOG-AUT-13 | La IA necesita datos | El mejor puntaje con IA y datos básicos < mejor puntaje con VRPTW y datos completos. ⚠ Implementación: se compara BOT-J vs. BOT-K (≥ 80% de semillas) | P2 |
 | LOG-AUT-14 | Estabilidad del reactivo | BOT-G no genera costos explosivos ni KPIs fuera de rango; se registran oscilaciones | P3 |
 | LOG-AUT-15 | Robustez de la calibración | Al perturbar ±20% cada constante, el orden BOT-C > BOT-A en Megalópolis se mantiene en ≥ 90% de las perturbaciones. ⚠ Pendiente: aún no implementada en el auto-juego | P2 |

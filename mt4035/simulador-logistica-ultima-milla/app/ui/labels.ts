@@ -216,6 +216,8 @@ export const KPI_NAMES: Record<string, string> = {
   PROFIT_OP: "Utilidad operativa (US$)",
   CAPEX: "Inversión del mes (US$)",
   PROFIT: "Utilidad (US$)",
+  SERVICE_PENALTY: "Penalizaciones por servicio (US$)",
+  SERVICE_BREACHES: "Guardrails de servicio rotos",
   FC_SCORE: "Puntaje del pronóstico",
   FC_TOTAL: "Pronóstico (pedidos)",
   FC_WAPE: "WAPE del pronóstico",

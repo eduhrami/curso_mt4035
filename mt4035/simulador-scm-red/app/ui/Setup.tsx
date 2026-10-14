@@ -87,11 +87,14 @@ export function Setup() {
             </button>
           ))}
         </div>
-        <p class="small muted">Tu puntaje se calcula según la estrategia que declares. Puedes cambiarla una sola vez durante la partida, con penalización.</p>
+        <p class="small muted">Tu puntaje definitivo es la utilidad acumulada. La propuesta que declares fija los guardrails de servicio que debes cumplir: romperlos cuesta dinero. Puedes cambiarla una sola vez durante la partida, con penalización.</p>
       </section>
 
       <section class="card stack" aria-labelledby="h-market">
         <h2 id="h-market">3. Escenario de mercado</h2>
+        <p class="small" style={{ margin: 0 }}>
+          El crecimiento, la estacionalidad y la volatilidad de la demanda no se anuncian: los estimas con los datos históricos que descargas al comenzar (pestaña «Pronóstico»).
+        </p>
         <ScenarioPicker
           headingId="h-market"
           presets={PRESETS.map((p) => ({ ...p, bestWith: REGION_TEXT[p.bestWith].title }))}
@@ -100,6 +103,7 @@ export function Setup() {
           selected={preset}
           market={market}
           onSelect={choosePreset}
+          cardHidden={["growth", "seasonality", "volatility"]}
           onMarketChange={(m) => setMarket(m as MarketProfile)}
         />
       </section>

@@ -48,7 +48,7 @@ describe("LOG-INV (P1)", () => {
             expect(close(m.attempts!, m.firstOk! + m.failedFirst!)).toBe(true);
             expect(m.successful!).toBeLessThanOrEqual(m.attempts! + 1e-9);
             // cierre del waterfall de costos
-            expect(close(m.lastMile!, m.routeCost! + m.pickCost! + m.capitalCost! + m.reattemptCost! + m.returnsCost! + m.techCost! + m.fixedDaily! + m.robberyCost! + m.idleCost!)).toBe(true);
+            expect(close(m.lastMile!, m.routeCost! + m.pickCost! + m.capitalCost! + m.reattemptCost! + m.returnsCost! + m.techCost! + m.fixedDaily! + m.robberyCost! + m.idleCost! + m.staffPlanCost!)).toBe(true);
             // spoilage solo sobre frescos
             expect(m.spoiled!).toBeLessThanOrEqual(m.freshTotal! + 1e-9);
             expect(m.stops!).toBeLessThanOrEqual(m.capStops! + 1e-9);

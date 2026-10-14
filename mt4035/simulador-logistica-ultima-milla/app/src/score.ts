@@ -29,6 +29,16 @@ export function forecastScore(history: readonly EpochReport[], p: Params): { sco
   return { score: years.length ? years.reduce((a, y) => a + y.score, 0) / years.length : 0, years };
 }
 
+/** Guardrails de servicio de la estrategia declarada (§7.5): umbral = guardrail calibrado del territorio + delta, o valor fijo. */
+export function serviceGuardrails(strategy: Strategy, p: Params, territory?: TerritoryId): { kpi: string; op: ">=" | "<="; value: number }[] {
+  const base = scoreGuardrails(p, territory);
+  return (p.money.serviceGuardrails[strategy] as { kpi: string; op: string; delta?: number; value?: number }[]).map((g) => ({
+    kpi: g.kpi,
+    op: g.op as ">=" | "<=",
+    value: g.value ?? (base.find((b) => b.kpi === g.kpi)?.value ?? 0) + (g.delta ?? 0),
+  }));
+}
+
 /** Utilidad acumulada del canal en línea (USD, §7.5): Σ (margen − compensaciones por retraso − capex). Puntaje definitivo. */
 export const profitOf = (history: readonly EpochReport[]) => history.reduce((a, h) => a + (h.kpis.PROFIT ?? 0), 0);
 

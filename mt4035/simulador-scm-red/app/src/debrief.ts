@@ -19,6 +19,13 @@ export const DEBRIEF_GENERAL: DebriefQuestion[] = [
 
 export const DEBRIEF_LAST: DebriefQuestion = { id: "DB-06", question: "Si volvieras a jugar el mismo escenario con la misma semilla, ¿qué cambiarías primero y qué KPI esperas que mejore? ¿Por qué?", hint: "Formula la respuesta como hipótesis: decisión → mecanismo → KPI." };
 
+/** DB-07: pronóstico (F-01) y aprendizaje año con año. */
+export const DEBRIEF_FORECAST: DebriefQuestion = {
+  id: "DB-07",
+  question: "¿Con qué método estimaste cada parámetro de tu pronóstico (nivel, crecimiento, índices trimestrales, CV y p95)? ¿Qué WAPE y sesgo tuviste cada año y qué corregiste al re-pronosticar?",
+  hint: "Describe tu análisis de los datos y cita la tabla de pronóstico del reporte final.",
+};
+
 export const DEBRIEF_CUSTOM: DebriefQuestion = {
   id: "DB-05",
   question: "Armaste tu propio escenario: ¿qué factores cambiaste respecto al perfil neutro, qué querías probar y qué confirmaste o refutaste con tus KPIs?",
@@ -33,6 +40,6 @@ export function debriefFor(scenario: Parameters<typeof presetOf>[0]) {
     scenario: p?.title ?? "Escenario propio",
     concept: p?.concept,
     notes: p?.watch ?? ["Qué factores de tu perfil movieron más tus KPIs", "Cómo se comparan tus resultados con los de un escenario predefinido"],
-    questions: [...DEBRIEF_GENERAL, own, DEBRIEF_LAST],
+    questions: [...DEBRIEF_GENERAL, own, DEBRIEF_LAST, DEBRIEF_FORECAST],
   };
 }

@@ -1,5 +1,5 @@
 {
-  "version": "p1",
+  "version": "p2",
   "note": "⚠ Calibración preliminar (F2). Se ajusta con auto-juego en F3. Montos en USD; tiempos en días u horas según el sufijo.",
   "weeksPerEpoch": 13,
   "grid": 6,
@@ -998,5 +998,105 @@
         ]
       }
     }
+  },
+  "forecast": {
+    "truth": {
+      "growthRange": {
+        "stagnant": [
+          -0.01,
+          0.015
+        ],
+        "moderate": [
+          0.02,
+          0.045
+        ],
+        "boom": [
+          0.06,
+          0.1
+        ]
+      },
+      "cvRange": {
+        "low": [
+          0.02,
+          0.04
+        ],
+        "mid": [
+          0.04,
+          0.07
+        ],
+        "high": [
+          0.07,
+          0.11
+        ]
+      },
+      "levelJitter": 0.05,
+      "seasonShape": [
+        -0.7,
+        0.3,
+        0.8,
+        -0.4
+      ],
+      "shapeJitter": 0.2,
+      "ampJitter": 0.2
+    },
+    "score": {
+      "weight": 0.3,
+      "wapeTolerance": 0.01,
+      "wapeSpan": 0.15,
+      "exceedSpan": 0.15,
+      "weights": {
+        "wape": 0.6,
+        "cv": 0.2,
+        "p95": 0.2
+      }
+    },
+    "planning": {
+      "sensitivity": 0.4,
+      "overstockLoss": 0.45,
+      "note": "sensitivity × infoMult[D-30]: fracción del error de pronóstico que llega a lo que piden las tiendas (con POS diario la reposición corrige rápido). Pronosticar de menos reduce la disponibilidad en esa proporción; pronosticar de más compra de más y esa mercancía se rebaja: overstockLoss es la pérdida sobre su costo.",
+      "infoMult": {
+        "basic": 1.0,
+        "pos_daily": 0.55,
+        "pos_terminal": 0.45
+      }
+    }
+  },
+  "money": {
+    "servicePenaltyShare": 0.02,
+    "serviceGuardrails": {
+      "freshness": [
+        {
+          "kpi": "OSA",
+          "op": ">=",
+          "delta": 0
+        },
+        {
+          "kpi": "OSA_FRESH",
+          "op": ">=",
+          "base": "OSA",
+          "delta": -0.02
+        }
+      ],
+      "lowcost": [
+        {
+          "kpi": "OSA",
+          "op": ">=",
+          "delta": -0.02
+        }
+      ],
+      "convenience": [
+        {
+          "kpi": "OSA",
+          "op": ">=",
+          "delta": 0.01
+        },
+        {
+          "kpi": "LOST_SALES",
+          "op": "<=",
+          "delta": 0
+        }
+      ]
+    },
+    "note": "Guardrails de servicio según la propuesta de valor declarada: umbral = guardrail calibrado de la región (o el de 'base') + delta. Cada trimestre con un guardrail roto resta servicePenaltyShare × ventas del trimestre de la utilidad (penalizaciones y pérdida de clientes)."
   }
 }

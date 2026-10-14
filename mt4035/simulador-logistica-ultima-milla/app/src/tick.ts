@@ -322,7 +322,11 @@ export function lmTick(ctx: Ctx): void {
   const crowdAvail = need * mix.crowd * t.crowdAvailability * (peak ? 0.75 : 1) * (1 - sh.crowdCut);
   const contract = p.fleet.peak[d.peakContract];
   const peakExtra = !peak || d.peakContract === "none" ? 0 : d.peakContract === "advance" ? plannedNeed * Math.max(0, fc.peaks[peak.id as PeakId] - 1) : plannedNeed * contract.extra * contract.reliability;
-  const available = ownAvail + plAvail + crowdAvail + peakExtra;
+  // Si la flota contratada no alcanza, el 3PL cubre parte del faltante de último momento a tarifa spot
+  // (más cara y no siempre disponible): pronosticar de menos cuesta dinero, no solo servicio.
+  // En los picos todo el mercado busca vehículos: casi no hay spot disponible.
+  const overflowAvail = mix["3pl"] > 0 ? Math.max(0, need - (ownAvail + plAvail + crowdAvail + peakExtra)) * fp.overflowReliability * (peak ? fp.overflowPeakMult : 1) * (1 - restricted) : 0;
+  const available = ownAvail + plAvail + crowdAvail + peakExtra + overflowAvail;
   const fleetShort = need > 0 ? clamp(1 - available / need, 0, 1) : 0;
   const lostRoutesShare = need > 0 ? Math.min(1, sh.lostRoutes / Math.max(need, 1)) : 0;
   const served = 1 - Math.min(1, fleetShort + lostRoutesShare);
@@ -331,9 +335,11 @@ export function lmTick(ctx: Ctx): void {
   const useOwn = Math.min(servedVehicles, ownAvail);
   const usePl = Math.min(servedVehicles - useOwn, plAvail);
   const useCrowd = Math.min(servedVehicles - useOwn - usePl, crowdAvail);
-  const useExtra = Math.max(0, servedVehicles - useOwn - usePl - useCrowd);
-  // Capacidad contratada sin usar: compromiso mínimo del 3PL y contrato anticipado de pico.
-  const idlePl = Math.max(0, fp.threePlCommit * plContract - usePl);
+  const useExtra = Math.min(Math.max(0, servedVehicles - useOwn - usePl - useCrowd), peakExtra);
+  const useOverflow = Math.max(0, servedVehicles - useOwn - usePl - useCrowd - useExtra);
+  // Capacidad contratada sin usar: compromiso del 3PL y contrato anticipado de pico.
+  // El compromiso cubre la necesidad pronosticada; la holgura por CV es flexible (se paga solo si se usa).
+  const idlePl = Math.max(0, fp.threePlCommit * plannedNeed * mix["3pl"] - usePl);
   const idleExtra = d.peakContract === "advance" ? Math.max(0, peakExtra - useExtra) : 0;
   const idleCost = (idlePl * p.fleet.threePlMarkup + idleExtra * contract.costMult) * fp.idleDayCost;
 
@@ -533,6 +539,7 @@ export function lmTick(ctx: Ctx): void {
     const plShare = servedVehicles > 0 ? usePl / servedVehicles : 0;
     const crowdShare = servedVehicles > 0 ? useCrowd / servedVehicles : 0;
     const extraShare = servedVehicles > 0 ? useExtra / servedVehicles : 0;
+    const overflowShare = servedVehicles > 0 ? useOverflow / servedVehicles : 0;
     const energy = km * (vv.costPerKm + (coldExtraPerRoute ? 0.08 : 0)) * fuel;
     const driver = rh * wage * pay.costMult * (d.shifts.two ? (1 + p.fleet.shiftOvertimeMult) / 2 : 1) * (weekday >= 5 && d.shifts.weekends ? p.fleet.weekendCostMult : 1);
     const vehicleVar = rRoutes * (coldExtraPerRoute + (vv.dayCost * Math.min(1, avgRouteHours / p.shiftHours)));
@@ -543,7 +550,8 @@ export function lmTick(ctx: Ctx): void {
       (energy + driver) * ownShareRoutes +
       routeBase * plShare * p.fleet.threePlMarkup +
       stops * crowdShare * p.fleet.crowdPerDrop * fuel +
-      routeBase * extraShare * contract.costMult;
+      routeBase * extraShare * contract.costMult +
+      routeBase * overflowShare * p.fleet.threePlMarkup * fp.overflowCostMult;
     routeCost += routeCostHere;
     const zoneCost = routeCostHere + w.alloc.reduce((a, x) => a + (x.pick + x.capital) * x.q, 0) * served + delivered * ret * retCost + failedFirst * absent.costShare * (stops > 0 ? routeCostHere / stops : 0);
     if (zp.kind === "urban") {
@@ -592,7 +600,10 @@ export function lmTick(ctx: Ctx): void {
   // Telemetría y tráfico se pagan por vehículo en operación.
   const fixedDaily = (fixedMonthly + need * p.data.costPerVehicleMonth[d.data]) / daysInMonth;
   const robberyCost = sh.lostOrders > 0 ? p.events["X-08"].cost : 0;
-  const lastMile = routeCost + ownFixed + pickCost + capitalCost + reattemptCost + returnsCost + techCost + fixedDaily + robberyCost + idleCost;
+  // Personal de surtido planeado con el pronóstico del día: de más se paga ocioso; de menos, horas extra con prima.
+  const staffRatio = requested > 0 ? (s.serviceRatio * forecastDay(fc, p, cal)) / requested : 1;
+  const staffPlanCost = pickCost * (staffRatio >= 1 ? fp.laborIdleShare * (staffRatio - 1) : fp.laborOvertimePremium * (1 - staffRatio));
+  const lastMile = routeCost + ownFixed + pickCost + capitalCost + reattemptCost + returnsCost + techCost + fixedDaily + robberyCost + idleCost + staffPlanCost;
   const successful = firstOk + (attempts - firstOk) * absent.success;
 
   // R-02: spoilage semanal de frescos
@@ -683,6 +694,8 @@ export function lmTick(ctx: Ctx): void {
     fcOracle: Math.abs(expectedMarket(s, p, cal) - marketTotal),
     fcExceed: marketTotal > fc.p95 ? 1 : 0,
     idleCost,
+    staffPlanCost,
+    contracted: ownAvail + plAvail + crowdAvail + peakExtra,
     plannedNeed,
     // KPI diarios (para percentiles: p95 en el puntaje, D-61 en la vista)
     dayOtd: delivTotal > 0 ? onTime / delivTotal : 1,

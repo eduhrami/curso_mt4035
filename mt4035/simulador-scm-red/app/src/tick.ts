@@ -5,6 +5,7 @@
  */
 import { normalInv, normalLoss, clamp, type TickContext } from "@mt4035/sim-core";
 import { activeDcs, assignDc, densityDemandMult, route, zoneGeometry, type ActiveDc } from "./network.ts";
+import { expectedMarket, forecastWeek, marketShock, seasonFactor } from "./forecast.ts";
 import { emptyShocks } from "./scenario.ts";
 import { CATEGORIES, perCat, type Category, type Params, type ScmState } from "./types.ts";
 
@@ -52,7 +53,7 @@ const CK = Object.fromEntries(
 ) as Record<Category, Record<"demand" | "sold" | "waste" | "received" | "fr" | "wst" | "osa" | "stops" | "hours" | "life", string>>;
 
 const KEYS = [
-  "stores", "demand", "sold", "lost", "subst", "waste", "excursion", "received", "invIni", "invFin",
+  "stores", "overstock", "demand", "sold", "lost", "subst", "waste", "excursion", "received", "invIni", "invFin",
   "revenue", "cogs", "gm", "wasteCost", "transport", "handling", "dcFixed", "receivingCost", "carrying", "itOpex",
   "deliveries", "otifDeliveries", "invValue", "dcInvValue", "ltWeighted", "ltSdWeighted", "bwrWeighted", "ofrProduct",
   "freshRouteHoursW", "freshDeliveries", "freshRouteHours", "trucksPerStoreDay", "dcDistKmW", "dcDeliveries", "dcRoutes", "trustW", "storeSsUnits", "dcSsUnits", "dcUtilMax", "deltaDcMeanFresh", "ebitda",
@@ -78,15 +79,26 @@ export function scmTick(ctx: Ctx): void {
   s.flags = { r01: false, r02: perCat(() => s.zones.map(() => false)), r04: false, r07: false };
   const sh = s.shocks;
 
-  // Mercado
+  // Mercado: proceso de demanda oculto de la partida (§4.4); el pronóstico del equipo (F-01) planea el inventario.
   const years = s.week / 52;
-  const growth = (1 + p.markets.growth[s.market.growth]) ** years;
-  const amp = p.markets.seasonality[s.market.seasonality];
-  const season = Math.sin((2 * Math.PI * ((s.week % 52) - 13)) / 52); // máximo en T3
+  const growth = (1 + s.truth.growth) ** years;
   const fuel = (1 + p.markets.fuelTrendPerYear[s.market.fuel]) ** years * sh.fuelMult;
   const mix = demandMix(s, p);
   const cv = effectiveCv(s, p);
   const cvWeek = cv / Math.sqrt(7);
+  const fc = d.demandForecast;
+  const marketExp = expectedMarket(s.truth, p, mix, s.week);
+  const shock = marketShock(s.truth, ctx.config.seed, s.week, ctx.noise);
+  const marketWeek = marketExp * (1 + shock);
+  const fcWeek = forecastWeek(fc, s.week);
+  // Sesgo del pronóstico: el inventario se planea con la demanda pronosticada (k > 1: de más; k < 1: de menos).
+  // Solo una parte del error llega a lo que piden las tiendas: la reposición se corrige con las ventas reales,
+  // más rápido con POS diario (D-30).
+  const fcSens = p.forecast.planning.sensitivity * p.forecast.planning.infoMult[d.info];
+  const planK = marketExp > 0 ? 1 + fcSens * (fcWeek / marketExp - 1) : 1;
+  // Error en el CV pronosticado: escala el stock de seguridad respecto del que planearía un pronóstico perfecto
+  // (el choque común se suma a la variabilidad de cada tienda como CV diario equivalente).
+  const cvRatio = Math.sqrt(cv * cv + 7 * fc.cv * fc.cv) / Math.sqrt(cv * cv + 7 * s.truth.cv * s.truth.cv);
 
   // Proveedores
   const rel = s.market.supplierReliability;
@@ -110,9 +122,9 @@ export function scmTick(ctx: Ctx): void {
   const assign = s.zones.map((z) => (z.stores > 0 ? assignDc(z, dcs, s.zones, p, r.sideKm) : null));
   const geo = s.zones.map((z) => zoneGeometry(z, p, r.sideKm));
   const assortMult = (d.assortment.skus / p.assortment.refSkus) ** p.assortment.demandElasticity * (d.assortment.local && d.info !== "basic" ? 1 + p.assortment.localDemandGain : 1);
-  const catFactor = perCat((c) => mix[c] * (1 + amp * p.categories[c].seasonMult * season) * sh.demandMult[c]);
+  const catFactor = perCat((c) => mix[c] * seasonFactor(s.truth, p, c, s.week) * sh.demandMult[c]);
   const demandRate = s.zones.map((z, zi) => {
-    const base = z.stores > 0 ? r.visitsPerDay * r.unitsPerVisit * growth * z.trust * z.competition * densityDemandMult(geo[zi]!.rho, p) * assortMult : 0;
+    const base = z.stores > 0 ? s.truth.level * growth * z.trust * z.competition * densityDemandMult(geo[zi]!.rho, p) * assortMult : 0;
     return { fresh: base * catFactor.fresh, chilled: base * catFactor.chilled, ambient: base * catFactor.ambient, frozen: base * catFactor.frozen };
   });
   const usesDc = (zi: number, c: Category) => d.flows[c] === "dc" && assign[zi] !== null;
@@ -212,17 +224,20 @@ export function scmTick(ctx: Ctx): void {
       const leadDays = viaDc && type === "stocking" ? dwell + transitDays : ltSup[c] + dwell + transitDays;
       const ageDays = viaDc && type === "stocking" ? ltSup[c] + p.dc.stockingCycleDays / 2 + d.dcSafetyDays + dwell + transitDays : ltSup[c] + dwell + transitDays;
 
-      // Inventario de seguridad y fill rate
+      // Inventario de seguridad y fill rate, planeados con el pronóstico (F-01): μ y σ del plan contra los reales.
       const z95 = normalInv(d.csl[c]);
+      const muPlan = mu * planK;
       const sigma = cv * mu * Math.sqrt(leadDays + reviewDays);
-      const ss = z95 * sigma;
-      const fr = clamp(1 - (sigma * normalLoss(z95)) / (mu * reviewDays), 0, 1);
+      const ss = z95 * sigma * planK * cvRatio;
+      // Un CV subestimado deja menos protección; sobreestimarlo solo cuesta inventario.
+      const zEff = z95 * Math.min(1, cvRatio);
+      const fr = clamp(1 - (sigma * normalLoss(zEff)) / (mu * reviewDays), 0, 1);
 
       // Frescura y merma
       const shelfLife = c === "fresh" ? r.freshShelfLifeDays : (cat.shelfLifeDays as number);
       const remaining = shelfLife - ageDays;
       const presentation = cat.presentationDays * r.presentationMult;
-      const coverage = reviewDays + ss / mu + presentation;
+      const coverage = (reviewDays * muPlan + ss + presentation * muPlan) / mu;
       let waste = cat.wasteBase;
       if (cat.perishable) {
         waste = remaining <= 0.05 ? p.freshness.wasteCap : cat.wasteBase + p.freshness.wasteSlope * Math.max(0, coverage - remaining) / coverage;
@@ -248,7 +263,9 @@ export function scmTick(ctx: Ctx): void {
       const supplyFactor = 1 - shortfall * p.supplier.shortfallToOos - (1 - capFactor) * 0.5 - cancel * 0.5;
       const recvErr = p.receiving.errRate[d.receiving] + (prev.r04 ? p.receiving.overloadErrAdd : 0);
       const r02 = prev.r02[c][zi] ? p.inventory.r02OsaMult : 1;
-      const osa = clamp(fr * supplyFactor * (1 - p.inventory.wasteOsaImpact * waste) * (1 - recvErr) * (1 - exc) * (1 - closed) * r02, 0, 1);
+      // Pronosticar de menos: la tienda pide de menos y le falta mercancía en proporción al error.
+      // Pronosticar de más no sube la disponibilidad (el exceso queda en bodega): solo cuesta.
+      const osa = clamp(fr * Math.min(1, planK) * supplyFactor * (1 - p.inventory.wasteOsaImpact * waste) * (1 - recvErr) * (1 - exc) * (1 - closed) * r02, 0, 1);
 
       // Puntualidad
       const late = clamp(
@@ -262,7 +279,7 @@ export function scmTick(ctx: Ctx): void {
 
       // Ventas
       const noise = ctx.stream("demand", ctx.tick, zi * 10 + CATEGORIES.indexOf(c)).normal() * ctx.noise;
-      const demand = mu * 7 * n * Math.max(0, 1 + cvWeek * noise);
+      const demand = mu * 7 * n * Math.max(0, 1 + cvWeek * noise + shock);
       const sold = demand * osa;
       const unmet = demand - sold;
       const lost = unmet * p.inventory.unmetLostShare;
@@ -271,7 +288,9 @@ export function scmTick(ctx: Ctx): void {
       const excUnits = exc * demand;
 
       // Inventario de tienda (conservación por construcción)
-      const target = n * (ss + (mu * reviewDays) / 2 + mu * presentation);
+      const target = n * (ss + (muPlan * reviewDays) / 2 + muPlan * presentation);
+      // Pronosticar de más: lo que se compra por encima de lo que se vende termina en rebaja u obsolescencia.
+      m.overstock! += Math.max(0, muPlan - mu) * 7 * n * cat.price * (1 - cat.margin) * p.forecast.planning.overstockLoss;
       const stored = s.inventory[c][zi]!;
       const invIni = stored < 0 ? target : stored;
       const received = Math.max(0, sold + wasteUnits + excUnits + target - invIni);
@@ -360,7 +379,13 @@ export function scmTick(ctx: Ctx): void {
   m.maxDeliveriesPerStoreDay = maxDeliveriesPerStoreDay;
   m.deltaDcMeanFresh = freshDelta.length ? freshDelta.reduce((x, y) => x + y, 0) / freshDelta.length : 0;
   m.ofrProduct = CATEGORIES.reduce((acc, c) => acc * (catInFull[c].den > 0 ? catInFull[c].num / catInFull[c].den : 1), 1);
-  m.ebitda = m.gm! - m.wasteCost! - m.transport! - m.handling! - m.dcFixed! - m.receivingCost! - m.carrying! - m.itOpex!;
+  // Pronóstico (F-01) contra la demanda del mercado por tienda (§7.4)
+  m.mkt = marketWeek;
+  m.fcWeek = fcWeek;
+  m.fcAbs = Math.abs(fcWeek - marketWeek);
+  m.fcOracle = Math.abs(marketExp - marketWeek);
+  m.fcExceed = marketWeek > fc.p95 ? 1 : 0;
+  m.ebitda = m.gm! - m.wasteCost! - m.overstock! - m.transport! - m.handling! - m.dcFixed! - m.receivingCost! - m.carrying! - m.itOpex!;
 
   s.week += 1;
   s.shocks = emptyShocks();

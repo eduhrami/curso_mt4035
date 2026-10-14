@@ -325,6 +325,20 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - **Utilidad:** KPIs mensuales del estado de resultados (`GROSS_MARGIN`, `FEES`, `LAST_MILE_COST`, `REFUNDS`, `LATE_COST`, `PROFIT_OP`, `CAPEX`, `PROFIT`). Para el capex, el `EpochContext` del núcleo expone ahora el `ledger` de la época (cambio compatible: SCM no lo usa). La compensación por retraso solo entra a la utilidad, no al CPD ni al margen del canal.
 - **Puntaje definitivo:** utilidad acumulada en USD (`scoreRun(...).profit`, `finalScore` de la exportación). El índice 0–100 (70% operación + 30% pronóstico) queda como referencia en el reporte final.
 
+### AD-35 ✔ Pronóstico de demanda con datos históricos en SCM (13-oct-2026)
+
+- Misma lógica que AD-33 (última milla), adaptada a semanas y trimestres: proceso de demanda por tienda oculto por partida (nivel, crecimiento continuo según E-20, forma estacional por trimestre con amplitud según E-21, choque semanal común con CV según E-22), CSV de 104 semanas de historia + semanas jugadas, decisión F-01 en T1 de cada año (A1…A5) con editor propio y bloqueo de la confirmación.
+- **Acoplamiento:** el pronóstico fija el inventario objetivo y el stock de seguridad de las tiendas (μ·k y SS·k·razón de CV, z efectivo para el fill rate). Con pronóstico perfecto el inventario es idéntico al del modelo anterior. La estacionalidad sinusoidal semanal pasa a índices trimestrales.
+- **Puntaje:** 70% operación + 30% pronóstico (`scoreRun` devuelve operación, pronóstico y total). SCM sigue con turno = época y no tiene aún métrica de utilidad como puntaje definitivo.
+- Pruebas `test/forecast.test.ts` (SCM-FC), helper `start` con pronóstico perfecto, BOT-L y SCM-AUT-15. `params` p2 y simulador 0.2.0.
+
+### AD-36 ✔ Utilidad con guardrails de servicio y peso del pronóstico (ambos simuladores, 13-oct-2026)
+
+- **Criterio:** la utilidad acumulada es el puntaje definitivo en los dos simuladores (SCM: EBITDA logístico − capex y cargos − penalizaciones; última milla: §7.5). El índice 0–100 queda como diagnóstico. Razón: es lo que evalúa una dirección real e integra pronóstico, capex, merma y flota ociosa sin pesos arbitrarios.
+- **Guardrails de servicio:** para que no se gane sacrificando al cliente y para que la estrategia declarada siga importando, cada periodo con un guardrail de servicio de la estrategia roto resta un % de las ventas del periodo (`money.serviceGuardrails`, `servicePenaltyShare`; umbrales = guardrails calibrados por región o territorio + ajuste por estrategia). `serviceGuardrails()` en `score.ts`.
+- **Economía del pronóstico:** ambos errores cuestan de forma realista y sin que convenga inflar el pronóstico. SCM: de menos, la disponibilidad cae en proporción al error (amortiguado por el POS diario); de más, rebajas sobre lo comprado de más. Última milla: compromiso del 3PL sobre la necesidad pronosticada, flota spot de último momento, personal de surtido planeado con el pronóstico.
+- **Peso del pronóstico:** `npm run forecast-impact` (auto-juego) mide qué parte de la brecha de utilidad entre la operación inicial y la mejor encontrada se explica por pronosticar bien. Promedio ≈ 56% en SCM (Kaigan ≈ 93%, Red River ≈ 32%, Valle ≈ 43%) y ≈ 28% en última milla (Megalópolis ≈ 21%, Bajío ≈ 38%, Norte ≈ 26%). No se fuerza por región: en qué casos pesa más es parte del aprendizaje.
+
 ---
 
 ## 4. Ruta de implementación

@@ -3,13 +3,14 @@ import { useState } from "preact/hooks";
 import { ConfirmDialog, DecisionPanel, download, fmtMoney, GlossaryContext, GlossaryDialog, MessageInbox, StorageBanner, ThreeColumns } from "@mt4035/ui-kit";
 import { GLOSSARY } from "./glossary.ts";
 import { DcEditor } from "./DcEditor.tsx";
+import { ForecastEditor } from "./ForecastEditor.tsx";
 import { Dashboard } from "./Dashboard.tsx";
 import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
 import { engine, glossaryOpen, professor, projectsInProgress, regionOf, screen, store } from "./game.ts";
 import { describeValue, KPI_NAMES, LABELS, OPTIONS, REGION_TEXT, scenarioLabel, TABS } from "./labels.ts";
-import { params, type DcSpec, type ScmState } from "../src/index.ts";
+import { params, profitOf, type DcSpec, type DemandForecast, type ScmState } from "../src/index.ts";
 import type { GameState } from "@mt4035/sim-core";
 
 export function App() {
@@ -30,6 +31,7 @@ function TopBar() {
   const s = store.state.value;
   const inGame = screen.value === "game" && s;
   const capex = s ? s.ledger.reduce((a, l) => a + (l.kind === "capex" || l.kind === "penalty" ? l.amount : 0), 0) : 0;
+  const profit = s ? profitOf(s.history) : 0;
   const exportJson = async () => {
     if (!s) return;
     download(`hoshi-mart-${regionOf(s)}-${s.config.seed}-${s.history.length}de20.json`, JSON.stringify(await store.exportRun(), null, 2));
@@ -45,8 +47,8 @@ function TopBar() {
           </span>
           <span class="chip">Estrategia: {OPTIONS[s.model.strategy]}</span>
           <span class="chip" data-testid="scenario-label">{scenarioLabel(s.config.scenario)}</span>
-          <span class="chip" title="Inversión acumulada (capex y penalizaciones)">
-            Inversión: {fmtMoney(capex)}
+          <span class="chip" title={`Utilidad acumulada = EBITDA logístico − inversión (${fmtMoney(capex)}) − penalizaciones por servicio`} data-testid="profit-chip">
+            Utilidad: {fmtMoney(profit)}
           </span>
           {projectsInProgress(s).length > 0 && (
             <span class="chip badge-info" title={projectsInProgress(s).join("\n")}>
@@ -96,6 +98,9 @@ function Game() {
   const final = s.phase === "FINAL";
   const pendingChanges = store.changedIds.value.length;
   const hasErrors = Object.keys(store.errors.value).length > 0;
+  // En T1 de cada año hay que capturar el pronóstico (F-01) antes de confirmar.
+  const fcYear = Math.floor(s.epoch / 4);
+  const needsForecast = s.epoch % 4 === 0 && (store.valueOf("F-01") as DemandForecast).year !== fcYear;
   const footer = !final && (
     <div class="stack" style={{ marginTop: "0.75rem" }}>
       {hasErrors && (
@@ -103,7 +108,12 @@ function Game() {
           Corrige las decisiones marcadas antes de confirmar.
         </p>
       )}
-      <button type="button" class="btn-primary" disabled={hasErrors || store.busy.value} onClick={() => setOpen(true)} data-testid="review">
+      {needsForecast && (
+        <p class="small" role="alert" style={{ color: "var(--warn)", margin: 0 }}>
+          Captura tu pronóstico de A{fcYear + 1} en la pestaña «Pronóstico» para confirmar T1.
+        </p>
+      )}
+      <button type="button" class="btn-primary" disabled={hasErrors || needsForecast || store.busy.value} onClick={() => setOpen(true)} data-testid="review">
         Revisar y confirmar {engine.epochLabel(s.epoch)} {pendingChanges ? `(${pendingChanges} cambios)` : "(sin cambios)"}
       </button>
       {pendingChanges > 0 && (
@@ -116,7 +126,7 @@ function Game() {
   return (
     <>
       <ThreeColumns
-        left={<DecisionPanel store={store} tabs={TABS} labels={LABELS} globalOptions={OPTIONS} kpiNames={KPI_NAMES} custom={{ "D-01": DcEditor }} footer={footer} />}
+        left={<DecisionPanel store={store} tabs={TABS} labels={LABELS} globalOptions={OPTIONS} kpiNames={KPI_NAMES} custom={{ "D-01": DcEditor, "F-01": ForecastEditor }} footer={footer} />}
         center={final ? <FinalReport state={s} /> : <Dashboard state={s} />}
         right={<MessageInbox reports={s.history} epochLabel={(e) => engine.epochLabel(e)} kpiNames={KPI_NAMES} />}
       />

@@ -259,9 +259,10 @@ describe("SCM P2 — reglas, eventos, retrasos y puntaje", () => {
 
   it("SCO-05 con normalización por región, el as-is de cada región puntúa en una banda comparable (25–60)", () => {
     for (const region of ["kaigan", "redriver", "valle"] as const) {
-      const reports = playGame(engine, det(region)).reports;
+      const reports = run(start(det(region)), 20).reports;
       for (const st of ["freshness", "lowcost", "convenience"] as const) {
-        const sc = scoreRun(reports, st, params, region).score;
+        // Banda de la operación (sin el 30% del pronóstico, que no depende de la región).
+        const sc = scoreRun(reports, st, params, region).operational;
         expect(sc, `${region}/${st}`).toBeGreaterThanOrEqual(25);
         expect(sc, `${region}/${st}`).toBeLessThanOrEqual(60);
       }

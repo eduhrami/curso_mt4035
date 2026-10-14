@@ -85,4 +85,15 @@ describe("LOG-FC (P1)", () => {
     expect(reports[0]!.kpis.CAPEX).toBe(params.nodes.dark.capex);
     expect(reports[1]!.kpis.CAPEX).toBe(0);
   });
+
+  it("MON-03 la penalización por servicio sigue la estrategia declarada: prometer velocidad con entrega al día siguiente cuesta cada mes", () => {
+    const speed = run(start(det("bajio", { strategy: "speed" })), 2).reports;
+    const rel = run(start(det("bajio", { strategy: "reliability" })), 2).reports;
+    for (const r of speed) {
+      expect(r.kpis.SERVICE_BREACHES).toBeGreaterThanOrEqual(1);
+      expect(r.kpis.SERVICE_PENALTY!).toBeCloseTo(r.kpis.SERVICE_BREACHES! * params.money.servicePenaltyShare * r.kpis.REVENUE!, 4);
+      expect(r.kpis.PROFIT!).toBeCloseTo(r.kpis.PROFIT_OP! - r.kpis.CAPEX! - r.kpis.SERVICE_PENALTY!, 4);
+    }
+    expect(speed[0]!.kpis.PROFIT!).toBeLessThan(rel[0]!.kpis.PROFIT! + rel[0]!.kpis.SERVICE_PENALTY!);
+  });
 });

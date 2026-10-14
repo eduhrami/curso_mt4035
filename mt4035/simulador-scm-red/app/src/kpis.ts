@@ -1,6 +1,7 @@
 /** KPIs por época (especificación §7.1). Siglas en inglés; proporciones en [0, 1]. */
 import type { EpochContext } from "@mt4035/sim-core";
 import { activeDcs } from "./network.ts";
+import { serviceGuardrails } from "./score.ts";
 import { CATEGORIES, type Params, type ScmState } from "./types.ts";
 
 export function aggregate(ctx: EpochContext<ScmState, Params>): Record<string, number> {
@@ -19,6 +20,8 @@ export function aggregate(ctx: EpochContext<ScmState, Params>): Record<string, n
   const annual = 52 / Math.max(weeks, 1);
   const itr = ratio(cogs * annual, avgInv);
   const stores = avg("stores");
+  // Capex (CD, aperturas), penalizaciones y costos de cierre cargados en el trimestre.
+  const charges = ctx.ledger.reduce((a, l) => a + l.amount, 0);
 
   const k: Record<string, number> = {
     STORES: stores,
@@ -46,11 +49,38 @@ export function aggregate(ctx: EpochContext<ScmState, Params>): Record<string, n
     TRUST: ratio(tot("trustW"), tot("stores"), 1),
     DC_DIST_KM: ratio(tot("dcDistKmW"), tot("dcDeliveries")),
     STOPS_PER_ROUTE: ratio(tot("dcDeliveries"), tot("dcRoutes")),
+    // Pronóstico (F-01) contra la demanda del mercado por tienda (§7.4): sumas semanales para el puntaje anual.
+    MARKET: tot("mkt"),
+    FC_TOTAL: tot("fcWeek"),
+    FC_ABS: tot("fcAbs"),
+    FC_ORACLE: tot("fcOracle"),
+    FC_EXCEED: tot("fcExceed"),
+    FC_WEEKS: weeks,
+    FC_WAPE: ratio(tot("fcAbs"), tot("mkt")),
+    FC_BIAS: ratio(tot("fcWeek") - tot("mkt"), tot("mkt")),
+    // Estado de resultados de la cadena (§7.5): utilidad = EBITDA logístico − inversión y cargos del trimestre.
+    GM_USD: gm,
+    WASTE_COST: tot("wasteCost"),
+    OVERSTOCK_COST: tot("overstock"),
+    TRANSPORT_COST: tot("transport"),
+    HANDLING_COST: tot("handling"),
+    DC_FIXED_COST: tot("dcFixed"),
+    RECEIVING_COST: tot("receivingCost"),
+    CARRYING_COST: tot("carrying"),
+    IT_COST: tot("itOpex"),
+    CAPEX: charges,
+    PROFIT: tot("ebitda") - charges,
+    FC_CVACC: Math.max(0, 1 - Math.abs(ctx.state.dec.demandForecast.cv - ctx.state.truth.cv) / ctx.state.truth.cv),
   };
   for (const c of CATEGORIES) {
     const key = c.toUpperCase();
     k[`OSA_${key}`] = ratio(tot(`sold_${c}`), tot(`demand_${c}`), 1);
     k[`WASTE_${key}`] = ratio(tot(`waste_${c}`), tot(`received_${c}`));
   }
+  // Penalización por servicio (§7.5): guardrails de la propuesta de valor declarada, rotos en el trimestre.
+  const broken = serviceGuardrails(ctx.state.strategy, ctx.params, ctx.state.region).filter((g) => !(g.op === ">=" ? (k[g.kpi] ?? 1) >= g.value : (k[g.kpi] ?? 0) <= g.value));
+  k.SERVICE_BREACHES = broken.length;
+  k.SERVICE_PENALTY = broken.length * ctx.params.money.servicePenaltyShare * revenue;
+  k.PROFIT = k.PROFIT! - k.SERVICE_PENALTY;
   return k;
 }

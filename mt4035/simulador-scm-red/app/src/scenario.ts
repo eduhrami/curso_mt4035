@@ -2,6 +2,7 @@
 import type { GameConfig, Rng } from "@mt4035/sim-core";
 import { zoneSide } from "./network.ts";
 import { CATEGORIES, DEFAULT_MARKET, perCat, type DcState, type Decisions, type Params, type Scenario, type ScmState, type Zone } from "./types.ts";
+import { defaultForecast, drawTruth } from "./forecast.ts";
 
 function zoneWeight(pattern: string, x: number, y: number, side: number, jitter: number): number {
   switch (pattern) {
@@ -108,6 +109,7 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     info: ini.info as Decisions["info"],
     sharing: ini.sharing as Decisions["sharing"],
     forecast: ini.forecast as Decisions["forecast"],
+    demandForecast: defaultForecast(p, scn.region, scn.market),
     collaboration: ini.collaboration as Decisions["collaboration"],
     training: ini.training as Decisions["training"],
   };
@@ -130,6 +132,8 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     shocks: emptyShocks(),
     mixShift: 0,
     lastEpochOsa: 1,
+    truth: drawTruth(rng, p, scn.region, scn.market),
+    noiseScale: config.test?.noise ?? 1,
     memo: {},
   };
 }

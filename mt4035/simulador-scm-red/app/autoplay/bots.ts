@@ -2,7 +2,8 @@
 import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-core";
 import type { Policy } from "@mt4035/sim-core/testing";
 import type { Bot } from "@mt4035/sim-tools";
-import { createScmEngine, scmConfig } from "../src/model.ts";
+import { truthForecast } from "../src/forecast.ts";
+import { createScmEngine, params, scmConfig } from "../src/model.ts";
 import type { DcSpec, RegionId, ScmState } from "../src/types.ts";
 
 type S = GameState<ScmState>;
@@ -342,3 +343,13 @@ export function baselineVector(scenario: string): Vec {
 }
 
 bots.push({ id: "H", label: "Buscador", purpose: "Óptimos por región × estrategia; detecta explotaciones", policy: (_seed, _scn, args) => vectorPolicy(args as Vec) });
+
+/** Los bots de referencia pronostican bien (F-01 = proceso verdadero cada T1): la operación se calibra aparte del pronóstico. */
+const withForecast =
+  (pol: Policy<ScmState>): Policy<ScmState> =>
+  (s, e) => ({ ...(e % 4 === 0 ? { "F-01": truthForecast(s.model, params, e / 4) } : {}), ...pol(s, e) });
+for (const b of bots) {
+  const inner = b.policy;
+  b.policy = (seed, scn, args) => withForecast(inner(seed, scn, args));
+}
+bots.push({ id: "L", label: "Estático sin pronosticar", purpose: "Con el pronóstico nominal pierde contra BOT-A, que pronostica bien (AUT-15)", policy: () => noop });

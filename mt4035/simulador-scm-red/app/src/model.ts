@@ -10,7 +10,7 @@ import { scmTick } from "./tick.ts";
 import { DEFAULT_MARKET, type Params, type Scenario, type ScmState } from "./types.ts";
 
 export const SIM_ID = "mt4035-scm";
-export const SIM_VERSION = "0.1.0";
+export const SIM_VERSION = "0.2.0";
 export const params: Params = paramsJson;
 export const PARAMS_VERSION = params.version;
 
@@ -70,20 +70,18 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
 
   if (s.market.demographics === "aging") s.mixShift += p.markets.agingFreshShiftPerYear / 4;
   // Estacionalidad y crecimiento mueven la demanda y, con costos fijos, los KPIs relativos a ventas.
-  const amp = p.markets.seasonality[s.market.seasonality];
-  const growth = p.markets.growth[s.market.growth];
-  if (amp > 0 || growth > 0) {
-    const quarter = ["T1", "T2", "T3", "T4"][e % 4];
-    ctx.log({
-      kind: "trend",
-      id: "E-20",
-      kpis: ["DEMAND", "SALES", "CTS_PCT", "CTS_STORE", "EBITDA_PCT", "ITR", "LOST_SALES", "OSA", "WASTE"],
-      drivers: [
-        { label: `estacionalidad (${quarter}, amplitud ±${Math.round(amp * 100)}%)`, ref: "E-21" },
-        { label: `crecimiento anual de la demanda ${Math.round(growth * 100)}%`, ref: "E-20" },
-      ],
-    });
-  }
+  // Los mensajes citan el pronóstico del equipo (F-01), nunca el proceso verdadero (§4.4).
+  const fc = s.dec.demandForecast;
+  const quarter = ["T1", "T2", "T3", "T4"][e % 4];
+  ctx.log({
+    kind: "trend",
+    id: "E-20",
+    kpis: ["DEMAND", "SALES", "CTS_PCT", "CTS_STORE", "EBITDA_PCT", "ITR", "LOST_SALES", "OSA", "WASTE"],
+    drivers: [
+      { label: `estacionalidad de ${quarter} (tu índice pronosticado: ×${(fc.quarters[e % 4]! / (fc.quarters.reduce((a, b) => a + b, 0) / 4)).toFixed(2)})`, ref: "E-21" },
+      { label: `inventario planeado con tu pronóstico: crecimiento ${Math.round(fc.growth * 100)}% anual`, ref: "F-01" },
+    ],
+  });
 }
 
 export const scmModel: ModelDef<ScmState, Params, Scenario> = {

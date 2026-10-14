@@ -1,6 +1,6 @@
 /** Corridas guardadas: continuar, exportar, borrar, importar y comparar hasta 4 (AD-26). */
 import { useState } from "preact/hooks";
-import { download, fmt, LineChart } from "@mt4035/ui-kit";
+import { download, fmt, fmtMoney, LineChart } from "@mt4035/ui-kit";
 import type { EpochReport } from "@mt4035/sim-core";
 import { params, scoreRun, type RegionId, type Strategy } from "../src/index.ts";
 import { KPI_META, OPTIONS, scenarioLabel } from "./labels.ts";
@@ -77,7 +77,7 @@ export function Runs() {
                   </td>
                   <td>{r.title}</td>
                   <td class="small">{new Date(r.savedAt).toLocaleString("es-MX")}</td>
-                  <td class="small">{r.data.finished ? `Terminada · ${r.data.export.finalScore?.toFixed(1) ?? "—"} pts` : `En curso (${r.data.export.epochsPlayed}/20)`}</td>
+                  <td class="small">{r.data.finished ? `Terminada · utilidad ${r.data.export.finalScore !== undefined ? fmtMoney(r.data.export.finalScore) : "—"}` : `En curso (${r.data.export.epochsPlayed}/20)`}</td>
                   <td class="row">
                     <button type="button" onClick={() => open(r.id)}>
                       {r.data.finished ? "Ver" : "Continuar"}
@@ -128,6 +128,16 @@ export function Runs() {
                     })}
                   </tr>
                 ))}
+                <tr>
+                  <td>
+                    <strong>Utilidad acumulada</strong>
+                  </td>
+                  {chosen.map((r) => (
+                    <td key={r.id}>
+                      <strong>{fmtMoney(pseudo(r.id).reduce((a, x) => a + (x.kpis.PROFIT ?? 0), 0))}</strong>
+                    </td>
+                  ))}
+                </tr>
                 <tr>
                   <td>Escenario (semilla)</td>
                   {chosen.map((r) => (

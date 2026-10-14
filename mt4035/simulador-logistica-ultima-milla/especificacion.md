@@ -146,10 +146,12 @@ Organizadas según las **5 decisiones que cambian la historia** de S5 más las o
 - **Cuándo:** solo en el primer trimestre de cada año (A1-T1, A2-T1, A3-T1) y para el año en curso; la interfaz no deja confirmar ese trimestre sin capturarlo. En A2 y A3 el formulario parte del pronóstico anterior y el equipo lo ajusta con los datos nuevos.
 - **Pronóstico del día:** `F(día) = nivel · (1 + g)^((día − 1 ene)/365) · índice(día)/promedio(índices) · quincena · pico`.
 - **Capacidad planeada con el pronóstico** (sustituye la necesidad reactiva del mes anterior):
-  - **3PL contratado** = vehículos por pedido (mes anterior) × pedidos/demanda del mercado (mes anterior) × F(día) sin pico × holgura, con holgura = 1 + 1.65 · CV pronosticado (máx. 1.5). Se paga un **compromiso mínimo** del 90% de lo contratado aunque no se use (US$ 75 por vehículo-día ocioso × margen del 3PL).
+  - **3PL contratado** = vehículos por pedido (mes anterior) × pedidos/demanda del mercado (mes anterior) × F(día) sin pico × holgura, con holgura = 1 + 1.65 · CV pronosticado (máx. 1.5). El **compromiso** cubre la necesidad pronosticada (sin la holgura) y se paga aunque no se use (US$ 160 por vehículo-día ocioso × margen del 3PL); la holgura es flexible.
+  - **Flota spot de último momento:** si la flota no alcanza, el 3PL cubre 60% del faltante a 2× la tarifa dedicada; en los picos no hay spot disponible (13-oct-2026).
+  - **Personal de surtido:** se planea con el pronóstico del día; de más, la mitad del exceso se paga ocioso; de menos, horas extra con 50% de prima sobre el costo de picking.
   - **Contrato anticipado de pico (D-36 «advance»)** = vehículos planeados × (multiplicador pronosticado del pico − 1); lo contratado y no usado también se paga. El contrato spot no depende del pronóstico.
   - **Capacidad publicada (D-26)** = F(día) sin pico × participación de la zona × tope.
-  - Pronosticar de menos deja rutas sin cubrir (OTD, backlog); de más, paga capacidad ociosa (CPD). El costo aparece en el desglose del CPD como «Flota contratada ociosa».
+  - Pronosticar de menos deja rutas sin cubrir o cubiertas a tarifa spot y paga horas extra; de más, paga flota y personal ociosos. El costo aparece en el desglose del CPD («Flota contratada ociosa») y en la utilidad (§7.5).
 - Sin captura, el modelo usa un pronóstico nominal (solo pruebas y bots; la interfaz siempre lo exige).
 
 ### 5.1 Estrategia de servicio (setup)
@@ -433,7 +435,7 @@ Basados en el [scorecard de KPIs de S5](../references/sesion-5-scorecard-kpis-tr
 
 ### 7.4 Calidad del pronóstico e índice de desempeño (13-oct-2026)
 
-**Índice de desempeño (referencia, 0–100) = 70% operación (§7.3) + 30% pronóstico.** Desde el turno trimestral, el puntaje definitivo es la utilidad (§7.5); el pronóstico la afecta a través de la capacidad contratada (§5.0). Cada año se califica con el pronóstico vigente en él (0–1):
+**Índice de desempeño (diagnóstico, 0–100) = 70% operación (§7.3) + 30% pronóstico.** Desde el turno trimestral, el puntaje definitivo es la utilidad (§7.5); el pronóstico la afecta a través de la capacidad contratada (§5.0). Cada año se califica con el pronóstico vigente en él (0–1):
 
 | Componente | Peso | Medida |
 |---|---|---|
@@ -441,7 +443,7 @@ Basados en el [scorecard de KPIs de S5](../references/sesion-5-scorecard-kpis-tr
 | Variabilidad | 20% | 1 − \|CV pronosticado − CV verdadero\| / CV verdadero |
 | Cobertura del p95 | 20% | 1 − \|días sobre el p95 pronosticado − 5%\| / 15% |
 
-El puntaje del pronóstico es el promedio de los años jugados. KPIs mensuales: `MARKET`, `FC_TOTAL`, `FC_WAPE`, `FC_BIAS`, `FC_ABS`, `FC_ORACLE`, `FC_EXCEED`, `FC_DAYS`, `FC_CVACC`, `IDLE_COST`. Con auto-juego (5 semillas por territorio): pronóstico perfecto ≈ 92/100 de calidad; ±10% en nivel y picos ≈ 76–80; ±20% ≈ 37–46. El puntaje total es máximo con el pronóstico correcto en 5 de 6 combinaciones territorio × contrato de pico (en Megalópolis sin contrato, sobreestimar 10% empata, porque el *as-is* tiene poca flota). ⚠ Calibración preliminar.
+El puntaje del pronóstico es el promedio de los años jugados. KPIs mensuales: `MARKET`, `FC_TOTAL`, `FC_WAPE`, `FC_BIAS`, `FC_ABS`, `FC_ORACLE`, `FC_EXCEED`, `FC_DAYS`, `FC_CVACC`, `IDLE_COST`. Con auto-juego (5 semillas por territorio): pronóstico perfecto ≈ 92/100 de calidad; ±10% en nivel y picos ≈ 76–80; ±20% ≈ 37–46. ⚠ Calibración preliminar. El peso del pronóstico en la **utilidad** se mide aparte (§7.6).
 
 ### 7.5 Utilidad: puntaje definitivo (13-oct-2026)
 
@@ -454,15 +456,30 @@ Estado de resultados mensual del canal en línea (KPIs en USD):
 | Tarifas de envío | `FEES` | Tarifa cobrada por pedido según D-25 |
 | Costo de última milla | `LAST_MILE_COST` | Rutas y troncal, picking, inventario, reintentos (retrabajo), devoluciones, tecnología, fijos de nodos, robos y capacidad contratada ociosa (el mismo costo del CPD) |
 | Reembolsos | `REFUNDS` | Frescos dañados que se reembolsan |
-| Compensaciones por retraso | `LATE_COST` | Pedidos entregados fuera de la promesa (`LATE_ORDERS` = entregados − a tiempo) × cupón de US$ 1.50 ⚠ |
+| Compensaciones por retraso | `LATE_COST` | Pedidos entregados fuera de la promesa (`LATE_ORDERS` = entregados − a tiempo) × cupón de US$ 2.00 ⚠ |
 | **Utilidad operativa** | `PROFIT_OP` | Margen + tarifas − última milla − reembolsos − compensaciones |
 | Inversión | `CAPEX` | Capex y penalizaciones cargados en el mes (dark stores, MFC, lockers, hubs, cambio de estrategia…) |
-| **Utilidad** | `PROFIT` | Utilidad operativa − inversión |
+| Penalizaciones por servicio | `SERVICE_PENALTY` | Por cada guardrail de servicio de la estrategia declarada roto en el mes: 2% de las ventas del mes ⚠ (`SERVICE_BREACHES`) |
+| **Utilidad** | `PROFIT` | Utilidad operativa − inversión − penalizaciones por servicio |
 
 - **Utilidad acumulada** = Σ `PROFIT` de los 36 meses. Es el puntaje definitivo (`finalScore` de la exportación, en USD) y se ve en la barra superior, en el dashboard («Estado de resultados»: último trimestre y acumulado), en el reporte final (por año) y en el comparador de corridas.
 - Los pedidos no entregados no generan ingreso: cancelaciones, rechazos por capacidad publicada y backlog perdido reducen la utilidad sin costo explícito. La insatisfacción también baja la confianza y, con ella, la demanda futura (§6).
 - Las compensaciones por retraso solo entran a la utilidad; no cambian el CPD ni el `MARGIN_PCT` del índice §7.3, así que la dinámica del juego no cambia.
-- Se compara entre equipos del mismo territorio, escenario y semilla (la escala depende del volumen del territorio).
+- Se compara entre equipos del mismo territorio, escenario y semilla (la escala depende del volumen del territorio). Para comparar entre territorios, conviene reportar la mejora contra la operación inicial (%) con la misma semilla.
+- **Guardrails de servicio por estrategia** (umbral = guardrail calibrado del territorio + ajuste): velocidad: OTD p95 ≥ base − 5 pp y tiempo de ciclo ≤ 24 h; confiabilidad: OTD p95 ≥ base + 5 pp y CSAT ≥ base; eficiencia: OTD p95 ≥ base − 5 pp y CSAT ≥ base − 0.2. Así la estrategia declarada define qué promesa hay que cumplir mientras se maximiza la utilidad (AD-36).
+
+### 7.6 Peso del pronóstico en la utilidad (13-oct-2026)
+
+`npm run forecast-impact` (auto-juego, [`app/autoplay/forecast-impact.ts`](app/autoplay/forecast-impact.ts)) mide, por territorio, qué parte de la brecha de utilidad entre la operación inicial (BOT-A) y la mejor operación encontrada (bots de referencia + 50 vectores aleatorios, por utilidad, con pronóstico perfecto) se explica por pronosticar bien: pérdida media con pronóstico −20% / +20% / (esa pérdida + la mejora operativa). Reporte en [`app/autoplay/reports/forecast-impact.md`](app/autoplay/reports/forecast-impact.md).
+
+| Territorio | Peso del pronóstico |
+|---|---|
+| Megalópolis Centro | ≈ 21% |
+| Ciudad Bajío | ≈ 38% (la operación tiene poco margen para subir la utilidad: el pronóstico pesa más) |
+| Región Norte | ≈ 26% |
+| **Promedio** | **≈ 28%** |
+
+No se fuerza una brecha por territorio: en qué casos pesa más el pronóstico es parte del aprendizaje.
 
 ---
 

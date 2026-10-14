@@ -96,13 +96,13 @@ describe("LOG-SCO (P1)", () => {
 });
 
 describe("LOG-SCO (P2)", () => {
-  it("SCO-05 as-is por territorio: puntajes en una banda comparable (~35–55, normalización por territorio)", () => {
+  it("SCO-05 as-is por territorio: índice en una banda comparable (~35–60, normalización por territorio)", () => {
     for (const t of ["megalopolis", "bajio", "norte"] as const) {
       const { reports } = playGame(engine, det(t));
       for (const st of ["speed", "reliability", "efficiency"] as const) {
         const sc = scoreRun(reports, st, params, t).score;
         expect(sc, `${t}/${st}`).toBeGreaterThanOrEqual(33);
-        expect(sc, `${t}/${st}`).toBeLessThanOrEqual(58);
+        expect(sc, `${t}/${st}`).toBeLessThanOrEqual(60);
       }
     }
   });

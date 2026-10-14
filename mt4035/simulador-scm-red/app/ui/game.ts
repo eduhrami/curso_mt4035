@@ -22,7 +22,8 @@ export const store = createGameStore({
   simVersion: SIM_VERSION,
   paramsVersion: PARAMS_VERSION,
   title: (s) => `${REGION_TEXT[regionOf(s)].title} · ${OPTIONS[s.model.strategy]} · ${s.config.player?.name || "sin nombre"} · ${s.history.length}/20`,
-  finalScore: (s) => finalScore(s).score,
+  // Puntaje definitivo: utilidad acumulada en USD (§7.5).
+  finalScore: (s) => finalScore(s).profit,
   debriefQuestions: (s) => debriefFor(s.config.scenario as Parameters<typeof debriefFor>[0]).questions,
 });
 

@@ -1,9 +1,12 @@
 /** Reporte final (AD-26): puntaje según la estrategia declarada, desglose, guardrails, trayectoria, decisiones y eventos. */
-import { DebriefPanel, download, fmt, Gloss, LineChart } from "@mt4035/ui-kit";
+import { DebriefPanel, download, fmt, fmtMoney, Gloss, LineChart } from "@mt4035/ui-kit";
+import { PNL } from "./Dashboard.tsx";
 import type { GameState } from "@mt4035/sim-core";
-import { debriefFor, type ScmState, type Strategy } from "../src/index.ts";
+import { debriefFor, params, type ScmState, type Strategy } from "../src/index.ts";
 import { describeValue, kpiMetaFor, OPTIONS, REGION_TEXT, scenarioLabel } from "./labels.ts";
 import { engine, finalScore, regionOf, screen, store } from "./game.ts";
+
+const FC_W = params.forecast.score.weight;
 
 export function FinalReport({ state }: { state: GameState<ScmState> }) {
   const region = regionOf(state);
@@ -36,14 +39,15 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
           {state.config.player?.team ? ` · ${state.config.player.team}` : ""} · escenario {scenarioLabel(state.config.scenario)} · semilla {state.config.seed} · estrategia declarada: <strong>{OPTIONS[state.model.strategy]}</strong>
         </p>
         <div class="row" style={{ alignItems: "baseline" }}>
-          <span style={{ fontSize: "2.4rem", fontWeight: 800 }} data-testid="final-score">
-            {result.score.toFixed(1)}
-          </span>
-          <span class="muted">/ 100</span>
-          <span class="small muted" style={{ marginLeft: "1rem" }}>
-            Con otra estrategia: {others.map((s) => `${OPTIONS[s]} ${finalScore(state, s).score.toFixed(1)}`).join(" · ")}
+          <span class="muted">Utilidad acumulada (puntaje definitivo):</span>
+          <span style={{ fontSize: "2.4rem", fontWeight: 800 }} data-testid="final-score" data-value={result.profit}>
+            {fmtMoney(result.profit)}
           </span>
         </div>
+        <p class="small muted" style={{ margin: 0 }}>
+          Índice de desempeño {result.score.toFixed(1)}/100 (diagnóstico: operación según tu propuesta de valor 70% + precisión del pronóstico 30%) · con otra propuesta:{" "}
+          {others.map((s) => `${OPTIONS[s]} ${finalScore(state, s).score.toFixed(1)}`).join(" · ")}
+        </p>
         <div class="row no-print">
           {exportButton("export-json")}
           <button type="button" onClick={() => download(`hoshi-mart-${region}-${state.config.seed}.csv`, store.csv(), "text/csv")}>
@@ -64,7 +68,91 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
       </div>
 
       <div class="card stack">
-        <h2>Cómo se formó el puntaje</h2>
+        <h2>Estado de resultados de los 5 años</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Concepto (US$)</th>
+                {[0, 1, 2, 3, 4].map((y) => (
+                  <th key={y}>A{y + 1}</th>
+                ))}
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {PNL.map(([k, label, sign]) => {
+                const of = (y?: number) => (sign * state.history.filter((h) => y === undefined || Math.floor(h.epoch / 4) === y).reduce((a, h) => a + (h.kpis[k] ?? 0), 0)) || 0;
+                return (
+                  <tr key={k} style={k === "PROFIT" || k === "EBITDA" ? { fontWeight: 700 } : undefined}>
+                    <td>{label}</td>
+                    {[0, 1, 2, 3, 4].map((y) => (
+                      <td key={y}>{fmtMoney(of(y))}</td>
+                    ))}
+                    <td>{fmtMoney(of())}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card stack">
+        <h2>Índice de desempeño (diagnóstico)</h2>
+        <p data-testid="score-split">
+          <strong>{result.score.toFixed(1)}</strong> = {Math.round((1 - FC_W) * 100)}% × operación <strong>{result.operational.toFixed(1)}</strong> + {Math.round(FC_W * 100)}% × pronóstico{" "}
+          <strong>{result.forecast.toFixed(1)}</strong>
+        </p>
+        <h3>Pronóstico (F-01)</h3>
+        <p class="small muted">
+          Cada año se califica con el pronóstico que capturaste en T1: 60% el patrón (WAPE semanal por encima del error inevitable del ruido), 20% la variabilidad (CV) y 20% la cobertura del p95 (ideal: 5% de las
+          semanas por encima).
+        </p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Año</th>
+                <th>WAPE</th>
+                <th>Sesgo</th>
+                <th>Semanas sobre tu p95</th>
+                <th>Exactitud del CV</th>
+                <th>Calificación</th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.forecastYears.map((y) => {
+                const hs = state.history.filter((h) => Math.floor(h.epoch / 4) === y.year);
+                const sumK = (k: string) => hs.reduce((a, h) => a + (h.kpis[k] ?? 0), 0);
+                const bias = (sumK("FC_TOTAL") - sumK("MARKET")) / Math.max(1e-9, sumK("MARKET"));
+                return (
+                  <tr key={y.year}>
+                    <td>A{y.year + 1}</td>
+                    <td>{fmt(y.wape, "pct1")}</td>
+                    <td>
+                      {bias >= 0 ? "+" : ""}
+                      {fmt(bias, "pct1")}
+                    </td>
+                    <td>{fmt(y.exceed, "pct1")}</td>
+                    <td>{fmt(y.cvAcc, "pct")}</td>
+                    <td>{(y.score * 100).toFixed(0)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <LineChart
+          labels={labels}
+          series={[
+            { label: "Demanda por tienda (mercado)", data: state.history.map((h) => (h.kpis.MARKET ?? 0) / Math.max(1, h.kpis.FC_WEEKS ?? 0)) },
+            { label: "Tu pronóstico", data: state.history.map((h) => (h.kpis.FC_TOTAL ?? 0) / Math.max(1, h.kpis.FC_WEEKS ?? 0)) },
+          ]}
+          format={(v) => fmt(v, "num1")}
+          ariaLabel="Demanda por tienda contra pronóstico por trimestre"
+        />
+        <h3>Operación</h3>
         <table>
           <thead>
             <tr>

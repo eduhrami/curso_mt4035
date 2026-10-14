@@ -4,6 +4,7 @@
  * siempre la versión p95; D-61 solo decide qué ve el jugador (R-12).
  */
 import { percentile, type EpochContext } from "@mt4035/sim-core";
+import { serviceGuardrails } from "./score.ts";
 import { familiarity, routingFactors, zoningKmMult } from "./tick.ts";
 import type { LmState, Params } from "./types.ts";
 
@@ -26,7 +27,7 @@ export function aggregate(ctx: EpochContext<LmState, Params>): Record<string, nu
   // Eficiencia contra el mejor diseño posible (IA con datos completos y zonas óptimas).
   const routeEff = Math.min(p.routing.ai.kmMult * p.zoning.dynamic, 1) / (routingFactors(s, p).kmMult * zoningKmMult(s, p, t.ordersPerDay));
   void familiarity;
-  return {
+  const k: Record<string, number> = {
     ORDERS: tot("orders"),
     DELIVERED: handled,
     REVENUE: revenue,
@@ -97,4 +98,10 @@ export function aggregate(ctx: EpochContext<LmState, Params>): Record<string, nu
     CAPEX: capex,
     PROFIT: tot("margin") - lateCost - capex,
   };
+  // Penalización por servicio (§7.5): guardrails de la estrategia declarada, rotos en el mes.
+  const broken = serviceGuardrails(s.strategy, p, s.territory).filter((g) => !(g.op === ">=" ? (k[g.kpi] ?? 1) >= g.value : (k[g.kpi] ?? 0) <= g.value));
+  k.SERVICE_BREACHES = broken.length;
+  k.SERVICE_PENALTY = broken.length * p.money.servicePenaltyShare * revenue;
+  k.PROFIT = k.PROFIT! - k.SERVICE_PENALTY;
+  return k;
 }

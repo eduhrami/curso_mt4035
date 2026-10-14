@@ -6,6 +6,7 @@ const RED = "Red, flujo y transporte";
 const INV = "Inventario y tienda";
 const INFO = "Información y colaboración";
 const GEN = "Conceptos generales";
+const FC = "Pronóstico y series de tiempo";
 
 export const GLOSSARY: GlossaryEntry[] = [
   // Indicadores
@@ -55,6 +56,24 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "CPFR", full: "Collaborative Planning, Forecasting and Replenishment", def: "Planeación, pronóstico y reposición colaborativos entre cliente y proveedor.", category: INFO },
   { term: "Arm's-length", def: "Relación transaccional con el proveedor, sin compartir información ni planear en conjunto.", category: INFO },
   { term: "Pronóstico causal", def: "Pronóstico que explica la demanda con sus causas (clima, calendario, promociones), no solo con su historia.", category: INFO },
+
+  // Dinero
+  { term: "Utilidad", def: "Puntaje definitivo: EBITDA logístico (margen bruto − merma − rebajas − costos logísticos − TI) − inversión − penalizaciones por servicio, acumulado en los 20 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },
+  { term: "Penalización por servicio", def: "Cada trimestre en que rompes un guardrail de servicio de tu propuesta de valor (p. ej., OSA mínima) pierdes un % de las ventas del trimestre: penalizaciones y clientes que se van.", aliases: ["penalizaciones por servicio"], category: "Dinero" },
+  { term: "Rebajas", def: "Pérdida por comprar más de lo que se vende cuando el pronóstico es alto: la mercancía sobrante se vende con descuento o se desecha.", category: "Dinero" },
+
+  // Pronóstico y series de tiempo
+  { term: "Pronóstico", def: "Estimación de la demanda futura. En el simulador (F-01) se captura en T1 de cada año con parámetros estimados de los datos y fija el inventario de las tiendas.", aliases: ["pronosticar", "pronosticas"], category: FC },
+  { term: "Serie de tiempo", def: "Datos ordenados en el tiempo (aquí, demanda por tienda por semana). Se descompone en tendencia, estacionalidad y ruido.", aliases: ["series de tiempo"], category: FC },
+  { term: "Tendencia", def: "Movimiento de largo plazo de la serie; aquí, el crecimiento anual de la demanda por tienda.", category: FC },
+  { term: "Nivel base", def: "Unidades por tienda por día de un trimestre de índice 1, al inicio del año que se pronostica.", category: FC },
+  { term: "Índice estacional", def: "Multiplicador de un periodo respecto al promedio (p. ej., T3 ×1.10). Se estima dividiendo la serie entre su tendencia.", aliases: ["índices"], category: FC },
+  { term: "Desestacionalizar", def: "Quitar a la serie el efecto de la estacionalidad para ver la tendencia y el ruido.", category: FC },
+  { term: "CV", full: "Coeficiente de variación", def: "Desviación estándar / media. Aquí, la variabilidad del residuo semanal una vez quitadas tendencia y estacionalidad.", aliases: ["coeficiente de variación"], category: FC },
+  { term: "Residuo", def: "Lo que queda de la serie al quitar tendencia y estacionalidad: el ruido aleatorio de la semana.", category: FC },
+  { term: "WAPE", full: "Weighted Absolute Percentage Error", def: "Error absoluto ponderado: Σ|pronóstico − real| / Σ real.", category: FC },
+  { term: "Sesgo", full: "Bias", def: "(Σ pronóstico − Σ real) / Σ real. Positivo: pronosticaste de más; negativo: de menos.", category: FC },
+  { term: "p95", full: "Percentil 95", def: "Valor que solo el 5% de las semanas supera.", category: FC },
 
   // Conceptos generales
   { term: "Bullwhip", full: "Efecto látigo", def: "Amplificación de la variabilidad de los pedidos conforme se sube en la cadena de suministro, aunque la demanda final sea estable.", aliases: ["efecto bullwhip", "efecto látigo"], category: GEN },

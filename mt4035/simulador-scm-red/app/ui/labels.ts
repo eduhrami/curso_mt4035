@@ -3,6 +3,7 @@ import type { KpiMeta, LabelMap } from "@mt4035/ui-kit";
 import { params, presetOf, type RegionId, type Strategy } from "../src/index.ts";
 
 export const TABS = [
+  { id: "Pronóstico", label: "Pronóstico" },
   { id: "Estrategia", label: "Estrategia" },
   { id: "Red", label: "Red" },
   { id: "Flujo", label: "Flujo" },
@@ -63,6 +64,7 @@ export const OPTIONS: Record<string, string> = {
 };
 
 export const LABELS: LabelMap = {
+  "F-01": { help: "Se captura en T1 de cada año con los datos observados hasta ese momento." },
   "D-00": { help: "Fija cómo se evalúa tu desempeño. Solo puedes cambiarla una vez, con penalización." },
   "D-01": { help: "Cada CD tarda 2–4 trimestres en construirse según su tamaño. No se puede mover de zona ni reducir." },
   "D-05": { help: "Decide dónde se ubican las tiendas nuevas: concentradas alrededor de tus CD o repartidas." },
@@ -122,6 +124,22 @@ export const KPI_NAMES: Record<string, string> = {
   LT_SD: "σ LT",
   OFR: "OFR",
   GMROI: "GMROI",
+  MARKET: "Demanda por tienda (mercado)",
+  FC_TOTAL: "Pronóstico por tienda",
+  FC_WAPE: "WAPE del pronóstico",
+  FC_BIAS: "Sesgo del pronóstico",
+  FC_ABS: "Error absoluto del pronóstico",
+  FC_ORACLE: "Error del ruido (piso)",
+  FC_EXCEED: "Semanas sobre el p95 pronosticado",
+  FC_WEEKS: "Semanas evaluadas",
+  FC_CVACC: "Exactitud del CV",
+  FC_SCORE: "Puntaje del pronóstico",
+  PROFIT: "Utilidad (US$)",
+  SERVICE_PENALTY: "Penalizaciones por servicio (US$)",
+  SERVICE_BREACHES: "Guardrails de servicio rotos",
+  CAPEX: "Inversión y cargos (US$)",
+  OVERSTOCK_COST: "Rebajas por sobrecompra (US$)",
+  GM_USD: "Margen bruto (US$)",
 };
 
 export const STRATEGY_TEXT: Record<Strategy, string> = {
@@ -167,6 +185,10 @@ export const MARKET_FIELDS: { key: string; label: string; options: Record<string
 
 /** Texto breve de un valor de decisión (para el diálogo de confirmación). */
 export function describeValue(id: string, v: unknown): string {
+  if (id === "F-01" && v && typeof v === "object") {
+    const f = v as { year: number; level: number; growth: number; quarters: number[]; cv: number; p95: number };
+    return `A${f.year + 1}: nivel ${f.level.toFixed(1)} unid./tienda/día, crecimiento ${(f.growth * 100).toFixed(1)}%, trimestres ${f.quarters.map((q) => `×${q.toFixed(2)}`).join("/")}, CV ${(f.cv * 100).toFixed(1)}%, p95 ${f.p95.toFixed(1)}`;
+  }
   const opt = (x: unknown) => OPTIONS[String(x)] ?? String(x);
   if (id === "D-01" && Array.isArray(v)) return v.length ? v.map((d) => `${d.id}: zona ${d.zone}, ${opt(d.type)}, ${opt(d.size)}`).join(" · ") : "sin CD";
   if (id === "D-06" && typeof v === "number") return `${(v * 100).toFixed(0)}% anual`;

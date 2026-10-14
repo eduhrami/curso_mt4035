@@ -99,6 +99,9 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "Compensación por retraso", def: "Cupón que se da al cliente por cada pedido entregado fuera de la promesa.", aliases: ["compensaciones"], category: "Dinero" },
   { term: "Margen de la canasta", def: "Parte del valor del pedido que queda después del costo de la mercancía (25% de la canasta).", category: "Dinero" },
 
+  { term: "Penalización por servicio", def: "Cada mes en que rompes un guardrail de servicio de tu estrategia (p. ej., OTD p95 mínimo) pierdes un % de las ventas del mes: penalizaciones y clientes que se van.", aliases: ["penalizaciones por servicio"], category: "Dinero" },
+  { term: "Flota spot", def: "Vehículos que el 3PL consigue de último momento cuando la flota contratada no alcanza: más caros y no siempre disponibles.", aliases: ["spot"], category: "Dinero" },
+
   // Conceptos generales
   { term: "Trade-off", def: "Disyuntiva: mejorar un objetivo empeora otro (p. ej., velocidad contra costo).", category: GEN },
   { term: "Frontera OTD–CPD", def: "Curva de las mejores combinaciones posibles de puntualidad y costo por pedido: mejorar una exige sacrificar la otra.", aliases: ["frontera"], category: GEN },

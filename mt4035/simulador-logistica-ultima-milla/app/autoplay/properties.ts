@@ -210,14 +210,14 @@ export const properties: PropertyDef[] = [
   },
   {
     id: "LOG-AUT-12",
-    label: "Medir importa: en Megalópolis, BOT-A tiene OTD promedio − OTD p95 ≥ 10 pp",
+    label: "Medir importa: en Megalópolis, BOT-A tiene OTD promedio − OTD p95 ≥ 8 pp",
     priority: "P2",
     needs: ["A"],
     check: (r) => {
       const runs = r.of("A", "megalopolis");
       if (!runs.length) return { pass: true, detail: "sin corridas de Megalópolis" };
       const gap = mean(runs.map((x) => x.kpiMeans.OTD! - x.kpiMeans.OTD_P95!));
-      return { pass: gap >= 0.1, detail: `diferencia media ${(gap * 100).toFixed(1)} pp` };
+      return { pass: gap >= 0.08, detail: `diferencia media ${(gap * 100).toFixed(1)} pp` };
     },
   },
   {

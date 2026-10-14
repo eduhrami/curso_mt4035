@@ -1302,10 +1302,16 @@
       "zoneCv": 0.03
     },
     "planning": {
-      "threePlCommit": 0.9,
-      "idleDayCost": 75,
+      "threePlCommit": 1.0,
+      "idleDayCost": 160,
       "headroomZ": 1.65,
-      "headroomMax": 1.5
+      "headroomMax": 1.5,
+      "overflowReliability": 0.6,
+      "overflowCostMult": 2.0,
+      "laborIdleShare": 0.5,
+      "laborOvertimePremium": 0.5,
+      "note": "El 3PL se contrata con el pronóstico: el compromiso cubre la necesidad pronosticada (se paga aunque no se use, idleDayCost por vehículo-día × margen del 3PL) y la holgura por CV es flexible. Si no alcanza, el 3PL cubre overflowReliability del faltante a tarifa spot (overflowCostMult × tarifa dedicada). El personal de surtido se planea con el pronóstico del día: de más, laborIdleShare del exceso se paga ocioso; de menos, horas extra con laborOvertimePremium.",
+      "overflowPeakMult": 0.0
     },
     "score": {
       "weight": 0.3,
@@ -1320,7 +1326,46 @@
     }
   },
   "money": {
-    "lateCoupon": 1.5,
-    "note": "Compensación por pedido entregado fuera de la promesa (cupón), USD. Solo entra a la utilidad, no al CPD ni al margen del canal."
+    "lateCoupon": 2.0,
+    "note": "lateCoupon: compensación por pedido entregado fuera de la promesa (USD). Guardrails de servicio según la estrategia declarada: umbral = guardrail calibrado del territorio + delta (o 'value' absoluto). Cada mes con un guardrail roto resta servicePenaltyShare × ventas del mes. Solo entran a la utilidad, no al CPD ni al margen del canal.",
+    "servicePenaltyShare": 0.02,
+    "serviceGuardrails": {
+      "speed": [
+        {
+          "kpi": "OTD_P95",
+          "op": ">=",
+          "delta": -0.05
+        },
+        {
+          "kpi": "CYCLE_HOURS",
+          "op": "<=",
+          "value": 24
+        }
+      ],
+      "reliability": [
+        {
+          "kpi": "OTD_P95",
+          "op": ">=",
+          "delta": 0.05
+        },
+        {
+          "kpi": "CSAT",
+          "op": ">=",
+          "delta": 0
+        }
+      ],
+      "efficiency": [
+        {
+          "kpi": "OTD_P95",
+          "op": ">=",
+          "delta": -0.05
+        },
+        {
+          "kpi": "CSAT",
+          "op": ">=",
+          "delta": -0.2
+        }
+      ]
+    }
   }
 }

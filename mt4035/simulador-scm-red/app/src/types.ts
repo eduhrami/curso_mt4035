@@ -1,5 +1,6 @@
 /** Tipos del modelo SCM (especificación §4–§7). */
 import type paramsJson from "../params/params.v1.json";
+import type { DemandTruth, Forecast as DemandForecast } from "./forecast.ts";
 
 export type Params = typeof paramsJson;
 
@@ -107,6 +108,8 @@ export interface Decisions {
   info: Info;
   sharing: Sharing;
   forecast: Forecast;
+  /** F-01: pronóstico de demanda por tienda del equipo (se captura al inicio de cada año). */
+  demandForecast: DemandForecast;
   collaboration: Collaboration;
   training: Level;
 }
@@ -151,6 +154,10 @@ export interface ScmState {
   shocks: Shocks;
   mixShift: number;
   lastEpochOsa: number;
+  /** Proceso de demanda verdadero de la partida (oculto al jugador; §4.4). */
+  truth: DemandTruth;
+  /** Escala del ruido de la demanda (config.test.noise; 1 en partidas normales). */
+  noiseScale: number;
   /** Datos de eventos en curso (categoría afectada, zona, etc.). */
   memo: Record<string, number | string>;
 }

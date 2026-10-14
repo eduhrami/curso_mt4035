@@ -87,7 +87,7 @@ export function Setup() {
             </button>
           ))}
         </div>
-        <p class="small muted">Tu puntaje definitivo es la utilidad acumulada; la estrategia que declares define el índice de desempeño de referencia (siempre con los días críticos, p95). Puedes cambiarla una sola vez durante la partida, con penalización.</p>
+        <p class="small muted">Tu puntaje definitivo es la utilidad acumulada. La estrategia que declares fija los guardrails de servicio que debes cumplir (siempre con los días críticos, p95): romperlos cuesta dinero. Puedes cambiarla una sola vez durante la partida, con penalización.</p>
       </section>
 
       <section class="card stack" aria-labelledby="h-market">

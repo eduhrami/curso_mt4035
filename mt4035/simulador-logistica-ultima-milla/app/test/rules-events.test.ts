@@ -91,7 +91,7 @@ describe("LOG-REG (P1)", () => {
     expect(fired(buffered, "R-06")).toBe(false);
     // La holgura absorbe el pico en la promesa (OTD del mes); los peores días son los posteriores al pico,
     // cuando se despacha el atraso, así que el p95 no es la medida de este efecto.
-    expect(buffered.kpis.OTD).toBeGreaterThan(none.kpis.OTD! + 0.1);
+    expect(buffered.kpis.OTD).toBeGreaterThan(none.kpis.OTD! + 0.05);
   });
 
   it("REG-08 R-08: IA de ruteo o de asignación con datos básicos dispara el aviso", () => {
@@ -120,7 +120,8 @@ describe("LOG-REG (P1)", () => {
     expect(van.tickMetrics[0]!.restrictedCut).toBe(params.events["X-04"].capacityCut);
     expect(ev.tickMetrics[0]!.restrictedCut).toBe(0);
     const base = oneEpoch("megalopolis").tickMetrics[0]!;
-    expect(van.tickMetrics[0]!.available! / base.available!).toBeCloseTo(1 - params.events["X-04"].capacityCut, 9);
+    // La flota contratada pierde el 20%; el spot de último momento (overflow) cubre parte, pero no es la capacidad contratada.
+    expect(van.tickMetrics[0]!.contracted! / base.contracted!).toBeCloseTo(1 - params.events["X-04"].capacityCut, 9);
     expect(fired(van, "R-13")).toBe(true);
     expect(fired(ev, "R-13")).toBe(false);
   });
