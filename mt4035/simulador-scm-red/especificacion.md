@@ -468,11 +468,11 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 **Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y siete preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-07`.
 
 - **DB-01…DB-04, DB-06 y DB-07** son comunes a todos los escenarios (DB-07: método de pronóstico, WAPE y sesgo por año y qué corrigió al re-pronosticar); **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
-- Introducción a la práctica, asignación de escenarios, plenario y rúbrica: [guía del instructor](./guia-instructor.md).
+- Introducción a la práctica, asignación de escenarios, plenario y rúbrica: guía del instructor, en el repositorio privado `eduhrami/curso_mt4035-privado` (no se publica porque incluye la rúbrica).
 
-**Preguntas para el plenario:** ver la [guía del instructor](./guia-instructor.md#a7-plenario-sugerido).
+**Preguntas para el plenario:** ver la guía del instructor (repositorio privado `eduhrami/curso_mt4035-privado`), §A.7.
 
-**Entregable:** JSON de la corrida con el debrief completo. La rúbrica está en la [guía del instructor](./guia-instructor.md#b-rúbrica-del-debrief).
+**Entregable:** JSON de la corrida con el debrief completo. La rúbrica está en la guía del instructor (repositorio privado `eduhrami/curso_mt4035-privado`), §B.
 
 ---
 

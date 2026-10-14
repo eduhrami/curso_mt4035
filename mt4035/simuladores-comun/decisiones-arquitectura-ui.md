@@ -298,7 +298,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - El store (`debriefQuestions`, `debrief`, `debriefComplete`) guarda el borrador con la corrida en `localStorage` al salir de cada campo y lo restaura al cargarla. Mínimo de 60 caracteres por respuesta.
 - El botón «Exportar corrida con debrief (JSON)» del reporte final se habilita solo con el debrief completo. El «Exportar JSON» de la barra superior se oculta al terminar la partida para que no haya otra vía de exportación sin debrief.
 - `RunExport.debrief` (`{ complete, answers[{ id, question, answer }] }`) es opcional en el esquema, lo cubre el checksum y el replay lo ignora. `aggregate` lo agrega como columnas `debrief_completo` y `debrief_DB-xx`.
-- Guías del instructor por simulador (`guia-instructor.md`): introducción a la práctica y rúbrica de las preguntas.
+- Guías del instructor por simulador: introducción a la práctica y rúbrica de las preguntas. Viven en el repositorio privado `eduhrami/curso_mt4035-privado` (14-oct-2026), no en el público.
 
 ### AD-32 ✔ Glosario y definiciones al pasar el mouse (5-oct-2026)
 
