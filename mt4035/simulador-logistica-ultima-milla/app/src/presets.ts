@@ -29,7 +29,7 @@ export const PRESETS: MarketPreset[] = [
   {
     id: "EM-01",
     title: "Mercado base",
-    tagline: "Crecimiento medio y un cliente promedio: la diferencia la hacen la red y la flota.",
+    tagline: "Un cliente promedio: la diferencia la hacen la red, la flota y qué tan bien pronosticas.",
     market: { ...DEFAULT_MARKET },
     seed: 5101,
     concept: "Línea base: la frontera entre entrega a tiempo (OTD) y costo por pedido (CPD).",
@@ -41,10 +41,10 @@ export const PRESETS: MarketPreset[] = [
   {
     id: "EM-02",
     title: "Carrera por la velocidad",
-    tagline: "Canal en línea explosivo y un cliente que premia la rapidez y no mira la tarifa.",
+    tagline: "Un cliente que premia la rapidez y no mira la tarifa.",
     market: { ...DEFAULT_MARKET, growth: "explosive", speedSensitivity: "high", feeSensitivity: "low" },
     seed: 5202,
-    concept: "El costo de la velocidad cuando el cliente la premia y el volumen crece rápido.",
+    concept: "El costo de la velocidad cuando el cliente la premia.",
     watch: ["OTD en p95 durante Hot Sale y Buen Fin", "Utilización de flota y nodos conforme crece el volumen"],
     question: "¿Dónde valió la pena pagar por velocidad y dónde no? ¿Cómo se comportaron el OTD p95 y la utilización de flota en Hot Sale y Buen Fin?",
     hint: "Reporta OTD p95, CPD y utilización en los meses pico.",
@@ -53,7 +53,7 @@ export const PRESETS: MarketPreset[] = [
   {
     id: "EM-03",
     title: "Margen apretado",
-    tagline: "Crecimiento lento, cliente sensible a la tarifa, gasolina volátil y choferes escasos.",
+    tagline: "Cliente sensible a la tarifa, gasolina volátil y choferes escasos.",
     market: { ...DEFAULT_MARKET, growth: "slow", speedSensitivity: "low", feeSensitivity: "high", fuel: "volatile", labor: "tight" },
     seed: 5303,
     concept: "Eficiencia cuando el margen es estrecho y el cliente es sensible a la tarifa.",

@@ -17,8 +17,21 @@ async function begin(page: Page, territory: "Megalópolis Centro" | "Ciudad Baj�
   return errors;
 }
 
+/** Captura un pronóstico plausible (A1: formulario en blanco; A2 y A3: parte del anterior). */
+async function captureForecast(page: Page) {
+  await page.getByRole("tab", { name: "Pronóstico" }).click();
+  const editor = page.getByTestId("forecast-editor");
+  const inputs = editor.locator("input");
+  if (!(await inputs.first().inputValue())) {
+    const values = ["600", "20", "1.25", "1", "0.95", "0.95", "1", "0.9", "0.95", "1.1", "1.6", "1.5", "1.9", "1.7", "10", "1100"];
+    for (let i = 0; i < values.length; i++) await inputs.nth(i).fill(values[i]!);
+  } else await editor.getByTestId("capture-forecast").click();
+  await expect(page.getByTestId("review")).toBeEnabled();
+}
+
 async function playEpoch(page: Page) {
   const before = await page.getByTestId("epoch-label").textContent();
+  if (await page.getByTestId("review").isDisabled()) await captureForecast(page);
   await page.getByTestId("review").click();
   await page.getByTestId("confirm-run").click();
   await expect(page.getByTestId("epoch-label")).not.toHaveText(before ?? "");
@@ -35,8 +48,8 @@ test("partida completa de 36 meses en Ciudad Bajío y exportación verificable c
   // El JSON solo se exporta con el debrief completo (AD-31).
   await expect(page.getByTestId("export-json")).toBeDisabled();
   const boxes = page.getByTestId("debrief").locator("textarea");
-  await expect(boxes).toHaveCount(6);
-  for (let i = 0; i < 6; i++) await boxes.nth(i).fill(`Respuesta ${i + 1}: decisión, mecanismo y KPI observados en la corrida con datos concretos.`);
+  await expect(boxes).toHaveCount(7);
+  for (let i = 0; i < 7; i++) await boxes.nth(i).fill(`Respuesta ${i + 1}: decisión, mecanismo y KPI observados en la corrida con datos concretos.`);
   await expect(page.getByTestId("export-json")).toBeEnabled();
   const [dl] = await Promise.all([page.waitForEvent("download"), page.getByTestId("export-json").click()]);
   const parsed = parseExport(readFileSync((await dl.path())!, "utf8"), "mt4035-lastmile");
@@ -45,7 +58,7 @@ test("partida completa de 36 meses en Ciudad Bajío y exportación verificable c
   expect(parsed.value.epochsPlayed).toBe(36);
   expect(parsed.value.finalScore).toBeCloseTo(score, 1);
   expect(parsed.value.debrief?.complete).toBe(true);
-  expect(parsed.value.debrief?.answers.map((a) => a.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06"]);
+  expect(parsed.value.debrief?.answers.map((a) => a.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06", "DB-07"]);
   const r = await replay(createLastMileEngine(), parsed.value, { simVersion: SIM_VERSION, paramsVersion: PARAMS_VERSION });
   expect(r.ok).toBe(true);
   expect(errors).toEqual([]);
@@ -53,6 +66,7 @@ test("partida completa de 36 meses en Ciudad Bajío y exportación verificable c
 
 test("abrir una dark store pide confirmar lo irreversible y queda como proyecto en curso", async ({ page }) => {
   await begin(page, "Megalópolis Centro");
+  await captureForecast(page);
   await page.getByRole("tab", { name: "Red" }).click();
   await page.getByRole("slider", { name: /Dark stores/ }).fill("1");
   await page.getByTestId("review").click();
@@ -152,4 +166,24 @@ test("el glosario se abre desde el inicio y los términos muestran su definició
   await dialog.getByRole("button", { name: "Cerrar glosario" }).click();
   await expect(dialog).toBeHidden();
   await expect(page.locator("abbr.gloss").first()).toHaveAttribute("title", /.+: .+/);
+});
+
+test("el pronóstico es obligatorio en enero de cada año y los datos de demanda se descargan", async ({ page }) => {
+  await begin(page, "Ciudad Bajío");
+  await expect(page.getByTestId("review")).toBeDisabled();
+  await expect(page.getByRole("alert").filter({ hasText: "pronóstico de A1" })).toBeVisible();
+  await page.getByRole("tab", { name: "Pronóstico" }).click();
+  const [dl] = await Promise.all([page.waitForEvent("download"), page.getByTestId("download-demand").click()]);
+  const lines = readFileSync((await dl.path())!, "utf8").trim().split("\n");
+  expect(lines[0]).toMatch(/^dia,anio,mes,dia_mes,dia_semana,evento,.*,total$/);
+  expect(lines).toHaveLength(1 + 730);
+  await captureForecast(page);
+  for (let i = 0; i < 12; i++) await playEpoch(page);
+  await expect(page.getByTestId("epoch-label")).toContainText("13/36");
+  await expect(page.getByTestId("review")).toBeDisabled();
+  await page.getByRole("tab", { name: "Pronóstico" }).click();
+  const [dl2] = await Promise.all([page.waitForEvent("download"), page.getByTestId("download-demand").click()]);
+  expect(readFileSync((await dl2.path())!, "utf8").trim().split("\n")).toHaveLength(1 + 730 + 365);
+  await captureForecast(page);
+  await expect(page.getByText("Pronóstico contra demanda")).toBeVisible();
 });

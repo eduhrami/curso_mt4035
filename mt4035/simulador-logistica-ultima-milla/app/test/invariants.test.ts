@@ -48,7 +48,7 @@ describe("LOG-INV (P1)", () => {
             expect(close(m.attempts!, m.firstOk! + m.failedFirst!)).toBe(true);
             expect(m.successful!).toBeLessThanOrEqual(m.attempts! + 1e-9);
             // cierre del waterfall de costos
-            expect(close(m.lastMile!, m.routeCost! + m.pickCost! + m.capitalCost! + m.reattemptCost! + m.returnsCost! + m.techCost! + m.fixedDaily! + m.robberyCost!)).toBe(true);
+            expect(close(m.lastMile!, m.routeCost! + m.pickCost! + m.capitalCost! + m.reattemptCost! + m.returnsCost! + m.techCost! + m.fixedDaily! + m.robberyCost! + m.idleCost!)).toBe(true);
             // spoilage solo sobre frescos
             expect(m.spoiled!).toBeLessThanOrEqual(m.freshTotal! + 1e-9);
             expect(m.stops!).toBeLessThanOrEqual(m.capStops! + 1e-9);
@@ -162,7 +162,7 @@ describe("LOG-INV (P1)", () => {
     expect(engine.validate(s0, { "D-55": "locker" }).ok).toBe(false);
   });
 
-  it("INV-17 los picos caen en mayo, agosto, noviembre y diciembre con magnitud en [1.3, 2.5]", () => {
+  it("INV-17 los picos caen en mayo, agosto, noviembre y diciembre con magnitud dentro del rango del proceso de demanda", () => {
     expect([...new Set(params.peaks.map((p) => p.month))].sort((a, b) => a - b)).toEqual([4, 7, 10, 11]);
     for (let seed = 1; seed <= 20; seed++) {
       const { reports } = playGame(engine, sto("megalopolis", seed, { test: { events: "off" } }));
@@ -171,8 +171,8 @@ describe("LOG-INV (P1)", () => {
         if ([4, 7, 10, 11].includes(e % 12)) expect(peakDays.length).toBeGreaterThan(0);
         else expect(peakDays).toHaveLength(0);
         for (const m of peakDays) {
-          expect(m.peak).toBeGreaterThanOrEqual(params.peakMagnitude.min);
-          expect(m.peak).toBeLessThanOrEqual(params.peakMagnitude.max);
+          expect(m.peak).toBeGreaterThanOrEqual(params.forecast.truth.peakClamp[0]!);
+          expect(m.peak).toBeLessThanOrEqual(params.forecast.truth.peakClamp[1]!);
         }
       });
     }

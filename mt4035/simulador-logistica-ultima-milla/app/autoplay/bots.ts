@@ -3,6 +3,7 @@ import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-cor
 import type { Policy } from "@mt4035/sim-core/testing";
 import type { Bot } from "@mt4035/sim-tools";
 import { createLastMileEngine, lmConfig, params } from "../src/model.ts";
+import { truthForecast } from "../src/forecast.ts";
 import { isPeakMonth } from "../src/network.ts";
 import type { Decisions, LmState, TerritoryId } from "../src/types.ts";
 
@@ -263,7 +264,12 @@ export function baselineVector(scenario: string): Vec {
   };
 }
 
-export const bots: Bot<LmState>[] = [
+/** Los bots de referencia pronostican bien (F-01 = proceso verdadero cada enero): la operación se calibra aparte del pronóstico. */
+const withForecast =
+  (pol: Policy<LmState>): Policy<LmState> =>
+  (s, e) => ({ ...(e % 12 === 0 ? { "F-01": truthForecast(s.model, params, e / 12) } : {}), ...pol(s, e) });
+
+const referenceBots: Bot<LmState>[] = [
   { id: "A", label: "Estático", purpose: "Línea base por territorio", policy: () => noop },
   { id: "B", label: "Velocidad a toda costa", purpose: "Debe perder bajo eficiencia y confiabilidad", policy: () => speedAtAllCost() },
   { id: "C", label: "Segmentado (mini-caso S5)", purpose: "Debe ganar a A en Megalópolis", policy: () => segmented() },
@@ -275,5 +281,10 @@ export const bots: Bot<LmState>[] = [
   { id: "J", label: "Segmentado + IA con datos básicos", purpose: "La IA necesita datos (AUT-13)", policy: () => segmented({ routing: "ai", data: "basic" }) },
   { id: "K", label: "Segmentado + VRPTW con datos completos", purpose: "La IA necesita datos (AUT-13)", policy: () => segmented({ routing: "vrptw", data: "full" }) },
   { id: "I", label: "Buscador", purpose: "Óptimos por territorio × estrategia; detecta explotaciones", policy: (_seed, scn, args) => vectorPolicy(args as Vec, scn) },
+];
+
+export const bots: Bot<LmState>[] = [
+  ...referenceBots.map((b) => ({ ...b, policy: (seed: number, scn: string, args?: unknown) => withForecast(b.policy(seed, scn, args)) })),
+  { id: "L", label: "Estático sin pronosticar", purpose: "Con el pronóstico nominal pierde contra BOT-A, que pronostica bien (AUT-17)", policy: () => noop },
 ];
 

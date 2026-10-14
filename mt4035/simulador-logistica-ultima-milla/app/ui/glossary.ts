@@ -7,6 +7,7 @@ const PROM = "Asignación y promesa";
 const FLOTA = "Flota y ruteo";
 const CLI = "Cliente, datos y devoluciones";
 const GEN = "Conceptos generales";
+const FC = "Pronóstico y series de tiempo";
 
 export const GLOSSARY: GlossaryEntry[] = [
   // Indicadores
@@ -76,6 +77,20 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "Pago contra entrega", full: "COD (Cash on Delivery)", def: "El cliente paga al recibir el pedido.", aliases: ["COD"], category: CLI },
   { term: "IA", full: "Inteligencia artificial", def: "En el simulador, ruteo basado en modelos que aprenden de los datos de operación.", category: CLI },
   { term: "Logística inversa", def: "Flujo de devoluciones del cliente de regreso a la empresa.", aliases: ["devoluciones"], category: CLI },
+
+  // Pronóstico y series de tiempo
+  { term: "Pronóstico", def: "Estimación de la demanda futura. En el simulador (F-01) se captura en enero de cada año con parámetros estimados de los datos y dimensiona la flota contratada.", aliases: ["pronosticar", "pronosticas"], category: FC },
+  { term: "Serie de tiempo", def: "Datos ordenados en el tiempo (aquí, pedidos por día). Se descompone en tendencia, estacionalidad y ruido.", aliases: ["series de tiempo"], category: FC },
+  { term: "Tendencia", def: "Movimiento de largo plazo de la serie; aquí, el crecimiento anual compuesto del canal en línea.", category: FC },
+  { term: "Nivel base", def: "Pedidos de un día típico (sin pico ni quincena, índice semanal 1) al inicio del año que se pronostica.", category: FC },
+  { term: "Índice estacional", def: "Multiplicador de un periodo respecto al promedio (p. ej., lunes ×1.2). Se estima dividiendo la serie entre su tendencia.", aliases: ["índices", "patrón semanal"], category: FC },
+  { term: "Desestacionalizar", def: "Quitar a la serie el efecto de la estacionalidad (días de la semana, quincenas, picos) para ver la tendencia y el ruido.", category: FC },
+  { term: "Quincena", def: "Días de pago (14, 15, 29 y 30 de cada mes): la demanda sube por un multiplicador que se estima con los datos.", category: FC },
+  { term: "CV", full: "Coeficiente de variación", def: "Desviación estándar / media. Aquí, la variabilidad del residuo diario una vez quitadas tendencia y estacionalidad.", aliases: ["coeficiente de variación"], category: FC },
+  { term: "Residuo", def: "Lo que queda de la serie al quitar tendencia y estacionalidad: el ruido aleatorio del día.", category: FC },
+  { term: "WAPE", full: "Weighted Absolute Percentage Error", def: "Error absoluto ponderado: Σ|pronóstico − real| / Σ real. Mide qué tan lejos quedó el pronóstico día a día.", category: FC },
+  { term: "Sesgo", full: "Bias", def: "(Σ pronóstico − Σ real) / Σ real. Positivo: pronosticaste de más; negativo: de menos.", category: FC },
+  { term: "Compromiso mínimo", def: "Parte de la flota contratada al 3PL que se paga aunque no se use. Pronosticar de más cuesta capacidad ociosa.", aliases: ["capacidad ociosa"], category: FC },
 
   // Conceptos generales
   { term: "Trade-off", def: "Disyuntiva: mejorar un objetivo empeora otro (p. ej., velocidad contra costo).", category: GEN },

@@ -250,4 +250,11 @@ export const properties: PropertyDef[] = [
       return { pass: cov >= 0.95, detail: `cobertura ${(cov * 100).toFixed(1)}% sobre ${total} cambios relevantes` };
     },
   },
+  {
+    id: "LOG-AUT-17",
+    label: "Pronosticar paga: BOT-A (pronóstico perfecto) > BOT-L (pronóstico nominal) bajo las tres estrategias (≥ 80%)",
+    priority: "P1",
+    needs: ["A", "L"],
+    check: (r) => perCombo(r, r.scenarios, 0.8, ["A", "L"], (_st, score) => score("A") > score("L")),
+  },
 ];

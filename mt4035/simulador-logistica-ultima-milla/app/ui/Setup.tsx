@@ -69,8 +69,9 @@ export function Setup() {
           ))}
         </div>
         <p class="small">
-          <strong>Calendario de picos</strong> (cada año; la magnitud, de ×{params.peakMagnitude.min} a ×{params.peakMagnitude.max}, se conoce hasta que ocurre):{" "}
-          {params.peaks.map((pk) => `${pk.name} (${MONTHS[pk.month]}, ${pk.days} días)`).join(" · ")} · y cada quincena.
+          <strong>Calendario de picos</strong> (cada año):{" "}
+          {params.peaks.map((pk) => `${pk.name} (${MONTHS[pk.month]}, ${pk.days} días)`).join(" · ")} · y cada quincena. Su magnitud, el volumen diario y el crecimiento del canal no se
+          anuncian: los estimas con los datos históricos que descargas al comenzar (pestaña «Pronóstico»).
         </p>
       </section>
 
@@ -99,6 +100,7 @@ export function Setup() {
           selected={preset}
           market={market}
           onSelect={choosePreset}
+          cardHidden={["growth"]}
           onMarketChange={(m) => setMarket(m as Market)}
         />
       </section>

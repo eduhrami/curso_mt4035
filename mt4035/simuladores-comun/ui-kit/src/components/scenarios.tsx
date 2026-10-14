@@ -29,6 +29,7 @@ export function ScenarioPicker({
   onSelect,
   onMarketChange,
   headingId,
+  cardHidden = [],
 }: {
   presets: ScenarioCard[];
   fields: MarketField[];
@@ -40,6 +41,8 @@ export function ScenarioPicker({
   onSelect: (id: string) => void;
   onMarketChange: (market: Record<string, string>) => void;
   headingId: string;
+  /** Factores que no se muestran en las fichas (el jugador debe estimarlos), aunque sí en el perfil propio. */
+  cardHidden?: string[];
 }) {
   const custom = selected === CUSTOM_SCENARIO;
   // Al cerrar «Crear mi propio escenario» se vuelve al último escenario predefinido elegido.
@@ -55,7 +58,7 @@ export function ScenarioPicker({
               <Gloss text={p.tagline} />
             </p>
             <ul class="small" style={{ margin: 0, paddingLeft: "1.1rem" }}>
-              {fields.map((f) => {
+              {fields.filter((f) => !cardHidden.includes(f.key)).map((f) => {
                 const changed = p.market[f.key] !== base[f.key];
                 return (
                   <li key={f.key} class={changed ? undefined : "muted"}>

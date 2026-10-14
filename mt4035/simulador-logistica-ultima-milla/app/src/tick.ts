@@ -7,6 +7,7 @@
  */
 import { clamp, normalCdf, type TickContext } from "@mt4035/sim-core";
 import { levelShares, monthOf, peakOn, placeNodes, route, speedScore, weekdayOf, type RouteResult } from "./network.ts";
+import { expectedMarket, forecastDay, marketByZone, type PeakId } from "./forecast.ts";
 import { emptyShocks } from "./scenario.ts";
 import { LEVELS, type LmState, type NodeKind, type Params } from "./types.ts";
 
@@ -116,10 +117,15 @@ export function lmTick(ctx: Ctx): void {
 
   // ---------- Demanda ----------
   const years = s.day / 365;
-  const growth = (1 + p.markets.growth[s.market.growth]) ** years;
+  // Demanda del mercado: proceso oculto de la partida (§4.3b); el pronóstico del equipo (F-01) planea la capacidad.
+  const growth = (1 + s.truth.growth) ** years;
   const peak = peakOn(s, p, ctx.epoch, dayOfMonth);
-  const quincena = p.quincena.days.includes(dayOfMonth + 1) ? p.quincena.mult : 1;
-  const weekdayMult = p.weekdayMult[weekday]!;
+  const cal = { epoch: ctx.epoch, dom: dayOfMonth, day: s.day };
+  const market = marketByZone(s, p, ctx.config.seed, cal, t.zones.map((z) => z.share), ctx.noise);
+  const marketTotal = market.reduce((a, b) => a + b, 0);
+  const fc = d.forecast;
+  // Día sin pico según el pronóstico (índice semanal y quincena): base de la capacidad planeada.
+  const fcBase = forecastDay(fc, p, cal, false);
   const spd = speedScore(d, p);
   // La holgura alarga la promesa que ve el cliente: se percibe más lenta (E-23).
   const spdPromised = spd * (1 - d.buffer);
@@ -154,7 +160,7 @@ export function lmTick(ctx: Ctx): void {
   const capUtil = d.assignment === "ai" ? 0.95 : p.highUtil;
   let cdLeft = d.sfd.active ? p.nodes.cd.capacity[d.sfd.capacity] * (1 - sh.capacityCut * 0) : 0;
   const cdCap = cdLeft;
-  const typicalOrders = t.ordersPerDay * growth;
+  const typicalOrders = s.truth.level * growth;
   // Capacidad restante de cada MFC y dark store (un nodo surte su zona y las vecinas).
   const mfcLeft = place.mfc.map(() => p.nodes.mfc.capacity);
   const darkLeft = place.dark.map(() => p.nodes.dark.capacity);
@@ -162,13 +168,13 @@ export function lmTick(ctx: Ctx): void {
 
   // ---------- Pasada 1: zonas ----------
   const work: ZoneWork[] = [];
-  for (const zp of t.zones) {
+  for (const [zi, zp] of t.zones.entries()) {
     const z = s.zones[zp.id]!;
-    const noise = ctx.stream("demand", ctx.tick, zp.id).normal() * ctx.noise;
-    let orders = t.ordersPerDay * zp.share * growth * (peak?.mult ?? 1) * quincena * weekdayMult * demandService * codDemand * z.trust * z.competition * sh.demandMult * Math.max(0, 1 + 0.08 * noise);
+    let orders = market[zi]! * demandService * codDemand * z.trust * z.competition * sh.demandMult;
     let rejected = 0;
     if (d.slotting !== "none") {
-      const cap = t.ordersPerDay * zp.share * growth * p.slotting[d.slotting] * 1.15;
+      // La capacidad publicada se planea con el pronóstico del día (sin pico), no con la demanda real.
+      const cap = fcBase * zp.share * p.slotting[d.slotting] * 1.15;
       if (orders > cap) {
         rejected = orders - cap;
         orders = cap;
@@ -299,14 +305,23 @@ export function lmTick(ctx: Ctx): void {
   s.needDays += 1;
   const restricted = p.vehicles[vehicleKind].restricted ? sh.capacityCut : 0;
   const ownAvail = (mix.own > 0 ? s.ownFleet : 0) * (1 - sh.ownCut) * (1 - restricted);
-  // El 3PL y los contratos de pico se dimensionan con la necesidad típica (promedio del mes anterior),
-  // no con la del día: en un pico la flota contratada se queda corta.
-  // Primer día del juego: se descuenta el efecto del día (fin de semana, quincena) para estimar el típico.
-  if (s.baseNeed === 0) s.baseNeed = need / (quincena * weekdayMult * (peak?.mult ?? 1));
-  const plAvail = s.baseNeed * mix["3pl"] * p.fleet.threePlElastic * (1 - restricted);
+  // El 3PL y el contrato anticipado de picos se dimensionan con el pronóstico del equipo (F-01):
+  // vehículos por pedido (mes anterior) × pedidos de un día típico pronosticado. La holgura sale del CV
+  // pronosticado. Pronosticar de menos deja rutas sin cubrir; de más, se paga el compromiso mínimo.
+  const fp = p.forecast.planning;
+  const requested = work.reduce((a, w) => a + w.orders + w.rejected, 0);
+  const load = work.reduce((a, w) => a + w.orders + w.carried, 0);
+  if (s.needPerOrder === 0 && load > 0) s.needPerOrder = need / load;
+  if (s.serviceRatio === 0 && marketTotal > 0) s.serviceRatio = requested / marketTotal;
+  s.ordersAccum += load;
+  s.marketAccum += marketTotal;
+  const plannedNeed = s.needPerOrder * s.serviceRatio * fcBase;
+  const headroom = Math.min(fp.headroomMax, 1 + fp.headroomZ * fc.cv);
+  const plContract = plannedNeed * mix["3pl"] * headroom;
+  const plAvail = plContract * (1 - restricted);
   const crowdAvail = need * mix.crowd * t.crowdAvailability * (peak ? 0.75 : 1) * (1 - sh.crowdCut);
   const contract = p.fleet.peak[d.peakContract];
-  const peakExtra = peak ? s.baseNeed * contract.extra * contract.reliability : 0;
+  const peakExtra = !peak || d.peakContract === "none" ? 0 : d.peakContract === "advance" ? plannedNeed * Math.max(0, fc.peaks[peak.id as PeakId] - 1) : plannedNeed * contract.extra * contract.reliability;
   const available = ownAvail + plAvail + crowdAvail + peakExtra;
   const fleetShort = need > 0 ? clamp(1 - available / need, 0, 1) : 0;
   const lostRoutesShare = need > 0 ? Math.min(1, sh.lostRoutes / Math.max(need, 1)) : 0;
@@ -317,6 +332,10 @@ export function lmTick(ctx: Ctx): void {
   const usePl = Math.min(servedVehicles - useOwn, plAvail);
   const useCrowd = Math.min(servedVehicles - useOwn - usePl, crowdAvail);
   const useExtra = Math.max(0, servedVehicles - useOwn - usePl - useCrowd);
+  // Capacidad contratada sin usar: compromiso mínimo del 3PL y contrato anticipado de pico.
+  const idlePl = Math.max(0, fp.threePlCommit * plContract - usePl);
+  const idleExtra = d.peakContract === "advance" ? Math.max(0, peakExtra - useExtra) : 0;
+  const idleCost = (idlePl * p.fleet.threePlMarkup + idleExtra * contract.costMult) * fp.idleDayCost;
 
   // ---------- Pasada 3: resultados por zona ----------
   const wage = t.driverWage * (s.market.labor === "tight" ? 1.15 : 1);
@@ -573,7 +592,7 @@ export function lmTick(ctx: Ctx): void {
   // Telemetría y tráfico se pagan por vehículo en operación.
   const fixedDaily = (fixedMonthly + need * p.data.costPerVehicleMonth[d.data]) / daysInMonth;
   const robberyCost = sh.lostOrders > 0 ? p.events["X-08"].cost : 0;
-  const lastMile = routeCost + ownFixed + pickCost + capitalCost + reattemptCost + returnsCost + techCost + fixedDaily + robberyCost;
+  const lastMile = routeCost + ownFixed + pickCost + capitalCost + reattemptCost + returnsCost + techCost + fixedDaily + robberyCost + idleCost;
   const successful = firstOk + (attempts - firstOk) * absent.success;
 
   // R-02: spoilage semanal de frescos
@@ -657,6 +676,14 @@ export function lmTick(ctx: Ctx): void {
     expressRoutes,
     freshRouteHours: freshDelivW > 0 ? routeHoursFreshW / freshDelivW : 0,
     peak: peak ? peak.mult : 0,
+    // Pronóstico (F-01) contra la demanda del mercado (§7.4)
+    mkt: marketTotal,
+    fcDay: forecastDay(fc, p, cal),
+    fcAbs: Math.abs(forecastDay(fc, p, cal) - marketTotal),
+    fcOracle: Math.abs(expectedMarket(s, p, cal) - marketTotal),
+    fcExceed: marketTotal > fc.p95 ? 1 : 0,
+    idleCost,
+    plannedNeed,
     // KPI diarios (para percentiles: p95 en el puntaje, D-61 en la vista)
     dayOtd: delivTotal > 0 ? onTime / delivTotal : 1,
     dayFads: attempts > 0 ? firstOk / attempts : 1,

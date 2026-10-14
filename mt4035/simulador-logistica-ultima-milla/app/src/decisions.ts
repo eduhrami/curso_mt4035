@@ -46,7 +46,27 @@ function needsNode(view: DecisionView<LmState>): string | null {
 const FIN = ["CPD", "CPD_P95", "MARGIN_PCT", "SHIP_PCT"];
 const SERVICE = ["OTD", "OTD_P95", "OTIF", "CSAT", "NPS"];
 
+const positive = (max: number) => z.number().finite().positive().max(max);
+const forecastSchema = z.object({
+  year: z.number().int().min(-1).max(10),
+  level: positive(1e6),
+  growth: z.number().finite().min(-0.5).max(3),
+  weekday: z.array(z.number().finite().min(0.2).max(3)).length(7),
+  quincena: z.number().finite().min(0.5).max(3),
+  peaks: z.object({ hotsale: positive(6), school: positive(6), buenfin: positive(6), xmas: positive(6) }),
+  cv: z.number().finite().min(0).max(1),
+  p95: positive(1e7),
+});
+
 export const decisions: Spec<any>[] = [
+  field("F-01", "forecast", "Pronóstico de demanda del año", "Pronóstico", forecastSchema, ["FC_SCORE", "FC_WAPE", "FLEET_SHORT", "BACKLOG", "OTD_P95", "CPD", "REJECTED"], {
+    validate: (v, view) => {
+      const e = view.state.epoch;
+      if (e % 12 !== 0) return "El pronóstico solo se captura al inicio de cada año (enero)";
+      if (v.year !== Math.floor(e / 12)) return `El pronóstico debe ser del año A${Math.floor(e / 12) + 1}`;
+      return null;
+    },
+  }),
   field("D-00", "strategy", "Estrategia de servicio declarada", "Estrategia", z.enum(["speed", "reliability", "efficiency"]), [], {
     maxChanges: 1,
     cost: (_v, _s, p) => p.strategyChangePenalty,

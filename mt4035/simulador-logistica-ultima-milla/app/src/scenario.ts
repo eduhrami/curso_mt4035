@@ -1,5 +1,6 @@
 /** Estado inicial por territorio: operación as-is de Mercado Alba (especificación §2 y §4.1). */
 import type { GameConfig, Rng } from "@mt4035/sim-core";
+import { defaultForecast, drawTruth } from "./forecast.ts";
 import { DEFAULT_MARKET, type Decisions, type LmState, type Params, type Scenario, type Shocks } from "./types.ts";
 
 export function emptyShocks(): Shocks {
@@ -27,6 +28,7 @@ export function emptyShocks(): Shocks {
 export function asIsDecisions(scn: Scenario, p: Params): Decisions {
   return {
     strategy: scn.strategy,
+    forecast: defaultForecast(p, p.territories[scn.territory].ordersPerDay, scn.market.growth),
     sfd: { active: true, capacity: p.territories[scn.territory].cdCapacity as Decisions["sfd"]["capacity"] },
     sfs: { share: 0, pickers: "2" },
     bopis: false,
@@ -74,11 +76,7 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
   const scn: Scenario = { ...config.scenario, market: { ...DEFAULT_MARKET, ...(config.scenario.market ?? {}) } };
   const t = p.territories[scn.territory];
   if (!t) throw new Error(`Territorio desconocido: ${scn.territory}`);
-  const peakMagnitude: Record<string, number> = {};
-  const s = rng.stream("peaks", 0, 0);
-  for (let year = 0; year < Math.ceil(p.epochs / 12); year++) {
-    for (const pk of p.peaks) peakMagnitude[`${year}:${pk.id}`] = s.uniform(p.peakMagnitude.min, p.peakMagnitude.max);
-  }
+  const { truth, peakMagnitude } = drawTruth(rng, p, t.ordersPerDay, scn.market.growth);
   return {
     territory: scn.territory,
     strategy: scn.strategy,
@@ -92,6 +90,12 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     needDays: 0,
     baseNeed: 0,
     peakMagnitude,
+    truth,
+    noiseScale: config.test?.noise ?? 1,
+    needPerOrder: 0,
+    serviceRatio: 0,
+    ordersAccum: 0,
+    marketAccum: 0,
     weekFresh: 0,
     weekSpoiled: 0,
     flags: { r01: false, r02: false, r05: false, r06: false },

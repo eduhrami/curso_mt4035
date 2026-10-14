@@ -3,11 +3,13 @@ import { useState } from "preact/hooks";
 import { ConfirmDialog, DecisionPanel, download, fmtMoney, GlossaryContext, GlossaryDialog, MessageInbox, StorageBanner, ThreeColumns } from "@mt4035/ui-kit";
 import { GLOSSARY } from "./glossary.ts";
 import { Dashboard } from "./Dashboard.tsx";
+import { ForecastEditor } from "./ForecastEditor.tsx";
 import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
 import { engine, glossaryOpen, EPOCHS, professor, projectsInProgress, screen, store, territoryOf } from "./game.ts";
 import { describeValue, KPI_NAMES, LABELS, MONTHS, OPTIONS, scenarioLabel, TABS, TERRITORY_TEXT } from "./labels.ts";
+import type { Forecast } from "../src/index.ts";
 
 export function App() {
   const state = store.state.value;
@@ -82,6 +84,9 @@ function Game() {
   const final = s.phase === "FINAL";
   const pendingChanges = store.changedIds.value.length;
   const hasErrors = Object.keys(store.errors.value).length > 0;
+  // En enero de cada año hay que capturar el pronóstico (F-01) antes de confirmar.
+  const fcYear = Math.floor(s.epoch / 12);
+  const needsForecast = s.epoch % 12 === 0 && (store.valueOf("F-01") as Forecast).year !== fcYear;
   const footer = !final && (
     <div class="stack" style={{ marginTop: "0.75rem" }}>
       {hasErrors && (
@@ -89,7 +94,12 @@ function Game() {
           Corrige las decisiones marcadas antes de confirmar.
         </p>
       )}
-      <button type="button" class="btn-primary" disabled={hasErrors || store.busy.value} onClick={() => setOpen(true)} data-testid="review">
+      {needsForecast && (
+        <p class="small" role="alert" style={{ color: "var(--warn)", margin: 0 }}>
+          Captura tu pronóstico de A{fcYear + 1} en la pestaña «Pronóstico» para confirmar enero.
+        </p>
+      )}
+      <button type="button" class="btn-primary" disabled={hasErrors || needsForecast || store.busy.value} onClick={() => setOpen(true)} data-testid="review">
         Revisar y confirmar {engine.epochLabel(s.epoch)} {pendingChanges ? `(${pendingChanges} cambios)` : "(sin cambios)"}
       </button>
       {pendingChanges > 0 && (
@@ -102,7 +112,7 @@ function Game() {
   return (
     <>
       <ThreeColumns
-        left={<DecisionPanel store={store} tabs={TABS} labels={LABELS} globalOptions={OPTIONS} kpiNames={KPI_NAMES} footer={footer} />}
+        left={<DecisionPanel store={store} tabs={TABS} labels={LABELS} globalOptions={OPTIONS} kpiNames={KPI_NAMES} custom={{ "F-01": ForecastEditor }} footer={footer} />}
         center={final ? <FinalReport state={s} /> : <Dashboard state={s} />}
         right={<MessageInbox reports={s.history} epochLabel={(e) => engine.epochLabel(e)} kpiNames={KPI_NAMES} unit="día" period="mes" />}
       />

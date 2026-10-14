@@ -89,7 +89,9 @@ describe("LOG-REG (P1)", () => {
     expect(none.kpis.OTD_P95).toBeLessThan(0.8);
     expect(fired(none, "R-06")).toBe(true);
     expect(fired(buffered, "R-06")).toBe(false);
-    expect(buffered.kpis.OTD_P95).toBeGreaterThan(none.kpis.OTD_P95!);
+    // La holgura absorbe el pico en la promesa (OTD del mes); los peores días son los posteriores al pico,
+    // cuando se despacha el atraso, así que el p95 no es la medida de este efecto.
+    expect(buffered.kpis.OTD).toBeGreaterThan(none.kpis.OTD! + 0.1);
   });
 
   it("REG-08 R-08: IA de ruteo o de asignación con datos básicos dispara el aviso", () => {

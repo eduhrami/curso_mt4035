@@ -21,6 +21,7 @@ const COSTS: [string[], string][] = [
   [["returnsCost"], "Devoluciones"],
   [["techCost"], "Tecnología por pedido"],
   [["fixedDaily", "robberyCost"], "Fijos (nodos, datos, seguridad)"],
+  [["idleCost"], "Flota contratada ociosa"],
 ];
 
 const sum = (r: EpochReport, ks: string[]) => r.tickMetrics.reduce((a, m) => a + ks.reduce((b, k) => b + (m[k] ?? 0), 0), 0);
@@ -106,6 +107,8 @@ export function Dashboard({ state }: { state: GameState<LmState> }) {
 
       <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} period="mes" unitPlural="días" />
 
+      <ForecastCard reports={reports} labels={labels} />
+
       <DailyView report={last} view={view} />
 
       <div class="card stack">
@@ -175,6 +178,34 @@ function ProfessorScore({ state }: { state: GameState<LmState> }) {
         </span>
       ))}
       <span class="muted">({KPI_NAMES.OTD_P95} y demás promediados sobre {state.history.length} meses)</span>
+    </div>
+  );
+}
+
+/** Pronóstico (F-01) contra la demanda del mercado, por mes, con el error del año en curso. */
+function ForecastCard({ reports, labels }: { reports: EpochReport[]; labels: string[] }) {
+  const year = Math.floor(reports[reports.length - 1]!.epoch / 12);
+  const ofYear = reports.filter((r) => Math.floor(r.epoch / 12) === year);
+  const sumK = (k: string) => ofYear.reduce((a, r) => a + (r.kpis[k] ?? 0), 0);
+  const wape = sumK("FC_ABS") / Math.max(1, sumK("MARKET"));
+  const bias = (sumK("FC_TOTAL") - sumK("MARKET")) / Math.max(1, sumK("MARKET"));
+  const exceed = sumK("FC_EXCEED") / Math.max(1, sumK("FC_DAYS"));
+  return (
+    <div class="card stack">
+      <h2>Pronóstico contra demanda</h2>
+      <p class="small muted">
+        Pedidos por día (promedio de cada mes) del mercado contra tu pronóstico (F-01). En lo que va de A{year + 1}: WAPE {fmt(wape, "pct1")} · sesgo {bias >= 0 ? "+" : ""}
+        {fmt(bias, "pct1")} · días sobre tu p95 {fmt(exceed, "pct1")} (ideal 5%). Lo usarás para re-pronosticar en enero.
+      </p>
+      <LineChart
+        labels={labels}
+        series={[
+          { label: "Demanda del mercado (pedidos/día)", data: reports.map((r) => (r.kpis.MARKET ?? 0) / Math.max(1, r.kpis.FC_DAYS ?? 0)) },
+          { label: "Tu pronóstico (pedidos/día)", data: reports.map((r) => (r.kpis.FC_TOTAL ?? 0) / Math.max(1, r.kpis.FC_DAYS ?? 0)) },
+        ]}
+        format={(v) => fmt(v, "num0")}
+        ariaLabel="Demanda del mercado contra pronóstico por mes"
+      />
     </div>
   );
 }

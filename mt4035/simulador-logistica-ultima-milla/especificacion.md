@@ -90,8 +90,8 @@ Este simulador pone al alumno frente a la pregunta de negocio de S5: **¿cómo h
 
 | ID | Factor | Opciones de perfil | Qué afecta |
 |---|---|---|---|
-| E-20 | Crecimiento del canal en línea | Lento (+10%/año) · Medio (+25%) · Explosivo (+50%) | Volumen y saturación de capacidad |
-| E-21 | Calendario de picos | Hot Sale (may), regreso a clases (ago), Buen Fin (nov), Navidad (dic), quincenas. La magnitud es aleatoria (×1.3–×2.5) | Dimensionamiento de flota y capacidad de nodo |
+| E-20 | Crecimiento del canal en línea | Lento · Medio · Explosivo. Cada nivel es un **rango** (6–14%, 18–32%, 40–60% anual) y la tasa exacta se sortea por partida y **no se muestra** (§4.3b) | Volumen y saturación de capacidad |
+| E-21 | Calendario de picos | Hot Sale (may), regreso a clases (ago), Buen Fin (nov), Navidad (dic), quincenas. Las fechas se conocen; la magnitud típica de cada pico (×1.35–×2.3), su variación anual y el efecto quincena **se estiman con los datos** (§4.3b) | Dimensionamiento de flota y capacidad de nodo |
 | E-22 | Mezcla de pedidos | % de frescos y refrigerados (20–50%) · % de voluminosos (5–20%) · tamaño medio de canasta | Cadena de frío, capacidad del vehículo, *drop size* |
 | E-23 | Sensibilidad del cliente a la velocidad | Baja · Media · Alta | Respuesta de la demanda a la promesa |
 | E-24 | Sensibilidad a la tarifa de envío | Baja · Media · Alta | Respuesta de la demanda a la tarifa y al mínimo de compra |
@@ -112,11 +112,45 @@ La pantalla de inicio ofrece cuatro escenarios cerrados (cada ficha muestra el p
 
 Los ids EM-xx son internos (no se muestran al jugador). La corrida guarda el id en `setup.preset` (`config.scenario.preset`) y el nombre del escenario se muestra en la barra superior, en el reporte final y en el comparador de corridas. Las corridas anteriores sin `preset` se reconocen por coincidencia exacta del perfil. Definición en [`app/src/presets.ts`](app/src/presets.ts). ⚠ Las semillas y la dificultad relativa de cada escenario están pendientes de revisar con auto-juego.
 
+### 4.3b Proceso de demanda oculto y datos históricos (13-oct-2026)
+
+La demanda del canal en línea ya no se describe en pantalla: cada partida sortea con su semilla un **proceso de demanda oculto** y el equipo lo estima con datos (práctica de modelación de distribuciones y series de tiempo, S1 y S3). Implementación en [`app/src/forecast.ts`](app/src/forecast.ts).
+
+`demanda_mercado(día, zona) = nivel · (1 + g)^(día/365) · índice_semanal(día) · quincena(día) · pico(día, año) · participación(zona) · (1 + ε_común + ε_zona)`
+
+| Componente | Sorteo por partida ⚠ | Qué estima el alumno |
+|---|---|---|
+| Nivel | pedidos/día del territorio × U(0.92, 1.08) | Nivel base al inicio del año |
+| Crecimiento `g` | Rango según E-20 | Tasa anual (tendencia) |
+| Índice semanal | Patrón base × U(0.94, 1.06), normalizado a promedio 1 | 7 índices (lunes a domingo) |
+| Quincena (días 14, 15, 29, 30) | U(1.04, 1.18) | Multiplicador |
+| Pico (por evento) | Típico U(1.35, 2.3); cada año × e^N(0, 0.07), acotado a [1.15, 2.6] | Multiplicador típico de cada pico |
+| Ruido común `ε_común` | Normal con CV U(0.06, 0.14) | CV del residuo y p95 diario |
+| Ruido de zona `ε_zona` | Normal con CV 0.03 (fijo) | — |
+
+- **Datos:** desde la pestaña «Pronóstico» el equipo descarga un CSV con **2 años de historia** (H1, H2) y, en enero de A2 y A3, también los meses ya jugados. Una fila por día: `dia, anio, mes, dia_mes, dia_semana, evento` (nombre del pico si cae ese día), una columna por zona y `total`. Los datos son la **demanda del mercado** (pedidos que el canal recibiría con la operación *as-is*), sin el efecto de las decisiones del equipo; los pedidos que efectivamente llegan son esa demanda × el efecto del servicio (velocidad, tarifa, confianza, pago contra entrega). El CSV es determinista con la semilla, así que se regenera igual en el replay.
+- **Lo que ya no se muestra:** el crecimiento en las fichas de escenario, los pedidos/día de cada territorio y la magnitud de los picos; los mensajes de tendencia citan el pronóstico del equipo, no el proceso verdadero.
+
 ---
 
 ## 5. Mapa de decisiones (acciones del jugador)
 
 Organizadas según las **5 decisiones que cambian la historia** de S5 más las operativas. Cada decisión trae su costo, retraso y reversibilidad.
+
+### 5.0 Pronóstico de demanda (F-01, enero de cada año)
+
+| ID | Decisión | Campos | Efecto |
+|---|---|---|---|
+| F-01 | Pronóstico de demanda del año | Nivel base (pedidos de un día típico al 1 de enero), crecimiento anual, 7 índices semanales (se normalizan a promedio 1), multiplicador de quincena, multiplicador de cada pico (Hot Sale, regreso a clases, Buen Fin, Navidad), CV del ruido diario y p95 de pedidos por día del año | Dimensiona la capacidad planeada (abajo) y es el 30% del puntaje (§7.4) |
+
+- **Cuándo:** solo en enero (A1-M01, A2-M01, A3-M01) y para el año en curso; la interfaz no deja confirmar enero sin capturarlo. En A2 y A3 el formulario parte del pronóstico anterior y el equipo lo ajusta con los datos nuevos.
+- **Pronóstico del día:** `F(día) = nivel · (1 + g)^((día − 1 ene)/365) · índice(día)/promedio(índices) · quincena · pico`.
+- **Capacidad planeada con el pronóstico** (sustituye la necesidad reactiva del mes anterior):
+  - **3PL contratado** = vehículos por pedido (mes anterior) × pedidos/demanda del mercado (mes anterior) × F(día) sin pico × holgura, con holgura = 1 + 1.65 · CV pronosticado (máx. 1.5). Se paga un **compromiso mínimo** del 90% de lo contratado aunque no se use (US$ 75 por vehículo-día ocioso × margen del 3PL).
+  - **Contrato anticipado de pico (D-36 «advance»)** = vehículos planeados × (multiplicador pronosticado del pico − 1); lo contratado y no usado también se paga. El contrato spot no depende del pronóstico.
+  - **Capacidad publicada (D-26)** = F(día) sin pico × participación de la zona × tope.
+  - Pronosticar de menos deja rutas sin cubrir (OTD, backlog); de más, paga capacidad ociosa (CPD). El costo aparece en el desglose del CPD como «Flota contratada ociosa».
+- Sin captura, el modelo usa un pronóstico nominal (solo pruebas y bots; la interfaz siempre lo exige).
 
 ### 5.1 Estrategia de servicio (setup)
 
@@ -397,6 +431,18 @@ Basados en el [scorecard de KPIs de S5](../references/sesion-5-scorecard-kpis-tr
 | CSAT / NPS | 0.25 | 0.25 | 0.15 |
 | Margen del canal en línea | 0.15 | 0.10 | 0.15 |
 
+### 7.4 Calidad del pronóstico y puntaje final (13-oct-2026)
+
+**Puntaje final = 70% operación (§7.3) + 30% pronóstico.** Cada año se califica con el pronóstico vigente en él (0–1):
+
+| Componente | Peso | Medida |
+|---|---|---|
+| Patrón | 60% | WAPE diario = Σ\|F − D\| / Σ D, calificado por encima del WAPE del pronóstico perfecto (el error inevitable del ruido de esa partida): 1 − max(0, WAPE − piso − 0.01) / 0.15 |
+| Variabilidad | 20% | 1 − \|CV pronosticado − CV verdadero\| / CV verdadero |
+| Cobertura del p95 | 20% | 1 − \|días sobre el p95 pronosticado − 5%\| / 15% |
+
+El puntaje del pronóstico es el promedio de los años jugados. KPIs mensuales: `MARKET`, `FC_TOTAL`, `FC_WAPE`, `FC_BIAS`, `FC_ABS`, `FC_ORACLE`, `FC_EXCEED`, `FC_DAYS`, `FC_CVACC`, `IDLE_COST`. Con auto-juego (5 semillas por territorio): pronóstico perfecto ≈ 92/100 de calidad; ±10% en nivel y picos ≈ 76–80; ±20% ≈ 37–46. El puntaje total es máximo con el pronóstico correcto en 5 de 6 combinaciones territorio × contrato de pico (en Megalópolis sin contrato, sobreestimar 10% empata, porque el *as-is* tiene poca flota). ⚠ Calibración preliminar.
+
 ---
 
 ## 8. Catálogo de eventos inesperados
@@ -430,7 +476,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 ## 9. Interfaz
 
 1. **Setup:** territorio (ficha de factores E-01…E-14), escenario de mercado (fichas EM-01…EM-04 de la §4.3; el perfil libre queda bajo «Crear mi propio escenario»), estrategia de servicio y semilla. El calendario de picos se ve desde el inicio. Incluye los créditos del curso (profesores y perfiles) y acceso al **glosario**.
-2. **Panel de decisiones por mes:** pestañas *Red · Asignación · Promesa · Flota · Zonas y ruteo · Cliente · Devoluciones · Datos y seguridad*. Cada control muestra costo, retraso y reversibilidad, más un previsualizador cualitativo (↑↓) de los KPIs afectados.
+2. **Panel de decisiones por mes:** pestañas *Pronóstico · Estrategia · Red · Asignación · Promesa · Flota · Zonas y ruteo · Cliente · Devoluciones · Datos y seguridad*. Cada control muestra costo, retraso y reversibilidad, más un previsualizador cualitativo (↑↓) de los KPIs afectados.
 3. **Mapa esquemático del territorio:** zonas como polígonos de una rejilla, nodos (CD, tiendas SFS, dark stores, MFC, lockers) como íconos y calor de demanda por zona. No es un mapa real ni hay vehículos animados.
 4. **Dashboard:**
    - Tarjetas de KPI con semáforo primario–guardrail.
@@ -438,18 +484,20 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
    - Series diarias y mensuales, con el selector promedio/p95 ligado a D-61.
    - Desglose de CPD en cascada (troncal, ruta, picking, reintentos, devoluciones).
    - Tabla por zona y por nivel de servicio.
+   - **Pronóstico contra demanda** (F-01): demanda del mercado y pronóstico por mes, con WAPE, sesgo y días sobre el p95 del año en curso.
+   - La pestaña «Pronóstico» tiene la descarga del CSV de demanda (§4.3b), el formulario de F-01 y una vista previa del promedio diario que implica. En modo profesor muestra el proceso verdadero.
 5. **Bandeja de mensajes:** eventos y alertas de regla con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con valores. Ejemplo: *"Día 14-jul: 212 pedidos frescos en Zona 3 llegaron tibios (spoilage 6.1%). Causas: ruta media 3.4 h (R-01), ola de calor (X-12), hieleras en lugar de refrigerado (D-32). Efecto: 212 reembolsos, CSAT de la zona −0.3."*
 - **Glosario (AD-32):** botón «Glosario» en la barra superior y en el inicio, con todas las siglas y conceptos agrupados y un buscador. En toda la interfaz, los términos del glosario aparecen subrayados con puntos y muestran su definición al pasar el mouse (`<abbr title>`); las opciones y etiquetas de KPI la muestran como tooltip. Entradas en [`app/ui/glossary.ts`](app/ui/glossary.ts).
 6. **Comparador de corridas:** 2–4 corridas, KPIs y diff de decisiones.
-7. **Reporte final:** scorecard, trayectoria de 36 meses, picos enfrentados y decisiones clave.. Cierra con el **debrief** (§11): notas del escenario y seis preguntas obligatorias; el JSON solo se exporta con el debrief completo.
+7. **Reporte final:** puntaje separado en operación y pronóstico, tabla de precisión del pronóstico por año (WAPE, sesgo, días sobre el p95, exactitud del CV), demanda contra pronóstico, trayectoria de 36 meses, picos enfrentados y decisiones clave. Cierra con el **debrief** (§11): notas del escenario y siete preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 
 ---
 
 ## 10. Persistencia y exportación
 
 - **`localStorage`** con clave `mt4035.lastmile.runs.v1`. Toda lectura y escritura va en `try/catch`, con respaldo en memoria.
-- **Esquema de corrida (JSON):** igual que el del [simulador SCM](../simulador-scm-red/especificacion.md#10-persistencia-y-exportación), con `sim: "mt4035-lastmile"`, `setup.territory: "megalopolis|bajio|norte"`, `setup.strategy: "speed|reliability|efficiency"`, `setup.preset: "EM-01…EM-04"` (omitido si es escenario propio, §4.3) y `debrief` con las respuestas DB-01…DB-06 (§11). Los KPIs van por mes y por zona, con diarios agregados p50/p95.
-- **Export:** JSON (completo y reproducible con semilla, decisiones y checksum) y CSV (KPIs por mes y zona).
+- **Esquema de corrida (JSON):** igual que el del [simulador SCM](../simulador-scm-red/especificacion.md#10-persistencia-y-exportación), con `sim: "mt4035-lastmile"`, `setup.territory: "megalopolis|bajio|norte"`, `setup.strategy: "speed|reliability|efficiency"`, `setup.preset: "EM-01…EM-04"` (omitido si es escenario propio, §4.3) y `debrief` con las respuestas DB-01…DB-07 (§11). Los pronósticos F-01 viajan en el registro de decisiones, así que el replay reproduce también la calificación del pronóstico. Los KPIs van por mes y por zona, con diarios agregados p50/p95.
+- **Export:** JSON (completo y reproducible con semilla, decisiones y checksum), CSV (KPIs por mes y zona) y CSV de demanda diaria del mercado (§4.3b).
 - **Import:** cargar un JSON para revisarlo o compararlo.
 
 ---
@@ -462,9 +510,11 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 2. **Mini-caso de S5 en vivo:** activar SFS en el urbano denso y SFD en la periferia, con una regla de umbral de costo. Comparar contra la corrida 1 en la frontera OTD–CPD.
 3. **Territorio Norte:** probar express (y ver cómo explota el CPD) contra lockers, micro-hubs y consolidación. Comprobar que "urbano = VRPTW + estacionamiento; rural = TSP + consolidación".
 
-**Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y seis preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-06`.
+**Modelación de demanda (13-oct-2026):** antes de jugar, el equipo descarga la historia, la analiza por fuera (descomposición de tendencia, índices estacionales, distribución del residuo) y captura F-01; en enero de A2 y A3 re-pronostica con los datos nuevos. Ver §4.3b, §5.0 y §7.4.
 
-- **DB-01…DB-04 y DB-06** son comunes a todos los escenarios; **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
+**Debrief en el simulador (AD-31):** al terminar, el reporte final muestra el concepto del escenario, las notas de «qué revisar en tu corrida» y siete preguntas que el equipo responde antes de exportar (mínimo 60 caracteres cada una). Las respuestas viajan dentro del JSON (las cubre el checksum) y `npm run aggregate` las pone en columnas `debrief_DB-01…DB-07`.
+
+- **DB-01…DB-04, DB-06 y DB-07** son comunes a todos los escenarios (DB-07: método de pronóstico, WAPE y sesgo por año y qué corrigió al re-pronosticar); **DB-05** es la pregunta propia del escenario (o una genérica si el escenario es propio). Texto en [`app/src/debrief.ts`](app/src/debrief.ts) y [`app/src/presets.ts`](app/src/presets.ts).
 - Introducción a la práctica, asignación de escenarios, plenario y rúbrica: [guía del instructor](./guia-instructor.md).
 
 **Preguntas para el plenario:** ver la [guía del instructor](./guia-instructor.md#a7-plenario-sugerido).
@@ -496,6 +546,7 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 - [x] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común. Sí: `@mt4035/sim-core`.
 - [x] Herramienta del profesor para volver a correr y agregar los JSON del grupo. `npm run replay` y `npm run aggregate` (F6); el modo profesor en la UI llega en F7.
 - [ ] Revisar con auto-juego las semillas y la dificultad relativa de los escenarios EM-01…EM-04 (§4.3), y confirmar si el profesor asigna escenario y semilla por equipo.
+- [ ] Validar en clase los rangos del proceso de demanda (§4.3b), la escala de calificación del pronóstico (§7.4) y el costo de la capacidad ociosa (§5.0). Decidir si conviene un ejemplo resuelto de descomposición (S1/S3) como apoyo.
 
 ---
 

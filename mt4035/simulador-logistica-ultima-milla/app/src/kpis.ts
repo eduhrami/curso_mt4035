@@ -71,5 +71,16 @@ export function aggregate(ctx: EpochContext<LmState, Params>): Record<string, nu
     OWN_FLEET: ms.length ? tot("ownFleet") / ms.length : 0,
     FRESH_ROUTE_HOURS: ms.length ? tot("freshRouteHours") / ms.length : 0,
     PEAK_DAYS: ms.filter((m) => (m.peak ?? 0) > 0).length,
+    // Pronóstico (F-01) contra la demanda del mercado (§7.4): sumas para el puntaje anual y vistas del mes.
+    MARKET: tot("mkt"),
+    FC_TOTAL: tot("fcDay"),
+    FC_ABS: tot("fcAbs"),
+    FC_ORACLE: tot("fcOracle"),
+    FC_EXCEED: tot("fcExceed"),
+    FC_DAYS: ms.length,
+    FC_WAPE: ratio(tot("fcAbs"), tot("mkt")),
+    FC_BIAS: ratio(tot("fcDay") - tot("mkt"), tot("mkt")),
+    FC_CVACC: Math.max(0, 1 - Math.abs(s.dec.forecast.cv - s.truth.cv) / s.truth.cv),
+    IDLE_COST: tot("idleCost"),
   };
 }

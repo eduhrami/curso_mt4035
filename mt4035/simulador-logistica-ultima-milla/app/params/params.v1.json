@@ -1,5 +1,5 @@
 {
-  "version": "p1",
+  "version": "p2",
   "note": "⚠ Calibración preliminar (F5). Se ajusta con auto-juego en F6. Montos en USD; tiempos en horas salvo indicación.",
   "epochs": 36,
   "daysPerMonth": [
@@ -1263,5 +1263,60 @@
     "suburban": 1.0,
     "city2": 1.2,
     "rural": 3.5
+  },
+  "forecast": {
+    "truth": {
+      "growthRange": {
+        "slow": [
+          0.06,
+          0.14
+        ],
+        "medium": [
+          0.18,
+          0.32
+        ],
+        "explosive": [
+          0.4,
+          0.6
+        ]
+      },
+      "levelJitter": 0.08,
+      "weekdayJitter": 0.06,
+      "quincena": [
+        1.04,
+        1.18
+      ],
+      "peakTypical": [
+        1.35,
+        2.3
+      ],
+      "peakYearSigma": 0.07,
+      "peakClamp": [
+        1.15,
+        2.6
+      ],
+      "cv": [
+        0.06,
+        0.14
+      ],
+      "zoneCv": 0.03
+    },
+    "planning": {
+      "threePlCommit": 0.9,
+      "idleDayCost": 75,
+      "headroomZ": 1.65,
+      "headroomMax": 1.5
+    },
+    "score": {
+      "weight": 0.3,
+      "wapeTolerance": 0.01,
+      "wapeSpan": 0.15,
+      "exceedSpan": 0.15,
+      "weights": {
+        "wape": 0.6,
+        "cv": 0.2,
+        "p95": 0.2
+      }
+    }
   }
 }

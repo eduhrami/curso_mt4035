@@ -31,10 +31,10 @@ describe("Escenarios de mercado (EM-xx)", () => {
 });
 
 describe("Debrief (AD-31)", () => {
-  it("cada escenario tiene seis preguntas DB-01…DB-06 y DB-05 es la suya", () => {
+  it("cada escenario tiene siete preguntas DB-01…DB-07 y DB-05 es la suya", () => {
     for (const p of PRESETS) {
       const d = debriefFor({ preset: p.id, market: p.market });
-      expect(d.questions.map((q) => q.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06"]);
+      expect(d.questions.map((q) => q.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06", "DB-07"]);
       expect(d.questions[4]!.question).toBe(p.question);
       expect(d.notes).toEqual(p.watch);
     }

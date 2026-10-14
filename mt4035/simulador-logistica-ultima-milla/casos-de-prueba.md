@@ -181,7 +181,21 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-SCO-02 | La misma corrida (express, CPD alto, Order Cycle Time bajo) evaluada con las tres estrategias | Puntaje velocidad > confiabilidad > eficiencia. ⚠ Implementación: se fija el perfil (Order Cycle Time en su mejor valor y CPD p95 en el peor) sobre la corrida *as-is* para aislar el efecto de los pesos | §7.3 | P1 |
 | LOG-SCO-03 | Violaciones de guardrail > N días | El puntaje decrece de forma estricta con días de violación | §7.3 | P1 |
 | LOG-SCO-04 | Corrida con reporte promedio vs. p95 | Puntaje idéntico (usa p95) | LOG-INV-13 | P1 |
+| LOG-SCO-06 | Puntaje final con pronóstico | Final = 70% operación + 30% calidad del pronóstico (§7.4); el pronóstico perfecto califica ≥ 90 y uno con nivel y picos ±20% ≤ 50 (auto-juego, 5 semillas por territorio) | §7.4 | P1 |
 | LOG-SCO-05 | *As-is* por territorio | Puntajes en banda comparable (p. ej. 35–55). ⚠ Implementación: rangos de CPD p95 y FADS por territorio y guardrail de utilización de vehículo de 50% en Norte; la prueba acepta [33, 58] | §7.3 | P2 |
+
+### 9.1 Pronóstico y datos de demanda (F-01, §4.3b, §5.0)
+
+| ID | Condición | Resultado esperado | Prio |
+|---|---|---|---|
+| LOG-FC-01 | F-01 fuera de enero o para otro año | Error de validación | P1 |
+| LOG-FC-02 | Enero sin pronóstico capturado (UI) | No se puede confirmar; aviso en el panel (prueba de punta a punta) | P1 |
+| LOG-FC-03 | CSV de demanda al inicio y en enero de A2 | 730 días de historia; +365 por año jugado; encabezado `dia, anio, mes, dia_mes, dia_semana, evento, zonas…, total` | P1 |
+| LOG-FC-04 | El CSV coincide con la demanda del mercado que usa el motor (`MARKET`) | Misma suma por mes | P1 |
+| LOG-FC-05 | Pronóstico de nivel × k (k < 1) | Más flota faltante y peor OTD que con k = 1 (pareada) | P1 |
+| LOG-FC-06 | Pronóstico de nivel × k (k > 1) | Más capacidad ociosa (`IDLE_COST`) y mayor CPD que con k = 1 (pareada) | P1 |
+| LOG-FC-07 | Pronóstico perfecto (`truthForecast`) | Calidad del pronóstico ≥ 0.9 en modo estocástico | P1 |
+| LOG-FC-08 | Las pruebas de mecanismos | Usan pronóstico perfecto (helper `start`), para no depender de pronosticar | — |
 
 ---
 
@@ -215,6 +229,9 @@ Los mismos casos que SCM-PER-01…07, con estos cambios: el CSV tiene **36 filas
 | **BOT-G Reactivo** | Si utilización > 90%, suma *crowdsourced*; si OTD < 90%, sube el buffer 10%; si CPD sube > 5% MoM, quita un nivel de servicio | Alumno táctico |
 | **BOT-H Aprendiz** | Igual que A en el año 1; después del primer Buen Fin/Navidad contrata flota de pico, agrega slotting y buffer en los picos de los años 2 y 3. Al iniciar el año 3, si el CD pasó de 85% de utilización en el año 2, suma SFS (30%) con umbral dinámico para liberar capacidad | Valida que los 36 meses permiten aprender de un ciclo a otro |
 | **BOT-I Buscador** | Búsqueda aleatoria + *hill climbing* por territorio × estrategia | Explotaciones y óptimos en límites |
+| **BOT-L Estático sin pronosticar** | Como A, pero con el pronóstico nominal (no analiza datos) | Pronosticar paga (LOG-AUT-17) |
+
+Todos los bots salvo L capturan el pronóstico perfecto cada enero, para que la calibración de la operación no dependa de pronosticar.
 | **BOT-J / BOT-K** | BOT-C con ruteo por IA y datos básicos (J) o con VRPTW y datos completos (K) | La IA necesita datos (LOG-AUT-13) |
 
 ### 11.2 Propiedades esperadas (modo estocástico, MC N = 200)
@@ -236,6 +253,7 @@ Los mismos casos que SCM-PER-01…07, con estos cambios: el CSV tiene **36 filas
 | LOG-AUT-13 | La IA necesita datos | El mejor puntaje con IA y datos básicos < mejor puntaje con VRPTW y datos completos. ⚠ Implementación: se compara BOT-J vs. BOT-K (≥ 80% de semillas) | P2 |
 | LOG-AUT-14 | Estabilidad del reactivo | BOT-G no genera costos explosivos ni KPIs fuera de rango; se registran oscilaciones | P3 |
 | LOG-AUT-15 | Robustez de la calibración | Al perturbar ±20% cada constante, el orden BOT-C > BOT-A en Megalópolis se mantiene en ≥ 90% de las perturbaciones. ⚠ Pendiente: aún no implementada en el auto-juego | P2 |
+| LOG-AUT-17 | Pronosticar paga | BOT-A (pronóstico perfecto) > BOT-L (nominal) en ≥ 80% de semillas en cada territorio × estrategia | P1 |
 | LOG-AUT-16 | **Explicabilidad** | Todo cambio de KPI > 10% entre meses tiene ≥ 1 causa registrada (decisión, evento, regla, pico o tendencia). Cobertura ≥ 95% | P1 |
 
 ### 11.3 Reporte de coherencia y alarmas

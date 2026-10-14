@@ -5,6 +5,7 @@ import { params, presetOf, type Strategy, type TerritoryId } from "../src/index.
 type PlayableTerritory = Exclude<TerritoryId, "minicaso">;
 
 export const TABS = [
+  { id: "Pronóstico", label: "Pronóstico" },
   { id: "Estrategia", label: "Estrategia" },
   { id: "Red", label: "Red" },
   { id: "Asignación", label: "Asignación" },
@@ -92,6 +93,7 @@ export const OPTIONS: Record<string, string> = {
 
 export const LABELS: LabelMap = {
   "D-00": { help: "Fija cómo se evalúa tu desempeño. Solo puedes cambiarla una vez, con penalización." },
+  "F-01": { help: "Se captura en enero de cada año con los datos observados hasta ese momento." },
   "D-01": {
     help: "Surtido desde el CD. Para apagarlo necesitas otro nodo que ya esté operando.",
     fields: { active: "Activo", capacity: "Capacidad de picking" },
@@ -204,6 +206,17 @@ export const KPI_NAMES: Record<string, string> = {
   STOPS_RURAL: "Paradas por ruta rural",
   NPS: "NPS",
   PEAK_DAYS: "Días pico",
+  MARKET: "Demanda del mercado",
+  FC_SCORE: "Puntaje del pronóstico",
+  FC_TOTAL: "Pronóstico (pedidos)",
+  FC_WAPE: "WAPE del pronóstico",
+  FC_BIAS: "Sesgo del pronóstico",
+  FC_ABS: "Error absoluto del pronóstico",
+  FC_ORACLE: "Error del ruido (piso)",
+  FC_EXCEED: "Días sobre el p95 pronosticado",
+  FC_DAYS: "Días evaluados",
+  FC_CVACC: "Exactitud del CV",
+  IDLE_COST: "Capacidad contratada ociosa (US$)",
 };
 
 export const STRATEGY_TEXT: Record<Strategy, string> = {
@@ -216,17 +229,17 @@ export const TERRITORY_TEXT: Record<PlayableTerritory, { title: string; tagline:
   megalopolis: {
     title: "Megalópolis Centro",
     tagline: "Urbano denso con tráfico severo y competencia de quick commerce.",
-    facts: ["~2,500 pedidos/día, 45 tiendas, CD periférico a 25–40 km", "Tráfico lento (~15 km/h) y muy variable", "Clientes fuera de casa de día; edificios y cotos", "Lluvias e inundaciones (jun–sep); no circula los días de contingencia"],
+    facts: ["45 tiendas, CD periférico a 25–40 km", "Tráfico lento (~15 km/h) y muy variable", "Clientes fuera de casa de día; edificios y cotos", "Lluvias e inundaciones (jun–sep); no circula los días de contingencia"],
   },
   bajio: {
     title: "Ciudad Bajío",
     tagline: "Ciudad media ordenada: direcciones de calidad y tráfico moderado.",
-    facts: ["~600 pedidos/día, 15 tiendas, CD a 10–15 km", "Tráfico medio (~30 km/h)", "Fraccionamientos con caseta; presencia media", "Marketplaces como competencia"],
+    facts: ["15 tiendas, CD a 10–15 km", "Tráfico medio (~30 km/h)", "Fraccionamientos con caseta; presencia media", "Marketplaces como competencia"],
   },
   norte: {
     title: "Región Norte",
     tagline: "Ciudad principal + 4 ciudades lejanas + zona rural, con calor extremo.",
-    facts: ["~400 pedidos/día; 60% en la ciudad principal", "Ciudades a 80–250 km; zona rural dispersa", "30% de pedidos con pago contra entrega", "Calor extremo (may–ago); pocos repartidores crowdsourced"],
+    facts: ["60% de la demanda en la ciudad principal", "Ciudades a 80–250 km; zona rural dispersa", "30% de pedidos con pago contra entrega", "Calor extremo (may–ago); pocos repartidores crowdsourced"],
   },
 };
 
@@ -252,6 +265,10 @@ export const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "j
 export function describeValue(id: string, v: unknown): string {
   const local = LABELS[id]?.options ?? {};
   const opt = (x: unknown) => local[String(x)] ?? OPTIONS[String(x)] ?? String(x);
+  if (id === "F-01" && v && typeof v === "object") {
+    const f = v as { year: number; level: number; growth: number; quincena: number; peaks: Record<string, number>; cv: number; p95: number };
+    return `A${f.year + 1}: nivel ${Math.round(f.level).toLocaleString("es-MX")}/día, crecimiento ${(f.growth * 100).toFixed(1)}%, quincena ×${f.quincena.toFixed(2)}, picos ${Object.values(f.peaks).map((x) => `×${x.toFixed(2)}`).join("/")}, CV ${(f.cv * 100).toFixed(1)}%, p95 ${Math.round(f.p95).toLocaleString("es-MX")}`;
+  }
   if ((id === "D-12" || id === "D-23") && typeof v === "number") return `${(v * 100).toFixed(0)}%`;
   if (typeof v === "number") return Number.isInteger(v) ? String(v) : v.toFixed(2);
   if (typeof v === "string") return opt(v);

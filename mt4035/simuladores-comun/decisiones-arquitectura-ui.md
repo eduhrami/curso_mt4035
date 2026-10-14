@@ -309,6 +309,15 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - Limitación: en pantallas táctiles no hay *hover*; el glosario completo cubre ese caso.
 - Créditos del curso en el inicio: `CourseCredits` (ui-kit, `components/credits.tsx`) con los profesores y sus perfiles públicos.
 
+### AD-33 ✔ Pronóstico de demanda con datos históricos (última milla, 13-oct-2026)
+
+- **Proceso oculto:** cada partida sortea con la semilla nivel, crecimiento (rango continuo según E-20), índices semanales, quincena, magnitud típica de cada pico con variación anual y CV del ruido diario (`app/src/forecast.ts`, `drawTruth`). La demanda del mercado por día y zona es una función determinista de la semilla (`marketByZone`), así que el CSV de datos se regenera igual en el replay y no se guarda en el estado.
+- **Datos:** CSV con 2 años de historia y los meses jugados (`demandCsv`), descargable desde la pestaña «Pronóstico». Las fichas, los textos del inicio y los mensajes de tendencia ya no revelan el volumen, el crecimiento ni la magnitud de los picos.
+- **Decisión F-01:** el pronóstico es una decisión más (esquema zod, editor propio `ForecastEditor`), válida solo en enero y para el año en curso; queda en el registro de decisiones, se exporta y se reproduce. La UI no deja confirmar enero sin capturarlo; el motor, sin captura, usa un pronóstico nominal (pruebas y bots).
+- **Acoplamiento con la operación:** el pronóstico dimensiona el 3PL (con holgura por CV y compromiso mínimo pagado), el contrato anticipado de picos y la capacidad publicada. La necesidad reactiva del mes anterior (`baseNeed`) deja de usarse para contratar.
+- **Puntaje:** `scoreRun` devuelve operación, pronóstico y final = 70/30 (`params.forecast.score`). La calidad por año se calcula con sumas mensuales en los KPIs `FC_*`; el WAPE se califica sobre el error del pronóstico perfecto (`FC_ORACLE`), para no castigar el ruido de la partida.
+- **Pruebas:** las de mecanismos usan pronóstico perfecto (`truthForecast` en el helper `start`); `test/forecast.test.ts` cubre LOG-FC; los bots de auto-juego pronostican perfecto salvo BOT-L (nominal), y LOG-AUT-17 exige que pronosticar bien pague. `params` pasa a `p2` y el simulador a 0.2.0: las corridas exportadas con `p1` ya no se reproducen idénticas.
+
 ---
 
 ## 4. Ruta de implementación

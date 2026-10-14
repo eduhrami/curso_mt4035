@@ -5,13 +5,14 @@ import { decisions } from "./decisions.ts";
 import { events } from "./events.ts";
 import { aggregate } from "./kpis.ts";
 import { isPeakMonth, monthOf } from "./network.ts";
+import type { PeakId } from "./forecast.ts";
 import { rules } from "./rules.ts";
 import { initialState } from "./scenario.ts";
 import { lmTick } from "./tick.ts";
 import { DEFAULT_MARKET, type LmState, type Params, type Scenario } from "./types.ts";
 
 export const SIM_ID = "mt4035-lastmile";
-export const SIM_VERSION = "0.1.0";
+export const SIM_VERSION = "0.2.0";
 export const params: Params = paramsJson;
 export const PARAMS_VERSION = params.version;
 
@@ -31,16 +32,21 @@ function onEpochStart(ctx: EpochContext<LmState, Params>): void {
   }
   if (mix.own === 0) s.ownFleet = 0;
   if (s.needDays > 0) s.baseNeed = s.needAccum / s.needDays;
+  // Planeación del mes con lo observado en el anterior: vehículos por pedido y pedidos / demanda del mercado.
+  if (s.ordersAccum > 0) s.needPerOrder = s.needAccum / s.ordersAccum;
+  if (s.marketAccum > 0) s.serviceRatio = s.ordersAccum / s.marketAccum;
   s.needAccum = 0;
   s.needDays = 0;
+  s.ordersAccum = 0;
+  s.marketAccum = 0;
 
-  const growth = p.markets.growth[s.market.growth];
+  const fc = s.dec.forecast;
   const peaks = p.peaks.filter((pk) => pk.month === monthOf(e));
   ctx.log({
     kind: "trend",
     id: "E-20",
     kpis: ["ORDERS", "DELIVERED", "REVENUE", "CPD", "CPD_P95", "MARGIN_PCT", "SHIP_PCT", "VEHICLE_UTIL", "STOPS_ROUTE", "BACKLOG", "NODE_UTIL", "OWN_FLEET"],
-    drivers: [{ label: `crecimiento anual del canal en línea ${Math.round(growth * 100)}%`, ref: "E-20" }, ...peaks.map((pk) => ({ label: `pico programado: ${pk.name}`, ref: "E-21" }))],
+    drivers: [{ label: `capacidad planeada con tu pronóstico: ${Math.round(fc.level).toLocaleString("es-MX")} pedidos/día típicos, crecimiento ${Math.round(fc.growth * 100)}% anual`, ref: "F-01" }, ...peaks.map((pk) => ({ label: `pico programado: ${pk.name}`, ref: "E-21" }))],
   });
   // El mes siguiente a un pico el servicio se recupera: se registra para explicar el cambio.
   if (e > 0 && isPeakMonth(p, e - 1)) {
@@ -48,7 +54,7 @@ function onEpochStart(ctx: EpochContext<LmState, Params>): void {
     ctx.log({ kind: "trend", id: "E-21", kpis: ["OTD", "OTD_P95", "FADS", "FADS_P95", "BACKLOG", "CSAT", "CSAT_P95", "CYCLE_HOURS", "EXCEPTION_RATE", "FLEET_SHORT", "PERFECT", "OTIF", "VEHICLE_UTIL", "CPD", "CPD_P95", "ORDERS"], drivers: prev.map((pk) => ({ label: `termina ${pk.name}: la demanda vuelve a su nivel y se limpia el backlog`, ref: "E-21" })) });
   }
   if (isPeakMonth(p, e)) {
-    ctx.log({ kind: "trend", id: "E-21", kpis: ["OTD", "OTD_P95", "FADS", "FADS_P95", "BACKLOG", "CSAT", "CSAT_P95", "CYCLE_HOURS", "EXCEPTION_RATE", "FLEET_SHORT", "PERFECT", "OTIF", "SPOIL_RATE", "ETA_ACC"], drivers: peaks.map((pk) => ({ label: `${pk.name}: demanda ×1.3–×2.5 durante ${pk.days} días`, ref: "E-21" })) });
+    ctx.log({ kind: "trend", id: "E-21", kpis: ["OTD", "OTD_P95", "FADS", "FADS_P95", "BACKLOG", "CSAT", "CSAT_P95", "CYCLE_HOURS", "EXCEPTION_RATE", "FLEET_SHORT", "PERFECT", "OTIF", "SPOIL_RATE", "ETA_ACC"], drivers: peaks.map((pk) => ({ label: `${pk.name}: pico de demanda durante ${pk.days} días (tu pronóstico: ×${fc.peaks[pk.id as PeakId].toFixed(2)})`, ref: "E-21" })) });
   }
 }
 

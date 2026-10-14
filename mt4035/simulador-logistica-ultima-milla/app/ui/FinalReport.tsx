@@ -5,6 +5,8 @@ import { debriefFor, isPeakMonth, params, type LmState, type Strategy } from "..
 import { describeValue, kpiMetaFor, MONTHS, OPTIONS, scenarioLabel, TERRITORY_TEXT } from "./labels.ts";
 import { engine, finalScore, screen, store, territoryOf } from "./game.ts";
 
+const FC_W = params.forecast.score.weight;
+
 export function FinalReport({ state }: { state: GameState<LmState> }) {
   const territory = territoryOf(state);
   const metas = kpiMetaFor(territory);
@@ -66,7 +68,60 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
 
       <div class="card stack">
         <h2>Cómo se formó el puntaje</h2>
-        <p class="small muted">El puntaje usa siempre los días críticos (p95), sin importar la vista que elegiste en D-61.</p>
+        <p data-testid="score-split">
+          <strong>{result.score.toFixed(1)}</strong> = {Math.round((1 - FC_W) * 100)}% × operación <strong>{result.operational.toFixed(1)}</strong> + {Math.round(FC_W * 100)}% × pronóstico{" "}
+          <strong>{result.forecast.toFixed(1)}</strong>
+        </p>
+        <h3>Pronóstico (F-01)</h3>
+        <p class="small muted">
+          Cada año se califica con el pronóstico que capturaste en enero: 60% el patrón (WAPE por encima del error inevitable del ruido), 20% la variabilidad (CV) y 20% la cobertura del p95 (ideal: 5% de los días por
+          encima).
+        </p>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Año</th>
+                <th>WAPE</th>
+                <th>Sesgo</th>
+                <th>Días sobre tu p95</th>
+                <th>Exactitud del CV</th>
+                <th>Calificación</th>
+              </tr>
+            </thead>
+            <tbody>
+              {result.forecastYears.map((y) => {
+                const hs = state.history.filter((h) => Math.floor(h.epoch / 12) === y.year);
+                const sumK = (k: string) => hs.reduce((a, h) => a + (h.kpis[k] ?? 0), 0);
+                const bias = (sumK("FC_TOTAL") - sumK("MARKET")) / Math.max(1, sumK("MARKET"));
+                return (
+                  <tr key={y.year}>
+                    <td>A{y.year + 1}</td>
+                    <td>{fmt(y.wape, "pct1")}</td>
+                    <td>
+                      {bias >= 0 ? "+" : ""}
+                      {fmt(bias, "pct1")}
+                    </td>
+                    <td>{fmt(y.exceed, "pct1")}</td>
+                    <td>{fmt(y.cvAcc, "pct")}</td>
+                    <td>{(y.score * 100).toFixed(0)}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <LineChart
+          labels={labels}
+          series={[
+            { label: "Demanda del mercado (pedidos/día)", data: state.history.map((r) => (r.kpis.MARKET ?? 0) / Math.max(1, r.kpis.FC_DAYS ?? 0)) },
+            { label: "Tu pronóstico (pedidos/día)", data: state.history.map((r) => (r.kpis.FC_TOTAL ?? 0) / Math.max(1, r.kpis.FC_DAYS ?? 0)) },
+          ]}
+          format={(v) => fmt(v, "num0")}
+          ariaLabel="Demanda del mercado contra pronóstico por mes"
+        />
+        <h3>Operación</h3>
+        <p class="small muted">El puntaje de operación usa siempre los días críticos (p95), sin importar la vista que elegiste en D-61.</p>
         <table>
           <thead>
             <tr>

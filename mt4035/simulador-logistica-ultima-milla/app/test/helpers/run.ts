@@ -1,6 +1,7 @@
 /** Utilidades de prueba para el modelo de última milla. */
 import { type DecisionChanges, type EpochReport, type GameConfig, type GameState, type TickContext } from "@mt4035/sim-core";
 import { overrideState } from "@mt4035/sim-core/testing";
+import { truthForecast } from "../../src/forecast.ts";
 import { createLastMileEngine, lmConfig, params as baseParams, type LmConfigOptions } from "../../src/model.ts";
 import type { LmState, Params, TerritoryId } from "../../src/types.ts";
 
@@ -31,7 +32,12 @@ export function run(state: GameState<LmState>, n: number, policy: (s: GameState<
   return { state: s, reports };
 }
 
-export const start = (cfg: GameConfig, eng = engine) => eng.createGame(cfg);
+/** Partida nueva con pronóstico perfecto (F-01 = proceso verdadero): las pruebas de mecanismos no dependen de pronosticar. */
+export function start(cfg: GameConfig, eng = engine) {
+  const g = eng.createGame(cfg);
+  g.model.dec.forecast = truthForecast(g.model, eng.params, 0);
+  return g;
+}
 
 export function withOverrides(state: GameState<LmState>, overrides: Record<string, unknown>): GameState<LmState> {
   return Object.entries(overrides).reduce((s, [path, v]) => overrideState(s, path, v), state);

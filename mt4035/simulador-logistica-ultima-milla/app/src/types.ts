@@ -1,5 +1,6 @@
 /** Tipos del modelo de logística y última milla (especificación §4–§7). */
 import type paramsJson from "../params/params.v1.json";
+import type { DemandTruth, Forecast } from "./forecast.ts";
 
 export type Params = typeof paramsJson;
 
@@ -41,6 +42,8 @@ export type Scenario = {
 
 export interface Decisions {
   strategy: Strategy;
+  /** F-01: pronóstico de demanda del equipo (se captura al inicio de cada año). */
+  forecast: Forecast;
   sfd: { active: boolean; capacity: "low" | "mid" | "high" };
   sfs: { share: number; pickers: "2" | "4" | "6" };
   bopis: boolean;
@@ -128,8 +131,17 @@ export interface LmState {
   needDays: number;
   /** Vehículos que se necesitan en un día típico (promedio del mes anterior): base del contrato con el 3PL. */
   baseNeed: number;
-  /** Magnitud de cada pico por año (sorteada al inicio; se revela al ocurrir). */
+  /** Magnitud de cada pico por año, historia incluida (sorteada al inicio; se revela al ocurrir). */
   peakMagnitude: Record<string, number>;
+  /** Proceso de demanda verdadero de la partida (oculto al jugador; §4.3b). */
+  truth: DemandTruth;
+  /** Escala del ruido de la demanda (config.test.noise; 1 en partidas normales). */
+  noiseScale: number;
+  /** Planeación (mes anterior): vehículos por pedido y pedidos recibidos / demanda del mercado. */
+  needPerOrder: number;
+  serviceRatio: number;
+  ordersAccum: number;
+  marketAccum: number;
   /** Contadores semanales para R-02 (spoilage de frescos). */
   weekFresh: number;
   weekSpoiled: number;

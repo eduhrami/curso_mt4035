@@ -1,8 +1,9 @@
 export * from "./types.ts";
 export * from "./model.ts";
 export * from "./score.ts";
+export * from "./forecast.ts";
 export { PRESETS, presetOf, type MarketPreset, type PresetId } from "./presets.ts";
-export { debriefFor, DEBRIEF_GENERAL, DEBRIEF_LAST, DEBRIEF_CUSTOM } from "./debrief.ts";
+export { debriefFor, DEBRIEF_GENERAL, DEBRIEF_LAST, DEBRIEF_CUSTOM, DEBRIEF_FORECAST } from "./debrief.ts";
 export { decisions } from "./decisions.ts";
 export { rules } from "./rules.ts";
 export { events } from "./events.ts";
