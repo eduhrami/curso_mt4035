@@ -7,7 +7,7 @@
 import { writeFileSync } from "node:fs";
 import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-core";
 import { parseArgs } from "@mt4035/sim-tools";
-import { createScmEngine, params, profitOf, scmConfig, truthForecast, type RegionId, type ScmState } from "../src/index.ts";
+import { createScmEngine, EPOCHS, params, profitOf, scmConfig, truthForecast, type RegionId, type ScmState } from "../src/index.ts";
 import { bots, canonicalVector, searchSpace, vectorPolicy } from "./bots.ts";
 
 type Pol = (s: GameState<ScmState>, e: number) => DecisionChanges;
@@ -23,7 +23,7 @@ function play(region: RegionId, polOf: (seed: number) => Pol, k: number, seeds: 
     const pol = polOf(seed);
     let s = engine.createGame(scmConfig({ region, seed, test: { events: "on", noise: 1 } }));
     const reports = [];
-    for (let e = 0; e < 20; e++) {
+    for (let e = 0; e < EPOCHS; e++) {
       const ch: DecisionChanges = { ...pol(s, e) };
       if (e % 4 === 0) {
         const f = truthForecast(s.model, params, e / 4);
@@ -70,7 +70,7 @@ const md = `# Peso del pronóstico en la utilidad — mt4035-scm
 
 Generado: ${new Date().toISOString()} · ${SEEDS} semillas de evaluación · ${CANDIDATES} vectores aleatorios + bots de referencia para la mejor operación (por utilidad, pronóstico perfecto).
 
-Utilidad acumulada de 5 años en millones de USD. «Pérdida −20% / +20%»: cuánto se pierde con un pronóstico 20% bajo / alto respecto al perfecto.
+Utilidad acumulada de 3 años en millones de USD. «Pérdida −20% / +20%»: cuánto se pierde con un pronóstico 20% bajo / alto respecto al perfecto.
 
 | Región | BOT-A (inicial) | Mejor operación | Pérdida A −20% / +20% | Pérdida mejor −20% / +20% | Brecha operativa | Brecha por pronóstico | Peso del pronóstico |
 |---|---|---|---|---|---|---|---|

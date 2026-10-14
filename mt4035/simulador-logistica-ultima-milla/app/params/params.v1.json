@@ -582,7 +582,6 @@
     "100": 1.0,
     "110": 1.1
   },
-  "strategyChangePenalty": 50000,
   "security": {
     "none": 1.0,
     "gps": 0.6,

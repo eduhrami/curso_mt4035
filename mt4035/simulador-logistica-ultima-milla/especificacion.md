@@ -154,11 +154,11 @@ Organizadas según las **5 decisiones que cambian la historia** de S5 más las o
   - Pronosticar de menos deja rutas sin cubrir o cubiertas a tarifa spot y paga horas extra; de más, paga flota y personal ociosos. El costo aparece en el desglose del CPD («Flota contratada ociosa») y en la utilidad (§7.5).
 - Sin captura, el modelo usa un pronóstico nominal (solo pruebas y bots; la interfaz siempre lo exige).
 
-### 5.1 Estrategia de servicio (setup)
+### 5.1 Estrategia de servicio (solo en el setup; fija toda la partida)
 
 | ID | Decisión | Opciones | Efecto |
 |---|---|---|---|
-| D-00 | Estrategia de servicio declarada | **Velocidad** (competir con *quick commerce*) · **Confiabilidad** (promesa que siempre se cumple) · **Eficiencia** (costo mínimo por pedido) | Pesos del puntaje y expectativas del cliente |
+| D-00 | Estrategia de servicio declarada | **Velocidad** (competir con *quick commerce*) · **Confiabilidad** (promesa que siempre se cumple) · **Eficiencia** (costo mínimo por pedido) | Pesos del puntaje, guardrails de servicio y expectativas del cliente. Se elige en el setup y **no se puede cambiar durante la partida** (AD-38): no es una decisión de turno |
 
 ### 5.2 Red de fulfillment (decisión 1: red e inventario integrado)
 
@@ -458,7 +458,7 @@ Estado de resultados mensual del canal en línea (KPIs en USD):
 | Reembolsos | `REFUNDS` | Frescos dañados que se reembolsan |
 | Compensaciones por retraso | `LATE_COST` | Pedidos entregados fuera de la promesa (`LATE_ORDERS` = entregados − a tiempo) × cupón de US$ 2.00 ⚠ |
 | **Utilidad operativa** | `PROFIT_OP` | Margen + tarifas − última milla − reembolsos − compensaciones |
-| Inversión | `CAPEX` | Capex y penalizaciones cargados en el mes (dark stores, MFC, lockers, hubs, cambio de estrategia…) |
+| Inversión | `CAPEX` | Capex y penalizaciones cargados en el mes (dark stores, MFC, lockers, hubs…) |
 | Penalizaciones por servicio | `SERVICE_PENALTY` | Por cada guardrail de servicio de la estrategia declarada roto en el mes: 2% de las ventas del mes ⚠ (`SERVICE_BREACHES`) |
 | **Utilidad** | `PROFIT` | Utilidad operativa − inversión − penalizaciones por servicio |
 

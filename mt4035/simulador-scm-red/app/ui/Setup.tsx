@@ -34,7 +34,7 @@ export function Setup() {
       <div class="card stack">
         <h1>Hoshi Mart · Dirección de Supply Chain</h1>
         <p>
-          Hoshi Mart compró Prairie Stop y el consejo evalúa entrar a Valle Metropolitano. Tienes <strong>5 años (20 trimestres)</strong> para decidir qué propuesta de valor sostiene cada región,
+          Hoshi Mart compró Prairie Stop y el consejo evalúa entrar a Valle Metropolitano. Tienes <strong>3 años (12 trimestres)</strong> para decidir qué propuesta de valor sostiene cada región,
           diseñar la red que la haga posible y demostrarlo con números. Cada trimestre revisas resultados, ajustas tus decisiones y confirmas.
         </p>
         <p class="small muted">Empresa y regiones ficticias, inspiradas en el caso Seven-Eleven Japan (Kellogg KEL026).</p>
@@ -87,7 +87,7 @@ export function Setup() {
             </button>
           ))}
         </div>
-        <p class="small muted">Tu puntaje definitivo es la utilidad acumulada. La propuesta que declares fija los guardrails de servicio que debes cumplir: romperlos cuesta dinero. Puedes cambiarla una sola vez durante la partida, con penalización.</p>
+        <p class="small muted">Tu puntaje definitivo es la utilidad acumulada. La propuesta que declares fija los guardrails de servicio que debes cumplir: romperlos cuesta dinero. Se fija aquí y no se puede cambiar durante la partida.</p>
       </section>
 
       <section class="card stack" aria-labelledby="h-market">

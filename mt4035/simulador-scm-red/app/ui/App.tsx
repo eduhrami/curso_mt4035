@@ -8,6 +8,7 @@ import { Dashboard } from "./Dashboard.tsx";
 import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
+import { EPOCHS } from "../src/index.ts";
 import { engine, glossaryOpen, professor, projectsInProgress, regionOf, screen, store } from "./game.ts";
 import { describeValue, KPI_NAMES, LABELS, OPTIONS, REGION_TEXT, scenarioLabel, TABS } from "./labels.ts";
 import { params, profitOf, type DcSpec, type DemandForecast, type ScmState } from "../src/index.ts";
@@ -34,7 +35,7 @@ function TopBar() {
   const profit = s ? profitOf(s.history) : 0;
   const exportJson = async () => {
     if (!s) return;
-    download(`hoshi-mart-${regionOf(s)}-${s.config.seed}-${s.history.length}de20.json`, JSON.stringify(await store.exportRun(), null, 2));
+    download(`hoshi-mart-${regionOf(s)}-${s.config.seed}-${s.history.length}de${EPOCHS}.json`, JSON.stringify(await store.exportRun(), null, 2));
   };
   return (
     <header class="topbar">
@@ -43,7 +44,7 @@ function TopBar() {
         <>
           <span>{REGION_TEXT[regionOf(s)].title}</span>
           <span class="chip" data-testid="epoch-label">
-            {s.phase === "FINAL" ? "Partida terminada" : `Trimestre ${engine.epochLabel(s.epoch)} · ${s.epoch + 1}/20`}
+            {s.phase === "FINAL" ? "Partida terminada" : `Trimestre ${engine.epochLabel(s.epoch)} · ${s.epoch + 1}/${EPOCHS}`}
           </span>
           <span class="chip">Estrategia: {OPTIONS[s.model.strategy]}</span>
           <span class="chip" data-testid="scenario-label">{scenarioLabel(s.config.scenario)}</span>

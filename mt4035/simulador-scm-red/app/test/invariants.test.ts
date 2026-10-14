@@ -27,13 +27,13 @@ describe("SCM-INV (P1)", () => {
     expect(distinct / N).toBeGreaterThanOrEqual(0.99);
   });
 
-  it("INV-03 exactamente 20 épocas × 13 semanas, etiquetas A1-T1 … A5-T4", () => {
+  it("INV-03 exactamente 12 épocas × 13 semanas, etiquetas A1-T1 … A3-T4", () => {
     const { state, reports } = playGame(engine, det("kaigan"));
-    expect(reports).toHaveLength(20);
+    expect(reports).toHaveLength(12);
     expect(reports.every((r) => r.tickMetrics.length === 13)).toBe(true);
     expect(reports[0]!.label).toBe("A1-T1");
-    expect(reports[19]!.label).toBe("A5-T4");
-    expect(state.model.week).toBe(260);
+    expect(reports[11]!.label).toBe("A3-T4");
+    expect(state.model.week).toBe(156);
     expect(state.phase).toBe("FINAL");
   });
 

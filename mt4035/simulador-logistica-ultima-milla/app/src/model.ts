@@ -12,7 +12,7 @@ import { lmTick } from "./tick.ts";
 import { DEFAULT_MARKET, type LmState, type Params, type Scenario } from "./types.ts";
 
 export const SIM_ID = "mt4035-lastmile";
-export const SIM_VERSION = "0.2.0";
+export const SIM_VERSION = "0.3.0";
 export const params: Params = paramsJson;
 export const PARAMS_VERSION = params.version;
 

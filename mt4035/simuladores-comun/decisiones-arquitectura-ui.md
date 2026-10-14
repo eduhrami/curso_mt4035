@@ -9,7 +9,7 @@
 ## 1. Restricciones de partida (vienen de las especificaciones)
 
 - Un jugador por navegador, sin servidor y sin juego simultáneo.
-- **Modo manual únicamente:** cada época se confirma de forma explícita. SCM: 20 épocas trimestrales (5 años). Logística: 36 épocas mensuales.
+- **Modo manual únicamente:** cada época se confirma de forma explícita. SCM: 12 épocas trimestrales (3 años). Logística: 36 épocas mensuales jugadas en 12 turnos trimestrales (AD-34). Ambos duran 12 trimestres (AD-37).
 - Motor basado en reglas y probabilidades, sin simulación física.
 - Persistencia solo en `localStorage`; las corridas se exportan y se envían al profesor.
 - Debe ser reproducible (semilla) y verificable por el profesor (*replay*).
@@ -283,7 +283,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 ### AD-29 ✔ Etiquetas de época
 
-- SCM: `A1-T1 … A5-T4`. Logística: `A1-M01 … A3-M12` con el nombre del mes y marcadores de temporada pico en la línea de tiempo.
+- SCM: `A1-T1 … A3-T4`. Logística: `A1-M01 … A3-M12` con el nombre del mes y marcadores de temporada pico en la línea de tiempo.
 
 ### AD-30 ✔ Escenarios de mercado predefinidos (5-oct-2026)
 
@@ -327,7 +327,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 ### AD-35 ✔ Pronóstico de demanda con datos históricos en SCM (13-oct-2026)
 
-- Misma lógica que AD-33 (última milla), adaptada a semanas y trimestres: proceso de demanda por tienda oculto por partida (nivel, crecimiento continuo según E-20, forma estacional por trimestre con amplitud según E-21, choque semanal común con CV según E-22), CSV de 104 semanas de historia + semanas jugadas, decisión F-01 en T1 de cada año (A1…A5) con editor propio y bloqueo de la confirmación.
+- Misma lógica que AD-33 (última milla), adaptada a semanas y trimestres: proceso de demanda por tienda oculto por partida (nivel, crecimiento continuo según E-20, forma estacional por trimestre con amplitud según E-21, choque semanal común con CV según E-22), CSV de 104 semanas de historia + semanas jugadas, decisión F-01 en T1 de cada año (A1…A3) con editor propio y bloqueo de la confirmación.
 - **Acoplamiento:** el pronóstico fija el inventario objetivo y el stock de seguridad de las tiendas (μ·k y SS·k·razón de CV, z efectivo para el fill rate). Con pronóstico perfecto el inventario es idéntico al del modelo anterior. La estacionalidad sinusoidal semanal pasa a índices trimestrales.
 - **Puntaje:** 70% operación + 30% pronóstico (`scoreRun` devuelve operación, pronóstico y total). SCM sigue con turno = época y no tiene aún métrica de utilidad como puntaje definitivo.
 - Pruebas `test/forecast.test.ts` (SCM-FC), helper `start` con pronóstico perfecto, BOT-L y SCM-AUT-15. `params` p2 y simulador 0.2.0.
@@ -337,7 +337,18 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - **Criterio:** la utilidad acumulada es el puntaje definitivo en los dos simuladores (SCM: EBITDA logístico − capex y cargos − penalizaciones; última milla: §7.5). El índice 0–100 queda como diagnóstico. Razón: es lo que evalúa una dirección real e integra pronóstico, capex, merma y flota ociosa sin pesos arbitrarios.
 - **Guardrails de servicio:** para que no se gane sacrificando al cliente y para que la estrategia declarada siga importando, cada periodo con un guardrail de servicio de la estrategia roto resta un % de las ventas del periodo (`money.serviceGuardrails`, `servicePenaltyShare`; umbrales = guardrails calibrados por región o territorio + ajuste por estrategia). `serviceGuardrails()` en `score.ts`.
 - **Economía del pronóstico:** ambos errores cuestan de forma realista y sin que convenga inflar el pronóstico. SCM: de menos, la disponibilidad cae en proporción al error (amortiguado por el POS diario); de más, rebajas sobre lo comprado de más. Última milla: compromiso del 3PL sobre la necesidad pronosticada, flota spot de último momento, personal de surtido planeado con el pronóstico.
-- **Peso del pronóstico:** `npm run forecast-impact` (auto-juego) mide qué parte de la brecha de utilidad entre la operación inicial y la mejor encontrada se explica por pronosticar bien. Promedio ≈ 56% en SCM (Kaigan ≈ 93%, Red River ≈ 32%, Valle ≈ 43%) y ≈ 28% en última milla (Megalópolis ≈ 21%, Bajío ≈ 38%, Norte ≈ 26%). No se fuerza por región: en qué casos pesa más es parte del aprendizaje.
+- **Peso del pronóstico:** `npm run forecast-impact` (auto-juego) mide qué parte de la brecha de utilidad entre la operación inicial y la mejor encontrada se explica por pronosticar bien. Promedio ≈ 59% en SCM (Kaigan ≈ 94%, Red River ≈ 39%, Valle ≈ 45%) y ≈ 28% en última milla (Megalópolis ≈ 21%, Bajío ≈ 38%, Norte ≈ 26%). No se fuerza por región: en qué casos pesa más es parte del aprendizaje.
+
+### AD-37 ✔ Horizonte homologado: 12 trimestres en ambos simuladores (14-oct-2026)
+
+- **Criterio:** las dos partidas duran 3 años = 12 trimestres que el jugador confirma. SCM: 12 épocas trimestrales (`A1-T1 … A3-T4`, 156 semanas); última milla: 36 meses del motor en 12 turnos trimestrales (AD-34). Razón: la misma duración y el mismo ritmo de juego en clase (≈4 min por turno) y utilidades acumuladas sobre el mismo horizonte.
+- **Implementación SCM:** `params.epochs = 12` (como en última milla); el motor, la UI, el auto-juego y las pruebas leen `EPOCHS`/`YEARS` de `src/model.ts`. Pronóstico F-01 en A1-T1, A2-T1 y A3-T1. `SIM_VERSION` 0.3.0: las exportaciones de 20 épocas ya no se reproducen.
+- **Calibración:** el auto-juego de 200 semillas con búsqueda sigue sin alarmas P1 y con todas las propiedades SCM-AUT en verde; el diseño adaptado sigue superando a la operación inicial en utilidad en las tres regiones (§7.6).
+
+### AD-38 ✔ Estrategia fija durante toda la partida (ambos simuladores, 14-oct-2026)
+
+- **Criterio:** la propuesta de valor (SCM) o la estrategia de servicio (última milla), D-00, se elige en el setup y no se puede cambiar durante la partida. Razón: el equipo debe vivir con su estrategia; el aprendizaje es alinear la red y la operación con ella, no cambiarla cuando los KPI no favorecen.
+- **Implementación:** D-00 dejó de ser una decisión del motor (sin pestaña «Estrategia» ni `strategyChangePenalty`); el motor rechaza un cambio como decisión desconocida. La estrategia vive en el escenario de la partida (`scenario.strategy`) y se muestra en la barra superior. SCM-LAG-04 y LOG-LAG-09 lo verifican. `SIM_VERSION` 0.3.0 en ambos simuladores.
 
 ---
 
@@ -349,7 +360,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 | **F1** ✔ | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas ([core/README.md](./core/README.md)) | INV genéricas en verde; replay idéntico. Cumplido el 3-oct-2026: 65 pruebas (64 rápidas + 1 Monte Carlo) |
 | **F2** ✔ | Modelo SCM (sin UI) + `params.v1` ([app/README.md](../simulador-scm-red/app/README.md)) | Casos SCM P1 en verde. Cumplido el 3-oct-2026: 56 pruebas (52 rápidas + 4 Monte Carlo) |
 | **F3** ✔ | Auto-juego SCM y calibración ([tools/README.md](./tools/README.md), [reporte](../simulador-scm-red/app/autoplay/reports/latest.md)) | Reporte de coherencia sin alarmas P1. Cumplido el 4-oct-2026: P1 y P2 de auto-juego en verde, más 84 pruebas SCM (P1, P2 y P3) |
-| **F4** ✔ | UI SCM ([ui-kit/README.md](./ui-kit/README.md), [app/README.md](../simulador-scm-red/app/README.md)) | Flujo *end-to-end* de 20 épocas + exportación. Cumplido el 4-oct-2026: 7 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, CD irreversible, validación, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de componentes |
+| **F4** ✔ | UI SCM ([ui-kit/README.md](./ui-kit/README.md), [app/README.md](../simulador-scm-red/app/README.md)) | Flujo *end-to-end* de la partida completa + exportación. Cumplido el 4-oct-2026: 7 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, CD irreversible, validación, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de componentes |
 | **F5** ✔ | Modelo logística + `params.v1` ([app/README.md](../simulador-logistica-ultima-milla/app/README.md); notas en la §6.3b de la [especificación](../simulador-logistica-ultima-milla/especificacion.md)) | Casos LOG P1 en verde. Cumplido el 4-oct-2026: 66 pruebas (63 rápidas + 3 Monte Carlo), con el fixture del mini-caso de S5 calibrado (LOG-ESC-04) |
 | **F6** ✔ | Auto-juego logística y calibración ([reporte](../simulador-logistica-ultima-milla/app/autoplay/reports/latest.md)) | Reporte sin alarmas P1. Cumplido el 4-oct-2026: 6,000 partidas + búsqueda de BOT-I; 15 propiedades LOG-AUT en verde (LOG-AUT-15 pendiente); puntaje normalizado por territorio |
 | **F7** ✔ | UI logística ([app/README.md](../simulador-logistica-ultima-milla/app/README.md#interfaz-f7)) | Flujo *end-to-end* de 36 épocas. Cumplido el 4-oct-2026: 8 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, dark store irreversible, validación, vista p95 de D-61, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de interfaz |

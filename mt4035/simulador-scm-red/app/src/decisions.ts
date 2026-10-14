@@ -94,20 +94,6 @@ export const decisions: Spec<any>[] = [
     kpis: ["FC_SCORE", "FC_WAPE", "OSA", "LOST_SALES", "WASTE", "ITR", "EBITDA_PCT"],
   },
   {
-    id: "D-00",
-    label: "Propuesta de valor declarada",
-    tab: "Estrategia",
-    schema: z.enum(["freshness", "lowcost", "convenience"]),
-    current: (s) => s.strategy,
-    maxChanges: 1,
-    cost: (_v, _s, p) => p.strategyChangePenalty,
-    costKind: "penalty",
-    apply: (s, v) => {
-      s.strategy = v;
-      s.dec.strategy = v;
-    },
-  } satisfies Spec<ScmState["strategy"]>,
-  {
     id: "D-01",
     label: "Red de CD (zona D-02, tipo D-03, tamaño D-04)",
     tab: "Red",

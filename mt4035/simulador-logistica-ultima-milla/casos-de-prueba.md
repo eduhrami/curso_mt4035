@@ -169,7 +169,7 @@ Los mismos del simulador SCM (`setSeed`, `events`, `noise`, `overrideState`, `ru
 | LOG-LAG-06 | D-43 = VRP dinámico con IA con D-60 básico | Se permite, con beneficio limitado (R-08), y el jugador recibe un aviso | D-43, R-08 | P1 |
 | LOG-LAG-07 | Contrato de flota para el pico decidido el mes anterior vs. en el mismo mes | El anticipado aplica tarifa contratada; el del mismo mes aplica tarifa spot | D-36 | P2 |
 | LOG-LAG-08 | Cerrar un MFC | Capex no recuperado; costo de cierre | D-05 | P2 |
-| LOG-LAG-09 | Cambio de estrategia (D-00) | Se permite una vez con penalización; un segundo intento se rechaza | D-00 | P1 |
+| LOG-LAG-09 | Estrategia fija (D-00) | D-00 no es una decisión de turno: cambiarla durante la partida se rechaza y la estrategia del setup se mantiene en todas las épocas, sin cargos | D-00 | P1 |
 
 ---
 

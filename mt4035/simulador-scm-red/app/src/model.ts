@@ -10,9 +10,12 @@ import { scmTick } from "./tick.ts";
 import { DEFAULT_MARKET, type Params, type Scenario, type ScmState } from "./types.ts";
 
 export const SIM_ID = "mt4035-scm";
-export const SIM_VERSION = "0.2.0";
+export const SIM_VERSION = "0.3.0";
 export const params: Params = paramsJson;
 export const PARAMS_VERSION = params.version;
+/** Horizonte de la partida: 3 años × 4 trimestres (AD-37, igual que última milla). */
+export const EPOCHS = params.epochs;
+export const YEARS = EPOCHS / 4;
 
 /** Aperturas/cierres, evolución de la dispersión, madurez de TI y activaciones de CD al inicio de la época. */
 function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
@@ -87,7 +90,7 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
 export const scmModel: ModelDef<ScmState, Params, Scenario> = {
   id: SIM_ID,
   version: SIM_VERSION,
-  calendar: { epochs: 20, ticksPerEpoch: () => params.weeksPerEpoch, label: quarterLabel },
+  calendar: { epochs: params.epochs, ticksPerEpoch: () => params.weeksPerEpoch, label: quarterLabel },
   decisions,
   init: (config, p, rng) => initialState(config as GameConfig<Scenario>, p, rng),
   onEpochStart,

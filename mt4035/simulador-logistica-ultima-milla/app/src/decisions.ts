@@ -67,15 +67,6 @@ export const decisions: Spec<any>[] = [
       return null;
     },
   }),
-  field("D-00", "strategy", "Estrategia de servicio declarada", "Estrategia", z.enum(["speed", "reliability", "efficiency"]), [], {
-    maxChanges: 1,
-    cost: (_v, _s, p) => p.strategyChangePenalty,
-    costKind: "penalty",
-    apply: (s, v) => {
-      s.strategy = v;
-      s.dec.strategy = v;
-    },
-  }),
   field("D-01", "sfd", "Ship-from-DC (surtido desde el CD)", "Red", z.object({ active: z.boolean(), capacity: z.enum(["low", "mid", "high"]) }), [...SERVICE, ...FIN, "NODE_UTIL", "BACKLOG"], {
     validate: (_v, view) => needsNode(view),
   }),

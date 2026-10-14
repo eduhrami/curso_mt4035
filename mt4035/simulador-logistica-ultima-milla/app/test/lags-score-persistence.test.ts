@@ -45,11 +45,13 @@ describe("LOG-LAG (P1)", () => {
     expect(r.messages.some((m) => m.source === "R-08")).toBe(true);
   });
 
-  it("LAG-09 la estrategia se cambia una vez con penalización; el segundo cambio se rechaza", () => {
-    const s1 = engine.confirmEpoch(engine.stage(start(det("bajio")), { "D-00": "efficiency" }).state);
-    expect(s1.report.ledger).toContainEqual(expect.objectContaining({ kind: "penalty", source: "D-00", amount: params.strategyChangePenalty }));
-    expect(s1.state.model.strategy).toBe("efficiency");
-    expect(engine.validate(s1.state, { "D-00": "speed" }).ok).toBe(false);
+  it("LAG-09 la estrategia se fija en el setup y no se puede cambiar durante la partida", () => {
+    const s0 = start(det("bajio"));
+    expect(engine.model.decisions.some((d) => d.id === "D-00")).toBe(false);
+    expect(engine.validate(s0, { "D-00": "efficiency" }).ok).toBe(false);
+    const s1 = engine.confirmEpoch(s0);
+    expect(s1.state.model.strategy).toBe(s0.model.strategy);
+    expect(s1.report.ledger.some((l) => l.source === "D-00")).toBe(false);
   });
 });
 

@@ -1,6 +1,6 @@
 # Simulador SCM + Diseño de red — Casos de prueba
 
-**Especificación de referencia:** [especificacion.md](./especificacion.md) (v0.1: 20 épocas trimestrales, modo manual)
+**Especificación de referencia:** [especificacion.md](./especificacion.md) (12 épocas trimestrales, modo manual)
 **Estado:** ⚠ borrador preliminar. Los umbrales y tolerancias numéricos son de calibración inicial y se ajustan cuando se fijen las constantes del motor.
 **Uso:** (1) base para pruebas de código (unitarias, de propiedades y de integración) y (2) protocolo de **auto-juego** para validar la coherencia de los resultados antes de dárselo al alumno.
 
@@ -47,7 +47,7 @@ Se prueban como **propiedades** sobre corridas aleatorias (bot aleatorio, §10) 
 |---|---|---|---|
 | SCM-INV-01 | **Determinismo:** misma semilla + mismas decisiones ⇒ JSON de KPIs y eventos idéntico bit a bit | §3 | P1 |
 | SCM-INV-02 | Semillas distintas con eventos activos ⇒ al menos un KPI o evento distinto en ≥ 99% de los pares | §3 | P1 |
-| SCM-INV-03 | Exactamente **20 épocas** (A1-T1 … A5-T4) × **13 ticks** = 260 semanas, sin épocas extra ni faltantes | §3 | P1 |
+| SCM-INV-03 | Exactamente **12 épocas** (A1-T1 … A3-T4) × **13 ticks** = 156 semanas, sin épocas extra ni faltantes | §3 | P1 |
 | SCM-INV-04 | El motor no avanza de época sin `confirm()`. Llamar `runEpoch` dos veces sin confirmar no duplica resultados | §3 | P1 |
 | SCM-INV-05 | **Conservación de unidades** por categoría, nodo y semana: `inv_ini + recibido = vendido + mermado + perdido_en_excursión + inv_fin` (tolerancia 1e-6) | §6.3 | P1 |
 | SCM-INV-06 | **Conservación de demanda:** `demanda = vendida + sustituida + perdida`, y `perdida = 0.5 × no_atendida` | §6.3 | P1 |
@@ -127,7 +127,7 @@ Modo determinista, decisiones *as-is* salvo que se indique. Los rangos son ⚠ y
 | SCM-ESC-06 | Mismo paquete de decisiones aplicado a las tres regiones | Orden de costo logístico relativo (CTS % de ventas): Kaigan < Valle < Red River. Se usa el porcentaje porque el costo absoluto por tienda depende del volumen, que en Kaigan es tres veces mayor | E-03, E-04 | P1 |
 | SCM-ESC-07 | *Greenfield* | Ventas = 0 hasta que abre el primer lote (retraso de 1 trimestre); en la época 0 solo hay capex | §4.1 | P2 |
 | SCM-ESC-08 | Kaigan con volatilidad alta vs. baja (E-22), mismo CSL | Inventario ↑ con volatilidad alta; FR ≤ | E-22 | P2 |
-| SCM-ESC-09 | Perfil de envejecimiento (E-26) | La participación de frescos en la demanda sube de forma monótona a lo largo de las 20 épocas | E-26 | P3 |
+| SCM-ESC-09 | Perfil de envejecimiento (E-26) | La participación de frescos en la demanda sube de forma monótona a lo largo de las 12 épocas | E-26 | P3 |
 | SCM-ESC-10 | Boom (+8%/año) sin ampliar CD | Utilización de CD > 90% antes de A4; dispara R-07; la frescura cae | E-20, R-07 | P2 |
 
 ---
@@ -180,7 +180,7 @@ Cada regla se prueba **justo debajo** y **justo arriba** de su umbral, usando `o
 | SCM-LAG-01 | CD nuevo decidido en A1-T1 con retraso de 3 trimestres | d̄ no cambia en A1-T1…A1-T3; cambia desde A1-T4. El capex se carga en A1-T1 | D-01, INV-17 | P1 |
 | SCM-LAG-02 | D-30 implantado | La madurez es 0 al implantarse y crece hasta 1 durante 2 trimestres de aprendizaje; el beneficio es proporcional a la madurez | D-30 | P1 |
 | SCM-LAG-03 | Cierre de CD | Se carga una indemnización; el capex no se recupera; la red se reconfigura en la época siguiente | D-01 | P2 |
-| SCM-LAG-04 | Cambio de estrategia (D-00) | Se permite una vez con penalización; un segundo intento se rechaza | D-00 | P1 |
+| SCM-LAG-04 | Estrategia fija (D-00) | D-00 no es una decisión de turno: cambiarla durante la partida se rechaza y la propuesta del setup se mantiene en todas las épocas, sin cargos | D-00 | P1 |
 | SCM-LAG-05 | D-33 = CPFR con D-31 = No | Se rechaza con mensaje "requiere POS compartido" | D-33 | P1 |
 | SCM-LAG-06 | D-20 = *tanpin kanri* sin terminal gráfica (D-30) | Se rechaza | D-20 | P1 |
 | SCM-LAG-07 | D-12 = combinada sin CD combinado (D-03) | Se rechaza | D-12 | P1 |
@@ -239,7 +239,7 @@ El objetivo es validar que **el modelo enseña lo que debe enseñar**: decisione
 
 | Bot | Política | Para qué sirve |
 |---|---|---|
-| **BOT-A Estático** | Confirma *as-is* las 20 épocas | Línea base por región |
+| **BOT-A Estático** | Confirma *as-is* las 12 épocas | Línea base por región |
 | **BOT-B Trasplante** | Copia el modelo Kaigan en cualquier región (3×/día, cross-dock combinado, sin densificar) | Debe perder fuera de Kaigan |
 | **BOT-C Adaptado** | Política diseñada por región (SCM-ESC-05 en Red River; densificación + POS en Valle) | Debe ganar a A y B |
 | **BOT-D Maximalista** | Todo al máximo: 20 CD, 3×/día, CSL 99%, todos los sistemas | Detecta "gastar resuelve todo" |

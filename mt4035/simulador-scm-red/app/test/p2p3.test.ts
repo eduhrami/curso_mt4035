@@ -4,7 +4,7 @@ import { playGame } from "@mt4035/sim-core/testing";
 import { effectiveCv, supplierLt } from "../src/tick.ts";
 import { events } from "../src/events.ts";
 import { rules } from "../src/rules.ts";
-import { createScmEngine, params, scoreRun } from "../src/index.ts";
+import { createScmEngine, EPOCHS, params, scoreRun } from "../src/index.ts";
 import type { DcSpec, ScmState } from "../src/types.ts";
 import { adaptedDispersed, naiveTransplant } from "../autoplay/bots.ts";
 import { builtDcs, det, engine, fakeCtx, meanKpi, paramsWith, run, start, sumMetric, withOverrides } from "./helpers/run.ts";
@@ -259,7 +259,7 @@ describe("SCM P2 — reglas, eventos, retrasos y puntaje", () => {
 
   it("SCO-05 con normalización por región, el as-is de cada región puntúa en una banda comparable (25–60)", () => {
     for (const region of ["kaigan", "redriver", "valle"] as const) {
-      const reports = run(start(det(region)), 20).reports;
+      const reports = run(start(det(region)), EPOCHS).reports;
       for (const st of ["freshness", "lowcost", "convenience"] as const) {
         // Banda de la operación (sin el 30% del pronóstico, que no depende de la región).
         const sc = scoreRun(reports, st, params, region).operational;

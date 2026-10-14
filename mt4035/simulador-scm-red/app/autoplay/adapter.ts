@@ -1,6 +1,6 @@
 /** Adaptador del simulador SCM para las herramientas de auto-juego (export default). */
 import type { AutoplayAdapter } from "@mt4035/sim-tools";
-import { CATEGORIES, createScmEngine, params, scmConfig, scoreRun, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
+import { CATEGORIES, createScmEngine, EPOCHS, params, scmConfig, scoreRun, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
 import { baselineVector, bots, canonicalVector, searchSpace } from "./bots.ts";
 import { properties } from "./properties.ts";
 
@@ -16,7 +16,7 @@ const adapter: AutoplayAdapter<ScmState, Params> = {
   bots,
   check: (reports) => {
     const problems: string[] = [];
-    if (reports.length !== 20) problems.push(`épocas jugadas: ${reports.length}`);
+    if (reports.length !== EPOCHS) problems.push(`épocas jugadas: ${reports.length}`);
     for (const r of reports) {
       for (const [k, v] of Object.entries(r.kpis)) if (!Number.isFinite(v)) problems.push(`${r.label} ${k} no finito`);
       for (const k of RATIOS) if (!(r.kpis[k]! >= 0 && r.kpis[k]! <= 1)) problems.push(`${r.label} ${k}=${r.kpis[k]} fuera de [0, 1]`);

@@ -15,7 +15,7 @@ await page.getByTestId("review").click();
 await page.screenshot({ path: `${out}/6-confirm.png` });
 await page.getByRole("dialog").getByRole("checkbox").check();
 await page.getByTestId("confirm-run").click();
-for (let i = 0; i < 19; i++) { await page.getByTestId("review").click(); await page.getByTestId("confirm-run").click(); await page.waitForTimeout(50); }
+for (let i = 0; i < 11; i++) { await page.getByTestId("review").click(); await page.getByTestId("confirm-run").click(); await page.waitForTimeout(50); }
 await page.locator(".col-dashboard").screenshot({ path: `${out}/7-final.png` });
 console.log("errores:", JSON.stringify(errors));
 await browser.close();

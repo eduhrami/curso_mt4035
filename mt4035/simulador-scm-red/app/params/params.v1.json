@@ -1,6 +1,7 @@
 {
   "version": "p2",
   "note": "⚠ Calibración preliminar (F2). Se ajusta con auto-juego en F3. Montos en USD; tiempos en días u horas según el sufijo.",
+  "epochs": 12,
   "weeksPerEpoch": 13,
   "grid": 6,
   "shiftHours": 10,
@@ -335,7 +336,6 @@
     "congestionK": 0.25,
     "utilPenalty": 0.05
   },
-  "strategyChangePenalty": 2000000,
   "markets": {
     "growth": {
       "stagnant": 0.0,

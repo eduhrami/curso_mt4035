@@ -1,6 +1,6 @@
 /** SCM-FC: proceso de demanda oculto, datos históricos y pronóstico F-01 (casos de prueba §9.1). */
 import { describe, expect, it } from "vitest";
-import { demandCsv, forecastScore, params, scoreRun, serviceGuardrails, truthForecast, type DemandForecast } from "../src/index.ts";
+import { demandCsv, EPOCHS, forecastScore, params, scoreRun, serviceGuardrails, truthForecast, type DemandForecast } from "../src/index.ts";
 import { det, engine, run, start, sumMetric, withOverrides } from "./helpers/run.ts";
 import { scmConfig } from "../src/model.ts";
 
@@ -47,7 +47,7 @@ describe("SCM-FC (P1)", () => {
       const play = (k: number) => {
         let s = engine.createGame(sto(region, 3));
         const reports = [];
-        for (let e = 0; e < 20; e++) {
+        for (let e = 0; e < EPOCHS; e++) {
           if (e % 4 === 0) s.model.dec.demandForecast = scaled(truthForecast(s.model, params, e / 4), k);
           const r = engine.confirmEpoch(s);
           s = r.state;

@@ -4,7 +4,6 @@ import { params, presetOf, type RegionId, type Strategy } from "../src/index.ts"
 
 export const TABS = [
   { id: "Pronóstico", label: "Pronóstico" },
-  { id: "Estrategia", label: "Estrategia" },
   { id: "Red", label: "Red" },
   { id: "Flujo", label: "Flujo" },
   { id: "Inventario", label: "Inventario" },
@@ -65,7 +64,6 @@ export const OPTIONS: Record<string, string> = {
 
 export const LABELS: LabelMap = {
   "F-01": { help: "Se captura en T1 de cada año con los datos observados hasta ese momento." },
-  "D-00": { help: "Fija cómo se evalúa tu desempeño. Solo puedes cambiarla una vez, con penalización." },
   "D-01": { help: "Cada CD tarda 2–4 trimestres en construirse según su tamaño. No se puede mover de zona ni reducir." },
   "D-05": { help: "Decide dónde se ubican las tiendas nuevas: concentradas alrededor de tus CD o repartidas." },
   "D-06": { help: "Ritmo anual de aperturas (+) o cierres (−). Surte efecto el trimestre siguiente.", format: "pct", step: 0.01 },

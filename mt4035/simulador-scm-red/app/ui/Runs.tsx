@@ -2,7 +2,7 @@
 import { useState } from "preact/hooks";
 import { download, fmt, fmtMoney, LineChart } from "@mt4035/ui-kit";
 import type { EpochReport } from "@mt4035/sim-core";
-import { params, scoreRun, type RegionId, type Strategy } from "../src/index.ts";
+import { EPOCHS, params, scoreRun, type RegionId, type Strategy } from "../src/index.ts";
 import { KPI_META, OPTIONS, scenarioLabel } from "./labels.ts";
 import { professor, screen, store } from "./game.ts";
 
@@ -77,7 +77,7 @@ export function Runs() {
                   </td>
                   <td>{r.title}</td>
                   <td class="small">{new Date(r.savedAt).toLocaleString("es-MX")}</td>
-                  <td class="small">{r.data.finished ? `Terminada · utilidad ${r.data.export.finalScore !== undefined ? fmtMoney(r.data.export.finalScore) : "—"}` : `En curso (${r.data.export.epochsPlayed}/20)`}</td>
+                  <td class="small">{r.data.finished ? `Terminada · utilidad ${r.data.export.finalScore !== undefined ? fmtMoney(r.data.export.finalScore) : "—"}` : `En curso (${r.data.export.epochsPlayed}/${EPOCHS})`}</td>
                   <td class="row">
                     <button type="button" onClick={() => open(r.id)}>
                       {r.data.finished ? "Ver" : "Continuar"}

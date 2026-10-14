@@ -17,7 +17,7 @@ async function begin(page: Page, region: "Kaigan" | "Red River" | "Valle Metropo
   return errors;
 }
 
-/** Captura un pronóstico plausible (A1: formulario en blanco; A2…A5: parte del anterior). */
+/** Captura un pronóstico plausible (A1: formulario en blanco; A2 y A3: parte del anterior). */
 async function captureForecast(page: Page) {
   await page.getByRole("tab", { name: "Pronóstico" }).click();
   const editor = page.getByTestId("forecast-editor");
@@ -37,9 +37,9 @@ async function playEpoch(page: Page) {
   await expect(page.getByTestId("epoch-label")).not.toHaveText(before ?? "");
 }
 
-test("partida completa de 20 trimestres en Kaigan y exportación verificable con replay", async ({ page }) => {
+test("partida completa de 12 trimestres en Kaigan y exportación verificable con replay", async ({ page }) => {
   const errors = await begin(page, "Kaigan");
-  for (let i = 0; i < 20; i++) await playEpoch(page);
+  for (let i = 0; i < 12; i++) await playEpoch(page);
   await expect(page.getByTestId("epoch-label")).toHaveText("Partida terminada");
   await expect(page.getByTestId("final-report")).toBeVisible();
   const score = Number(await page.getByTestId("final-score").getAttribute("data-value"));
@@ -54,7 +54,7 @@ test("partida completa de 20 trimestres en Kaigan y exportación verificable con
   const parsed = parseExport(readFileSync((await dl.path())!, "utf8"), "mt4035-scm");
   expect(parsed.ok).toBe(true);
   if (!parsed.ok) return;
-  expect(parsed.value.epochsPlayed).toBe(20);
+  expect(parsed.value.epochsPlayed).toBe(12);
   expect(parsed.value.finalScore).toBeCloseTo(score, 1);
   expect(parsed.value.debrief?.complete).toBe(true);
   expect(parsed.value.debrief?.answers.map((a) => a.id)).toEqual(["DB-01", "DB-02", "DB-03", "DB-04", "DB-05", "DB-06", "DB-07"]);
@@ -93,7 +93,7 @@ test("al recargar, la corrida guardada se puede continuar", async ({ page }) => 
   await page.reload();
   await page.getByRole("button", { name: /Corridas guardadas/ }).click();
   await page.getByRole("button", { name: "Continuar" }).first().click();
-  await expect(page.getByTestId("epoch-label")).toContainText("3/20");
+  await expect(page.getByTestId("epoch-label")).toContainText("3/12");
 });
 
 test("si el navegador bloquea localStorage, avisa y el juego sigue en memoria", async ({ page }) => {
@@ -107,7 +107,7 @@ test("si el navegador bloquea localStorage, avisa y el juego sigue en memoria", 
   await begin(page, "Kaigan");
   await expect(page.getByRole("status").first()).toContainText("exporta tu corrida");
   await playEpoch(page);
-  await expect(page.getByTestId("epoch-label")).toContainText("2/20");
+  await expect(page.getByTestId("epoch-label")).toContainText("2/12");
 });
 
 test("en móvil (360 px) no hay scroll horizontal y las vistas se cambian con pestañas", async ({ page }) => {
@@ -167,7 +167,7 @@ test("el pronóstico es obligatorio en T1 de cada año y los datos de demanda se
   expect(lines).toHaveLength(1 + 104);
   await captureForecast(page);
   for (let i = 0; i < 4; i++) await playEpoch(page);
-  await expect(page.getByTestId("epoch-label")).toContainText("5/20");
+  await expect(page.getByTestId("epoch-label")).toContainText("5/12");
   await expect(page.getByTestId("review")).toBeDisabled();
   await page.getByRole("tab", { name: "Pronóstico" }).click();
   const [dl2] = await Promise.all([page.waitForEvent("download"), page.getByTestId("download-demand").click()]);

@@ -58,7 +58,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "Pronóstico causal", def: "Pronóstico que explica la demanda con sus causas (clima, calendario, promociones), no solo con su historia.", category: INFO },
 
   // Dinero
-  { term: "Utilidad", def: "Puntaje definitivo: EBITDA logístico (margen bruto − merma − rebajas − costos logísticos − TI) − inversión − penalizaciones por servicio, acumulado en los 20 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },
+  { term: "Utilidad", def: "Puntaje definitivo: EBITDA logístico (margen bruto − merma − rebajas − costos logísticos − TI) − inversión − penalizaciones por servicio, acumulado en los 12 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },
   { term: "Penalización por servicio", def: "Cada trimestre en que rompes un guardrail de servicio de tu propuesta de valor (p. ej., OSA mínima) pierdes un % de las ventas del trimestre: penalizaciones y clientes que se van.", aliases: ["penalizaciones por servicio"], category: "Dinero" },
   { term: "Rebajas", def: "Pérdida por comprar más de lo que se vende cuando el pronóstico es alto: la mercancía sobrante se vende con descuento o se desecha.", category: "Dinero" },
 

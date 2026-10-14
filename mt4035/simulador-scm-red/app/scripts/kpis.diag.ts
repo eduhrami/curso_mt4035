@@ -18,7 +18,7 @@ it("diagnóstico de KPIs", () => {
   for (const [name, cfg, pol] of runs) {
     const { reports } = playGame(engine, cfg, pol);
     const pick = (i: number) => KP.map((k) => `${k}=${fmt(k, reports[i]!.kpis[k]!)}`).join(" ");
-    console.log(`\n### ${name}\n E1  ${pick(0)}\n E8  ${pick(7)}\n E20 ${pick(19)}`);
+    console.log(`\n### ${name}\n E1  ${pick(0)}\n E8  ${pick(7)}\n E12 ${pick(11)}`);
     for (const st of ["freshness", "lowcost", "convenience"] as const) console.log(`  score ${st}: ${scoreRun(reports, st, params).score.toFixed(1)}`);
   }
 });

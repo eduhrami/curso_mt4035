@@ -2,7 +2,7 @@
 import { signal } from "@preact/signals";
 import { createGameStore } from "@mt4035/ui-kit";
 import type { GameState } from "@mt4035/sim-core";
-import { createScmEngine, debriefFor, params, PARAMS_VERSION, scoreRun, SIM_VERSION, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
+import { createScmEngine, debriefFor, EPOCHS, params, PARAMS_VERSION, scoreRun, SIM_VERSION, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
 import { REGION_TEXT, OPTIONS } from "./labels.ts";
 
 export const engine = createScmEngine();
@@ -21,7 +21,7 @@ export const store = createGameStore({
   storageKey: "mt4035.scm.runs.v1",
   simVersion: SIM_VERSION,
   paramsVersion: PARAMS_VERSION,
-  title: (s) => `${REGION_TEXT[regionOf(s)].title} · ${OPTIONS[s.model.strategy]} · ${s.config.player?.name || "sin nombre"} · ${s.history.length}/20`,
+  title: (s) => `${REGION_TEXT[regionOf(s)].title} · ${OPTIONS[s.model.strategy]} · ${s.config.player?.name || "sin nombre"} · ${s.history.length}/${EPOCHS}`,
   // Puntaje definitivo: utilidad acumulada en USD (§7.5).
   finalScore: (s) => finalScore(s).profit,
   debriefQuestions: (s) => debriefFor(s.config.scenario as Parameters<typeof debriefFor>[0]).questions,

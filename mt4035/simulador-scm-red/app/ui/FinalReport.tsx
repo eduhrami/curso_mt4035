@@ -2,7 +2,7 @@
 import { DebriefPanel, download, fmt, fmtMoney, Gloss, LineChart } from "@mt4035/ui-kit";
 import { PNL } from "./Dashboard.tsx";
 import type { GameState } from "@mt4035/sim-core";
-import { debriefFor, params, type ScmState, type Strategy } from "../src/index.ts";
+import { debriefFor, EPOCHS, params, YEARS, type ScmState, type Strategy } from "../src/index.ts";
 import { describeValue, kpiMetaFor, OPTIONS, REGION_TEXT, scenarioLabel } from "./labels.ts";
 import { engine, finalScore, regionOf, screen, store } from "./game.ts";
 
@@ -68,7 +68,7 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
       </div>
 
       <div class="card stack">
-        <h2>Estado de resultados de los 5 años</h2>
+        <h2>Estado de resultados de los {EPOCHS} trimestres</h2>
         <div class="table-scroll">
           <table>
             <thead>
@@ -190,7 +190,7 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
       </div>
 
       <div class="card stack">
-        <h2>Trayectoria de 5 años</h2>
+        <h2>Trayectoria de {YEARS} años</h2>
         <LineChart labels={labels} series={["OSA", "OTIF", "WASTE", "CTS_PCT", "EBITDA_PCT"].map((k) => ({ label: metas.find((m) => m.id === k)?.acronym ?? k, data: state.history.map((h) => h.kpis[k] ?? null) }))} format={(v) => fmt(v, "pct")} ariaLabel="Trayectoria de los KPI principales" />
       </div>
 

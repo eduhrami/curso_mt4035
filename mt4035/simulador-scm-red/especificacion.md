@@ -11,7 +11,7 @@
 
 ## 1. Propósito
 
-Con este simulador el alumno vive la pregunta central del caso SEJ: **¿una cadena de suministro diseñada para una geografía densa funciona igual en una geografía dispersa?** El alumno elige una combinación de escenario, estrategia y decisiones de red, inventario e información. Después observa durante 5 años simulados cómo se mueven sus KPIs y cómo los eventos inesperados ponen a prueba su diseño.
+Con este simulador el alumno vive la pregunta central del caso SEJ: **¿una cadena de suministro diseñada para una geografía densa funciona igual en una geografía dispersa?** El alumno elige una combinación de escenario, estrategia y decisiones de red, inventario e información. Después observa durante 3 años simulados cómo se mueven sus KPIs y cómo los eventos inesperados ponen a prueba su diseño.
 
 **Objetivos de aprendizaje** (alineados con S4):
 
@@ -37,7 +37,7 @@ Con este simulador el alumno vive la pregunta central del caso SEJ: **¿una cade
 >
 > El consejo también evalúa entrar a **Valle Metropolitano**, una zona metropolitana latinoamericana con un núcleo urbano muy denso y una periferia extendida.
 >
-> **Tú eres la nueva Dirección de Supply Chain.** El consejo te da 5 años y te pide tres cosas: (1) definir qué propuesta de valor sostiene cada región, (2) diseñar la red que la haga posible y (3) demostrarlo con números. Cada trimestre presentas resultados al comité. Habrá sorpresas: tifones, tormentas de nieve, fallas de refrigeración, proveedores que no entregan.
+> **Tú eres la nueva Dirección de Supply Chain.** El consejo te da 3 años y te pide tres cosas: (1) definir qué propuesta de valor sostiene cada región, (2) diseñar la red que la haga posible y (3) demostrarlo con números. Cada trimestre presentas resultados al comité. Habrá sorpresas: tifones, tormentas de nieve, fallas de refrigeración, proveedores que no entregan.
 
 **Rol del jugador:** decide la red, la política de inventario y reposición, la infraestructura de información y la relación con proveedores. **No** decide precios, ruteo al cliente final ni abastecimiento internacional.
 
@@ -49,8 +49,8 @@ Con este simulador el alumno vive la pregunta central del caso SEJ: **¿una cade
 
 | Elemento | Definición |
 |---|---|
-| Horizonte | **5 años × 4 trimestres = 20 épocas** (fijo). Las épocas se etiquetan A1-T1 … A5-T4 |
-| Época de decisión | **Trimestre**. Al inicio de cada una de las 20 épocas el jugador decide (o confirma sin cambios) |
+| Horizonte | **3 años × 4 trimestres = 12 épocas** (fijo; `params.epochs`, igual que los 12 turnos de última milla, AD-37). Las épocas se etiquetan A1-T1 … A3-T4 |
+| Época de decisión | **Trimestre**. Al inicio de cada una de las 12 épocas el jugador decide (o confirma sin cambios) |
 | Tick interno del motor | **Semana**: 13 ticks por época. Los efectos dentro del día (frecuencia de entrega, frescura) se resuelven con fórmulas agregadas, no simulando cada día |
 | Modo de juego | **Manual, época por época.** El jugador revisa resultados y mensajes, ajusta y **confirma** sus decisiones, y el motor corre el trimestre. La siguiente época no avanza sin confirmación. No hay modo automático ni mixto: cada trimestre es un punto de decisión explícito |
 | Aleatoriedad | PRNG con **semilla** (p. ej. *mulberry32*). Con la misma semilla y las mismas decisiones se obtiene la misma corrida, lo que permite repetirla y que el profesor la verifique |
@@ -136,7 +136,7 @@ La demanda de cada zona y categoría es esa base × confianza, competencia, dens
 | Estacionalidad | Forma base por trimestre (−0.7, 0.3, 0.8, −0.4) ± 0.2, sin promedio; amplitud según E-21 × U(0.8, 1.2) | 4 índices trimestrales |
 | Choque semanal común | Normal con CV por E-22: baja 2–4%, media 4–7%, alta 7–11% | CV del residuo semanal y p95 semanal |
 
-- **Datos:** desde la pestaña «Pronóstico» el equipo descarga un CSV con **104 semanas de historia** (H1, H2) y, en T1 de A2…A5, también las semanas jugadas. Columnas: `semana, anio, trimestre, semana_del_anio, frescos, refrigerado, ambiente, congelado, total` (unidades por tienda por día). Es la demanda del **mercado** por tienda (ventas comparables), sin el efecto de las decisiones del equipo ni el número de tiendas. Con envejecimiento (E-26), la mezcla se desplaza hacia frescos igual que en el motor.
+- **Datos:** desde la pestaña «Pronóstico» el equipo descarga un CSV con **104 semanas de historia** (H1, H2) y, en T1 de A2 y A3, también las semanas jugadas. Columnas: `semana, anio, trimestre, semana_del_anio, frescos, refrigerado, ambiente, congelado, total` (unidades por tienda por día). Es la demanda del **mercado** por tienda (ventas comparables), sin el efecto de las decisiones del equipo ni el número de tiendas. Con envejecimiento (E-26), la mezcla se desplaza hacia frescos igual que en el motor.
 - **Lo que ya no se muestra:** crecimiento, estacionalidad y volatilidad en las fichas de escenario; los mensajes de tendencia citan el pronóstico del equipo.
 - Sustituye la estacionalidad sinusoidal semanal del modelo anterior por índices trimestrales (escalonados), para que el pronóstico trimestral pueda ser exacto.
 
@@ -152,18 +152,18 @@ Las decisiones van en cuatro capas que **se pueden cambiar a distinta velocidad*
 |---|---|---|---|
 | F-01 | Pronóstico de demanda por tienda del año | Nivel base (unidades por tienda por día de un trimestre de índice 1, al inicio del año), crecimiento anual, 4 índices trimestrales (se normalizan a promedio 1), CV del residuo semanal y p95 semanal | Fija el inventario objetivo y el stock de seguridad de las tiendas; es el 30% del puntaje (§7.4) |
 
-- **Cuándo:** solo en T1 (A1-T1 … A5-T1) y para el año en curso; la interfaz no deja confirmar T1 sin capturarlo. Distinto de D-32 (método de pronóstico del sistema de tiendas, que reduce el CV operativo).
+- **Cuándo:** solo en T1 (A1-T1, A2-T1, A3-T1) y para el año en curso; la interfaz no deja confirmar T1 sin capturarlo. Distinto de D-32 (método de pronóstico del sistema de tiendas, que reduce el CV operativo).
 - **Acoplamiento:** con `k` = 1 + s · (pronóstico / demanda esperada − 1), donde s = 0.4 × factor del sistema de información (POS básico 1.0, POS diario 0.55, POS + terminal 0.45: con POS diario la reposición corrige rápido), las tiendas piden con μ·k:
   - **De menos (k < 1):** la disponibilidad se multiplica por k (falta mercancía en proporción al error): menos ventas y más ventas perdidas.
   - **De más (k > 1):** lo comprado por encima de lo que se vende se rebaja con 45% de pérdida sobre su costo (`OVERSTOCK_COST`), y el inventario, la merma de perecederos y su costo suben. No mejora la disponibilidad (el exceso queda en bodega).
   - **CV:** el stock de seguridad se escala con la razón entre el CV pronosticado y el real; subestimarlo baja la protección (z efectivo), sobreestimarlo solo cuesta inventario.
   - Con pronóstico perfecto, el inventario es idéntico al del modelo anterior.
 
-### 5.1 Estrategia (solo en el setup; se puede cambiar una vez, con penalización)
+### 5.1 Estrategia (solo en el setup; fija toda la partida)
 
 | ID | Decisión | Opciones | Efecto en el juego |
 |---|---|---|---|
-| D-00 | Propuesta de valor declarada | **Frescura y proximidad** · **Bajo costo** · **Conveniencia y amplitud** | Fija los pesos del puntaje (§7.3) y la elasticidad de la demanda a cada KPI |
+| D-00 | Propuesta de valor declarada | **Frescura y proximidad** · **Bajo costo** · **Conveniencia y amplitud** | Fija los pesos del puntaje (§7.3), los guardrails de servicio (§7.5) y la elasticidad de la demanda a cada KPI. Se elige en el setup y **no se puede cambiar durante la partida** (AD-38): no es una decisión de turno |
 
 ### 5.2 Red: estructural (efecto con retraso, alto costo, poco reversible)
 
@@ -372,10 +372,10 @@ La lección: el mismo ITR puede dar buen o mal puntaje según la propuesta de va
 
 ### 7.5 Utilidad: puntaje definitivo (13-oct-2026)
 
-Estado de resultados trimestral de la cadena (KPIs en USD): margen bruto de lo vendido (`GM_USD`) − merma (`WASTE_COST`) − rebajas por sobrecompra (`OVERSTOCK_COST`) − transporte − manejo en CD − costo fijo de CD − recepción − costo de mantener inventario − TI y capacitación = **EBITDA logístico** (`EBITDA`); − inversión y cargos del trimestre (`CAPEX`: CD, aperturas, cierres, cambio de estrategia) − **penalizaciones por servicio** (`SERVICE_PENALTY`) = **utilidad** (`PROFIT`).
+Estado de resultados trimestral de la cadena (KPIs en USD): margen bruto de lo vendido (`GM_USD`) − merma (`WASTE_COST`) − rebajas por sobrecompra (`OVERSTOCK_COST`) − transporte − manejo en CD − costo fijo de CD − recepción − costo de mantener inventario − TI y capacitación = **EBITDA logístico** (`EBITDA`); − inversión y cargos del trimestre (`CAPEX`: CD, aperturas, cierres) − **penalizaciones por servicio** (`SERVICE_PENALTY`) = **utilidad** (`PROFIT`).
 
 - **Penalizaciones por servicio:** cada trimestre con un guardrail roto de la propuesta de valor declarada resta 2% de las ventas del trimestre ⚠ (`SERVICE_BREACHES`). Umbral = guardrail calibrado de la región + ajuste: frescura: OSA ≥ base y OSA de frescos ≥ base − 2 pp; bajo costo: OSA ≥ base − 2 pp; conveniencia: OSA ≥ base + 1 pp y ventas perdidas ≤ base. La propuesta declarada define la promesa que hay que cumplir mientras se maximiza la utilidad (AD-36).
-- **Utilidad acumulada** = Σ `PROFIT` de los 20 trimestres: puntaje definitivo (`finalScore` de la exportación, en USD). Se ve en la barra superior, en el dashboard («Estado de resultados»), en el reporte final (por año) y en el comparador. Solo es comparable dentro de la misma región, escenario y semilla; entre regiones conviene la mejora contra la operación inicial (%).
+- **Utilidad acumulada** = Σ `PROFIT` de los 12 trimestres: puntaje definitivo (`finalScore` de la exportación, en USD). Se ve en la barra superior, en el dashboard («Estado de resultados»), en el reporte final (por año) y en el comparador. Solo es comparable dentro de la misma región, escenario y semilla; entre regiones conviene la mejora contra la operación inicial (%).
 
 ### 7.6 Peso del pronóstico en la utilidad (13-oct-2026)
 
@@ -383,10 +383,10 @@ Estado de resultados trimestral de la cadena (KPIs en USD): margen bruto de lo v
 
 | Región | Peso del pronóstico |
 |---|---|
-| Kaigan | ≈ 93% (la red inicial ya es la de Seven-Eleven: la operación casi no puede mejorar y el pronóstico es la palanca que queda; además, con OSA ≥ 96% el margen de error es mínimo) |
-| Red River | ≈ 32% |
-| Valle Metropolitano | ≈ 43% |
-| **Promedio** | **≈ 56%** |
+| Kaigan | ≈ 94% (la red inicial ya es la de Seven-Eleven: la operación casi no puede mejorar y el pronóstico es la palanca que queda; además, con OSA ≥ 96% el margen de error es mínimo) |
+| Red River | ≈ 39% |
+| Valle Metropolitano | ≈ 45% |
+| **Promedio** | **≈ 59%** |
 
 No se fuerza una brecha por región: en qué casos pesa más el pronóstico es parte del aprendizaje.
 
@@ -431,7 +431,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 5. **Bandeja de mensajes:** eventos (§8) y alertas de reglas (§6.4), con fecha simulada, severidad y "¿por qué pasó esto?", que despliega la cadena causal con los valores que la activaron.
 - **Glosario (AD-32):** botón «Glosario» en la barra superior y en el inicio, con todas las siglas y conceptos agrupados y un buscador. En toda la interfaz, los términos del glosario aparecen subrayados con puntos y muestran su definición al pasar el mouse (`<abbr title>`); las opciones y etiquetas de KPI la muestran como tooltip. Entradas en [`app/ui/glossary.ts`](app/ui/glossary.ts).
 6. **Comparador de corridas:** 2–4 corridas guardadas, KPI por KPI, con el diff de decisiones.
-7. **Reporte final:** puntaje separado en operación y pronóstico, precisión del pronóstico por año, demanda contra pronóstico, scorecard, trayectoria de 5 años, decisiones clave y eventos enfrentados. Cierra con el **debrief** (§11): notas del escenario y siete preguntas obligatorias; el JSON solo se exporta con el debrief completo.
+7. **Reporte final:** puntaje separado en operación y pronóstico, precisión del pronóstico por año, demanda contra pronóstico, scorecard, trayectoria de 3 años, decisiones clave y eventos enfrentados. Cierra con el **debrief** (§11): notas del escenario y siete preguntas obligatorias; el JSON solo se exporta con el debrief completo.
 
 ---
 
@@ -489,7 +489,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 
 ## 13. Decisiones pendientes
 
-- [ ] Confirmar la duración objetivo de una partida en clase: 20 épocas manuales (≈3 min por época si se juega en ~60 min).
+- [x] Duración de una partida en clase: 12 épocas manuales (3 años), homologada con última milla (AD-37, 14-oct-2026); ≈4 min por época en ~45–50 min de juego.
 - [ ] Validar los rangos numéricos de la §6.3 y los p_base de la §8 con datos del caso y benchmarks.
 - [ ] Definir si se juega una sola región o la comparación Kaigan vs. Red River es obligatoria.
 - [ ] Decidir si el puntaje es visible durante el juego o solo al final.

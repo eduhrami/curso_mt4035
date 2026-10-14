@@ -1,13 +1,13 @@
 # Peso del pronóstico en la utilidad — mt4035-scm
 
-Generado: 2026-10-14T04:41:35.651Z · 3 semillas de evaluación · 50 vectores aleatorios + bots de referencia para la mejor operación (por utilidad, pronóstico perfecto).
+Generado: 2026-10-14T17:30:45.256Z · 3 semillas de evaluación · 50 vectores aleatorios + bots de referencia para la mejor operación (por utilidad, pronóstico perfecto).
 
-Utilidad acumulada de 5 años en millones de USD. «Pérdida −20% / +20%»: cuánto se pierde con un pronóstico 20% bajo / alto respecto al perfecto.
+Utilidad acumulada de 3 años en millones de USD. «Pérdida −20% / +20%»: cuánto se pierde con un pronóstico 20% bajo / alto respecto al perfecto.
 
 | Región | BOT-A (inicial) | Mejor operación | Pérdida A −20% / +20% | Pérdida mejor −20% / +20% | Brecha operativa | Brecha por pronóstico | Peso del pronóstico |
 |---|---|---|---|---|---|---|---|
-| kaigan | 6380 | 6448 (BOT-C) | 1322 / 361 | 1318 / 335 | 67 | 834 | **93%** |
-| redriver | 159 | 658 (vector 33) | 170 / 189 | 494 / 79 | 499 | 233 | **32%** |
-| valle | 736 | 1159 (vector 43) | 355 / 202 | 628 / 99 | 423 | 321 | **43%** |
+| kaigan | 3692 | 3723 (BOT-C) | 752 / 218 | 757 / 195 | 31 | 481 | **94%** |
+| redriver | 128 | 364 (vector 33) | 139 / 147 | 280 / 49 | 236 | 154 | **39%** |
+| valle | 425 | 649 (vector 43) | 202 / 115 | 344 / 65 | 224 | 181 | **45%** |
 
-**Peso medio del pronóstico: 56%.** No se fuerza por región: donde la operación ya es buena (Kaigan) el pronóstico es la palanca que queda; donde la operación tiene mucho por mejorar (Red River) pesa menos.
+**Peso medio del pronóstico: 59%.** No se fuerza por región: donde la operación ya es buena (Kaigan) el pronóstico es la palanca que queda; donde la operación tiene mucho por mejorar (Red River) pesa menos.

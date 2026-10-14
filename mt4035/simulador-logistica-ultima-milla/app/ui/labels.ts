@@ -6,7 +6,6 @@ type PlayableTerritory = Exclude<TerritoryId, "minicaso">;
 
 export const TABS = [
   { id: "Pronóstico", label: "Pronóstico" },
-  { id: "Estrategia", label: "Estrategia" },
   { id: "Red", label: "Red" },
   { id: "Asignación", label: "Asignación" },
   { id: "Promesa", label: "Promesa" },
@@ -92,7 +91,6 @@ export const OPTIONS: Record<string, string> = {
 };
 
 export const LABELS: LabelMap = {
-  "D-00": { help: "Fija cómo se evalúa tu desempeño. Solo puedes cambiarla una vez, con penalización." },
   "F-01": { help: "Se captura en enero de cada año con los datos observados hasta ese momento." },
   "D-01": {
     help: "Surtido desde el CD. Para apagarlo necesitas otro nodo que ya esté operando.",

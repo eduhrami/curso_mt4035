@@ -1,7 +1,7 @@
 /** SCM-ESC (P1): escenarios de referencia calibrados contra el caso (casos de prueba §5). */
 import { describe, expect, it } from "vitest";
 import { playGame } from "@mt4035/sim-core/testing";
-import { params, scoreRun } from "../src/index.ts";
+import { EPOCHS, params, scoreRun } from "../src/index.ts";
 import type { DcSpec } from "../src/types.ts";
 import { adaptedDispersed, naiveTransplant } from "./helpers/policies.ts";
 import { det, engine, meanKpi, sumMetric } from "./helpers/run.ts";
@@ -47,7 +47,7 @@ describe("SCM-ESC (P1)", () => {
   it("ESC-05 diseño adaptado en Red River: CTS ↓ y OSA ↑ frente a as-is desde A2", () => {
     const base = asIs("redriver");
     const adapted = playGame(engine, det("redriver"), adaptedDispersed()).reports;
-    for (let e = 4; e < 20; e++) {
+    for (let e = 4; e < EPOCHS; e++) {
       expect(adapted[e]!.kpis.CTS_PCT).toBeLessThan(base[e]!.kpis.CTS_PCT!);
       expect(adapted[e]!.kpis.OSA).toBeGreaterThan(base[e]!.kpis.OSA!);
     }

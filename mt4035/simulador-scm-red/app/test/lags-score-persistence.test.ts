@@ -17,10 +17,12 @@ describe("SCM-LAG (P1)", () => {
     expect(r.reports.map((x) => x.kpis.INFO_MATURITY)).toEqual([1, 1, 0, 0.5, 1, 1]); // retraso 2: opera desde la época 2
   });
 
-  it("LAG-04 la estrategia se cambia una vez con penalización; el segundo cambio se rechaza", () => {
-    const s1 = engine.confirmEpoch(engine.stage(start(det("kaigan")), { "D-00": "lowcost" }).state);
-    expect(s1.report.ledger).toContainEqual(expect.objectContaining({ kind: "penalty", source: "D-00", amount: params.strategyChangePenalty }));
-    expect(engine.validate(s1.state, { "D-00": "convenience" }).ok).toBe(false);
+  it("LAG-04 la propuesta de valor se fija en el setup y no se puede cambiar durante la partida", () => {
+    expect(engine.model.decisions.some((d) => d.id === "D-00")).toBe(false);
+    expect(engine.validate(start(det("kaigan")), { "D-00": "lowcost" }).ok).toBe(false);
+    const { reports, state } = run(start(det("kaigan")), 4);
+    expect(state.model.strategy).toBe("freshness");
+    expect(reports.flatMap((r) => r.ledger).some((l) => l.source === "D-00")).toBe(false);
   });
 
   it("LAG-05 CPFR/VMI sin compartir POS se rechaza; con D-31 preparado se acepta", () => {
@@ -114,12 +116,12 @@ describe("SCM-PER (P1)", () => {
     expect(parseExport(JSON.stringify(exp), "mt4035-lastmile").ok).toBe(false);
   });
 
-  it("PER-05 CSV con 20 filas y los mismos valores que el JSON", async () => {
+  it("PER-05 CSV con 12 filas y los mismos valores que el JSON", async () => {
     const { state } = playGame(engine, det("kaigan"));
     const exp = await buildExport(state, opts);
     const lines = toCSV(kpiRows(exp)).trim().split("\n");
-    expect(lines).toHaveLength(21);
+    expect(lines).toHaveLength(13);
     const header = lines[0]!.split(",");
-    expect(Number(lines[20]!.split(",")[header.indexOf("OSA")])).toBe(exp.kpis[19]!.values.OSA);
+    expect(Number(lines[12]!.split(",")[header.indexOf("OSA")])).toBe(exp.kpis[11]!.values.OSA);
   });
 });
