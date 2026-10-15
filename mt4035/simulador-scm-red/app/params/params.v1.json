@@ -1,5 +1,5 @@
 {
-  "version": "p2",
+  "version": "p3",
   "note": "⚠ Calibración preliminar (F2). Se ajusta con auto-juego en F3. Montos en USD; tiempos en días u horas según el sufijo.",
   "epochs": 12,
   "weeksPerEpoch": 13,
@@ -201,7 +201,8 @@
       "cpfr": 0.7
     },
     "dedicatedLtMult": 0.5,
-    "dedicatedCapex": 3000000,
+    "inboundCostPerCaseKm": 0.01,
+    "inboundNote": "Proveedor con planta en la región (supplierSites): Hoshi Mart recoge en la planta y paga el flete al CD (USD por caja-km, camión completo ida y vuelta). Con proveedores externos el flete va en el precio.",
     "shortfallToOos": 0.6,
     "dsdFreqPerWeek": {
       "fresh": 3,
@@ -212,26 +213,27 @@
     "frFloor": 0.5
   },
   "info": {
+    "note": "Calibrado para que el POS se recupere en ≤ 2 años (≤ 8 trimestres) con un error de pronóstico de ±10% sobre la operación óptima de Red River y Valle (AD-40).",
     "cvMult": {
       "basic": 1.0,
-      "pos_daily": 0.85,
-      "pos_terminal": 0.75
+      "pos_daily": 0.75,
+      "pos_terminal": 0.6
     },
-    "maturityPerEpoch": 0.5,
+    "maturityPerEpoch": 1.0,
     "lagEpochs": {
       "basic": 0,
-      "pos_daily": 2,
-      "pos_terminal": 3
+      "pos_daily": 1,
+      "pos_terminal": 2
     },
     "capexPerStore": {
       "basic": 0,
-      "pos_daily": 3000,
-      "pos_terminal": 8000
+      "pos_daily": 1500,
+      "pos_terminal": 4000
     },
     "opexPerStoreWeek": {
       "basic": 0,
-      "pos_daily": 20,
-      "pos_terminal": 40
+      "pos_daily": 10,
+      "pos_terminal": 20
     },
     "sharing": {
       "bwrMult": {
@@ -328,8 +330,9 @@
   },
   "stores": {
     "capex": 400000,
+    "lagEpochs": 1,
     "closureCost": 100000,
-    "lagEpochs": 1
+    "closureNote": "⚠ Indemnización por tienda cerrada (USD): cargo, no inversión; no consume el tope anual."
   },
   "late": {
     "base": 0.01,
@@ -365,6 +368,10 @@
   },
   "regions": {
     "kaigan": {
+      "supplierSites": [
+        { "id": "P-FR", "zone": 12, "label": "Planta dedicada de alimentos preparados", "categories": ["fresh"], "dedicated": true },
+        { "id": "P-RF", "zone": 25, "label": "Planta de lácteos y refrigerados", "categories": ["chilled"], "dedicated": false }
+      ],
       "label": "Kaigan",
       "sideKm": 122,
       "stores": 1800,
@@ -406,7 +413,7 @@
       "regulatedLoading": true,
       "initial": {
         "dcs": {
-          "count": 12,
+          "count": 5,
           "type": "combined",
           "size": "medium"
         },
@@ -448,17 +455,14 @@
         "sharing": "daily",
         "forecast": "seasonal",
         "collaboration": "vmi",
-        "training": "high",
-        "dedicated": {
-          "fresh": true,
-          "chilled": false
-        }
+        "training": "high"
       },
       "dsdFeePerDelivery": 20,
       "supplierFrAdj": 0.03,
       "presentationMult": 1.0
     },
     "redriver": {
+      "supplierSites": [],
       "label": "Red River",
       "sideKm": 632,
       "stores": 1200,
@@ -542,17 +546,17 @@
         "sharing": "no",
         "forecast": "moving_avg",
         "collaboration": "arms",
-        "training": "low",
-        "dedicated": {
-          "fresh": false,
-          "chilled": false
-        }
+        "training": "low"
       },
       "dsdFeePerDelivery": 35,
       "supplierFrAdj": 0.0,
       "presentationMult": 1.6
     },
     "valle": {
+      "supplierSites": [
+        { "id": "P-CA", "zone": 14, "label": "Central de abasto (frescos y refrigerados)", "categories": ["fresh", "chilled"], "dedicated": false },
+        { "id": "P-PI", "zone": 30, "label": "Parque industrial (abarrotes y congelados)", "categories": ["ambient", "frozen"], "dedicated": false }
+      ],
       "label": "Valle Metropolitano",
       "sideKm": 182,
       "stores": 600,
@@ -594,7 +598,7 @@
       "regulatedLoading": true,
       "initial": {
         "dcs": {
-          "count": 2,
+          "count": 4,
           "type": "stocking",
           "size": "medium"
         },
@@ -636,11 +640,7 @@
         "sharing": "no",
         "forecast": "moving_avg",
         "collaboration": "arms",
-        "training": "mid",
-        "dedicated": {
-          "fresh": false,
-          "chilled": false
-        }
+        "training": "mid"
       },
       "dsdFeePerDelivery": 10,
       "supplierFrAdj": -0.01,
@@ -1062,6 +1062,12 @@
     }
   },
   "money": {
+    "capexBudgetNote": "⚠ Tope de inversión por año (USD): suma del capex de decisiones (CD, aperturas, escaneo, POS) confirmado en los cuatro trimestres del año. 0 = sin tope. Calibrado contra el plan óptimo de cada región (AD-43): obliga a escalonar en Red River; en Kaigan cabe un CD combinado al año; en Valle no limita el plan de referencia.",
+    "capexBudgetPerYear": {
+      "kaigan": 20000000,
+      "redriver": 7000000,
+      "valle": 6000000
+    },
     "servicePenaltyShare": 0.02,
     "serviceGuardrails": {
       "freshness": [

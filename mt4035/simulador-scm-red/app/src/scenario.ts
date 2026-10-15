@@ -1,7 +1,7 @@
 /** Construcción del estado inicial por región (especificación §4.1, red as-is). */
 import type { GameConfig, Rng } from "@mt4035/sim-core";
-import { zoneSide } from "./network.ts";
-import { CATEGORIES, DEFAULT_MARKET, perCat, type DcState, type Decisions, type Params, type Scenario, type ScmState, type Zone } from "./types.ts";
+import { dedicatedFromSites, zoneSide } from "./network.ts";
+import { CATEGORIES, DEFAULT_MARKET, perCat, type DcState, type Decisions, type Params, type Scenario, type ScmState, type SupplierSite, type Zone } from "./types.ts";
 import { defaultForecast, drawTruth } from "./forecast.ts";
 
 function zoneWeight(pattern: string, x: number, y: number, side: number, jitter: number): number {
@@ -91,8 +91,8 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
   const dec: Decisions = {
     strategy: scn.strategy,
     openingStrategy: "mixed",
-    openingRate: 0,
-    dedicated: { ...ini.dedicated },
+    // Proveedores dedicados: dato del escenario (plantas en el mapa, E-08), no una decisión del jugador.
+    dedicated: dedicatedFromSites(r.supplierSites as SupplierSite[]),
     flows: scn.greenfield ? perCat(() => "dsd" as const) : (ini.flows as Decisions["flows"]),
     freq: { ...ini.freq },
     consolidation: ini.consolidation as Decisions["consolidation"],
@@ -125,6 +125,7 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     infoMaturity: 1,
     infoSince: -10,
     pendingOpenings: [],
+    pendingClosures: [],
     inventory: perCat(() => zones.map(() => -1)), // -1: se inicializa al nivel objetivo en el primer tick
     lastWaste: perCat(() => zones.map(() => 0)),
     highWaste: perCat(() => [] as number[]),

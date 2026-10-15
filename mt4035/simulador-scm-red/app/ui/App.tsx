@@ -8,7 +8,7 @@ import { Dashboard } from "./Dashboard.tsx";
 import { FinalReport } from "./FinalReport.tsx";
 import { Runs } from "./Runs.tsx";
 import { Setup } from "./Setup.tsx";
-import { EPOCHS } from "../src/index.ts";
+import { capexBudget, EPOCHS } from "../src/index.ts";
 import { engine, glossaryOpen, professor, projectsInProgress, regionOf, screen, store } from "./game.ts";
 import { describeValue, KPI_NAMES, LABELS, OPTIONS, REGION_TEXT, scenarioLabel, TABS } from "./labels.ts";
 import { params, profitOf, type DcSpec, type DemandForecast, type ScmState } from "../src/index.ts";
@@ -51,6 +51,11 @@ function TopBar() {
           <span class="chip" title={`Utilidad acumulada = EBITDA logístico − inversión (${fmtMoney(capex)}) − penalizaciones por servicio`} data-testid="profit-chip">
             Utilidad: {fmtMoney(profit)}
           </span>
+          {s.phase !== "FINAL" && capexBudget(s) && (
+            <span class="chip" data-testid="budget-chip" title="Tope de gasto en decisiones del año: CD nuevos, conversiones, ampliaciones y cierres; aperturas y cierres de tiendas; escaneo y POS. Se renueva cada T1.">
+              Inversión A{capexBudget(s)!.year + 1}: {fmtMoney(Math.max(0, capexBudget(s)!.remaining))} de {fmtMoney(capexBudget(s)!.budget)}
+            </span>
+          )}
           {projectsInProgress(s).length > 0 && (
             <span class="chip badge-info" title={projectsInProgress(s).join("\n")}>
               Proyectos en curso: {projectsInProgress(s).length}

@@ -4,10 +4,10 @@
  * Los totales del tick quedan en ctx.metrics y kpis.ts los agrega por época.
  */
 import { normalInv, normalLoss, clamp, type TickContext } from "@mt4035/sim-core";
-import { activeDcs, assignDc, densityDemandMult, route, zoneGeometry, type ActiveDc } from "./network.ts";
+import { activeDcs, assignDc, densityDemandMult, route, siteKm, zoneGeometry, type ActiveDc } from "./network.ts";
 import { expectedMarket, forecastWeek, marketShock, seasonFactor } from "./forecast.ts";
 import { emptyShocks } from "./scenario.ts";
-import { CATEGORIES, perCat, type Category, type Params, type ScmState } from "./types.ts";
+import { CATEGORIES, perCat, type Category, type Params, type ScmState, type SupplierSite } from "./types.ts";
 
 type Ctx = TickContext<ScmState, Params>;
 
@@ -54,7 +54,7 @@ const CK = Object.fromEntries(
 
 const KEYS = [
   "stores", "overstock", "demand", "sold", "lost", "subst", "waste", "excursion", "received", "invIni", "invFin",
-  "revenue", "cogs", "gm", "wasteCost", "transport", "handling", "dcFixed", "receivingCost", "carrying", "itOpex",
+  "revenue", "cogs", "gm", "wasteCost", "transport", "inbound", "handling", "dcFixed", "receivingCost", "carrying", "itOpex",
   "deliveries", "otifDeliveries", "invValue", "dcInvValue", "ltWeighted", "ltSdWeighted", "bwrWeighted", "ofrProduct",
   "freshRouteHoursW", "freshDeliveries", "freshRouteHours", "trucksPerStoreDay", "dcDistKmW", "dcDeliveries", "dcRoutes", "trustW", "storeSsUnits", "dcSsUnits", "dcUtilMax", "deltaDcMeanFresh", "ebitda",
 ] as const;
@@ -187,9 +187,14 @@ export function scmTick(ctx: Ctx): void {
       const highUtil = viaDc && util > p.dc.highUtil;
       if (highUtil) s.flags.r07 = true;
 
+      // Tramo de entrada (E-08): de la planta del proveedor al CD, o a la tienda si es DSD. Sin planta en la región,
+      // el proveedor es externo: flete en el precio y lead time de la región (supplierDistKm solo para el DSD).
+      const sites = r.supplierSites as SupplierSite[];
+      const inboundKm = siteKm(viaDc ? s.zones[a!.dc.dc.zone]! : z, c, sites, s.zones, p, r.sideKm);
+      const inboundDays = viaDc && inboundKm !== null ? inboundKm / r.speedKmh / 24 : 0;
       const rt = route({
         maxStops: cat.maxStopsPerRoute,
-        distKm: viaDc ? a!.distKm : r.supplierDistKm * p.circuity,
+        distKm: viaDc ? a!.distKm : (inboundKm ?? r.supplierDistKm * p.circuity),
         deltaKm: viaDc ? g.deltaKm : 0.7 / Math.sqrt(g.rho * r.dsdSharedDensity),
         dropCases,
         capacityCases: viaDc ? capCases : p.vehicle.capacityCases.mono,
@@ -221,8 +226,8 @@ export function scmTick(ctx: Ctx): void {
       // Lead time y edad del producto
       const dwell = viaDc ? p.dc.dwellDays[type!] * (highUtil ? 1 + 2 * (util - p.dc.highUtil) : 1) : 0;
       const transitDays = rt.avgInVehicleHours / 24;
-      const leadDays = viaDc && type === "stocking" ? dwell + transitDays : ltSup[c] + dwell + transitDays;
-      const ageDays = viaDc && type === "stocking" ? ltSup[c] + p.dc.stockingCycleDays / 2 + d.dcSafetyDays + dwell + transitDays : ltSup[c] + dwell + transitDays;
+      const leadDays = viaDc && type === "stocking" ? dwell + transitDays : ltSup[c] + inboundDays + dwell + transitDays;
+      const ageDays = viaDc && type === "stocking" ? ltSup[c] + inboundDays + p.dc.stockingCycleDays / 2 + d.dcSafetyDays + dwell + transitDays : ltSup[c] + inboundDays + dwell + transitDays;
 
       // Inventario de seguridad y fill rate, planeados con el pronóstico (F-01): μ y σ del plan contra los reales.
       const z95 = normalInv(d.csl[c]);
@@ -307,6 +312,7 @@ export function scmTick(ctx: Ctx): void {
       m.cogs! += (sold + subst) * unitCost;
       m.gm! += sold * cat.price * margin + subst * cat.price * cat.margin * p.inventory.substituteMarginMult;
       m.wasteCost! += (wasteUnits + excUnits) * unitCost;
+      if (viaDc && inboundKm !== null) m.inbound! += (received / cat.unitsPerCase) * p.supplier.inboundCostPerCaseKm * inboundKm * fuel;
       if (viaDc) {
         m.handling! += (received / cat.unitsPerCase) * p.dc.handlingPerCase[type!] * (r.wage / 16);
         if (type === "stocking") {
@@ -385,7 +391,7 @@ export function scmTick(ctx: Ctx): void {
   m.fcAbs = Math.abs(fcWeek - marketWeek);
   m.fcOracle = Math.abs(marketExp - marketWeek);
   m.fcExceed = marketWeek > fc.p95 ? 1 : 0;
-  m.ebitda = m.gm! - m.wasteCost! - m.overstock! - m.transport! - m.handling! - m.dcFixed! - m.receivingCost! - m.carrying! - m.itOpex!;
+  m.ebitda = m.gm! - m.wasteCost! - m.overstock! - m.transport! - m.inbound! - m.handling! - m.dcFixed! - m.receivingCost! - m.carrying! - m.itOpex!;
 
   s.week += 1;
   s.shocks = emptyShocks();

@@ -1,6 +1,6 @@
 /** Adaptador del simulador SCM para las herramientas de auto-juego (export default). */
 import type { AutoplayAdapter } from "@mt4035/sim-tools";
-import { CATEGORIES, createScmEngine, EPOCHS, params, scmConfig, scoreRun, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
+import { CATEGORIES, createScmEngine, EPOCHS, params, profitFor, scmConfig, scoreRun, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
 import { baselineVector, bots, canonicalVector, searchSpace } from "./bots.ts";
 import { properties } from "./properties.ts";
 
@@ -13,6 +13,9 @@ const adapter: AutoplayAdapter<ScmState, Params> = {
   strategies: ["freshness", "lowcost", "convenience"],
   config: (scenario, seed) => scmConfig({ region: scenario as RegionId, seed }),
   score: (reports, strategy, scenario) => scoreRun(reports, strategy as Strategy, params, scenario as RegionId).score,
+  // El buscador optimiza la utilidad acumulada (puntaje definitivo, AD-36/AD-39), en millones de USD.
+  searchScore: (reports, strategy, scenario) => profitFor(reports, strategy as Strategy, params, scenario as RegionId) / 1e6,
+  searchScoreLabel: "Utilidad (M USD)",
   bots,
   check: (reports) => {
     const problems: string[] = [];
@@ -34,11 +37,29 @@ const adapter: AutoplayAdapter<ScmState, Params> = {
   search: {
     bot: "H",
     space: searchSpace as unknown as Record<string, readonly (string | number | boolean)[]>,
-    ordinal: ["dcCount", "csl", "freshFreq", "ambientFreq"],
+    // CSL: el de frescos (el de no perecederos al máximo es la respuesta económica correcta: no caducan).
+    ordinal: ["dcCount", "cslFresh", "freshFreq", "ambientFreq"],
     notBound: { dcCount: [-1] },
     baseline: (scenario) => baselineVector(scenario),
+    // Arranques con red nueva de CD: el ascenso desde la red actual rara vez da el salto «construir CD + mover flujos».
+    starts: (scenario) =>
+      [4, 8].flatMap((dcCount) =>
+        (["stocking", "combined"] as const).map((dcType) => ({
+          ...baselineVector(scenario),
+          dcCount,
+          dcType,
+          dcSize: "small",
+          flowFresh: "dsd",
+          flowChilled: "dc",
+          flowAmbient: "dc",
+          flowFrozen: "dc",
+          consolidation: dcType === "combined" ? "combined" : "supplier",
+        })),
+      ),
+    multiStart: 3,
     canonicalize: (v, scenario) => canonicalVector(v as Parameters<typeof canonicalVector>[0], scenario) as typeof v,
     groups: [
+      ["dcCount", "dcType", "flowFresh", "flowChilled", "flowAmbient", "flowFrozen"],
       ["dcCount", "dcType", "flowFresh", "flowAmbient"],
       ["dcCount", "flowChilled", "flowFrozen"],
       ["flowFresh", "freshFreq"],

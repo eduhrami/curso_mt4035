@@ -70,12 +70,23 @@ test("agregar un CD pide confirmar lo irreversible y queda como proyecto en curs
   await page.getByRole("button", { name: /Agregar CD/ }).click();
   await page.getByTestId("review").click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog.getByText("D-01")).toBeVisible();
+  await expect(dialog.getByText(/Red de CD/).first()).toBeVisible();
   await expect(page.getByTestId("confirm-run")).toBeDisabled();
   await dialog.getByRole("checkbox").check();
   await page.getByTestId("confirm-run").click();
   await expect(page.getByText(/Proyectos en curso: 1/)).toBeVisible();
   await expect(page.getByRole("heading", { name: /^Mensajes/ })).toBeVisible();
+});
+
+test("un turno que excede el tope de inversión anual muestra el aviso y no se puede confirmar", async ({ page }) => {
+  await begin(page, "Red River");
+  await captureForecast(page);
+  await page.getByRole("tab", { name: "Red" }).click();
+  // Dos CD medianos con inventario en Red River: ~US$ 11.9 M contra un tope de US$ 7 M.
+  await page.getByRole("button", { name: /Agregar CD/ }).click();
+  await page.getByRole("button", { name: /Agregar CD/ }).click();
+  await expect(page.getByRole("alert").first()).toContainText("Tope de inversión de A1");
+  await expect(page.getByTestId("review")).toBeDisabled();
 });
 
 test("una decisión inválida muestra el error y bloquea la confirmación", async ({ page }) => {
@@ -174,4 +185,27 @@ test("el pronóstico es obligatorio en T1 de cada año y los datos de demanda se
   expect(readFileSync((await dl2.path())!, "utf8").trim().split("\n")).toHaveLength(1 + 104 + 52);
   await captureForecast(page);
   await expect(page.getByText("Pronóstico contra demanda")).toBeVisible();
+});
+
+test("«¿Cómo impacta?» explica cada decisión y el mapa ubica las plantas de proveedores", async ({ page }) => {
+  await begin(page, "Kaigan");
+  await page.getByRole("tab", { name: "Red" }).click();
+  const d01 = page.locator('[data-decision="D-01"]');
+  await expect(d01.getByText("Mueve:")).toHaveCount(0);
+  await d01.getByRole("button", { name: /¿Cómo impacta/ }).hover();
+  await expect(d01.getByRole("tooltip")).toContainText("Más CD acercan la mercancía");
+  await expect(page.getByTestId("site-P-FR").first()).toBeVisible();
+  await expect(page.locator("figcaption").first()).toContainText("Planta dedicada de alimentos preparados — zona 12");
+  await expect(page.getByTestId("budget-chip")).toContainText("Inversión A1");
+  // Los códigos internos (D-xx, R-xx, X-xx, E-xx) no aparecen en ninguna pestaña ni tras jugar un trimestre.
+  const noCodes = async () => expect(await page.locator("body").innerText()).not.toMatch(/\b(AD|DB|EM|D|R|X|E|K|F)-\d{2}\b/);
+  for (const tab of ["Pronóstico", "Estrategia", "Red", "Flujo", "Inventario", "Información"]) {
+    const t = page.getByRole("tab", { name: tab, exact: true });
+    if (await t.count()) {
+      await t.first().click();
+      await noCodes();
+    }
+  }
+  await playEpoch(page);
+  await noCodes();
 });

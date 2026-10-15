@@ -86,12 +86,25 @@ describe("SCM P2/P3 — invariantes y dirección causal", () => {
     expect(best).toBeLessThan(spreads.length - 1);
   });
 
-  it("CAU-18 proveedores dedicados de frescos (tras 3 épocas): lead time ↓ y merma de frescos ↓", () => {
-    const base = run(start(det("valle")), 4).reports;
-    const ded = run(start(det("valle")), 4, (_s, e) => (e === 0 ? { "D-07": { fresh: true, chilled: false } } : {})).reports;
-    expect(ded[2]!.kpis.WASTE_FRESH).toBeCloseTo(base[2]!.kpis.WASTE_FRESH!, 9); // aún no opera
-    expect(ded[3]!.kpis.LT).toBeLessThan(base[3]!.kpis.LT!);
-    expect(ded[3]!.kpis.WASTE_FRESH).toBeLessThan(base[3]!.kpis.WASTE_FRESH!);
+  it("CAU-18 los proveedores son dato del escenario (E-08): plantas en el mapa, dedicadas solo donde el escenario lo dice", () => {
+    expect(engine.model.decisions.some((d) => d.id === "D-07")).toBe(false);
+    expect(start(det("kaigan")).model.dec.dedicated).toEqual({ fresh: true, chilled: false });
+    expect(start(det("valle")).model.dec.dedicated).toEqual({ fresh: false, chilled: false });
+    expect(supplierLt("fresh", start(det("kaigan")).model, params)).toBeLessThan(params.regions.kaigan.supplierLtDays.fresh);
+  });
+
+  it("CAU-18b CD junto a la planta vs. junto al cliente (Valle): cerca de la central de abasto baja el flete de entrada y la edad de los frescos; cerca de las tiendas baja el reparto", () => {
+    const allDc = { fresh: "dc", chilled: "dc", ambient: "dc", frozen: "dc" };
+    const at = (zone: number) => oneEpoch({ dcs: builtDcs([{ id: "X", zone, type: "stocking", size: "large" }]), "dec.flows": allDc }, "valle");
+    const nearSupplier = at(14); // central de abasto (frescos y refrigerados)
+    const nearIndustrial = at(30); // parque industrial (abarrotes y congelados), en la periferia
+    expect(sumMetric(nearSupplier, "inbound")).toBeGreaterThan(0);
+    expect(nearSupplier.kpis.WASTE_FRESH).toBeLessThan(nearIndustrial.kpis.WASTE_FRESH!);
+    expect(nearSupplier.kpis.TRANSPORT_COST).toBeLessThan(nearIndustrial.kpis.TRANSPORT_COST!);
+    // Con todo el surtido en la periferia, el flete de entrada de ambiente y congelado es casi nulo,
+    // pero el de frescos y refrigerados (y el reparto) sube.
+    const inboundAmbient = (r: typeof nearSupplier) => sumMetric(r, "inbound");
+    expect(inboundAmbient(nearIndustrial)).not.toBeCloseTo(inboundAmbient(nearSupplier), 0);
   });
 
   it("CAU-19/REG-09 tanpin kanri: con capacitación alta la reducción de CV es ≈ 2× la de capacitación baja; R-09 avisa", () => {
@@ -242,11 +255,12 @@ describe("SCM P2 — reglas, eventos, retrasos y puntaje", () => {
     expect(p(0.85)).toBeGreaterThan(p(0.95));
   });
 
-  it("LAG-03 cerrar un CD carga la penalización y lo retira de la red", () => {
+  it("LAG-03 cerrar CD carga la penalización y los retira de la red", () => {
     const s0 = start(det("valle"));
     const r = run(s0, 1, () => ({ "D-01": [s0.model.dcs.map(({ id, zone, type, size }) => ({ id, zone, type, size }))[0]!] })).reports[0]!;
     const capex = params.dc.capex[s0.model.dcs[1]!.size];
-    expect(r.ledger.find((l) => l.source === "D-01")!.amount).toBeCloseTo(params.dc.closurePenaltyMult * capex * params.regions.valle.realEstate, 6);
+    const closed = s0.model.dcs.length - 1;
+    expect(r.ledger.find((l) => l.source === "D-01")!.amount).toBeCloseTo(closed * params.dc.closurePenaltyMult * capex * params.regions.valle.realEstate, 6);
     expect(r.kpis.DC_COUNT).toBe(1);
   });
 
@@ -257,13 +271,13 @@ describe("SCM P2 — reglas, eventos, retrasos y puntaje", () => {
     expect(engine.validate(kg, { "D-01": smaller }).errors[0]?.message).toMatch(/ampliar/);
   });
 
-  it("SCO-05 con normalización por región, el as-is de cada región puntúa en una banda comparable (25–60)", () => {
+  it("SCO-05 con normalización por región, el as-is de cada región puntúa en una banda comparable (10–60; la red inicial es sub-óptima a propósito, AD-44)", () => {
     for (const region of ["kaigan", "redriver", "valle"] as const) {
       const reports = run(start(det(region)), EPOCHS).reports;
       for (const st of ["freshness", "lowcost", "convenience"] as const) {
         // Banda de la operación (sin el 30% del pronóstico, que no depende de la región).
         const sc = scoreRun(reports, st, params, region).operational;
-        expect(sc, `${region}/${st}`).toBeGreaterThanOrEqual(25);
+        expect(sc, `${region}/${st}`).toBeGreaterThanOrEqual(10);
         expect(sc, `${region}/${st}`).toBeLessThanOrEqual(60);
       }
     }

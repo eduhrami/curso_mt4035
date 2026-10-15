@@ -29,7 +29,7 @@ export const events: Ev[] = [
     kpis: ["SPOIL_RATE", "EXCEPTION_RATE", "CSAT", "CPD"],
     pBase: (ctx) => ev(ctx.params)["X-01"].pBase,
     modifiers: [
-      { label: "rutas largas con frescos sin frío (R-01)", ref: "R-01", factor: 1.5, when: (ctx) => ctx.state.flags.r01 },
+      { label: "rutas largas con frescos sin frío", ref: "R-01", factor: 1.5, when: (ctx) => ctx.state.flags.r01 },
       { label: "sin equipo de frío", ref: "D-32", factor: 1.3, when: (ctx) => ctx.state.dec.cold === "none" && ctx.state.dec.vehicle !== "reefer" },
       { label: "mantenimiento correctivo", ref: "D-63", factor: 1.3, when: (ctx) => ctx.state.dec.maintenance === "corrective" },
       { label: "vehículo refrigerado o multi-temperatura", ref: "D-32", factor: 0.5, when: (ctx) => ctx.state.dec.cold === "reefer" || ctx.state.dec.cold === "multi" || ctx.state.dec.vehicle === "reefer" },
@@ -136,7 +136,7 @@ export const events: Ev[] = [
     modifiers: [
       { label: "pago por parada", ref: "D-35", factor: 1.6, when: (ctx) => ctx.state.dec.pay === "per_stop" },
       { label: "flota sin mantenimiento preventivo", ref: "D-63", factor: 1.4, when: (ctx) => ctx.state.dec.maintenance === "corrective" },
-      { label: "choferes con sobrecarga por ausentismo (X-06)", ref: "X-06", factor: 1.5, when: (ctx) => !!ctx.isActive("X-06") },
+      { label: "choferes con sobrecarga por ausentismo", ref: "X-06", factor: 1.5, when: (ctx) => !!ctx.isActive("X-06") },
     ],
     perTick: (ctx) => {
       ctx.state.shocks.lostRoutes = ev(ctx.params)["X-09"].lossRoutes;

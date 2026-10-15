@@ -205,3 +205,31 @@ describe("tipos del estado", () => {
     expect(m.fridge).toBe(true);
   });
 });
+
+describe("restricciones del turno (validateTurn)", () => {
+  it("recibe el costo inmediato de los cambios y puede rechazar el turno completo", () => {
+    const capped = createEngine({ ...makeToyModel(), validateTurn: (_s, costs) => (costs.filter((c) => c.kind === "capex").reduce((a, c) => a + c.amount, 0) > 100 ? [{ id: "*", message: "tope de inversión" }] : []) }, toyParams);
+    const s = capped.createGame(toyConfig());
+    expect(capped.validate(s, { "D-02": true }).ok).toBe(true); // 100 de capex: dentro del tope
+    expect(capped.validate(s, { "D-02": true, "D-03": s.model.capacity + 50 }).errors).toEqual([{ id: "*", message: "tope de inversión" }]);
+    expect(capped.validate(s, { "D-02": true, "D-04": "b" }).ok).toBe(true); // las penalizaciones no cuentan como inversión
+  });
+});
+
+describe("desglose de costos (costs)", () => {
+  it("el motor carga cada parte por separado y validateTurn recibe el desglose", () => {
+    const base = makeToyModel();
+    let seen: { kind: string; amount: number }[] = [];
+    const model = {
+      ...base,
+      decisions: base.decisions.map((d) => (d.id === "D-02" ? { ...d, costs: () => [{ kind: "capex" as const, amount: 70 }, { kind: "penalty" as const, amount: 30, note: "cierre" }] } : d)),
+      validateTurn: (_s: unknown, costs: { kind: string; amount: number }[]) => ((seen = costs), []),
+    };
+    const eng = createEngine(model, toyParams);
+    const s = eng.createGame(toyConfig());
+    expect(eng.validate(s, { "D-02": true }).ok).toBe(true);
+    expect(seen.map((c) => [c.kind, c.amount])).toEqual([["capex", 70], ["penalty", 30]]);
+    const r = eng.confirmEpoch(eng.stage(s, { "D-02": true }).state).report;
+    expect(r.ledger.filter((l) => l.source === "D-02").map((l) => [l.kind, l.amount])).toEqual([["capex", 70], ["penalty", 30]]);
+  });
+});

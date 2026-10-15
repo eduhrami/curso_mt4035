@@ -21,9 +21,8 @@ node_modules/
 dist/
 coverage/
 
-# Reportes de auto-juego con fecha (se conserva autoplay/reports/latest.md)
-mt4035/**/autoplay/reports/coherencia-*
-mt4035/**/autoplay/reports/registros-*
+# Reportes de auto-juego: contienen los óptimos de cada escenario; se generan en privado/ (app/autoplay/reports-dir.ts)
+mt4035/**/autoplay/reports/
 
 # Salidas de Playwright
 mt4035/**/app/test-results/

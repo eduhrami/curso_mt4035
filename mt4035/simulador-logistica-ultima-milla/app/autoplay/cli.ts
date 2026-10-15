@@ -7,12 +7,14 @@
 import { aggregateCli, autoplayCli, parseArgs, replayCli } from "@mt4035/sim-tools";
 import { createLastMileEngine, PARAMS_VERSION, SIM_ID, SIM_VERSION } from "../src/index.ts";
 
+import { REPORTS_DIR } from "./reports-dir.ts";
+
 const [cmd, ...rest] = process.argv.slice(2);
 const adapterUrl = new URL("./adapter.ts", import.meta.url).href;
 let code = 0;
 switch (cmd) {
   case "autoplay":
-    code = await autoplayCli(adapterUrl, ["--out", new URL("./reports", import.meta.url).pathname, ...rest]);
+    code = await autoplayCli(adapterUrl, ["--out", REPORTS_DIR, ...rest]);
     break;
   case "replay":
     code = await replayCli(createLastMileEngine(), parseArgs(rest).positional, { simVersion: SIM_VERSION, paramsVersion: PARAMS_VERSION });

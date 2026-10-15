@@ -48,8 +48,9 @@ describe("SCM-CAU (P1)", () => {
     expect(kg.hi.rulesFired.some((f) => f.id === "R-05")).toBe(false);
   });
 
-  it("CAU-05 Kaigan: CSL 90% → 99% ⇒ inventario ↑, OSA ↑, costo de inventario ↑, ITR ↓", () => {
-    const csl = (v: number) => ({ fresh: v, chilled: v, ambient: v, frozen: v });
+  it("CAU-05 Kaigan: CSL de no perecederos 90% → 99% ⇒ inventario ↑, OSA ↑, costo de inventario ↑, ITR ↓", () => {
+    // En frescos, subir el CSL más allá de la vida de anaquel se vuelve merma y R-02 baja la OSA: se deja fijo.
+    const csl = (v: number) => ({ fresh: 0.9, chilled: v, ambient: v, frozen: v });
     const lo = oneEpoch({ "dec.csl": csl(0.9) });
     const hi = oneEpoch({ "dec.csl": csl(0.99) });
     expect(sumMetric(hi, "invValue")).toBeGreaterThan(sumMetric(lo, "invValue"));
@@ -104,7 +105,7 @@ describe("SCM-CAU (P1)", () => {
 
   it("CAU-16 Valle: apertura dispersa → dominancia ⇒ paradas por ruta ↑, CTS por tienda ↓, densidad (canibalización) ↑", () => {
     const grow = (strategy: "dominance" | "dispersed") =>
-      run(start(det("valle")), 9, (_s, e) => (e === 0 ? { "D-05": strategy, "D-06": 0.15 } : {})).reports[8]!;
+      run(start(det("valle")), 9, (_s, e) => (e === 0 ? { "D-05": strategy, "D-08": 25 } : e < 8 ? { "D-08": 25 } : {})).reports[8]!;
     const disp = grow("dispersed");
     const dom = grow("dominance");
     expect(dom.kpis.STOPS_PER_ROUTE).toBeGreaterThan(disp.kpis.STOPS_PER_ROUTE!);

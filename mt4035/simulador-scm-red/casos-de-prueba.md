@@ -88,7 +88,8 @@ Cada fila compara una corrida **base** contra una **variante** con la misma semi
 | SCM-CAU-15 | Red River | CD de ambiente: cross-dock → con inventario + SS en CD | SS total de la red ↓ por *pooling* (R-11); el efecto en frescos de vida corta es ≈ 0 | D-03, D-24, R-11 | P2 |
 | SCM-CAU-16 | Valle | Apertura dispersa → dominancia de *clusters* | Paradas/ruta ↑, CTS ↓, canibalización ↑ | D-05, R-10 | P1 |
 | SCM-CAU-17 | Valle | Barrido de densidad de *cluster* | Ventas totales menos costo logístico es **cóncavo** con óptimo interior (la canibalización acaba superando el ahorro) | D-05, R-10 | P2 |
-| SCM-CAU-18 | Kaigan | Proveedores dedicados en frescos (D-07) | t_proveedor→CD ↓, VU_rem ↑, merma ↓ (tras el retraso de 3–4 trimestres) | D-07 | P2 |
+| SCM-CAU-18 | Las tres regiones | Proveedores como dato del escenario (E-08) | D-07 ya no es una decisión; Kaigan tiene proveedor dedicado de frescos (lead time ×0.5) y Valle y Red River no | E-08 | P2 |
+| SCM-CAU-18b | Valle | Un CD con todo por CD junto a la central de abasto (zona 14) vs. en el parque industrial (zona 30) | Junto a la central: merma de frescos ↓ y reparto ↓; el flete de entrada cambia según qué plantas quedan cerca | E-08, §6.3b | P2 |
 | SCM-CAU-19 | Kaigan | *Tanpin kanri* con capacitación baja → alta | El beneficio en error de pronóstico con capacitación alta ≈ 2× el de capacitación baja | D-20, D-34, R-09 | P2 |
 | SCM-CAU-20 | Kaigan | Pronóstico estacional → causal, con estacionalidad marcada vs. suave | La reducción de error con perfil marcado es mayor que con perfil suave | D-32, E-21 | P2 |
 | SCM-CAU-21 | Cualquiera | Combustible +25% (E-23) | Costo de transporte ↑. El aumento absoluto es mayor en la configuración con más km totales | E-23 | P2 |
@@ -119,7 +120,7 @@ Modo determinista, decisiones *as-is* salvo que se indique. Los rangos son ⚠ y
 
 | ID | Condición | Resultado esperado | Traza | Prio |
 |---|---|---|---|---|
-| SCM-ESC-01 | Kaigan *as-is* | Trucks/store/day ∈ [8, 11] (SEJ: 9). ITR global ≥ 40. OSA ≥ 96%. Waste de frescos ≤ 5% | E-06, K-04, K-10 | P1 |
+| SCM-ESC-01 | Kaigan *as-is* (5 CD combinados, saturada, AD-44) y con 8 CD | Red inicial: trucks/store/day ∈ [8, 11] (SEJ: 9) e ITR global ≥ 40. Con 8 CD combinados alcanza la referencia SEJ: OSA ≥ 96% y waste de frescos ≤ 5%, con más OSA que la red inicial | E-06, K-04, K-10 | P1 |
 | SCM-ESC-02 | Red River *as-is* | Trucks/store/día ∈ [4, 8] (DSD de ~40 proveedores 1×/semana). ITR ∈ [15, 25]. OSA ∈ [88%, 93%]. Frescos < 12% de ventas | E-06, E-11 | P1 |
 | SCM-ESC-03 | Valle *as-is* | KPIs intermedios entre Kaigan y Red River en OSA y CTS | E-06 | P2 |
 | SCM-ESC-04 | **Trasplante ingenuo:** Red River con 3×/día, cross-dock combinado, sin densificar | CTS % ventas ≥ 2× el de Kaigan *as-is*; se dispara R-05; puntaje < SCM-ESC-05 bajo **todas** las estrategias | R-05, §11 | P1 |
@@ -178,7 +179,7 @@ Cada regla se prueba **justo debajo** y **justo arriba** de su umbral, usando `o
 | ID | Condición | Resultado esperado | Traza | Prio |
 |---|---|---|---|---|
 | SCM-LAG-01 | CD nuevo decidido en A1-T1 con retraso de 3 trimestres | d̄ no cambia en A1-T1…A1-T3; cambia desde A1-T4. El capex se carga en A1-T1 | D-01, INV-17 | P1 |
-| SCM-LAG-02 | D-30 implantado | La madurez es 0 al implantarse y crece hasta 1 durante 2 trimestres de aprendizaje; el beneficio es proporcional a la madurez | D-30 | P1 |
+| SCM-LAG-02 | D-30 implantado | La madurez es 0 al implantarse y llega a 1 en un trimestre de aprendizaje; el beneficio es proporcional a la madurez | D-30 | P1 |
 | SCM-LAG-03 | Cierre de CD | Se carga una indemnización; el capex no se recupera; la red se reconfigura en la época siguiente | D-01 | P2 |
 | SCM-LAG-04 | Estrategia fija (D-00) | D-00 no es una decisión de turno: cambiarla durante la partida se rechaza y la propuesta del setup se mantiene en todas las épocas, sin cargos | D-00 | P1 |
 | SCM-LAG-05 | D-33 = CPFR con D-31 = No | Se rechaza con mensaje "requiere POS compartido" | D-33 | P1 |
@@ -186,6 +187,8 @@ Cada regla se prueba **justo debajo** y **justo arriba** de su umbral, usando `o
 | SCM-LAG-07 | D-12 = combinada sin CD combinado (D-03) | Se rechaza | D-12 | P1 |
 | SCM-LAG-08 | D-24 (SS en CD) con CD cross-dock | Se rechaza o se ignora con aviso | D-24 | P2 |
 | SCM-LAG-09 | Reducir la capacidad de un CD (D-04) | Se rechaza: solo se permite ampliar | D-04 | P2 |
+| SCM-LAG-10 | Tope de inversión anual (AD-43) | Un turno cuyo capex de decisiones, sumado a lo invertido en el año, excede `capexBudgetPerYear` se rechaza con un mensaje que dice cuánto queda; las decisiones sin capex no se restringen; la indemnización por cerrar CD también cuenta; el tope se renueva en T1 | D-01, D-08, D-09, D-23, D-30 | P1 |
+| SCM-LAG-11 | Cierre manual de tiendas (D-09) | Cierra el número de tiendas indicado en la zona elegida el trimestre siguiente; cobra la indemnización; no se puede cerrar más de lo que hay en la zona | D-09 | P1 |
 
 ---
 
@@ -197,7 +200,7 @@ Cada regla se prueba **justo debajo** y **justo arriba** de su umbral, usando `o
 | SCM-SCO-02 | Misma trayectoria de KPIs evaluada con las tres estrategias | Una corrida de OSA alta y CTS alto puntúa más bajo *frescura* que bajo *bajo costo* | §7.3 | P1 |
 | SCM-SCO-03 | Se agregan violaciones de guardrail a una corrida | El puntaje es estrictamente decreciente con el número de violaciones | §7.2 | P1 |
 | SCM-SCO-04 | Cualquier corrida | Puntaje ∈ [0, 100] | §7.3 | P1 |
-| SCM-SCO-05 | *As-is* de cada región, estrategia por omisión | Los puntajes caen en una banda comparable (p. ej. 40–60) para que ninguna región sea injugable. ⚠ Depende de cómo se normalice por región (decisión pendiente). Desde AD-35 se mide sobre el puntaje de operación, con pronóstico perfecto | §7.3 | P2 |
+| SCM-SCO-05 | *As-is* de cada región, estrategia por omisión | La operación (sin el pronóstico) puntúa entre 10 y 60 en las tres regiones, para que ninguna sea injugable. La banda es amplia porque las redes iniciales son sub-óptimas a propósito (AD-44) | §7.3 | P2 |
 
 ---
 
@@ -241,12 +244,12 @@ El objetivo es validar que **el modelo enseña lo que debe enseñar**: decisione
 |---|---|---|
 | **BOT-A Estático** | Confirma *as-is* las 12 épocas | Línea base por región |
 | **BOT-B Trasplante** | Copia el modelo Kaigan en cualquier región (3×/día, cross-dock combinado, sin densificar) | Debe perder fuera de Kaigan |
-| **BOT-C Adaptado** | Política diseñada por región (SCM-ESC-05 en Red River; densificación + POS en Valle) | Debe ganar a A y B |
-| **BOT-D Maximalista** | Todo al máximo: 20 CD, 3×/día, CSL 99%, todos los sistemas | Detecta "gastar resuelve todo" |
+| **BOT-C Adaptado** | Política diseñada por región, que cabe en el tope de inversión: Kaigan amplía con 2 CD combinados; Red River construye 4 CD de inventario chicos (SCM-ESC-05); Valle convierte sus CD y suma POS | Debe ganar a A y B |
+| **BOT-D Maximalista** | Todo al máximo: 20 CD, 3×/día, CSL 99%, todos los sistemas. Con el tope de inversión gasta el máximo cada año (un CD que no cabe ni con el tope completo baja de tamaño, `withBudget`) | Detecta "gastar resuelve todo" |
 | **BOT-E Minimalista** | 1 CD, 1×/semana, CSL 85%, sin TI | Detecta "no hacer nada es barato y gana" |
 | **BOT-F Aleatorio** | Decisiones aleatorias válidas en cada época | Robustez e invariantes |
 | **BOT-G Reactivo** | Reglas simples: si OSA < 92%, sube frecuencia; si Waste > 8%, baja cobertura; si CTS > X, baja frecuencia | Comportamiento de un alumno "táctico" |
-| **BOT-H Buscador** | Búsqueda aleatoria + *hill climbing* sobre decisiones para maximizar el puntaje por región × estrategia | Detecta explotaciones y óptimos en los límites |
+| **BOT-H Buscador** | Búsqueda aleatoria + *hill climbing* con varios arranques (incluidos diseños con CD nuevos) para maximizar la **utilidad acumulada** por región × estrategia (AD-39), con CSL de frescos aparte, error de pronóstico de ±10% (AD-40) y tope de gasto anual (AD-43): invierte como un equipo, lo que no cabe se reintenta en T1 de cada año, primero lo de efecto más largo (red de CD, POS, escaneo, tiendas). Al final elige el mejor de todo lo evaluado, incluidos los ascensos de las otras estrategias | Detecta explotaciones y óptimos en los límites |
 | **BOT-L Estático sin pronosticar** | Como A, pero con el pronóstico nominal (no analiza datos) | Pronosticar paga (SCM-AUT-15) |
 
 Todos los bots salvo L capturan el pronóstico perfecto en cada T1, para que la calibración de la operación no dependa de pronosticar.
@@ -260,12 +263,12 @@ Todos los bots salvo L capturan el pronóstico perfecto en cada T1, para que la 
 | SCM-AUT-03 | Adaptación gana | Red River y Valle: BOT-C > BOT-A y BOT-C > BOT-B en ≥ 80% de semillas, para cada estrategia | P1 |
 | SCM-AUT-04 | Ningún extremo domina | BOT-D nunca es el mejor bajo *bajo costo*; BOT-E nunca es el mejor bajo *frescura* (≥ 95% de semillas) | P1 |
 | SCM-AUT-05 | Decisiones significativas | Los óptimos de BOT-H difieren entre combinaciones: ≥ 3 configuraciones distintas entre las 9 de región × estrategia | P2 |
-| SCM-AUT-06 | Óptimos interiores | En BOT-H, el n_CD, la frecuencia y el CSL óptimos no están en los límites del rango en ≥ 7 de 9 combinaciones. Si lo están, hay que revisar la calibración | P2 |
-| SCM-AUT-07 | Validación contra el caso | Kaigan + frescura: el óptimo de BOT-H se parece al diseño SEJ (CD combinado cross-dock, ≥ 2×/día de frescos, *clusters* densos, POS diario) | P2 |
+| SCM-AUT-06 | Óptimos interiores | En BOT-H, el n_CD, la frecuencia y el CSL de frescos óptimos no están en los límites del rango en ≥ 7 de 9 combinaciones. Si lo están, hay que revisar la calibración. El CSL de no perecederos se excluye: al máximo es la respuesta correcta porque no caducan | P2 |
+| SCM-AUT-07 | Validación contra el caso | Kaigan + frescura: el óptimo de BOT-H se parece al diseño SEJ (CD combinado cross-dock, ≥ 2×/día de frescos, *clusters* densos, POS compartido con proveedores). Con la utilidad como objetivo, compartir el POS semanal basta (AD-39) | P2 |
 | SCM-AUT-08 | Geografía cambia el óptimo | Red River + frescura: frecuencia óptima ≤ 2×/día y ≥ 1 CD con inventario para ambiente | P2 |
 | SCM-AUT-09 | Habilidad > suerte | CV del puntaje de BOT-A entre semillas < 15%; la diferencia media BOT-C − BOT-B > 2 desviaciones estándar | P1 |
 | SCM-AUT-10 | Resiliencia tiene valor | Kaigan: la configuración con ≥ 2 CD por zona tiene un **p5** de puntaje mayor que la de 1 CD por zona, aunque las medias se parezcan | P2 |
-| SCM-AUT-11 | La información tarda | BOT-A + solo D-30/D-31: OSA ↑ y BWR ↓, con efecto visible hasta 2–4 trimestres después de decidir | P2 |
+| SCM-AUT-11 | La información tarda | BOT-A + solo D-30/D-31: OSA ↑ y BWR ↓, con efecto visible 2–4 trimestres después de decidir (D-30: 1–2 de implantación + 1 de aprendizaje) | P2 |
 | SCM-AUT-12 | Estabilidad del reactivo | BOT-G no produce KPIs fuera de rango ni costos explosivos. Se registra si oscila (útil para el debrief sobre bullwhip autoinducido) | P3 |
 | SCM-AUT-13 | Robustez de la calibración | Al perturbar ±20% cada constante de `params` (una a la vez), el orden BOT-C > BOT-B en Red River se mantiene en ≥ 90% de las perturbaciones | P2 |
 | SCM-AUT-15 | Pronosticar paga | BOT-A (pronóstico perfecto) > BOT-L (nominal) en ≥ 80% de semillas en cada región × estrategia | P1 |

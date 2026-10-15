@@ -1,6 +1,6 @@
 /** Textos de la interfaz de última milla: decisiones, opciones, KPIs y territorios (en español; KPIs con sigla en inglés). */
 import type { KpiMeta, LabelMap } from "@mt4035/ui-kit";
-import { params, presetOf, type Strategy, type TerritoryId } from "../src/index.ts";
+import { decisions, params, presetOf, type Strategy, type TerritoryId } from "../src/index.ts";
 
 type PlayableTerritory = Exclude<TerritoryId, "minicaso">;
 
@@ -90,6 +90,96 @@ export const OPTIONS: Record<string, string> = {
   high: "Alta",
 };
 
+/**
+ * «¿Cómo impacta?» (recurso didáctico): en qué dirección mueve cada decisión los KPIs y por qué. Las direcciones siguen
+ * el mapa de decisiones y las reglas de la especificación (§5, §6.4); el efecto exacto depende del territorio y del
+ * resto de las decisiones.
+ */
+export const IMPACT: Record<string, string> = {
+  "F-01":
+    "Tu pronóstico dimensiona lo que contratas para el año: la capacidad comprometida con el 3PL, los contratos de flota para los picos y el personal de surtido. Si te quedas corto, en los días fuertes faltan rutas: pagas flota de último momento (más cara), crece el Backlog y caen el OTD y la CSAT. Si te pasas, pagas flota y personal ociosos y sube el CPD. Acertar los picos (Hot Sale, Buen Fin, Navidad) y la quincena pesa más que acertar el promedio.",
+  "D-01":
+    "Surtir desde el CD aprovecha su escala: el picking por pedido es barato y no toca el inventario de las tiendas, así que protege la OSA tienda. A cambio, el CD suele estar lejos de los clientes: las rutas son más largas, sube el Order Cycle Time y cuesta cumplir promesas rápidas. Más capacidad de picking evita que se forme Backlog en días pico.",
+  "D-02":
+    "Surtir desde tienda acerca el pedido al cliente: rutas cortas, entregas más rápidas y mejor OTD para promesas de mismo día. Pero el picking en tienda es más caro y compite con la operación de piso: si se usa demasiado, cae la OSA tienda y sube el error de surtido (baja el Perfect Order). Más pickers suben la capacidad y el costo; el tope de horas de piso protege a la tienda.",
+  "D-03":
+    "Que el cliente recoja en tienda elimina el reparto de esos pedidos: baja mucho el CPD y la entrega no falla por cliente ausente (sube FADS). La demanda de recolección es limitada y depende de que haya tiendas cerca; también usa algo de tiempo del personal de piso.",
+  "D-04":
+    "Una dark store es una tienda cerrada al público dedicada a pedidos en línea en una zona densa: acerca el inventario al cliente, baja el tiempo de entrega y libera a las tiendas de piso (protege la OSA tienda). Tiene un costo fijo alto (renta y personal) y tarda 3 meses en abrir: solo se paga con volumen suficiente; con poco volumen, la Node Util. es baja y el CPD sube.",
+  "D-05":
+    "Un MFC automatiza el picking: surte su zona y las vecinas con un costo por pedido muy bajo y muy rápido. La inversión es muy alta y tarda 6 meses en operar: conviene solo en zonas muy densas y con volumen alto; con poco volumen, la inversión no se recupera y la Node Util. queda baja.",
+  "D-06":
+    "Los lockers y puntos de recolección concentran varias entregas en una sola parada: bajan el CPD y suben FADS porque el cliente recoge cuando puede. Rinden más en zonas donde mucha gente no está en casa. Tienen un costo fijo bajo y tardan 1–2 meses en operar; el cliente pierde algo de comodidad.",
+  "D-07":
+    "Un micro-hub de cross-dock recibe carga consolidada y la reparte en rutas cortas en la periferia o en ciudades secundarias: bajan los kilómetros por ruta y sube la Route Efficiency donde el nodo de origen queda lejos. Tiene un costo fijo medio y tarda 2 meses en operar.",
+  "D-10":
+    "Define desde qué nodo se surte cada pedido. «El más cercano» es simple, pero satura las tiendas populares (cae la OSA tienda y crece el Backlog). Las reglas de menor costo y de umbral dinámico comparan el costo de cada nodo y bajan el CPD. La asignación con IA es la mejor, pero solo si los datos lo permiten: con datos básicos rinde una fracción de su potencial.",
+  "D-11":
+    "El batching junta pedidos antes de asignarlos. Un intervalo corto responde rápido (mejor Order Cycle Time) pero asigna peor, pedido por pedido, y sube el CPD. Uno largo asigna mejor y arma rutas más eficientes, pero retrasa los pedidos y complica las promesas rápidas.",
+  "D-12":
+    "Limita cuántas horas del personal de piso pueden dedicarse a surtir pedidos en línea. Un tope bajo protege la OSA tienda y la experiencia de quien compra en la tienda, pero deja menos capacidad para el canal en línea: en picos crece el Backlog. Si el surtido en tienda rebasa el tope, la OSA tienda cae y sube el error de picking.",
+  "D-20":
+    "Cada nivel de servicio que ofreces (express, mismo día, día siguiente, estándar) atrae clientes, pero fragmenta la densidad: los pedidos se reparten en más rutas con menos paradas, baja la Vehicle Util. y sube el CPD. El express con densidad baja es especialmente caro.",
+  "D-21":
+    "Una ventana angosta (1–2 h) da certeza al cliente: sube FADS y la CSAT, pero cada ruta hace menos paradas y sube el CPD. «Todo el día» llena las rutas, pero en zonas donde la gente no está en casa las entregas fallan: bajan FADS y suben los reintentos y el CPD.",
+  "D-22":
+    "Una hora de corte tardía para el mismo día es más atractiva y sube los pedidos, pero concentra el trabajo en la tarde: se exprime la capacidad, crece el Backlog y baja el OTD si la flota no alcanza.",
+  "D-23":
+    "La holgura agrega tiempo a la promesa. Sin holgura, la promesa es atractiva pero optimista: en un pico se forma un Backlog que se arrastra días, el OTD se desploma y la CSAT cae más de lo que suma la velocidad. Con holgura, el OTD es más estable a cambio de prometer algo más lento.",
+  "D-24":
+    "Segmentar (por membresía, por categoría con frescos en ventana corta o por zona urbana o rural) da el mejor servicio solo a quien lo necesita: libera capacidad y baja el CPD sin bajar el servicio global.",
+  "D-25":
+    "Una tarifa de envío más alta o un umbral de envío gratis más alto suben el tamaño del pedido y los ingresos por envío, pero frenan la demanda. Una tarifa baja atrae pedidos chicos que cuestan más de reparto por peso vendido.",
+  "D-26":
+    "Publicar una capacidad diaria por ventana y zona evita prometer lo que no cabe: protege el OTD y la CSAT en los picos. Si la capacidad publicada es baja, se rechazan pedidos y se pierden ventas; si es alta, se acumula Backlog.",
+  "D-30":
+    "La mezcla de flota reparte el riesgo. La flota propia es un costo fijo, controlable y confiable (buen OTD). El 3PL dedicado reserva capacidad a un costo intermedio. La flota crowdsourced es variable y elástica, barata en días normales, pero menos confiable: en picos con choferes escasos puede no cubrir rutas y cae el OTD.",
+  "D-31":
+    "El vehículo define capacidad, costo y velocidad. La camioneta de combustión carga mucho, pero no circula en contingencias ambientales. La eléctrica tiene energía barata y está exenta de restricciones, pero menos autonomía en rutas largas. La moto y la bici de carga son rápidas para express urbano con poca carga. La refrigerada protege los frescos y cuesta más.",
+  "D-32":
+    "El equipo de frío (hieleras, vehículo refrigerado o compartimentos multitemperatura) baja el Spoilage de los frescos, sobre todo en rutas de más de 3 horas y con calor, donde sin frío el daño crece rápido. Menos producto dañado significa menos reembolsos y mejor CSAT, a cambio de más costo de equipo.",
+  "D-33":
+    "Más vehículos propios por zona dan holgura: menos Backlog y mejor OTD en días fuertes, pero en días normales la flota queda ociosa y sube el CPD. Una flota mínima es barata en promedio y se queda corta en los picos.",
+  "D-34":
+    "Más turnos y fines de semana suben la capacidad de reparto y permiten promesas más amplias: baja el Backlog y sube el OTD. A cambio, sube el costo laboral, que se paga aunque no haya volumen.",
+  "D-35":
+    "El pago fijo es estable pero no premia la productividad. El pago por parada sube las paradas por hora, pero también las entregas marcadas en falso y los accidentes (bajan FADS real y la CSAT). El esquema mixto con bono por entrega a primer intento y OTD alinea al chofer con el cliente.",
+  "D-36":
+    "Contratar flota para los picos con anticipación es más barato y seguro que buscarla al momento (spot), que es cara e incierta. Si el contrato queda corto frente al pico real, faltan rutas y cae el OTD; si sobra, pagas capacidad ociosa. Se dimensiona con tu pronóstico de los picos.",
+  "D-40":
+    "Pocas zonas de reparto hacen rutas largas: sube el Order Cycle Time y cuesta cumplir ventanas. Muchas zonas consolidan menos pedidos por ruta: baja la Vehicle Util. y sube el CPD. El óptimo depende de la densidad del territorio.",
+  "D-41":
+    "Zonificar por colonias es simple, pero deja zonas desbalanceadas: unas rutas se saturan y otras van medio vacías. El k-means balanceado y el clustering capacitado reparten la carga de forma pareja: menos rutas saturadas, mejor OTD y mejor Route Efficiency. La zonificación dinámica sigue la demanda, pero exige buenos datos.",
+  "D-42":
+    "Re-zonificar ajusta las zonas a la demanda, pero cada cambio hace que el chofer pierda familiaridad con su zona: bajan las paradas por hora. Re-zonificar a diario sin datos maduros cuesta más de lo que gana.",
+  "D-43":
+    "Un ruteo más sofisticado (heurística, optimizador con ventanas de tiempo o re-ruteo en tiempo real con IA) acorta las rutas, sube la Route Efficiency y el OTD y baja el CPD. Pero rinde según los datos: con datos básicos, el ruteo con IA logra solo una parte de su potencial.",
+  "D-44":
+    "La función de costo define cómo «ve» el tiempo el optimizador. La distancia en línea recta y el tiempo medio subestiman el tiempo real, sobre todo en horas pico: las rutas parecen factibles pero llegan tarde y cae el OTD (la lección de UPS/ORION). El tiempo dependiente de la hora es el más realista, pero requiere datos de calidad.",
+  "D-45":
+    "Cargar los frescos al final del picking y entregarlos primero en la ruta reduce su tiempo fuera de frío: baja el Spoilage y los reembolsos sin costo adicional relevante.",
+  "D-50":
+    "Avisar al cliente cuándo llega su pedido sube la entrega a primer intento (FADS) y la CSAT: el seguimiento en vivo con ventana de 30 minutos es lo más efectivo. Menos reintentos bajan el CPD. Tiene un costo tecnológico por pedido.",
+  "D-51":
+    "Validar la dirección al capturarla (o con geocodificación, referencias y foto) baja las direcciones erróneas, sobre todo en zonas de urbanización irregular o nuevos desarrollos: suben FADS y la Route Efficiency y bajan los reintentos.",
+  "D-52":
+    "Qué hacer si el cliente no está cambia los reintentos y su costo. Reintentar el mismo día sube el costo de ruta; al día siguiente alarga la entrega. Desviar a locker o tienda resuelve con una sola parada. Dejar con un vecino o caseta sube FADS, pero también el riesgo de reclamo.",
+  "D-53":
+    "El pago contra entrega sube las entregas fallidas (el cliente cambia de opinión o no tiene efectivo): bajan FADS y suben los reintentos y el CPD. Eliminarlo reduce la demanda, sobre todo donde el uso de tarjeta es bajo; limitarlo a clientes recurrentes es un punto medio.",
+  "D-55":
+    "El canal de devolución equilibra costo y experiencia. Solo en tienda es barato pero incómodo para el cliente; recolectar a domicilio es cómodo y caro; los lockers son un punto medio. Afecta la CSAT y el costo por devolución.",
+  "D-56":
+    "Recoger las devoluciones en la ruta de salida (backhaul) aprovecha el camión que regresa: bajan las Empty Miles y el costo por devolución, pero la ruta dura más y hace menos paradas de entrega.",
+  "D-60":
+    "Mejores datos (GPS, tráfico histórico, peso y volumen) no mueven los KPIs por sí solos: habilitan que la asignación con IA, el ruteo dinámico y la función de costo por hora rindan su potencial. Sin datos, esas decisiones rinden poco. Tiene un costo de tecnología.",
+  "D-61":
+    "No cambia la operación: cambia lo que ves. Con el promedio mensual, los días críticos (lunes, quincenas, picos) quedan ocultos en el dashboard aunque el motor sí los simula. Con la serie diaria o el p95 aparecen los días en que el OTD y FADS se desploman, que son los que el cliente recuerda.",
+  "D-62":
+    "Las medidas de seguridad en ruta (GPS con botón de pánico, horarios y rutas variables, seguro) bajan la probabilidad y la severidad de los robos de mercancía: menos pedidos perdidos y reembolsos, a cambio de un costo mensual.",
+  "D-63":
+    "El mantenimiento preventivo cuesta más que el correctivo, pero reduce las averías y las fallas de refrigeración: mejor OTD y menos Spoilage.",
+};
+
 export const LABELS: LabelMap = {
   "F-01": { help: "Se captura en enero de cada año con los datos observados hasta ese momento." },
   "D-01": {
@@ -105,7 +195,7 @@ export const LABELS: LabelMap = {
   "D-07": { help: "Cross-dock cerca de las zonas lejanas: consolida la troncal. Tarda 2 meses.", unit: "hubs" },
   "D-10": { help: "«Más cercano» ignora la capacidad: si el nodo se llena, el resto se atrasa. El umbral dinámico reparte." },
   "D-11": { options: { "5": "5 min", "15": "15 min", "60": "60 min", "240": "240 min" }, help: "Lotes más cortos: ciclo más rápido, asignación un poco más cara." },
-  "D-12": { help: "Tope de horas de piso para picking en línea. Si se excede, cae la disponibilidad en anaquel (R-05).", format: "pct", step: 0.05 },
+  "D-12": { help: "Tope de horas de piso para picking en línea. Si se excede, cae la disponibilidad en anaquel.", format: "pct", step: 0.05 },
   "D-20": { help: "Más niveles fragmentan las rutas. El express exige un nodo en la zona.", fields: { express: "Express (< 2 h)", sameday: "Mismo día", nextday: "Día siguiente", standard: "Estándar (2–4 días)" } },
   "D-21": { help: "Ventanas más angostas: más clientes en casa, menos paradas por ruta y menos puntualidad." },
   "D-22": { options: { "12": "12:00", "14": "14:00", "16": "16:00" }, help: "Un corte tardío capta más pedidos del mismo día y carga la tarde." },
@@ -118,13 +208,13 @@ export const LABELS: LabelMap = {
   "D-32": { help: "El frío reduce el spoilage de frescos." },
   "D-33": { help: "Tamaño de la flota propia frente a la necesidad del mes anterior." },
   "D-34": { fields: { two: "Dos turnos", weekends: "Fines de semana" } },
-  "D-35": { help: "Pago por parada: más paradas por hora y más intentos en falso y accidentes (R-09)." },
+  "D-35": { help: "Pago por parada: más paradas por hora y más intentos en falso y accidentes." },
   "D-36": { help: "Flota extra en meses pico. El contrato anticipado se firma un mes antes; el spot es caro y poco confiable." },
   "D-40": { help: "Hay un número óptimo de zonas: pocas son enormes, muchas fragmentan.", unit: "zonas" },
   "D-41": { help: "Cómo se trazan las zonas: las balanceadas y con capacidad reparten mejor la carga; la dinámica necesita datos maduros." },
-  "D-42": { help: "Re-zonificar seguido sin datos maduros quita familiaridad a los choferes (R-07)." },
-  "D-43": { help: "La IA con datos básicos rinde ~30% de su potencial (R-08)." },
-  "D-44": { help: "El tiempo según la hora requiere telemetría + tráfico (D-60)." },
+  "D-42": { help: "Re-zonificar seguido sin datos maduros quita familiaridad a los choferes." },
+  "D-43": { help: "La IA con datos básicos rinde ~30% de su potencial." },
+  "D-44": { help: "El tiempo según la hora requiere telemetría + tráfico." },
   "D-45": { help: "Cargar los frescos al final para entregarlos primero: menos tiempo fuera del frío." },
   "D-50": {},
   "D-51": {},
@@ -133,10 +223,11 @@ export const LABELS: LabelMap = {
   "D-55": { options: { store: "En tienda" }, help: "Devolver en locker requiere lockers." },
   "D-56": {},
   "D-60": { options: { basic: "Básicos", gps: "Telemetría GPS", full: "Telemetría + tráfico" }, help: "Cuesta por vehículo y tarda en implantarse (1–2 meses)." },
-  "D-61": { options: { mean: "Promedio del mes", daily: "Serie diaria", p95: "p95 (días críticos)" }, help: "Solo cambia lo que ves en el dashboard; el puntaje usa siempre p95 (R-12)." },
+  "D-61": { options: { mean: "Promedio del mes", daily: "Serie diaria", p95: "p95 (días críticos)" }, help: "Solo cambia lo que ves en el dashboard; el puntaje usa siempre p95." },
   "D-62": { options: { none: "Ninguna", gps: "GPS", full: "GPS + botón de pánico + horarios variables" } },
   "D-63": {},
 };
+for (const [id, impact] of Object.entries(IMPACT)) LABELS[id] = { ...LABELS[id], impact };
 
 const P95_NOTE = " (5% de los peores días)";
 
@@ -157,7 +248,7 @@ export const KPI_META: KpiMeta[] = [
   { id: "STOPS_ROUTE", acronym: "Stops/route", name: "Paradas por ruta", formula: "Paradas / rutas", format: "num1", higherIsBetter: true },
   { id: "ROUTE_EFF", acronym: "Route Efficiency", name: "Eficiencia de ruta", formula: "km del mejor diseño posible / km reales", format: "pct", higherIsBetter: true },
   { id: "NODE_UTIL", acronym: "Node Util.", name: "Utilización máxima de nodo", formula: "Pedidos surtidos / capacidad de picking (nodo más cargado)", format: "pct", higherIsBetter: false },
-  { id: "STORE_OSA", acronym: "OSA tienda", name: "Disponibilidad en anaquel de tiendas SFS", formula: "Baja si el picking en línea excede el tope (R-05)", format: "pct", higherIsBetter: true },
+  { id: "STORE_OSA", acronym: "OSA tienda", name: "Disponibilidad en anaquel de tiendas SFS", formula: "Baja si el picking en línea excede el tope", format: "pct", higherIsBetter: true },
   { id: "EMPTY_MILES", acronym: "Empty Miles", name: "Kilómetros en vacío", formula: "km sin carga / km totales", format: "pct", higherIsBetter: false },
   { id: "CO2", acronym: "CO₂", name: "Emisiones por entrega", formula: "kg de CO₂ / entrega", format: "num2", higherIsBetter: false },
   { id: "SHIP_PCT", acronym: "Costo/ventas", name: "Costo de última milla / ventas", formula: "Costo de última milla / ventas en línea", format: "pct", higherIsBetter: false },
@@ -297,3 +388,42 @@ export function describeValue(id: string, v: unknown): string {
   }
   return String(v);
 }
+
+/** Nombre legible de reglas y eventos para la explicación causal (el jugador no ve los códigos internos). */
+const RULE_EVENT_NAMES: Record<string, string> = {
+  "R-01": "Ruta larga con frescos sin equipo de frío",
+  "R-02": "Frescos dañados por encima del umbral",
+  "R-03": "Ventana «todo el día» con baja presencia en casa",
+  "R-04": "Express con densidad baja",
+  "R-05": "Surtido en tienda sobre el tope de horas",
+  "R-06": "Promesa sin margen en un pico",
+  "R-07": "Re-zonificación diaria sin datos maduros",
+  "R-08": "Ruteo con IA y datos básicos",
+  "R-09": "Pago por parada",
+  "R-10": "Flota crowdsourced en pico con choferes escasos",
+  "R-11": "Backhaul de devoluciones",
+  "R-12": "Reporte con promedio",
+  "R-13": "Restricción ambiental con flota de combustión",
+  "R-14": "Lockers en zonas con baja presencia en casa",
+  "X-01": "Falla de cadena de frío",
+  "X-02": "Inundación o lluvia torrencial",
+  "X-03": "Bloqueo o manifestación",
+  "X-04": "Contingencia ambiental",
+  "X-05": "Pico viral o campaña sorpresa",
+  "X-06": "Ausentismo de choferes",
+  "X-07": "Plataforma crowdsourced sin capacidad",
+  "X-08": "Robo de mercancía en ruta",
+  "X-09": "Accidente vial",
+  "X-10": "Caída del sistema de ruteo",
+  "X-11": "Competidor con entrega en 15–30 min",
+  "X-12": "Ola de calor",
+  "X-13": "Errores de geocodificación",
+  "X-14": "Cierre temporal de una tienda-nodo",
+  "X-15": "Alza de gasolina",
+};
+
+/** Nombre de cada causa (decisión, regla o evento) por su código interno. */
+export const CAUSE_NAMES: Record<string, string> = {
+  ...RULE_EVENT_NAMES,
+  ...Object.fromEntries(decisions.map((d) => [d.id, d.label])),
+};

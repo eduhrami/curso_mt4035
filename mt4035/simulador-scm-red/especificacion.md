@@ -81,9 +81,9 @@ Hay tres capas: **estructurales** (se fijan en el setup y no cambian), **dinámi
 | E-03 | Densidad de población / visitas por tienda al día | Muy alta / ~1,000 | Baja / ~350 | Alta en núcleo (~800) / media en periferia (~450) |
 | E-04 | Distancia típica entre tiendas | < 1 km dentro del *cluster* | 15–40 km | 0.5–2 km núcleo / 5–15 km periferia |
 | E-05 | Velocidad efectiva y congestión | Baja velocidad, congestión alta y predecible | Alta velocidad, congestión baja | Congestión alta y **muy variable** en el núcleo |
-| E-06 | Red *as-is* | 12 CD combinados (*cross-dock* por temperatura), entregas 3×/día de frescos | DSD de ~40 proveedores + 2 mayoristas; 1 entrega/semana por proveedor | 2 CD con inventario; frescos por DSD |
+| E-06 | Red *as-is* (sub-óptima a propósito, AD-44) | 5 CD combinados (*cross-dock* por temperatura), entregas 3×/día de frescos: la red no creció al ritmo de las tiendas (faltan CD) | DSD de ~40 proveedores + 2 mayoristas; 1 entrega/semana por proveedor (faltan CD) | 4 CD con inventario heredados de una expansión (sobran CD); frescos por DSD |
 | E-07 | Sistema de información *as-is* | POS con análisis diario; pedido por terminal | POS básico; pedido manual semanal | POS sin integración |
-| E-08 | Base de proveedores | Concentrada y cercana, dispuesta a co-invertir (*vendor* dedicado) | Fragmentada; proveedores grandes con poder de negociación | Mixta; proveedores medianos con capacidad limitada |
+| E-08 | Base de proveedores (plantas en el mapa, dato del escenario) | Concentrada y cercana, dispuesta a co-invertir: **planta dedicada de alimentos preparados** (frescos, zona 12) y **planta de lácteos y refrigerados** (zona 25, no dedicada) | Fragmentada y **externa a la región**: proveedores grandes con poder de negociación; no hay plantas en el mapa | Mixta; proveedores medianos con capacidad limitada: **central de abasto** (frescos y refrigerados, zona 14, núcleo) y **parque industrial** (abarrotes y congelados, zona 30, periferia) |
 | E-09 | Costo inmobiliario (CD y tienda) | Muy alto | Bajo | Alto en núcleo, bajo en periferia |
 | E-10 | Costo laboral (chofer, almacén) | Alto | Alto | Bajo–medio |
 | E-11 | Mezcla de demanda | 30% *fast food* y frescos de vida corta | 10% frescos; dominan abarrotes, bebidas y combustible | 20% frescos |
@@ -173,10 +173,11 @@ Las decisiones van en cuatro capas que **se pueden cambiar a distinta velocidad*
 | D-02 | Ubicación de cada CD | Asignar a un *cluster* o zona de la región (mapa esquemático, no geográfico real) | Igual que D-01 | Según la zona | Baja |
 | D-03 | Tipo de CD | **Con inventario** (*stocking*) · **Cross-dock sin inventario** · **Combinado por temperatura** (congelado, refrigerado, ambiente, caliente) | 1–2 trimestres para convertir | El combinado tiene mayor capex | Media |
 | D-04 | Capacidad de cada CD | Pequeño, mediano o grande (cajas/día) | Con D-01 | Escalonado | Ampliar sí; reducir no |
-| D-05 | Estrategia de apertura de tiendas | **Dominancia de mercado** (*clusters* de 50–60 tiendas por CD) · **Dispersa / oportunista** · **Mixta** | 1 trimestre por lote | Capex por tienda | Cerrar tiendas cuesta |
-| D-06 | Ritmo de apertura/cierre | −10% a +15% de tiendas por año | 1 trimestre | Igual | Igual |
-| D-07 | Proveedores dedicados cerca de los CD | Sí/No por categoría de frescos (como las plantas de *vendors* de SEJ) | 3–4 trimestres | Co-inversión | Baja |
-| D-08 | Lote de apertura de tiendas | 0–500 tiendas que abren la época siguiente (necesario en *greenfield*) | 1 trimestre | Capex por tienda | Cerrar tiendas cuesta |
+| D-05 | Estrategia de apertura de tiendas | **Dominancia de mercado** (*clusters* de 50–60 tiendas por CD) · **Dispersa / oportunista** · **Mixta** | Con cada lote (D-08) | — | Media: solo afecta a los lotes futuros |
+| D-08 | Lote de apertura de tiendas | 0–500 tiendas que abren la época siguiente, ubicadas según D-05 (necesario en *greenfield*) | 1 trimestre | Capex por tienda | Se pueden cerrar con D-09 |
+| D-09 | Cierre de tiendas | Zona y número de tiendas (0–100) que cierran la época siguiente | 1 trimestre | Indemnización por tienda (US$ 100,000 ⚠) | Las tiendas cerradas no vuelven; para crecer hay que abrir lotes nuevos |
+
+El ritmo anual de apertura o cierre (antes D-06) no es una decisión: es una política que el equipo ejerce con los lotes manuales de apertura (D-08) y de cierre por zona (D-09) cada trimestre. Los proveedores dedicados (antes D-07) tampoco: son externos y vienen con el escenario como plantas ubicadas en el mapa (E-08). Lo que el jugador decide es cuántos CD tener y dónde, cerca de las plantas o cerca de las tiendas (§6.3b, «Tramo de entrada»).
 
 ### 5.3 Flujo y transporte: táctico (efecto el siguiente trimestre, reversible)
 
@@ -205,7 +206,7 @@ Las decisiones van en cuatro capas que **se pueden cambiar a distinta velocidad*
 
 | ID | Decisión | Opciones | Retraso | Efecto |
 |---|---|---|---|---|
-| D-30 | Sistema de información de tienda | POS básico · **POS con análisis diario** · **POS + terminal gráfica de pedido** (análisis por SKU y hora) | 2–3 trimestres + 2 de aprendizaje | Baja el error de pronóstico (CV efectivo) y habilita *tanpin kanri* |
+| D-30 | Sistema de información de tienda | POS básico · **POS con análisis diario** · **POS + terminal gráfica de pedido** (análisis por SKU y hora) | 1–2 trimestres + 1 de aprendizaje | Baja el error de pronóstico (CV efectivo) y habilita *tanpin kanri* |
 | D-31 | Compartir POS con proveedores | No · Semanal · Diario | 1–2 trimestres | Baja el **bullwhip** (BWR) y sube el fill rate del proveedor |
 | D-32 | Pronóstico | Promedio móvil · Estacional · **Causal** (clima, calendario, eventos locales) | 1–2 trimestres | Baja el error, sobre todo con estacionalidad o clima |
 | D-33 | Colaboración con proveedores | Arm's-length · VMI · **CPFR** | 2–3 trimestres | Lead time más corto y confiable; requiere D-31 |
@@ -283,6 +284,9 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
   - hay un tope operativo de paradas por categoría (frescos 8, por las ventanas de comida);
   - si la troncal ida y vuelta no cabe en medio turno, se hace con relevo y el lazo local usa un turno completo.
 - **DSD:** el proveedor cobra una tarifa por entrega incluida en el precio, porque reparte en rutas compartidas con otros clientes. Las frecuencias son por categoría: frescos 3×/semana, refrigerado 2×, ambiente y congelado 1×.
+- **Tramo de entrada (E-08, 14-oct-2026):** cada región define sus plantas de proveedores (`regions.*.supplierSites`: zona, categorías y si es dedicado). Para una categoría con planta en la región, Hoshi Mart recoge en la planta y paga el flete al CD: `costo_entrada = cajas · c_caja_km (0.01 USD) · d(planta, CD) · combustible`, y el tránsito `d / v` se suma al lead time y a la edad del producto (merma de frescos). En DSD, la distancia de reparto del proveedor es la de su planta a la zona. Sin planta, el proveedor es externo: su flete va en el precio y su lead time es el de la región. Por eso la ubicación del CD es un trade-off: cerca de la planta baja el flete de entrada y la edad de los frescos; cerca de las tiendas baja el reparto. Una planta dedicada (Kaigan, frescos) acorta el lead time del proveedor ×0.5 y mitiga X-04 y X-09.
+- **Sistema de información (D-30, 14-oct-2026, AD-40):** POS diario: capex US$ 1,500 por tienda, US$ 10 por tienda-semana, CV ×0.75, 1 trimestre de implantación; con terminal: US$ 4,000, US$ 20, CV ×0.6, 2 trimestres; madura en un trimestre. Calibrado para que se recupere en ≤ 2 años con un error de pronóstico de ±10% sobre la operación óptima de Red River y Valle. Con pronóstico perfecto casi no aporta: su valor principal es corregir con las ventas reales el pronóstico equivocado del equipo (`forecast.planning.infoMult`).
+- **Tope de gasto anual en decisiones (AD-43):** la suma de los costos de decisiones confirmados en los cuatro trimestres de un año no puede pasar de `money.capexBudgetPerYear` de la región (Kaigan US$ 20 M, Red River US$ 7 M, Valle US$ 6 M ⚠). Cuentan todas las decisiones con costo: CD nuevos, conversiones, ampliaciones y cierres (indemnización); lotes de apertura y cierres de tiendas; escaneo y POS. Un turno que lo excede no se puede confirmar. Se renueva en T1. Obliga a priorizar y a escalonar: en Red River la red regional se construye en dos años y en Valle los cierres de CD toman dos años. En Kaigan el tope deja margen para gastar más de lo que la utilidad justifica: decidir cuánto gastar es parte de la reflexión.
 - **Inventario de tienda:** stock de seguridad + stock de ciclo + **inventario de exhibición** (días por categoría, multiplicado por región según el tamaño de tienda). La exhibición de perecederos cuenta en la cobertura de frescura.
 - **CD con inventario:** guarda stock de ciclo (2 días) más los días de seguridad de D-24. Ambos amortiguan las fallas del proveedor; el cross-dock no amortigua (R-06).
 - **Fill rate:** se usa la fórmula de revisión periódica de la §6.3. Con el CSL fijo, reponer más seguido baja un poco el fill rate de los no perecederos; en los perecederos lo domina la reducción de merma.
@@ -377,16 +381,16 @@ Estado de resultados trimestral de la cadena (KPIs en USD): margen bruto de lo v
 - **Penalizaciones por servicio:** cada trimestre con un guardrail roto de la propuesta de valor declarada resta 2% de las ventas del trimestre ⚠ (`SERVICE_BREACHES`). Umbral = guardrail calibrado de la región + ajuste: frescura: OSA ≥ base y OSA de frescos ≥ base − 2 pp; bajo costo: OSA ≥ base − 2 pp; conveniencia: OSA ≥ base + 1 pp y ventas perdidas ≤ base. La propuesta declarada define la promesa que hay que cumplir mientras se maximiza la utilidad (AD-36).
 - **Utilidad acumulada** = Σ `PROFIT` de los 12 trimestres: puntaje definitivo (`finalScore` de la exportación, en USD). Se ve en la barra superior, en el dashboard («Estado de resultados»), en el reporte final (por año) y en el comparador. Solo es comparable dentro de la misma región, escenario y semilla; entre regiones conviene la mejora contra la operación inicial (%).
 
-### 7.6 Peso del pronóstico en la utilidad (13-oct-2026)
+### 7.6 Peso del pronóstico en la utilidad (14-oct-2026)
 
-`npm run forecast-impact` ([`app/autoplay/forecast-impact.ts`](app/autoplay/forecast-impact.ts), reporte en [`app/autoplay/reports/forecast-impact.md`](app/autoplay/reports/forecast-impact.md)): qué parte de la brecha de utilidad entre la operación inicial (BOT-A) y la mejor operación encontrada (bots de referencia + 50 vectores aleatorios, por utilidad, pronóstico perfecto) se explica por pronosticar bien (pérdida media con −20% / +20%).
+`npm run forecast-impact` ([`app/autoplay/forecast-impact.ts`](app/autoplay/forecast-impact.ts), reporte `forecast-impact.md` en el repositorio privado): qué parte de la brecha de utilidad entre la operación inicial (BOT-A) y la mejor operación encontrada (bots de referencia + 50 vectores aleatorios, por utilidad, pronóstico perfecto) se explica por pronosticar bien (pérdida media con −20% / +20%).
 
 | Región | Peso del pronóstico |
 |---|---|
-| Kaigan | ≈ 94% (la red inicial ya es la de Seven-Eleven: la operación casi no puede mejorar y el pronóstico es la palanca que queda; además, con OSA ≥ 96% el margen de error es mínimo) |
-| Red River | ≈ 39% |
-| Valle Metropolitano | ≈ 45% |
-| **Promedio** | **≈ 59%** |
+| Kaigan | ≈ 38% (con la red saturada, ampliarla es la primera palanca; con frescos de vida corta, pronosticar de menos cuesta caro) |
+| Red River | ≈ 38% |
+| Valle Metropolitano | ≈ 47% |
+| **Promedio** | **≈ 41%** |
 
 No se fuerza una brecha por región: en qué casos pesa más el pronóstico es parte del aprendizaje.
 
@@ -489,6 +493,8 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 
 ## 13. Decisiones pendientes
 
+- [ ] Validar los montos ⚠ del tope de inversión anual (Kaigan US$ 15 M, Red River US$ 7 M, Valle US$ 6 M), del flete de entrada (US$ 0.01 por caja-km) y de la ubicación de las plantas de proveedores (AD-41, AD-43).
+- [ ] SCM-AUT-06 (P2) falla por frecuencias en el límite del rango (frescos 3×/día en Kaigan, abarrotes 1×/semana en regiones dispersas), que son respuestas económicas razonables. Decidir si la propiedad deja de contar las frecuencias o se amplía el rango de frecuencias.
 - [x] Duración de una partida en clase: 12 épocas manuales (3 años), homologada con última milla (AD-37, 14-oct-2026); ≈4 min por época en ~45–50 min de juego.
 - [ ] Validar los rangos numéricos de la §6.3 y los p_base de la §8 con datos del caso y benchmarks.
 - [ ] Definir si se juega una sola región o la comparación Kaigan vs. Red River es obligatoria.

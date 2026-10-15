@@ -9,6 +9,7 @@ import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-cor
 import { parseArgs } from "@mt4035/sim-tools";
 import { createLastMileEngine, lmConfig, params, profitOf, truthForecast, type LmState, type TerritoryId } from "../src/index.ts";
 import { bots, searchSpace, vectorPolicy } from "./bots.ts";
+import { REPORTS_DIR } from "./reports-dir.ts";
 
 type Pol = (s: GameState<LmState>, e: number) => DecisionChanges;
 const a = parseArgs(process.argv.slice(2));
@@ -78,5 +79,5 @@ ${rows.join("\n")}
 
 **Peso medio del pronóstico: ${((shares.reduce((x, y) => x + y, 0) / shares.length) * 100).toFixed(0)}%.** No se fuerza por región: donde la operación tiene poco margen para mejorar la utilidad (Bajío) el pronóstico pesa más; donde la geografía y la red pesan más (Norte, Megalópolis) pesa menos.
 `;
-writeFileSync(new URL("./reports/forecast-impact.md", import.meta.url), md);
+writeFileSync(`${REPORTS_DIR}/forecast-impact.md`, md);
 process.stdout.write(md);

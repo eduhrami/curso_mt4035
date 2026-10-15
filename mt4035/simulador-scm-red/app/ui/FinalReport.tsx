@@ -104,7 +104,7 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
           <strong>{result.score.toFixed(1)}</strong> = {Math.round((1 - FC_W) * 100)}% × operación <strong>{result.operational.toFixed(1)}</strong> + {Math.round(FC_W * 100)}% × pronóstico{" "}
           <strong>{result.forecast.toFixed(1)}</strong>
         </p>
-        <h3>Pronóstico (F-01)</h3>
+        <h3>Pronóstico</h3>
         <p class="small muted">
           Cada año se califica con el pronóstico que capturaste en T1: 60% el patrón (WAPE semanal por encima del error inevitable del ruido), 20% la variabilidad (CV) y 20% la cobertura del p95 (ideal: 5% de las
           semanas por encima).

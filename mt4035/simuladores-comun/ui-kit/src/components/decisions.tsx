@@ -23,6 +23,11 @@ export interface DecisionLabels {
   step?: number;
   /** Unidad que se muestra junto al número. */
   unit?: string;
+  /**
+   * Recurso didáctico: qué KPIs sube y cuáles baja la decisión, y por qué. Se muestra en el botón «¿Cómo impacta?»;
+   * sin este texto, el panel lista los KPIs que mueve (spec.kpis).
+   */
+  impact?: string;
 }
 
 export type LabelMap = Record<string, DecisionLabels>;
@@ -162,6 +167,28 @@ export function DecisionPanel<S, P>({ store, tabs, labels, globalOptions, kpiNam
   );
 }
 
+/**
+ * Botón discreto «¿Cómo impacta?»: al pasar el mouse (o enfocar con teclado) muestra un párrafo con la dirección en
+ * que la decisión mueve los KPIs y el porqué. En pantallas táctiles se abre y cierra con un toque.
+ */
+function ImpactHint({ text, label }: { text: string; label: string }) {
+  const [hover, setHover] = useState(false);
+  const [pinned, setPinned] = useState(false);
+  const open = hover || pinned;
+  return (
+    <div class="impact" onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
+      <button type="button" class="impact-toggle small" aria-expanded={open} aria-label={`¿Cómo impacta ${label}?`} onClick={() => setPinned(!pinned)} onFocus={() => setHover(true)} onBlur={() => setHover(false)}>
+        ¿Cómo impacta?
+      </button>
+      {open && (
+        <div class="impact-pop small" role="tooltip">
+          <Gloss text={text} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, custom, disabled }: { spec: DecisionSpec<S, P, any>; store: GameStore<S, P>; labels: DecisionLabels; globalOptions: Record<string, string>; kpiNames: Record<string, string>; custom?: (p: CustomControlProps<S>) => VNode; disabled: boolean }) {
   const state = store.state.value!;
   const params = store.engine.params;
@@ -177,7 +204,7 @@ function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, cust
     <div class={`decision${changed ? " changed" : ""}`} data-decision={spec.id}>
       <h4>
         <span>
-          <Gloss text={spec.label} /> <span class="muted small mono">{spec.id}</span>
+          <Gloss text={spec.label} />
         </span>
         {changed && (
           <button type="button" class="btn-ghost small" onClick={() => store.resetDecision(spec.id)} aria-label={`Deshacer ${spec.label}`}>
@@ -196,7 +223,9 @@ function DecisionItem<S, P>({ spec, store, labels, globalOptions, kpiNames, cust
           <span key={p.activateAt}>En obra desde {store.engine.epochLabel(p.decidedAt)}: opera en {store.engine.epochLabel(p.activateAt)}</span>
         ))}
       </div>
-      {spec.kpis && spec.kpis.length > 0 && (
+      {labels.impact ? (
+        <ImpactHint text={labels.impact} label={spec.label} />
+      ) : spec.kpis && spec.kpis.length > 0 && (
         <div class="row small kpi-tags" aria-label="KPIs que mueve">
           <span class="muted">Mueve:</span>
           {spec.kpis.slice(0, 6).map((k) => (

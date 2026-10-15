@@ -116,17 +116,17 @@ export const decisions: Spec<any>[] = [
   field("D-42", "rezoning", "Frecuencia de re-zonificación", "Zonas y ruteo", z.enum(["never", "quarterly", "monthly", "daily"]), ["STOPS_HOUR", "CPD", "OTD"]),
   field("D-43", "routing", "Método de ruteo", "Zonas y ruteo", z.enum(["manual", "heuristic", "vrptw", "ai"]), ["ROUTE_EFF", "OTD", "OTD_P95", "ETA_ACC", ...FIN]),
   field("D-44", "costFn", "Función de costo del ruteo", "Zonas y ruteo", z.enum(["euclid", "avgtime", "timedep"]), ["OTD", "OTD_P95", "ETA_ACC"], {
-    validate: (v, view) => (v === "timedep" && view.effective("D-60") !== "full" ? "El tiempo dependiente de la hora requiere telemetría + tráfico (D-60)" : null),
+    validate: (v, view) => (v === "timedep" && view.effective("D-60") !== "full" ? "El tiempo dependiente de la hora requiere telemetría + tráfico" : null),
   }),
   field("D-45", "loadSeq", "Secuencia de carga", "Zonas y ruteo", z.enum(["none", "fresh_first"]), ["SPOIL_RATE", "EXCEPTION_RATE", "CSAT"]),
   field("D-50", "eta", "Notificación de ETA al cliente", "Cliente", z.enum(["none", "sms", "live"]), ["FADS", "FADS_P95", "CSAT", "ETA_ACC", ...FIN]),
   field("D-51", "address", "Validación de dirección", "Cliente", z.enum(["none", "capture", "geocode"]), ["FADS", "FADS_P95", ...FIN]),
   field("D-52", "absent", "Política ante cliente ausente", "Cliente", z.enum(["retry_same", "retry_next", "divert", "neighbor"]), ["EXCEPTION_RATE", "CYCLE_HOURS", ...FIN, "CSAT"], {
-    validate: (v, view) => (v === "divert" && (view.effective("D-06") as number) === 0 && !view.effective("D-03") ? "Desviar a locker o tienda requiere lockers (D-06) o BOPIS (D-03)" : null),
+    validate: (v, view) => (v === "divert" && (view.effective("D-06") as number) === 0 && !view.effective("D-03") ? "Desviar a locker o tienda requiere lockers o BOPIS" : null),
   }),
   field("D-53", "cod", "Pago contra entrega", "Cliente", z.enum(["allow", "limit", "remove"]), ["FADS", "ORDERS", "EXCEPTION_RATE", ...FIN]),
   field("D-55", "returnsChannel", "Canal de devolución", "Devoluciones", z.enum(["store", "pickup", "locker", "mixed"]), ["RETURN_COST", "CSAT", ...FIN], {
-    validate: (v, view) => (v === "locker" && (view.effective("D-06") as number) === 0 ? "Devolver en lockers requiere lockers (D-06)" : null),
+    validate: (v, view) => (v === "locker" && (view.effective("D-06") as number) === 0 ? "Devolver en lockers requiere lockers" : null),
   }),
   field("D-56", "returnsConsolidation", "Consolidación de devoluciones", "Devoluciones", z.enum(["dedicated", "backhaul"]), ["RETURN_COST", "EMPTY_MILES", "STOPS_ROUTE", ...FIN]),
   field("D-60", "data", "Calidad y granularidad de datos", "Datos y seguridad", z.enum(["basic", "gps", "full"]), ["ROUTE_EFF", "OTD", "ETA_ACC", ...FIN], {

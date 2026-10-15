@@ -3,12 +3,13 @@ import { useState } from "preact/hooks";
 import { DataTable, fmt, fmtMoney, KpiCard, KpiExplanation, LineChart, ScatterChart, StackedBar, type ScatterGroup } from "@mt4035/ui-kit";
 import type { EpochReport, GameState } from "@mt4035/sim-core";
 import { scoreRun, params, type ScmState, type Strategy } from "../src/index.ts";
-import { KPI_NAMES, kpiMetaFor, OPTIONS, REGION_TEXT } from "./labels.ts";
+import { CAUSE_NAMES, KPI_NAMES, kpiMetaFor, OPTIONS, REGION_TEXT } from "./labels.ts";
 import { engine, professor, regionOf, store } from "./game.ts";
 import { NetworkMap } from "./NetworkMap.tsx";
 
 const COSTS: [string, string][] = [
-  ["transport", "Transporte"],
+  ["transport", "Reparto a tiendas"],
+  ["inbound", "Flete de proveedores"],
   ["handling", "Manejo en CD"],
   ["dcFixed", "CD (fijo)"],
   ["receivingCost", "Recepción en tienda"],
@@ -87,7 +88,7 @@ export function Dashboard({ state }: { state: GameState<ScmState> }) {
         <DataTable caption={meta.name} columns={["Trimestre", meta.acronym]} rows={reports.map((r) => [r.label, fmt(r.kpis[kpi], meta.format)])} />
       </div>
 
-      <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} />
+      <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} causeNames={CAUSE_NAMES} />
 
       <ProfitCard reports={reports} />
 
@@ -145,7 +146,7 @@ function ForecastCard({ reports, labels }: { reports: EpochReport[]; labels: str
     <div class="card stack">
       <h2>Pronóstico contra demanda</h2>
       <p class="small muted">
-        Unidades por tienda por día (promedio de cada trimestre) del mercado contra tu pronóstico (F-01). En lo que va de A{year + 1}: WAPE {fmt(wape, "pct1")} · sesgo {bias >= 0 ? "+" : ""}
+        Unidades por tienda por día (promedio de cada trimestre) del mercado contra tu pronóstico. En lo que va de A{year + 1}: WAPE {fmt(wape, "pct1")} · sesgo {bias >= 0 ? "+" : ""}
         {fmt(bias, "pct1")} · semanas sobre tu p95 {fmt(exceed, "pct1")} (ideal 5%). Lo usarás para re-pronosticar en T1.
       </p>
       <LineChart
@@ -167,14 +168,15 @@ export const PNL: [string, string, 1 | -1][] = [
   ["GM_USD", "Margen bruto de lo vendido", 1],
   ["WASTE_COST", "Merma (frescos caducados y fallas de frío)", -1],
   ["OVERSTOCK_COST", "Rebajas por comprar de más (pronóstico alto)", -1],
-  ["TRANSPORT_COST", "Transporte", -1],
+  ["TRANSPORT_COST", "Reparto a tiendas (transporte)", -1],
+  ["INBOUND_COST", "Flete de las plantas de proveedores al CD", -1],
   ["HANDLING_COST", "Manejo en CD", -1],
   ["DC_FIXED_COST", "Costo fijo de los CD", -1],
   ["RECEIVING_COST", "Recepción en tienda", -1],
   ["CARRYING_COST", "Costo de mantener inventario", -1],
   ["IT_COST", "Tecnología y capacitación", -1],
   ["EBITDA", "EBITDA logístico", 1],
-  ["CAPEX", "Inversión (CD, aperturas, cierres) y cargos", -1],
+  ["CAPEX", "Inversión (CD, aperturas de tiendas) y cargos (cierre de CD)", -1],
   ["SERVICE_PENALTY", "Penalizaciones por servicio (guardrails de tu propuesta de valor)", -1],
   ["PROFIT", "Utilidad", 1],
 ];

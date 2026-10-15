@@ -1,22 +1,27 @@
 /** SCM-ESC (P1): escenarios de referencia calibrados contra el caso (casos de prueba §5). */
 import { describe, expect, it } from "vitest";
 import { playGame } from "@mt4035/sim-core/testing";
-import { EPOCHS, params, scoreRun } from "../src/index.ts";
+import { createScmEngine, EPOCHS, params, scoreRun } from "../src/index.ts";
 import type { DcSpec } from "../src/types.ts";
 import { adaptedDispersed, naiveTransplant } from "./helpers/policies.ts";
-import { det, engine, meanKpi, sumMetric } from "./helpers/run.ts";
+import { det, engine, meanKpi, paramsWith, sumMetric } from "./helpers/run.ts";
 
 const asIs = (region: "kaigan" | "redriver" | "valle") => playGame(engine, det(region)).reports;
 
 describe("SCM-ESC (P1)", () => {
-  it("ESC-01 Kaigan as-is: 8–11 camiones/tienda/día, ITR ≥ 40, OSA ≥ 96%, merma de frescos ≤ 5%", () => {
-    for (const r of asIs("kaigan")) {
+  it("ESC-01 Kaigan: la red inicial (5 CD combinados, saturada) tiene 8–11 camiones/tienda/día e ITR ≥ 40; con 8 CD alcanza la referencia SEJ (OSA ≥ 96%, merma de frescos ≤ 5%)", () => {
+    const initial = asIs("kaigan");
+    for (const r of initial) {
       expect(r.kpis.TRUCKS).toBeGreaterThanOrEqual(8);
       expect(r.kpis.TRUCKS).toBeLessThanOrEqual(11);
       expect(r.kpis.ITR).toBeGreaterThanOrEqual(40);
+    }
+    const sej = playGame(createScmEngine(paramsWith((p) => (p.regions.kaigan.initial.dcs.count = 8))), det("kaigan")).reports;
+    for (const r of sej) {
       expect(r.kpis.OSA).toBeGreaterThanOrEqual(0.96);
       expect(r.kpis.WASTE_FRESH).toBeLessThanOrEqual(0.05);
     }
+    expect(meanKpi(sej, "OSA")).toBeGreaterThan(meanKpi(initial, "OSA"));
   });
 
   it("ESC-02 Red River as-is: 4–8 camiones/tienda/día, ITR 15–26, OSA 88–93%, frescos < 12% de la demanda", () => {

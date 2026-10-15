@@ -352,7 +352,7 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
     - Bajío: CPD p95 de USD 2–8 y FADS de 80–98%.
     - Norte: CPD p95 de USD 5–16 y guardrail de utilización de vehículo de 50%.
     - Con esto la operación *as-is* puntúa en una banda comparable (~35–55).
-  - Reporte de coherencia en `app/autoplay/reports/latest.md`.
+  - Reporte de coherencia (`latest.md`) en el repositorio privado: contiene los óptimos de cada escenario.
 - **Desviaciones conocidas** (también anotadas en los casos de prueba):
   - El costo fijo de una dark store empieza cuando opera, no al decidir. El capex sí se carga al decidir.
   - La flota es de un solo tipo de vehículo; no hay flota mixta 50% EV.
@@ -470,7 +470,7 @@ Estado de resultados mensual del canal en línea (KPIs en USD):
 
 ### 7.6 Peso del pronóstico en la utilidad (13-oct-2026)
 
-`npm run forecast-impact` (auto-juego, [`app/autoplay/forecast-impact.ts`](app/autoplay/forecast-impact.ts)) mide, por territorio, qué parte de la brecha de utilidad entre la operación inicial (BOT-A) y la mejor operación encontrada (bots de referencia + 50 vectores aleatorios, por utilidad, con pronóstico perfecto) se explica por pronosticar bien: pérdida media con pronóstico −20% / +20% / (esa pérdida + la mejora operativa). Reporte en [`app/autoplay/reports/forecast-impact.md`](app/autoplay/reports/forecast-impact.md).
+`npm run forecast-impact` (auto-juego, [`app/autoplay/forecast-impact.ts`](app/autoplay/forecast-impact.ts)) mide, por territorio, qué parte de la brecha de utilidad entre la operación inicial (BOT-A) y la mejor operación encontrada (bots de referencia + 50 vectores aleatorios, por utilidad, con pronóstico perfecto) se explica por pronosticar bien: pérdida media con pronóstico −20% / +20% / (esa pérdida + la mejora operativa). Reporte (`forecast-impact.md`) en el repositorio privado.
 
 | Territorio | Peso del pronóstico |
 |---|---|

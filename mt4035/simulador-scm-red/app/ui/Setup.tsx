@@ -37,6 +37,10 @@ export function Setup() {
           Hoshi Mart compró Prairie Stop y el consejo evalúa entrar a Valle Metropolitano. Tienes <strong>3 años (12 trimestres)</strong> para decidir qué propuesta de valor sostiene cada región,
           diseñar la red que la haga posible y demostrarlo con números. Cada trimestre revisas resultados, ajustas tus decisiones y confirmas.
         </p>
+        <p>
+          La red que heredas no es la adecuada: en algunas regiones faltan centros de distribución y en otras sobran. Las plantas de los proveedores ya están en el mapa; tú decides cuántos CD tener y
+          dónde. El consejo te da un <strong>tope de inversión por año</strong>: no podrás hacerlo todo a la vez, así que prioriza.
+        </p>
         <p class="small muted">Empresa y regiones ficticias, inspiradas en el caso Seven-Eleven Japan (Kellogg KEL026).</p>
         <p class="small" style={{ margin: 0 }}>
           ¿Dudas con alguna sigla? Abre el{" "}
@@ -70,7 +74,7 @@ export function Setup() {
         <label class="row">
           <input type="checkbox" checked={greenfield} onChange={(e) => setGreenfield((e.target as HTMLInputElement).checked)} />
           <span>
-            Empezar desde cero (<em>greenfield</em>): sin tiendas ni CD; abres tiendas con la decisión D-08.
+            Empezar desde cero (<em>greenfield</em>): sin tiendas ni CD; abres tiendas con la decisión «Lote de apertura de tiendas».
           </span>
         </label>
       </section>

@@ -6,14 +6,15 @@ import { Gloss } from "./glossary.tsx";
 const SEV_LABEL = { critico: "Crítico", alerta: "Alerta", info: "Info" } as const;
 const SEV_ICON = { critico: "●", alerta: "▲", info: "○" } as const;
 
-const driverText = (d: Driver) => `${d.label}${d.value !== undefined && d.value !== "" ? `: ${d.value}` : ""}${d.ref ? ` (${d.ref})` : ""}`;
+// Los códigos internos (D-xx, R-xx, X-xx) no significan nada para el jugador: solo se muestran nombres.
+const driverText = (d: Driver) => `${d.label}${d.value !== undefined && d.value !== "" ? `: ${d.value}` : ""}`;
 
 export function MessageItem({ m, epochLabel, kpiNames, unit }: { m: Message; epochLabel: string; kpiNames: Record<string, string>; unit: string }) {
   return (
     <article class={`msg sev-${m.severity}`} data-source={m.source}>
       <div class="row small" style={{ justifyContent: "space-between" }}>
         <span>
-          <span aria-hidden="true">{SEV_ICON[m.severity]}</span> <strong>{SEV_LABEL[m.severity]}</strong> · {m.source}
+          <span aria-hidden="true">{SEV_ICON[m.severity]}</span> <strong>{SEV_LABEL[m.severity]}</strong>
         </span>
         <span class="muted">
           {epochLabel}
@@ -111,7 +112,7 @@ export function MessageInbox({ reports, epochLabel, kpiNames, unit = "semana", p
 const KIND_LABEL: Record<CausalEntry["kind"], string> = { decision: "Tu decisión", activation: "Entró en operación", event: "Evento", rule: "Regla", trend: "Tendencia" };
 
 /** Causas registradas en la época que movieron un KPI ("¿por qué cambió?"). */
-export function KpiExplanation({ report, kpi, kpiName, period = "trimestre", unitPlural = "semanas" }: { report: EpochReport | null; kpi: string; kpiName: string; period?: string; unitPlural?: string }) {
+export function KpiExplanation({ report, kpi, kpiName, period = "trimestre", unitPlural = "semanas", causeNames = {} }: { report: EpochReport | null; kpi: string; kpiName: string; period?: string; unitPlural?: string; /** Nombre legible de cada causa (decisión, regla o evento) por su código interno. */ causeNames?: Record<string, string> }) {
   if (!report) return null;
   const entries = explainKpi(report, kpi);
   // Agrupa entradas repetidas por tick (p. ej. una regla que se dispara varias semanas).
@@ -131,7 +132,8 @@ export function KpiExplanation({ report, kpi, kpiName, period = "trimestre", uni
         <ul class="small" style={{ margin: 0 }}>
           {[...grouped.values()].map(({ e, n }) => (
             <li key={`${e.kind}${e.id}`}>
-              <strong>{KIND_LABEL[e.kind]}</strong> {e.id}
+              <strong>{KIND_LABEL[e.kind]}</strong>
+              {causeNames[e.id] ? ` «${causeNames[e.id]}»` : ""}
               {n > 1 ? ` (${n} ${unitPlural})` : ""}: {e.drivers.map(driverText).join("; ")}
               {e.note ? ` — ${e.note}` : ""}
             </li>

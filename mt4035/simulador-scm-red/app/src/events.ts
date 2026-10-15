@@ -23,7 +23,7 @@ export const events: Ev[] = [
     kpis: ["WASTE", "WASTE_FRESH", "OSA_FRESH", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
     pBase: (ctx) => ev(ctx.params)["X-01"].pBase,
     modifiers: [
-      { label: "rutas largas con frescos (R-01)", ref: "R-01", factor: (ctx) => ev(ctx.params)["X-01"].longRouteMult, when: (ctx) => ctx.state.flags.r01 },
+      { label: "rutas largas con frescos", ref: "R-01", factor: (ctx) => ev(ctx.params)["X-01"].longRouteMult, when: (ctx) => ctx.state.flags.r01 },
       { label: "flota con mantenimiento correctivo", ref: "D-16", factor: 1.3, when: (ctx) => ctx.state.dec.maintenance === "corrective" },
       { label: "vehículos multi-temperatura", ref: "D-14", factor: 0.7, when: (ctx) => ctx.state.dec.vehicle.type === "multi" },
       { label: "telemetría de temperatura", ref: "D-14", factor: 0.5, when: (ctx) => ctx.state.dec.vehicle.telemetry },
@@ -95,8 +95,8 @@ export const events: Ev[] = [
     kpis: ["OSA", "OTIF", "LOST_SALES", "EBITDA_PCT", "SALES"],
     pBase: (ctx) => ev(ctx.params)["X-04"].pBase[ctx.state.market.supplierReliability],
     modifiers: [
-      { label: "cross-dock sin amortiguador (R-06)", ref: "R-06", factor: (ctx) => ev(ctx.params)["X-04"].crossdockMult, when: (ctx) => usesDc(ctx) && activeDcs(ctx.state, ctx.state.epoch).every((d) => d.type !== "stocking") },
-      { label: "proveedores dedicados", ref: "D-07", factor: (ctx) => ev(ctx.params)["X-04"].dedicatedMult, when: (ctx) => ctx.state.dec.dedicated.fresh || ctx.state.dec.dedicated.chilled },
+      { label: "cross-dock sin amortiguador", ref: "R-06", factor: (ctx) => ev(ctx.params)["X-04"].crossdockMult, when: (ctx) => usesDc(ctx) && activeDcs(ctx.state, ctx.state.epoch).every((d) => d.type !== "stocking") },
+      { label: "proveedores dedicados", ref: "E-08", factor: (ctx) => ev(ctx.params)["X-04"].dedicatedMult, when: (ctx) => ctx.state.dec.dedicated.fresh || ctx.state.dec.dedicated.chilled },
       { label: "CPFR", ref: "D-33", factor: (ctx) => ev(ctx.params)["X-04"].cpfrMult, when: (ctx) => ctx.state.dec.collaboration === "cpfr" },
     ],
     duration: (sev) => 2 + Math.round(2 * sev),
@@ -172,7 +172,7 @@ export const events: Ev[] = [
     pBase: (ctx) => ev(ctx.params)["X-09"].pBase,
     modifiers: [
       { label: "muchos proveedores pequeños", ref: "E-08", factor: (ctx) => ev(ctx.params)["X-09"].manySuppliersMult, when: (ctx) => totalSuppliers(ctx) > 40 },
-      { label: "proveedores dedicados con control", ref: "D-07", factor: (ctx) => ev(ctx.params)["X-09"].dedicatedMult, when: (ctx) => ctx.state.dec.dedicated.fresh },
+      { label: "proveedores dedicados con control", ref: "E-08", factor: (ctx) => ev(ctx.params)["X-09"].dedicatedMult, when: (ctx) => ctx.state.dec.dedicated.fresh },
     ],
     onStart: (ctx) => {
       ctx.state.memo["X-09.cat"] = ctx.stream("X-09", ctx.tick).next() < 0.5 ? "fresh" : "chilled";

@@ -71,7 +71,7 @@ export function ConfirmDialog<S, P>({ store, open, onClose, onConfirmed, describ
               {changes.map((c) => (
                 <tr key={c.id}>
                   <td>
-                    <Gloss text={c.label} /> <span class="muted mono small">{c.id}</span>
+                    <Gloss text={c.label} />
                   </td>
                   <td class="small">{c.from}</td>
                   <td class="small">

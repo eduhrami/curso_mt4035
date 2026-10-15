@@ -6,7 +6,7 @@ import { useState } from "preact/hooks";
 import { DataTable, fmt, fmtMoney, KpiCard, KpiExplanation, LineChart, ScatterChart, StackedBar, type ScatterGroup } from "@mt4035/ui-kit";
 import type { EpochReport, GameState } from "@mt4035/sim-core";
 import { params, scoreRun, type LmState, type Strategy } from "../src/index.ts";
-import { KPI_NAMES, kpiMetaFor, LABELS, OPTIONS, P95_OF, TERRITORY_TEXT } from "./labels.ts";
+import { CAUSE_NAMES, KPI_NAMES, kpiMetaFor, LABELS, OPTIONS, P95_OF, TERRITORY_TEXT } from "./labels.ts";
 import { professor, store, territoryOf } from "./game.ts";
 import { TerritoryMap } from "./TerritoryMap.tsx";
 
@@ -105,7 +105,7 @@ export function Dashboard({ state }: { state: GameState<LmState> }) {
         <DataTable caption={meta.name} columns={["Mes", meta.acronym]} rows={reports.map((r) => [r.label, fmt(r.kpis[kpi], meta.format)])} />
       </div>
 
-      <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} period="mes" unitPlural="días" />
+      <KpiExplanation report={last} kpi={kpi} kpiName={meta.acronym} period="mes" unitPlural="días" causeNames={CAUSE_NAMES} />
 
       <ProfitCard reports={reports} />
 
@@ -146,7 +146,7 @@ function DailyView({ report, view }: { report: EpochReport; view: string }) {
     return (
       <div class="card small">
         <h3>Días del mes</h3>
-        <p class="muted">Tu reporte es el promedio mensual. Cambia D-61 a «Serie diaria» o «p95» para ver los días críticos (por ejemplo, picos y quincenas).</p>
+        <p class="muted">Tu reporte es el promedio mensual. Cambia el «Nivel de agregación del reporte» a «Serie diaria» o «p95» para ver los días críticos (por ejemplo, picos y quincenas).</p>
       </div>
     );
   }
@@ -196,7 +196,7 @@ function ForecastCard({ reports, labels }: { reports: EpochReport[]; labels: str
     <div class="card stack">
       <h2>Pronóstico contra demanda</h2>
       <p class="small muted">
-        Pedidos por día (promedio de cada mes) del mercado contra tu pronóstico (F-01). En lo que va de A{year + 1}: WAPE {fmt(wape, "pct1")} · sesgo {bias >= 0 ? "+" : ""}
+        Pedidos por día (promedio de cada mes) del mercado contra tu pronóstico. En lo que va de A{year + 1}: WAPE {fmt(wape, "pct1")} · sesgo {bias >= 0 ? "+" : ""}
         {fmt(bias, "pct1")} · días sobre tu p95 {fmt(exceed, "pct1")} (ideal 5%). Lo usarás para re-pronosticar en enero.
       </p>
       <LineChart

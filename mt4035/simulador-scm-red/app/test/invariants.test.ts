@@ -58,7 +58,7 @@ describe("SCM-INV (P1)", () => {
             expect(Math.abs(m.invIni! + m.received! - (m.sold! + m.waste! + m.excursion! + m.invFin!))).toBeLessThan(tol + 1e-6);
             expect(m.demand!).toBeCloseTo(m.sold! + m.subst! + m.lost!, 6);
             expect(m.lost!).toBeCloseTo(params.inventory.unmetLostShare * (m.demand! - m.sold!), 6);
-            expect(m.ebitda!).toBeCloseTo(m.gm! - m.wasteCost! - m.transport! - m.handling! - m.dcFixed! - m.receivingCost! - m.carrying! - m.itOpex!, 4);
+            expect(m.ebitda!).toBeCloseTo(m.gm! - m.wasteCost! - m.transport! - m.inbound! - m.handling! - m.dcFixed! - m.receivingCost! - m.carrying! - m.itOpex!, 4);
           }
           for (const c of CATEGORIES) expect(s.model.inventory[c].every((x) => x >= 0)).toBe(true);
         }

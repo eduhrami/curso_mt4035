@@ -15,7 +15,7 @@ export function aggregate(ctx: EpochContext<ScmState, Params>): Record<string, n
   const revenue = tot("revenue");
   const cogs = tot("cogs");
   const gm = tot("gm");
-  const cts = tot("transport") + tot("handling") + tot("dcFixed") + tot("receivingCost") + tot("carrying");
+  const cts = tot("transport") + tot("inbound") + tot("handling") + tot("dcFixed") + tot("receivingCost") + tot("carrying");
   const avgInv = avg("invValue") + avg("dcInvValue");
   const annual = 52 / Math.max(weeks, 1);
   const itr = ratio(cogs * annual, avgInv);
@@ -63,6 +63,7 @@ export function aggregate(ctx: EpochContext<ScmState, Params>): Record<string, n
     WASTE_COST: tot("wasteCost"),
     OVERSTOCK_COST: tot("overstock"),
     TRANSPORT_COST: tot("transport"),
+    INBOUND_COST: tot("inbound"),
     HANDLING_COST: tot("handling"),
     DC_FIXED_COST: tot("dcFixed"),
     RECEIVING_COST: tot("receivingCost"),

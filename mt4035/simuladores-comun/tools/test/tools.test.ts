@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { makeTasks, parseArgs, parseSeeds, Results, type RunRecord } from "../src/index.ts";
+import { makeTasks, parseArgs, parseSeeds, Results, runTask, searchOptima, WorkerPool, type RunRecord } from "../src/index.ts";
+import toy from "./fixtures/toy-adapter.ts";
 
 const rec = (bot: string, seed: number, score: number): RunRecord => ({
   bot, scenario: "x", seed, ok: true, problems: [], scores: { s: score }, kpiMeans: {}, series: {}, coverage: 1, changes: 0, unexplained: [], ms: 1,
@@ -22,5 +23,18 @@ describe("sim-tools", () => {
     expect(Results.rank({ A: 1, B: 2, C: 2 }, "B")).toBe(1.5);
     expect(r.shareOfSeeds("x", ["A", "B"], (s) => s("B").scores.s! > s("A").scores.s!)).toBe(0.5);
     expect(r.pairedDiff("B", "A", "x", "s")).toEqual([10, -10]);
+  });
+
+  it("el buscador optimiza searchScore cuando el adaptador lo define; las propiedades siguen con score", async () => {
+    const rec = runTask(toy, toy.createEngine(), { bot: "H", scenario: "x", seed: 1, args: { freq: 2 } });
+    expect(rec.scores.s).toBeLessThan(0);
+    expect(rec.searchScores!.s).toBeCloseTo(-rec.scores.s!, 12);
+    const pool = await WorkerPool.open(new URL("./fixtures/toy-adapter.ts", import.meta.url).href, 0);
+    try {
+      const [out] = await searchOptima(toy, pool, { scenarios: ["x"], seeds: [1, 2], random: 3, rounds: 2 });
+      expect(out!.score).toBeGreaterThan(0); // maximizó +OSA, no −OSA
+    } finally {
+      await pool.close();
+    }
   });
 });

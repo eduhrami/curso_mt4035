@@ -72,7 +72,7 @@ test("abrir una dark store pide confirmar lo irreversible y queda como proyecto 
   await page.getByRole("slider", { name: /Dark stores/ }).fill("1");
   await page.getByTestId("review").click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog.getByText("D-04")).toBeVisible();
+  await expect(dialog.getByText(/Dark stores/).first()).toBeVisible();
   await expect(dialog.getByText("A1-M04")).toBeVisible();
   await expect(page.getByTestId("confirm-run")).toBeDisabled();
   await dialog.getByRole("checkbox").check();
@@ -188,4 +188,14 @@ test("el pronóstico es obligatorio en enero de cada año y los datos de demanda
   expect(readFileSync((await dl2.path())!, "utf8").trim().split("\n")).toHaveLength(1 + 730 + 365);
   await captureForecast(page);
   await expect(page.getByText("Pronóstico contra demanda")).toBeVisible();
+});
+
+test("«¿Cómo impacta?» explica cada decisión y la interfaz no muestra códigos internos", async ({ page }) => {
+  await begin(page, "Megalópolis Centro");
+  await page.getByRole("tab", { name: "Red", exact: true }).click();
+  const d04 = page.locator('[data-decision="D-04"]');
+  await expect(d04.getByText("Mueve:")).toHaveCount(0);
+  await d04.getByRole("button", { name: /¿Cómo impacta/ }).hover();
+  await expect(d04.getByRole("tooltip")).toContainText("dark store");
+  expect(await page.locator("body").innerText()).not.toMatch(/\b(AD|DB|EM|D|R|X|E|K|F)-\d{2}\b/);
 });

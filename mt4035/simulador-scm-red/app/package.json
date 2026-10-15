@@ -16,6 +16,7 @@
     "autoplay": "tsx autoplay/cli.ts autoplay",
     "replay": "tsx autoplay/cli.ts replay",
     "forecast-impact": "tsx autoplay/forecast-impact.ts",
+    "network-optima": "tsx autoplay/network-optima.ts",
     "aggregate": "tsx autoplay/cli.ts aggregate",
     "perf": "tsx scripts/perf.ts",
     "dev": "vite",

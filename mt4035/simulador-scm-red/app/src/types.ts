@@ -21,6 +21,16 @@ export type Level = "low" | "mid" | "high";
 export type Policy = "rop" | "periodic" | "tanpin";
 export type Maintenance = "corrective" | "preventive" | "predictive";
 export type Fleet = "own" | "dedicated" | "spot";
+
+/** Planta de proveedores ubicada en el mapa de la región (E-08): dato del escenario. */
+export interface SupplierSite {
+  id: string;
+  zone: number;
+  label: string;
+  categories: Category[];
+  /** Proveedor dedicado (co-invierte con Hoshi Mart): lead time ×dedicatedLtMult. */
+  dedicated: boolean;
+}
 export type OpeningStrategy = "dominance" | "dispersed" | "mixed";
 
 export type MarketProfile = {
@@ -90,7 +100,6 @@ export interface Zone {
 export interface Decisions {
   strategy: Strategy;
   openingStrategy: OpeningStrategy;
-  openingRate: number;
   dedicated: { fresh: boolean; chilled: boolean };
   flows: PerCat<Flow>;
   freq: PerCat<number>;
@@ -145,6 +154,8 @@ export interface ScmState {
   infoSince: number;
   /** Lotes de apertura pendientes (D-08): tiendas y época en que abren. */
   pendingOpenings: { stores: number; epoch: number }[];
+  /** Cierres manuales de tiendas por zona que vencen en la época indicada. */
+  pendingClosures: { zone: number; stores: number; epoch: number }[];
   inventory: PerCat<number[]>;
   /** Merma de la semana anterior por categoría y zona (para R-02). */
   lastWaste: PerCat<number[]>;

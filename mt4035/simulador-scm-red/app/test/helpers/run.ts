@@ -7,12 +7,15 @@ import { truthForecast } from "../../src/forecast.ts";
 
 export const engine = createScmEngine();
 
-/** Configuración determinista (eventos apagados, ruido 0) salvo que se indique otra cosa. */
+/**
+ * Configuración determinista (eventos apagados, ruido 0) salvo que se indique otra cosa. Las pruebas de mecanismos
+ * corren sin tope de inversión anual (budget: "off"); LAG-10 prueba el tope.
+ */
 export const det = (region: RegionId, o: ScmConfigOptions = {}): GameConfig =>
-  scmConfig({ region, ...o, test: { events: "off", noise: 0, ...(o.test ?? {}) } }) as GameConfig;
+  scmConfig({ region, ...o, test: { events: "off", noise: 0, budget: "off", ...(o.test ?? {}) } }) as GameConfig;
 
 export const sto = (region: RegionId, seed: number, o: ScmConfigOptions = {}): GameConfig =>
-  scmConfig({ region, seed, ...o, test: { events: "on", noise: 1, ...(o.test ?? {}) } }) as GameConfig;
+  scmConfig({ region, seed, ...o, test: { events: "on", noise: 1, budget: "off", ...(o.test ?? {}) } }) as GameConfig;
 
 export function paramsWith(mutate: (p: Params) => void): Params {
   const p = structuredClone(baseParams);
@@ -82,7 +85,6 @@ export function randomPolicy(seed: number, eng = engine) {
       { "D-25": pick(["fifo", "discount"]) },
       { "D-34": pick(["low", "mid", "high"]) },
       { "D-05": pick(["dominance", "dispersed", "mixed"]) },
-      { "D-06": st.uniform(-0.1, 0.15) },
       { "D-08": st.int(0, 60) },
       { "D-30": pick(["basic", "pos_daily", "pos_terminal"]) },
       { "D-33": pick(["arms", "vmi", "cpfr"]) },

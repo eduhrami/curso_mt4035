@@ -141,6 +141,14 @@ export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engin
       const msg = specs.get(id)!.validate?.(value, view, params) ?? null;
       if (msg) errors.push({ id, message: msg });
     }
+    if (model.validateTurn && errors.length === 0) {
+      const costs = Object.entries(parsed).flatMap(([id, value]) => {
+        const spec = specs.get(id)!;
+        if (spec.costs) return spec.costs(value, state.model, params).map((c) => ({ id, kind: c.kind, amount: c.amount }));
+        return [{ id, kind: spec.costKind ?? ("capex" as const), amount: spec.cost?.(value, state.model, params) ?? 0 }];
+      });
+      errors.push(...model.validateTurn(state, costs.filter((c) => c.amount !== 0), params));
+    }
     return { ok: errors.length === 0, errors };
   }
 
@@ -220,8 +228,12 @@ export function createEngine<S, P>(model: ModelDef<S, P, any>, params: P): Engin
     for (const spec of model.decisions) {
       if (!Object.prototype.hasOwnProperty.call(sealed, spec.id)) continue;
       const value = sealed[spec.id];
-      const cost = spec.cost?.(value, state.model, params) ?? 0;
-      if (cost !== 0) epochCtx0.charge(spec.costKind ?? "capex", cost, spec.id);
+      if (spec.costs) {
+        for (const c of spec.costs(value, state.model, params)) if (c.amount !== 0) epochCtx0.charge(c.kind, c.amount, spec.id, c.note);
+      } else {
+        const cost = spec.cost?.(value, state.model, params) ?? 0;
+        if (cost !== 0) epochCtx0.charge(spec.costKind ?? "capex", cost, spec.id);
+      }
       const lag = Math.max(0, Math.floor(spec.lag?.(value, state.model, params) ?? 0));
       epochCtx0.log({ kind: "decision", id: spec.id, kpis: spec.kpis ?? [], drivers: [{ label: spec.label, value: JSON.stringify(value), ref: spec.id }], note: lag ? `surte efecto en ${model.calendar.label(e + lag)}` : undefined });
       // Una decisión nueva sustituye a un proyecto pendiente de la misma decisión.

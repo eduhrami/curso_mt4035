@@ -3,6 +3,7 @@ import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-cor
 import type { Policy } from "@mt4035/sim-core/testing";
 import type { Bot } from "@mt4035/sim-tools";
 import { truthForecast } from "../src/forecast.ts";
+import { withBudget } from "./budget.ts";
 import { createScmEngine, params, scmConfig } from "../src/model.ts";
 import type { DcSpec, RegionId, ScmState } from "../src/types.ts";
 
@@ -29,11 +30,11 @@ export function naiveTransplant(dcCount = 2): Policy<ScmState> {
   };
 }
 
-/** BOT-C en Red River: CD regionales con inventario, frescos por DSD, información y consolidación. */
+/** BOT-C en Red River: CD regionales chicos con inventario (caben en el tope de inversión en dos años), frescos por DSD, información y consolidación. */
 export function adaptedDispersed(): Policy<ScmState> {
   return (_s, e) => {
     if (e === 0) {
-      const dcs: DcSpec[] = [7, 10, 25, 28].map((zone, i) => ({ id: `A-${i + 1}`, zone, type: "stocking", size: "medium" }));
+      const dcs: DcSpec[] = [7, 10, 25, 28].map((zone, i) => ({ id: `A-${i + 1}`, zone, type: "stocking", size: "small" }));
       return { "D-01": dcs, "D-30": "pos_daily", "D-31": "weekly", "D-32": "seasonal", "D-23": "scan" };
     }
     if (e === 3) {
@@ -63,9 +64,12 @@ export function adaptedValle(): Policy<ScmState> {
   };
 }
 
-/** BOT-C en Kaigan: el modelo SEJ ya está alineado; solo profundiza la colaboración y el mantenimiento. */
+/** BOT-C en Kaigan: amplía la red saturada con CD combinados (uno por año por el tope) y profundiza la colaboración. */
 export function adaptedKaigan(): Policy<ScmState> {
-  return (_s, e) => (e === 0 ? { "D-33": "cpfr", "D-16": "predictive" } : {});
+  return (s, e) =>
+    e === 0
+      ? { "D-01": [...planned(s), ...[20, 8].map((zone, i): DcSpec => ({ id: `K-${i + 1}`, zone, type: "combined", size: "medium" }))], "D-33": "cpfr", "D-16": "predictive" }
+      : {};
 }
 
 /** BOT-D · Maximalista: todo al máximo. */
@@ -89,7 +93,6 @@ export function maximalist(): Policy<ScmState> {
       "D-32": "causal",
       "D-33": "cpfr",
       "D-34": "high",
-      "D-07": { fresh: true, chilled: true },
       "D-14": { type: "multi", telemetry: true },
       "D-16": "predictive",
       "D-23": "scan",
@@ -123,7 +126,6 @@ export function minimalist(): Policy<ScmState> {
       "D-23": "manual",
       "D-15": "peak",
       "D-14": { type: "mono", telemetry: false },
-      "D-07": { fresh: false, chilled: false },
     };
   };
 }
@@ -148,7 +150,6 @@ export function randomPolicy(seed: number): Policy<ScmState> {
       { "D-25": pick(["fifo", "discount"]) },
       { "D-34": pick(["low", "mid", "high"]) },
       { "D-05": pick(["dominance", "dispersed", "mixed"]) },
-      { "D-06": st.uniform(-0.1, 0.15) },
       { "D-08": st.int(0, 60) },
       { "D-30": pick(["basic", "pos_daily", "pos_terminal"]) },
       { "D-33": pick(["arms", "vmi", "cpfr"]) },
@@ -226,6 +227,8 @@ export const searchSpace = {
   chilledFreq: [3, 7, 14, 21],
   ambientFreq: [1, 2, 3, 7],
   frozenFreq: [1, 2, 3, 7],
+  // CSL de frescos aparte: en perecederos, más stock de seguridad que la vida de anaquel aguanta se vuelve merma (R-02).
+  cslFresh: [0.85, 0.9, 0.93, 0.95, 0.97, 0.99],
   csl: [0.85, 0.9, 0.93, 0.95, 0.97, 0.99],
   info: ["basic", "pos_daily", "pos_terminal"],
   sharing: ["no", "weekly", "daily"],
@@ -239,7 +242,6 @@ export const searchSpace = {
   telemetry: [false, true],
   dcSafetyDays: [0, 1, 2, 4],
   policy: ["rop", "periodic", "tanpin"],
-  dedicatedFresh: [false, true],
 } as const;
 
 type Vec = { -readonly [K in keyof typeof searchSpace]: (typeof searchSpace)[K][number] };
@@ -292,7 +294,7 @@ export function vectorPolicy(v: Vec): Policy<ScmState> {
       "D-01": dcs,
       "D-10": { fresh: flow(v.flowFresh), chilled: flow(v.flowChilled), ambient: flow(v.flowAmbient), frozen: flow(v.flowFrozen) },
       "D-11": { fresh: v.freshFreq, chilled: v.chilledFreq, ambient: v.ambientFreq, frozen: v.frozenFreq },
-      "D-21": csl(v.csl),
+      "D-21": { fresh: v.cslFresh, chilled: v.csl, ambient: v.csl, frozen: v.csl },
       "D-30": v.info,
       "D-31": sharing,
       "D-32": v.forecast,
@@ -304,7 +306,6 @@ export function vectorPolicy(v: Vec): Policy<ScmState> {
       "D-14": { type: v.multiTemp ? "multi" : "mono", telemetry: v.telemetry },
       "D-24": dcs.some((d) => d.type === "stocking") ? v.dcSafetyDays : 0,
       "D-20": v.policy === "tanpin" && v.info !== "pos_terminal" ? "periodic" : v.policy,
-      "D-07": { fresh: v.dedicatedFresh, chilled: (engine.effectiveValue(s, "D-07") as { chilled: boolean }).chilled },
     };
   };
 }
@@ -325,7 +326,8 @@ export function baselineVector(scenario: string): Vec {
     chilledFreq: nearest(searchSpace.chilledFreq, d.freq.chilled),
     ambientFreq: nearest(searchSpace.ambientFreq, d.freq.ambient),
     frozenFreq: nearest(searchSpace.frozenFreq, d.freq.frozen),
-    csl: nearest(searchSpace.csl, (d.csl.fresh + d.csl.chilled + d.csl.ambient + d.csl.frozen) / 4),
+    cslFresh: nearest(searchSpace.cslFresh, d.csl.fresh),
+    csl: nearest(searchSpace.csl, (d.csl.chilled + d.csl.ambient + d.csl.frozen) / 3),
     info: d.info,
     sharing: d.sharing,
     forecast: d.forecast,
@@ -338,7 +340,6 @@ export function baselineVector(scenario: string): Vec {
     telemetry: d.vehicle.telemetry,
     dcSafetyDays: nearest(searchSpace.dcSafetyDays, d.dcSafetyDays),
     policy: d.policy,
-    dedicatedFresh: d.dedicated.fresh,
   };
 }
 
@@ -346,10 +347,17 @@ bots.push({ id: "H", label: "Buscador", purpose: "Óptimos por región × estrat
 
 /** Los bots de referencia pronostican bien (F-01 = proceso verdadero cada T1): la operación se calibra aparte del pronóstico. */
 const withForecast =
-  (pol: Policy<ScmState>): Policy<ScmState> =>
-  (s, e) => ({ ...(e % 4 === 0 ? { "F-01": truthForecast(s.model, params, e / 4) } : {}), ...pol(s, e) });
+  (pol: Policy<ScmState>, k = 1): Policy<ScmState> =>
+  (s, e) => ({ ...(e % 4 === 0 ? { "F-01": scaledForecast(truthForecast(s.model, params, e / 4), k) } : {}), ...pol(s, e) });
+const scaledForecast = <F extends { level: number; p95: number }>(f: F, k: number): F => (k === 1 ? f : { ...f, level: f.level * k, p95: f.p95 * k });
+/**
+ * Error de pronóstico del buscador (BOT-H): ±10% según la paridad de la semilla, como un equipo típico. Con pronóstico
+ * perfecto el POS (D-30) no tiene qué corregir y nunca se pagaría; con error, el POS diario amortigua el error (AD-40).
+ */
+export const searchForecastError = (seed: number) => (seed % 2 ? 1.1 : 0.9);
 for (const b of bots) {
   const inner = b.policy;
-  b.policy = (seed, scn, args) => withForecast(inner(seed, scn, args));
+  // Todos los bots respetan el tope de inversión anual (AD-43): lo que no cabe se difiere al año siguiente.
+  b.policy = (seed, scn, args) => withForecast(withBudget(inner(seed, scn, args)), b.id === "H" ? searchForecastError(seed) : 1);
 }
 bots.push({ id: "L", label: "Estático sin pronosticar", purpose: "Con el pronóstico nominal pierde contra BOT-A, que pronostica bien (AUT-15)", policy: () => noop });

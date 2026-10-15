@@ -45,6 +45,20 @@ export function serviceGuardrails(strategy: Strategy, p: Params, region?: Region
 /** Utilidad acumulada (USD, §7.5): Σ (EBITDA logístico − capex y cargos). Puntaje definitivo. */
 export const profitOf = (history: readonly EpochReport[]) => history.reduce((a, h) => a + (h.kpis.PROFIT ?? 0), 0);
 
+/**
+ * Utilidad acumulada que habría obtenido la misma corrida con otra propuesta de valor declarada: la estrategia
+ * solo entra a la utilidad por las penalizaciones de servicio, así que se recalculan con sus guardrails.
+ * Lo usa el bot buscador para evaluar las tres propuestas con una sola corrida.
+ */
+export function profitFor(history: readonly EpochReport[], strategy: Strategy, p: Params, region?: RegionId): number {
+  const gs = serviceGuardrails(strategy, p, region);
+  return history.reduce((a, h) => {
+    const k = h.kpis;
+    const broken = gs.filter((g) => !(g.op === ">=" ? (k[g.kpi] ?? 1) >= g.value : (k[g.kpi] ?? 0) <= g.value)).length;
+    return a + (k.PROFIT ?? 0) + (k.SERVICE_PENALTY ?? 0) - broken * p.money.servicePenaltyShare * (k.SALES ?? 0);
+  }, 0);
+}
+
 export interface ScmScore extends ScoreResult {
   /** Utilidad acumulada (USD): puntaje definitivo de la partida. */
   profit: number;

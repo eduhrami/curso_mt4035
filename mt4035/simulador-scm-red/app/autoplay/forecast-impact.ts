@@ -9,6 +9,8 @@ import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-cor
 import { parseArgs } from "@mt4035/sim-tools";
 import { createScmEngine, EPOCHS, params, profitOf, scmConfig, truthForecast, type RegionId, type ScmState } from "../src/index.ts";
 import { bots, canonicalVector, searchSpace, vectorPolicy } from "./bots.ts";
+import { withBudget } from "./budget.ts";
+import { REPORTS_DIR } from "./reports-dir.ts";
 
 type Pol = (s: GameState<ScmState>, e: number) => DecisionChanges;
 const a = parseArgs(process.argv.slice(2));
@@ -48,7 +50,7 @@ for (const region of ["kaigan", "redriver", "valle"] as RegionId[]) {
   const cands: { name: string; pol: (seed: number) => Pol }[] = REFERENCE.map((id) => ({ name: `BOT-${id}`, pol: (seed: number) => bots.find((b) => b.id === id)!.policy(seed, region) as Pol }));
   for (let i = 0; i < CANDIDATES; i++) {
     const v = canonicalVector(Object.fromEntries(Object.entries(searchSpace).map(([key, opts]) => [key, (opts as readonly unknown[])[Math.floor(rng.next() * (opts as readonly unknown[]).length)]])) as never, region);
-    cands.push({ name: `vector ${i}`, pol: () => vectorPolicy(v) as Pol });
+    cands.push({ name: `vector ${i}`, pol: () => withBudget(vectorPolicy(v)) as Pol });
   }
   let best = cands[0]!;
   let bestP = -Infinity;
@@ -76,7 +78,7 @@ Utilidad acumulada de 3 años en millones de USD. «Pérdida −20% / +20%»: cu
 |---|---|---|---|---|---|---|---|
 ${rows.join("\n")}
 
-**Peso medio del pronóstico: ${((shares.reduce((x, y) => x + y, 0) / shares.length) * 100).toFixed(0)}%.** No se fuerza por región: donde la operación ya es buena (Kaigan) el pronóstico es la palanca que queda; donde la operación tiene mucho por mejorar (Red River) pesa menos.
+**Peso medio del pronóstico: ${((shares.reduce((x, y) => x + y, 0) / shares.length) * 100).toFixed(0)}%.** No se fuerza por región: donde la operación tiene mucho por mejorar, el diseño de la red pesa más; donde la operación ya es buena, el pronóstico es la palanca que queda.
 `;
-writeFileSync(new URL("./reports/forecast-impact.md", import.meta.url), md);
+writeFileSync(`${REPORTS_DIR}/forecast-impact.md`, md);
 process.stdout.write(md);

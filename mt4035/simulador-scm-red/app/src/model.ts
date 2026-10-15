@@ -1,5 +1,5 @@
 /** Ensamblado del modelo SCM como ModelDef de sim-core. */
-import { createEngine, quarterLabel, type EpochContext, type GameConfig, type ModelDef } from "@mt4035/sim-core";
+import { createEngine, quarterLabel, type EpochContext, type GameConfig, type GameState, type ModelDef } from "@mt4035/sim-core";
 import paramsJson from "../params/params.v1.json" with { type: "json" };
 import { decisions } from "./decisions.ts";
 import { events } from "./events.ts";
@@ -7,10 +7,10 @@ import { aggregate } from "./kpis.ts";
 import { rules } from "./rules.ts";
 import { allocate, initialState } from "./scenario.ts";
 import { scmTick } from "./tick.ts";
-import { DEFAULT_MARKET, type Params, type Scenario, type ScmState } from "./types.ts";
+import { DEFAULT_MARKET, type Params, type RegionId, type Scenario, type ScmState } from "./types.ts";
 
 export const SIM_ID = "mt4035-scm";
-export const SIM_VERSION = "0.3.0";
+export const SIM_VERSION = "0.4.0";
 export const params: Params = paramsJson;
 export const PARAMS_VERSION = params.version;
 /** Horizonte de la partida: 3 años × 4 trimestres (AD-37, igual que última milla). */
@@ -35,15 +35,22 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
   if (maturity !== s.infoMaturity) ctx.log({ kind: "trend", id: "D-30", kpis: ["OSA", "ITR", "WASTE", "LOST_SALES", "SALES", "EBITDA_PCT"], drivers: [{ label: "madurez del sistema de información", value: maturity, ref: "D-30" }] });
   s.infoMaturity = maturity;
 
-  // Tiendas: ritmo anual (D-06) + lotes (D-08) que vencen esta época.
-  const total = s.zones.reduce((a, z) => a + z.stores, 0);
-  const byRate = Math.round((total * s.dec.openingRate) / 4);
+  // Tiendas: cierres manuales por zona (D-09) que vencen esta época.
+  const closing = s.pendingClosures.filter((c) => c.epoch <= e);
+  s.pendingClosures = s.pendingClosures.filter((c) => c.epoch > e);
+  for (const c of closing) {
+    const z = s.zones[c.zone]!;
+    const n = Math.min(c.stores, z.stores);
+    z.stores -= n;
+    ctx.log({ kind: "trend", id: "D-09", kpis: ["SALES", "DEMAND", "STORES", "CTS_STORE", "CTS_PCT", "EBITDA_PCT", "TRUCKS", "ITR"], drivers: [{ label: `tiendas cerradas en la zona ${c.zone}`, value: n }] });
+  }
+
+  // Tiendas: lotes de apertura (D-08) que vencen esta época, ubicados según la estrategia de apertura (D-05).
   const lots = s.pendingOpenings.filter((o) => o.epoch <= e).reduce((a, o) => a + o.stores, 0);
   s.pendingOpenings = s.pendingOpenings.filter((o) => o.epoch > e);
-  const delta = byRate + lots;
-  if (delta !== 0) {
+  const delta = lots;
+  if (delta > 0) {
     const weights = s.zones.map((z) => {
-      if (delta < 0) return z.stores;
       switch (s.dec.openingStrategy) {
         case "dominance":
           return z.stores > 0 ? z.stores ** 1.5 : 0;
@@ -53,13 +60,11 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
           return z.stores + 1;
       }
     });
-    const alloc = allocate(Math.abs(delta), weights.every((w) => w === 0) ? s.zones.map(() => 1) : weights);
+    const alloc = allocate(delta, weights.every((w) => w === 0) ? s.zones.map(() => 1) : weights);
     s.zones.forEach((z, i) => {
-      z.stores = Math.max(0, z.stores + Math.sign(delta) * alloc[i]!);
+      z.stores += alloc[i]!;
     });
-    if (byRate > 0) ctx.charge("capex", byRate * p.stores.capex * r.storeCapexMult, "D-06", "aperturas por ritmo anual");
-    if (byRate < 0) ctx.charge("opex", -byRate * p.stores.closureCost, "D-06", "cierres por ritmo anual");
-    ctx.log({ kind: "trend", id: delta === lots ? "D-08" : "D-06", kpis: ["SALES", "DEMAND", "STORES", "CTS_STORE", "CTS_PCT", "EBITDA_PCT", "TRUCKS", "ITR"], drivers: [{ label: "tiendas abiertas/cerradas", value: delta }] });
+    ctx.log({ kind: "trend", id: "D-08", kpis: ["SALES", "DEMAND", "STORES", "CTS_STORE", "CTS_PCT", "EBITDA_PCT", "TRUCKS", "ITR"], drivers: [{ label: "tiendas abiertas", value: delta }] });
   }
 
   // Dispersión (D-05): solo cambia con aperturas; las tiendas nuevas se ubican según la estrategia.
@@ -98,6 +103,16 @@ export const scmModel: ModelDef<ScmState, Params, Scenario> = {
   rules,
   events,
   aggregate,
+  validateTurn: (state, costs, p) => {
+    const b = capexBudget(state, p);
+    // Todas las decisiones con costo consumen el tope: inversión e indemnizaciones por cierre.
+    const capex = costs.filter((c) => c.amount > 0);
+    const total = capex.reduce((a, c) => a + c.amount, 0);
+    if (!b || total <= b.remaining + 1e-6) return [];
+    const usd = (x: number) => `US$ ${(x / 1e6).toFixed(1)} M`;
+    const message = `Tope de inversión de A${b.year + 1}: te quedan ${usd(Math.max(0, b.remaining))} de ${usd(b.budget)} y este trimestre suma ${usd(total)}. Prioriza o difiere alguna inversión al año siguiente.`;
+    return capex.map((c) => ({ id: c.id, message }));
+  },
   onEpochEnd: (ctx, kpis) => {
     ctx.state.epoch = ctx.epoch + 1;
     ctx.state.lastEpochOsa = kpis.OSA ?? 1;
@@ -105,6 +120,19 @@ export const scmModel: ModelDef<ScmState, Params, Scenario> = {
 };
 
 export const createScmEngine = (p: Params = params) => createEngine(scmModel, p);
+
+/** Presupuesto de inversión del año en curso (AD-43): tope, lo ya gastado en decisiones (inversión e indemnizaciones por cierre) y lo que queda. */
+export function capexBudget(state: GameState<ScmState>, p: Params = params): { budget: number; spent: number; remaining: number; year: number } | null {
+  const budget = p.money.capexBudgetPerYear[state.model.region as RegionId] ?? 0;
+  if (!budget || state.config.test?.budget === "off") return null;
+  const year = Math.floor(state.epoch / 4);
+  const spent = state.history
+    .filter((h) => Math.floor(h.epoch / 4) === year)
+    .flatMap((h) => h.ledger)
+    .filter((l) => l.source.startsWith("D-"))
+    .reduce((a, l) => a + l.amount, 0);
+  return { budget, spent, remaining: budget - spent, year };
+}
 
 export interface ScmConfigOptions {
   seed?: number;

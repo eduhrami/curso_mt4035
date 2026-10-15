@@ -105,7 +105,7 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
           Además de la utilidad, el simulador calcula un índice 0–100 que compara tu operación con la estrategia que declaraste y califica tu pronóstico: <strong>{result.score.toFixed(1)}</strong> = {Math.round((1 - FC_W) * 100)}% × operación <strong>{result.operational.toFixed(1)}</strong> + {Math.round(FC_W * 100)}% × pronóstico{" "}
           <strong>{result.forecast.toFixed(1)}</strong>
         </p>
-        <h3>Pronóstico (F-01)</h3>
+        <h3>Pronóstico</h3>
         <p class="small muted">
           Cada año se califica con el pronóstico que capturaste en enero: 60% el patrón (WAPE por encima del error inevitable del ruido), 20% la variabilidad (CV) y 20% la cobertura del p95 (ideal: 5% de los días por
           encima).
@@ -154,7 +154,7 @@ export function FinalReport({ state }: { state: GameState<LmState> }) {
           ariaLabel="Demanda del mercado contra pronóstico por mes"
         />
         <h3>Operación</h3>
-        <p class="small muted">El puntaje de operación usa siempre los días críticos (p95), sin importar la vista que elegiste en D-61.</p>
+        <p class="small muted">El puntaje de operación usa siempre los días críticos (p95), sin importar la vista que elegiste en «Nivel de agregación del reporte».</p>
         <table>
           <thead>
             <tr>

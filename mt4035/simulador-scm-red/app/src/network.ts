@@ -1,5 +1,5 @@
 /** Geometría de la región, red de CD y rutas (especificación §6.3, "Geometría de la red"). */
-import type { DcSize, DcState, DcType, Params, ScmState, Zone } from "./types.ts";
+import type { Category, DcSize, DcState, DcType, Params, ScmState, SupplierSite, Zone } from "./types.ts";
 
 export const zoneSide = (p: Params, sideKm: number): number => sideKm / p.grid;
 
@@ -29,6 +29,28 @@ export function assignDc(zone: Zone, dcs: readonly ActiveDc[], zones: readonly Z
     const home = zones[d.dc.zone]!;
     const dist = p.circuity * Math.hypot(home.x - zone.x, home.y - zone.y) + 0.3 * zs;
     if (!best || dist < best.distKm) best = { dc: d, distKm: dist };
+  }
+  return best;
+}
+
+/** Proveedores dedicados por categoría según las plantas del escenario (E-08). */
+export function dedicatedFromSites(sites: readonly SupplierSite[]): { fresh: boolean; chilled: boolean } {
+  const ded = (c: Category) => sites.some((x) => x.dedicated && x.categories.includes(c));
+  return { fresh: ded("fresh"), chilled: ded("chilled") };
+}
+
+/**
+ * Distancia vial (km) de una zona a la planta más cercana que surte la categoría, o null si la categoría
+ * llega de proveedores externos a la región (su flete va en el precio y su lead time es el de la región).
+ */
+export function siteKm(zone: Zone, c: Category, sites: readonly SupplierSite[], zones: readonly Zone[], p: Params, sideKm: number): number | null {
+  let best: number | null = null;
+  const zs = zoneSide(p, sideKm);
+  for (const x of sites) {
+    if (!x.categories.includes(c)) continue;
+    const home = zones[x.zone]!;
+    const dist = p.circuity * Math.hypot(home.x - zone.x, home.y - zone.y) + 0.3 * zs;
+    if (best === null || dist < best) best = dist;
   }
   return best;
 }

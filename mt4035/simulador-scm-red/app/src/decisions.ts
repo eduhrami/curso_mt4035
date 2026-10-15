@@ -23,21 +23,31 @@ const SIZE_ORDER = { small: 0, medium: 1, large: 2 } as const;
 const storeCount = (s: ScmState) => s.zones.reduce((a, zn) => a + zn.stores, 0);
 
 /** Costo de pasar de la red vigente a la red planeada (construcción, conversión, ampliación, cierre). */
-export function networkCost(next: readonly DcSpec[], s: ScmState, p: Params): number {
+/**
+ * Costo de pasar a la red planeada, separado en inversión (CD nuevos, conversiones, ampliaciones: cuenta para el tope
+ * de inversión, AD-43) e indemnización por cierres (cargo, no inversión).
+ */
+export function networkCosts(next: readonly DcSpec[], s: ScmState, p: Params): { investment: number; closures: number } {
   const re = p.regions[s.region].realEstate;
-  let cost = 0;
+  let investment = 0;
+  let closures = 0;
   const cur = new Map(s.dcs.map((d) => [d.id, d]));
   for (const n of next) {
     const c = cur.get(n.id);
-    if (!c) cost += p.dc.capex[n.size] * p.dc.typeMult[n.type] * re;
+    if (!c) investment += p.dc.capex[n.size] * p.dc.typeMult[n.type] * re;
     else {
-      if (c.type !== n.type) cost += 0.3 * p.dc.capex[n.size] * re;
-      if (c.size !== n.size) cost += (p.dc.capex[n.size] - p.dc.capex[c.size]) * re;
+      if (c.type !== n.type) investment += 0.3 * p.dc.capex[n.size] * re;
+      if (c.size !== n.size) investment += (p.dc.capex[n.size] - p.dc.capex[c.size]) * re;
     }
   }
   const ids = new Set(next.map((n) => n.id));
-  for (const c of s.dcs) if (!ids.has(c.id)) cost += p.dc.closurePenaltyMult * p.dc.capex[c.size] * re;
-  return cost;
+  for (const c of s.dcs) if (!ids.has(c.id)) closures += p.dc.closurePenaltyMult * p.dc.capex[c.size] * re;
+  return { investment, closures };
+}
+
+export function networkCost(next: readonly DcSpec[], s: ScmState, p: Params): number {
+  const { investment, closures } = networkCosts(next, s, p);
+  return investment + closures;
 }
 
 /** Aplica la red planeada al estado con el retraso de cada CD (construir, convertir, ampliar o cerrar). */
@@ -95,11 +105,18 @@ export const decisions: Spec<any>[] = [
   },
   {
     id: "D-01",
-    label: "Red de CD (zona D-02, tipo D-03, tamaño D-04)",
+    label: "Red de CD (zona, tipo y tamaño de cada CD)",
     tab: "Red",
     schema: z.array(dcSchema).max(20),
     current: (s) => s.dcs.map(({ id, zone, type, size }) => ({ id, zone, type, size })),
     cost: (v, s, p) => networkCost(v, s, p),
+    costs: (v, s, p) => {
+      const { investment, closures } = networkCosts(v, s, p);
+      return [
+        { kind: "capex", amount: investment },
+        { kind: "penalty", amount: closures, note: "indemnización por cierre de CD" },
+      ];
+    },
     irreversible: true,
     validate: (v, view) => {
       const ids = new Set<string>();
@@ -111,7 +128,7 @@ export const decisions: Spec<any>[] = [
         const n = v.find((x) => x.id === prev.id);
         if (!n) continue;
         if (n.zone !== prev.zone) return `${prev.id}: no se puede mover un CD de zona (ciérralo y abre otro)`;
-        if (SIZE_ORDER[n.size] < SIZE_ORDER[prev.size]) return `${prev.id}: solo se permite ampliar la capacidad (D-04)`;
+        if (SIZE_ORDER[n.size] < SIZE_ORDER[prev.size]) return `${prev.id}: solo se permite ampliar la capacidad`;
       }
       return null;
     },
@@ -130,31 +147,6 @@ export const decisions: Spec<any>[] = [
     kpis: ["CTS_STORE", "SALES", "EBITDA_PCT"],
   },
   {
-    id: "D-06",
-    label: "Ritmo de apertura/cierre de tiendas (% anual)",
-    tab: "Red",
-    schema: z.number().min(-0.1).max(0.15),
-    current: (s) => s.dec.openingRate,
-    lag: (_v, _s, p) => p.stores.lagEpochs,
-    apply: (s, v) => {
-      s.dec.openingRate = v;
-    },
-    kpis: ["SALES", "CTS_STORE", "EBITDA_PCT"],
-  },
-  {
-    id: "D-07",
-    label: "Proveedores dedicados cerca de los CD",
-    tab: "Red",
-    schema: z.object({ fresh: z.boolean(), chilled: z.boolean() }),
-    current: (s) => ({ ...s.dec.dedicated }),
-    lag: () => 3,
-    cost: (v, s, p) => p.supplier.dedicatedCapex * ((v.fresh && !s.dec.dedicated.fresh ? 1 : 0) + (v.chilled && !s.dec.dedicated.chilled ? 1 : 0)),
-    apply: (s, v) => {
-      s.dec.dedicated = { ...v };
-    },
-    kpis: ["WASTE", "LT", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
-  },
-  {
     id: "D-08",
     label: "Lote de apertura de tiendas (abre la época siguiente)",
     tab: "Red",
@@ -167,13 +159,31 @@ export const decisions: Spec<any>[] = [
     kpis: ["SALES", "CTS_STORE", "EBITDA_PCT"],
   },
   {
+    id: "D-09",
+    label: "Cierre de tiendas (cierran la época siguiente)",
+    tab: "Red",
+    schema: z.object({ zone: z.number().int().min(0).max(35), stores: z.number().int().min(0).max(100) }),
+    current: () => ({ zone: 0, stores: 0 }),
+    validate: (v, view) => {
+      const pending = view.state.pendingClosures.filter((c) => c.zone === v.zone).reduce((a, c) => a + c.stores, 0);
+      const have = (view.state.zones[v.zone]?.stores ?? 0) - pending;
+      return v.stores > have ? `La zona ${v.zone} solo tiene ${have} tiendas por cerrar` : null;
+    },
+    cost: (v, _s, p) => v.stores * p.stores.closureCost,
+    costKind: "penalty",
+    apply: (s, v, p) => {
+      if (v.stores > 0) s.pendingClosures.push({ zone: v.zone, stores: v.stores, epoch: s.epoch + p.stores.lagEpochs });
+    },
+    kpis: ["SALES", "CTS_STORE", "EBITDA_PCT"],
+  },
+  {
     id: "D-10",
     label: "Flujo por categoría: por CD o entrega directa (DSD)",
     tab: "Flujo",
     schema: perCatSchema(() => z.enum(["dc", "dsd"])),
     current: (s) => ({ ...s.dec.flows }),
     validate: (v, view) =>
-      Object.values(v).includes("dc") && plannedDcs(view.effective("D-01")).length === 0 ? "El flujo por CD requiere al menos un CD en la red (D-01)" : null,
+      Object.values(v).includes("dc") && plannedDcs(view.effective("D-01")).length === 0 ? "El flujo por CD requiere al menos un CD en la red" : null,
     apply: (s, v) => {
       s.dec.flows = { ...v };
     },
@@ -202,7 +212,7 @@ export const decisions: Spec<any>[] = [
     schema: z.enum(["supplier", "combined"]),
     current: (s) => s.dec.consolidation,
     validate: (v, view) =>
-      v === "combined" && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "combined") ? "La consolidación combinada requiere un CD combinado por temperatura (D-03)" : null,
+      v === "combined" && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "combined") ? "La consolidación combinada requiere un CD combinado por temperatura" : null,
     apply: (s, v) => {
       s.dec.consolidation = v;
     },
@@ -258,7 +268,7 @@ export const decisions: Spec<any>[] = [
     tab: "Inventario",
     schema: z.enum(["rop", "periodic", "tanpin"]),
     current: (s) => s.dec.policy,
-    validate: (v, view) => (v === "tanpin" && view.effective("D-30") !== "pos_terminal" ? "Tanpin kanri requiere POS + terminal gráfica de pedido (D-30)" : null),
+    validate: (v, view) => (v === "tanpin" && view.effective("D-30") !== "pos_terminal" ? "Tanpin kanri requiere POS + terminal gráfica de pedido" : null),
     apply: (s, v) => {
       s.dec.policy = v;
     },
@@ -305,7 +315,7 @@ export const decisions: Spec<any>[] = [
     schema: z.number().min(0).max(7),
     current: (s) => s.dec.dcSafetyDays,
     validate: (v, view) =>
-      v > 0 && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "stocking") ? "El inventario en CD requiere un CD con inventario (D-03)" : null,
+      v > 0 && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "stocking") ? "El inventario en CD requiere un CD con inventario" : null,
     apply: (s, v) => {
       s.dec.dcSafetyDays = v;
     },
@@ -370,7 +380,7 @@ export const decisions: Spec<any>[] = [
     schema: z.enum(["arms", "vmi", "cpfr"]),
     current: (s) => s.dec.collaboration,
     lag: () => 2,
-    validate: (v, view) => (v !== "arms" && view.effective("D-31") === "no" ? "VMI y CPFR requieren compartir POS con proveedores (D-31)" : null),
+    validate: (v, view) => (v !== "arms" && view.effective("D-31") === "no" ? "VMI y CPFR requieren compartir POS con proveedores" : null),
     apply: (s, v) => {
       s.dec.collaboration = v;
     },

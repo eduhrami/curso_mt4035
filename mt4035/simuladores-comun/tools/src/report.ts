@@ -24,6 +24,8 @@ export interface CoherenceReport {
   coverage: { mean: number; min: number; worst: { kpi: string; count: number }[] };
   msPerRun: number;
   search: SearchOutcome[];
+  /** Objetivo del buscador (por defecto, el puntaje). */
+  searchLabel?: string;
 }
 
 export function evaluate(adapter: AutoplayAdapter, records: readonly RunRecord[], generatedAt: string, search: readonly SearchOutcome[] = []): CoherenceReport {
@@ -70,6 +72,7 @@ export function evaluate(adapter: AutoplayAdapter, records: readonly RunRecord[]
     },
     msPerRun: records.reduce((a, r) => a + r.ms, 0) / Math.max(records.length, 1),
     search: [...search],
+    ...(adapter.searchScoreLabel ? { searchLabel: adapter.searchScoreLabel } : {}),
   };
 }
 
@@ -117,7 +120,7 @@ export function toMarkdown(rep: CoherenceReport, failures: readonly RunRecord[] 
   );
   if (rep.search.length) {
     const keys = Object.keys(rep.search[0]!.best);
-    lines.push("## Óptimos del bot buscador", "", `| Escenario | Estrategia | Puntaje | En extremo | ${keys.join(" | ")} |`, `|---|---|---|---|${keys.map(() => "---|").join("")}`);
+    lines.push("## Óptimos del bot buscador", "", `| Escenario | Estrategia | ${rep.searchLabel ?? "Puntaje"} | En extremo | ${keys.join(" | ")} |`, `|---|---|---|---|${keys.map(() => "---|").join("")}`);
     for (const s of rep.search) lines.push(`| ${s.scenario} | ${s.strategy} | ${f1(s.score)} | ${s.atBounds.join(", ") || "—"} | ${keys.map((k) => String(s.best[k])).join(" | ")} |`);
     lines.push("");
   }

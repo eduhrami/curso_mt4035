@@ -12,15 +12,17 @@ export function runTask<S, P>(adapter: AutoplayAdapter<S, P>, engine: Engine<S, 
     const { reports } = playGame(engine, adapter.config(task.scenario, task.seed), bot.policy(task.seed, task.scenario, task.args));
     const problems = adapter.check(reports);
     const scores = Object.fromEntries(adapter.strategies.map((st) => [st, adapter.score(reports, st, task.scenario)]));
+    const searchScores = adapter.searchScore && task.bot === adapter.search?.bot ? Object.fromEntries(adapter.strategies.map((st) => [st, adapter.searchScore!(reports, st, task.scenario)])) : undefined;
     const keys = Object.keys(reports[0]?.kpis ?? {});
     const kpiMeans = Object.fromEntries(keys.map((k) => [k, reports.reduce((a, r) => a + (r.kpis[k] ?? NaN), 0) / reports.length]));
     const series = Object.fromEntries(adapter.trackKpis.map((k) => [k, reports.map((r) => r.kpis[k] ?? NaN)]));
     const cov = explainabilityCoverage(reports, adapter.coverage.threshold, adapter.coverage.kpis, adapter.coverage.minAbs);
     return {
       ...base,
-      ok: problems.length === 0 && Object.values(scores).every(Number.isFinite),
+      ok: problems.length === 0 && Object.values(scores).every(Number.isFinite) && Object.values(searchScores ?? {}).every(Number.isFinite),
       problems,
       scores,
+      ...(searchScores ? { searchScores } : {}),
       kpiMeans,
       series,
       coverage: cov.coverage,

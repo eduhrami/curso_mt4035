@@ -350,6 +350,56 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - **Criterio:** la propuesta de valor (SCM) o la estrategia de servicio (última milla), D-00, se elige en el setup y no se puede cambiar durante la partida. Razón: el equipo debe vivir con su estrategia; el aprendizaje es alinear la red y la operación con ella, no cambiarla cuando los KPI no favorecen.
 - **Implementación:** D-00 dejó de ser una decisión del motor (sin pestaña «Estrategia» ni `strategyChangePenalty`); el motor rechaza un cambio como decisión desconocida. La estrategia vive en el escenario de la partida (`scenario.strategy`) y se muestra en la barra superior. SCM-LAG-04 y LOG-LAG-09 lo verifican. `SIM_VERSION` 0.3.0 en ambos simuladores.
 
+
+### AD-39 ✔ El buscador optimiza la utilidad (sim-tools y SCM, 14-oct-2026)
+
+- **Criterio:** el bot buscador de SCM (BOT-H) maximiza la utilidad acumulada, que es el puntaje definitivo (AD-36), no el índice 0–100. Última milla puede adoptarlo con el mismo gancho; por ahora su buscador (BOT-I) sigue con el índice. Las propiedades de coherencia siguen en puntos del índice. `sim-tools` acepta un objetivo opcional del adaptador (`searchScore`, `searchScoreLabel`) y lo usa el buscador; sin él, usa `score`.
+- **Búsqueda más robusta:** varios arranques (`multiStart` y `starts`, que en SCM incluyen diseños con 4 y 8 CD nuevos) y un grupo que explora juntos número y tipo de CD con los cuatro flujos. El ascenso desde la red actual no daba el salto «construir CD + mover flujos» y se quedaba en óptimos locales.
+- **CSL de frescos aparte (SCM):** el espacio de búsqueda separa el CSL de frescos del de las demás categorías. En perecederos, más stock de seguridad que la vida de anaquel aguanta se vuelve merma (R-02), así que un CSL único arrastraba a todas las categorías.
+- **`profitFor` (SCM):** la propuesta de valor solo entra a la utilidad por las penalizaciones de servicio, así que una corrida evalúa las tres propuestas (SCO-07).
+- **Red de referencia por escenario:** `npm run network-optima` parte de los óptimos del buscador, refina la ubicación de los CD (mover, quitar o agregar uno a la vez) y repite el ascenso en cada escenario predefinido con su semilla.
+- **Reportes privados:** los reportes de auto-juego contienen los óptimos de cada escenario, así que se escriben en el repositorio privado (`app/autoplay/reports-dir.ts`) y no en el público.
+
+### AD-40 ✔ El POS se paga en dos años (SCM, 14-oct-2026)
+
+- **Criterio:** el sistema de información de tienda (D-30) debe recuperar su inversión en ≤ 8 trimestres sobre la operación óptima de Red River y Valle, con el error de pronóstico de un equipo típico (±10%).
+- **Parámetros:** POS diario: capex US$ 1,500 por tienda, opex US$ 10 por tienda-semana, CV ×0.75, 1 trimestre de implantación; con terminal: US$ 4,000, US$ 20, CV ×0.6, 2 trimestres; madura en un trimestre (antes US$ 3,000/8,000, US$ 20/40, CV ×0.85/0.75, 2–3 trimestres + 2 de aprendizaje).
+- **Hallazgo:** con pronóstico perfecto el POS casi no aporta (2–6 M USD en 3 años), porque su valor principal es corregir con las ventas reales el pronóstico equivocado del equipo. Por eso el buscador y la red de referencia juegan con ±10% de error de nivel (`searchForecastError`, paridad de la semilla); los demás bots siguen con pronóstico perfecto.
+- **Resultado:** con ±10% de error, el POS se recupera entre el trimestre 2 y el 7 en Red River y Valle, y el buscador lo elige.
+
+### AD-41 ✔ Proveedores como dato del escenario (SCM, 14-oct-2026)
+
+- **Criterio:** los proveedores son externos: el jugador no decide si son dedicados (antes D-07). Cada región trae sus plantas en el mapa (`regions.*.supplierSites`, E-08): Kaigan, planta dedicada de alimentos preparados (zona 12) y planta de lácteos (zona 25); Valle, central de abasto (zona 14) y parque industrial (zona 30); Red River, proveedores fuera de la región.
+- **Mecánica:** con planta en la región, Hoshi Mart paga el flete de la planta al CD (`supplier.inboundCostPerCaseKm` × cajas × distancia), y el tránsito se suma al lead time y a la edad de los frescos. En DSD, el reparto sale de la planta. Sin planta, el flete va en el precio. La planta dedicada acorta el lead time (×0.5) y mitiga X-04 y X-09. Nuevo KPI `INBOUND_COST` en el estado de resultados y en el CTS.
+- **Decisión del jugador:** cuántos CD y dónde, cerca de las plantas (menos flete de entrada, frescos más jóvenes) o de las tiendas (menos reparto). El mapa dibuja las plantas (◆, rellena = dedicada) y las lista.
+
+### AD-42 ✔ Sin ritmo de apertura o cierre de tiendas (SCM, 14-oct-2026)
+
+- **Criterio:** el ritmo anual de apertura o cierre (antes D-06) es una política, no una decisión. El equipo la ejerce con controles manuales cada trimestre: lotes de apertura (D-08, ubicados según la estrategia de apertura D-05) y cierres por zona (D-09, con indemnización que consume el tope anual).
+
+### AD-43 ✔ Tope de gasto anual en decisiones (SCM, 14-oct-2026)
+
+- **Criterio:** los costos de decisiones de un año tienen un tope por región (`money.capexBudgetPerYear`): Kaigan US$ 20 M, Red River US$ 7 M, Valle US$ 6 M ⚠. Cuentan todas las decisiones con costo: CD nuevos, conversiones, ampliaciones y cierres (indemnización); lotes de apertura y cierres de tiendas; escaneo y POS. Con las redes de referencia, el tope obliga a escalonar en Red River (red regional en dos años) y en Valle (cierres de CD en dos años). En Kaigan deja margen para gastar más de lo que la utilidad justifica: decidir cuánto gastar es parte de la reflexión del alumno.
+- **Motor:** `sim-core` admite restricciones del turno completo (`ModelDef.validateTurn(state, costs, params)`), evaluadas después de validar cada decisión con el costo inmediato de cada cambio, y un desglose del costo por tipo de cargo (`DecisionSpec.costs`; D-01 separa inversión e indemnización en el ledger). SCM suma lo gastado en el año (ledger de las épocas del año, fuente `D-xx`) y rechaza el turno que excede el tope con un mensaje que dice cuánto queda. Se renueva en T1. `GameConfig.test.budget: "off"` lo desactiva en las pruebas de mecanismos (SCM-LAG-10 lo prueba activo).
+- **UI:** la barra superior muestra «Inversión A#: queda X de Y».
+- **Auto-juego (`withBudget`, `app/autoplay/budget.ts`):** el bot invierte como un equipo. Lo que cabe se ejecuta; lo que no, se reintenta en T1 de cada año, cuando el tope se renueva, con prioridad por plazo de impacto: red de CD (cada conversión, cierre o CD nuevo por separado), POS, escaneo, cierres y aperturas de tiendas. Lo de efecto más largo va primero para que se recupere antes de que termine la partida. Lo que depende de algo diferido también se difiere. Un CD que no cabe ni con el tope completo baja de tamaño.
+- **Buscador:** al final elige, para cada estrategia, el mejor de todo lo evaluado en la región, incluidos los ascensos de las otras estrategias (una corrida puntúa las tres).
+
+### AD-44 ✔ Redes iniciales sub-óptimas (SCM, 14-oct-2026)
+
+- **Criterio:** las tres regiones arrancan lejos de su red óptima para que diseñar la red sea la primera decisión. Óptimo estructural medido con la red ya existente desde el inicio (sin sesgo de costo de cierre, ±10% de error de pronóstico): Kaigan 6–12 CD combinados (meseta; el máximo en 10–12), Red River 6–8 CD de inventario chicos, Valle 1–2 CD de inventario chicos.
+- **Efecto en el peso del pronóstico:** con redes por diseñar, la operación pesa más en las tres regiones: el pronóstico explica ≈ 41% de la brecha de utilidad (Kaigan 38%, Red River 38%, Valle 47%; spec §7.6).
+- **Redes de referencia resultantes** (`network-optima`, con tope): Kaigan construye 1 CD combinado; Red River, 3 CD de inventario chicos en dos años; Valle conserva sus 4 CD con frescura y cierra 2 con bajo costo o conveniencia (la propuesta de valor decide la red).
+- **Redes iniciales:** Kaigan 5 CD combinados (la red no creció al ritmo de las tiendas: faltan CD; por debajo de 6 la utilidad cae fuerte y de 6 a 12 es casi plana), Red River sin CD (faltan), Valle 4 CD de inventario medianos heredados de una expansión (sobran). Con esto, la operación inicial puntúa más bajo (SCO-05 acepta 10–60).
+
+### AD-45 ✔ «¿Cómo impacta?» en lugar de «Mueve:» (ambos simuladores, 14-oct-2026)
+
+- **Criterio:** cada decisión muestra un botón discreto «¿Cómo impacta?» que, al pasar el mouse o con un toque, abre un párrafo con la dirección en que mueve los KPIs y el porqué (recurso didáctico). El texto vive en `labels[id].impact` de cada simulador (`IMPACT` en `app/ui/labels.ts`, alineado con el mapa de decisiones, el diagrama causal y las reglas de cada especificación); ambos simuladores tienen un párrafo por decisión. Sin texto, el panel listaría los KPIs que mueve.
+
+### AD-46 ✔ Sin códigos internos en la interfaz (ambos simuladores, 15-oct-2026)
+
+- **Criterio:** los códigos de la especificación (D-xx, R-xx, X-xx, E-xx, F-01, AD-xx) no significan nada para el alumno: no aparecen en la interfaz ni en el glosario. El ui-kit ya no muestra el código de cada decisión, del diálogo de confirmación ni de los mensajes; la explicación causal de un KPI muestra el nombre de la causa (`causeNames`, `CAUSE_NAMES` en `app/ui/labels.ts` de cada simulador). Los textos nombran la decisión o el concepto. Los códigos siguen en el código, las pruebas, la especificación y la exportación JSON. La prueba de punta a punta del SCM revisa que ninguna pestaña los muestre.
+
 ---
 
 ## 4. Ruta de implementación
@@ -359,10 +409,10 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 | **F0** ✔ | Especificaciones, casos de prueba y este documento | Publicados en el repo |
 | **F1** ✔ | `sim-core`: PRNG con números aleatorios comunes, contrato del motor, reglas y eventos, log causal, persistencia, export y replay + arnés de pruebas ([core/README.md](./core/README.md)) | INV genéricas en verde; replay idéntico. Cumplido el 3-oct-2026: 65 pruebas (64 rápidas + 1 Monte Carlo) |
 | **F2** ✔ | Modelo SCM (sin UI) + `params.v1` ([app/README.md](../simulador-scm-red/app/README.md)) | Casos SCM P1 en verde. Cumplido el 3-oct-2026: 56 pruebas (52 rápidas + 4 Monte Carlo) |
-| **F3** ✔ | Auto-juego SCM y calibración ([tools/README.md](./tools/README.md), [reporte](../simulador-scm-red/app/autoplay/reports/latest.md)) | Reporte de coherencia sin alarmas P1. Cumplido el 4-oct-2026: P1 y P2 de auto-juego en verde, más 84 pruebas SCM (P1, P2 y P3) |
+| **F3** ✔ | Auto-juego SCM y calibración ([tools/README.md](./tools/README.md), reporte en el repositorio privado) | Reporte de coherencia sin alarmas P1. Cumplido el 4-oct-2026: P1 y P2 de auto-juego en verde, más 84 pruebas SCM (P1, P2 y P3) |
 | **F4** ✔ | UI SCM ([ui-kit/README.md](./ui-kit/README.md), [app/README.md](../simulador-scm-red/app/README.md)) | Flujo *end-to-end* de la partida completa + exportación. Cumplido el 4-oct-2026: 7 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, CD irreversible, validación, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de componentes |
 | **F5** ✔ | Modelo logística + `params.v1` ([app/README.md](../simulador-logistica-ultima-milla/app/README.md); notas en la §6.3b de la [especificación](../simulador-logistica-ultima-milla/especificacion.md)) | Casos LOG P1 en verde. Cumplido el 4-oct-2026: 66 pruebas (63 rápidas + 3 Monte Carlo), con el fixture del mini-caso de S5 calibrado (LOG-ESC-04) |
-| **F6** ✔ | Auto-juego logística y calibración ([reporte](../simulador-logistica-ultima-milla/app/autoplay/reports/latest.md)) | Reporte sin alarmas P1. Cumplido el 4-oct-2026: 6,000 partidas + búsqueda de BOT-I; 15 propiedades LOG-AUT en verde (LOG-AUT-15 pendiente); puntaje normalizado por territorio |
+| **F6** ✔ | Auto-juego logística y calibración (reporte en el repositorio privado) | Reporte sin alarmas P1. Cumplido el 4-oct-2026: 6,000 partidas + búsqueda de BOT-I; 15 propiedades LOG-AUT en verde (LOG-AUT-15 pendiente); puntaje normalizado por territorio |
 | **F7** ✔ | UI logística ([app/README.md](../simulador-logistica-ultima-milla/app/README.md#interfaz-f7)) | Flujo *end-to-end* de 36 épocas. Cumplido el 4-oct-2026: 8 pruebas de punta a punta en Chromium (partida completa con replay del JSON exportado, dark store irreversible, validación, vista p95 de D-61, recarga, sin `localStorage`, móvil 360 px, modo profesor) y 4 de interfaz |
 | **F8** ✔ | Publicación en GitHub Pages | Ambos simuladores accesibles en línea. Cumplido el 5-oct-2026: <https://eduhrami.github.io/curso_mt4035/> (rama `gh-pages`: `scm/`, `ultima-milla/` y portada), verificados en Chromium desde la URL pública |
 

@@ -100,11 +100,11 @@ export const properties: PropertyDef[] = [
   },
   {
     id: "SCM-AUT-06",
-    label: "Óptimos interiores: n.º de CD, CSL y frecuencia no en los extremos en ≥ 7 de 9 combinaciones",
+    label: "Óptimos interiores: n.º de CD, CSL de frescos y frecuencia no en los extremos en ≥ 7 de 9 combinaciones",
     priority: "P2",
     needs: ["H"],
     check: (r) => {
-      const interior = r.search.filter((s) => !s.atBounds.includes("dcCount") && !s.atBounds.includes("csl") && !(s.atBounds.includes("freshFreq") && s.atBounds.includes("ambientFreq")));
+      const interior = r.search.filter((s) => !s.atBounds.includes("dcCount") && !s.atBounds.includes("cslFresh") && !(s.atBounds.includes("freshFreq") && s.atBounds.includes("ambientFreq")));
       const edges = r.search.filter((s) => !interior.includes(s)).map((s) => `${s.scenario}/${s.strategy}: ${s.atBounds.join("+")}`);
       return { pass: interior.length >= Math.min(7, r.search.length), detail: `${interior.length}/${r.search.length} interiores${edges.length ? `; en extremo: ${edges.join(", ")}` : ""}` };
     },
@@ -118,9 +118,9 @@ export const properties: PropertyDef[] = [
       const o = r.search.find((s) => s.scenario === "kaigan" && s.strategy === "freshness");
       if (!o) return { pass: false, detail: "sin óptimo para kaigan/freshness" };
       const b = o.best;
-      const sej = { combinado: b.dcCount === -1 || b.dcType === "combined", frescosPorCd: b.flowFresh === "dc", frecuencia: Number(b.freshFreq) >= 14, posCompartido: b.sharing === "daily" };
+      const sej = { combinado: b.dcCount === -1 || b.dcType === "combined", frescosPorCd: b.flowFresh === "dc", frecuencia: Number(b.freshFreq) >= 14, posCompartido: b.sharing !== "no" };
       const miss = Object.entries(sej).filter(([, ok]) => !ok).map(([k]) => k);
-      return { pass: miss.length === 0, detail: miss.length ? `difiere en: ${miss.join(", ")}` : "CD combinado, frescos por CD ≥ 2×/día, POS diario compartido" };
+      return { pass: miss.length === 0, detail: miss.length ? `difiere en: ${miss.join(", ")}` : "CD combinado, frescos por CD ≥ 2×/día, POS compartido con proveedores" };
     },
   },
   {

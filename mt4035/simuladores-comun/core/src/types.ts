@@ -1,6 +1,7 @@
 /** Contrato entre sim-core y los modelos de simulador (AD-05, AD-07). */
 import type { ZodType } from "zod";
 import type { Rng, Stream, EntityKey } from "./rng.ts";
+import type { ValidationError } from "./engine.ts";
 
 // ---------------------------------------------------------------------------
 // Configuración y calendario
@@ -14,6 +15,8 @@ export interface TestHooks {
   forcedEvents?: ForcedEvent[];
   /** Guarda en el reporte los intermedios que el modelo publique con ctx.trace(). */
   trace?: boolean;
+  /** "off" desactiva las restricciones del turno (p. ej. el tope de inversión) para probar mecanismos aislados. */
+  budget?: "on" | "off";
 }
 
 export interface ForcedEvent {
@@ -217,6 +220,12 @@ export interface DecisionSpec<S, P, V = unknown> {
   cost?(value: V, state: S, params: P): number;
   /** Tipo de cargo en el ledger para cost() (por omisión "capex"). */
   costKind?: LedgerEntry["kind"];
+  /**
+   * Desglose del costo inmediato por tipo de cargo (p. ej. inversión en CD nuevos + indemnización por cierres). Si se
+   * define, el motor carga cada parte por separado y las restricciones del turno reciben el desglose; su suma debe
+   * coincidir con cost(), que la UI muestra como total.
+   */
+  costs?(value: V, state: S, params: P): { kind: LedgerEntry["kind"]; amount: number; note?: string }[];
   /** La UI pide doble confirmación; el motor no lo usa para validar. */
   irreversible?: boolean | ((prev: V, next: V) => boolean);
   /** Dependencias y restricciones; devuelve un mensaje de error o null. */
@@ -285,4 +294,15 @@ export interface ModelDef<S, P, Scenario = Record<string, unknown>> {
   events: EventDef<S, P>[];
   aggregate(ctx: EpochContext<S, P>): Record<string, number>;
   onEpochEnd?(ctx: EpochContext<S, P>, kpis: Record<string, number>): void;
+  /**
+   * Restricciones del turno completo (p. ej. un tope de inversión anual): recibe el costo inmediato de cada cambio
+   * que se valida y devuelve errores. Se evalúa después de validar cada decisión por separado.
+   */
+  validateTurn?(state: GameState<S>, costs: TurnCost[], params: P): ValidationError[];
+}
+
+export interface TurnCost {
+  id: string;
+  kind: LedgerEntry["kind"];
+  amount: number;
 }

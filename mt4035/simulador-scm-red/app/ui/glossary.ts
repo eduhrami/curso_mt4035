@@ -29,6 +29,8 @@ export const GLOSSARY: GlossaryEntry[] = [
 
   // Red, flujo y transporte
   { term: "CD", full: "Centro de distribución", def: "Instalación que recibe mercancía de proveedores y la reparte a las tiendas. Puede guardar inventario o solo cruzarlo (cross-dock).", category: RED },
+  { term: "Planta de proveedores", def: "Instalación de un proveedor dentro de la región (◆ en el mapa). Es un dato del escenario: no la decides tú. Si es dedicada, trabaja solo para Hoshi Mart y su lead time es más corto. Un CD cerca de la planta paga menos flete de entrada; uno cerca de las tiendas, menos reparto.", aliases: ["plantas de proveedores", "planta dedicada", "proveedor dedicado", "proveedores dedicados"], category: RED },
+  { term: "Flete de entrada", def: "Costo de traer la mercancía de la planta del proveedor al CD (por caja y kilómetro). Con proveedores externos a la región va incluido en el precio.", aliases: ["flete de proveedores"], category: RED },
   { term: "Cross-dock", def: "Operación en la que la mercancía entra al CD y sale casi de inmediato hacia las tiendas, sin almacenarse.", aliases: ["cross-docking"], category: RED },
   { term: "DSD", full: "Direct Store Delivery", def: "Entrega directa del proveedor a la tienda, sin pasar por un CD.", category: RED },
   { term: "3PL", full: "Third-Party Logistics", def: "Operador logístico externo que presta transporte o almacenaje. «Dedicado» reserva recursos para la empresa; «spot» se contrata al momento.", category: RED },
@@ -60,10 +62,11 @@ export const GLOSSARY: GlossaryEntry[] = [
   // Dinero
   { term: "Utilidad", def: "Puntaje definitivo: EBITDA logístico (margen bruto − merma − rebajas − costos logísticos − TI) − inversión − penalizaciones por servicio, acumulado en los 12 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },
   { term: "Penalización por servicio", def: "Cada trimestre en que rompes un guardrail de servicio de tu propuesta de valor (p. ej., OSA mínima) pierdes un % de las ventas del trimestre: penalizaciones y clientes que se van.", aliases: ["penalizaciones por servicio"], category: "Dinero" },
+  { term: "Tope de inversión", def: "Máximo que puedes gastar en decisiones en un año (CD nuevos, conversiones, ampliaciones y cierres; aperturas y cierres de tiendas; escaneo y POS). Si un trimestre lo excede no lo puedes confirmar: prioriza o difiere al año siguiente. Se renueva cada T1. Las indemnizaciones por cerrar CD o tiendas también lo consumen.", aliases: ["presupuesto de inversión"], category: "Dinero" },
   { term: "Rebajas", def: "Pérdida por comprar más de lo que se vende cuando el pronóstico es alto: la mercancía sobrante se vende con descuento o se desecha.", category: "Dinero" },
 
   // Pronóstico y series de tiempo
-  { term: "Pronóstico", def: "Estimación de la demanda futura. En el simulador (F-01) se captura en T1 de cada año con parámetros estimados de los datos y fija el inventario de las tiendas.", aliases: ["pronosticar", "pronosticas"], category: FC },
+  { term: "Pronóstico", def: "Estimación de la demanda futura. En el simulador se captura en T1 de cada año con parámetros estimados de los datos y fija el inventario de las tiendas.", aliases: ["pronosticar", "pronosticas"], category: FC },
   { term: "Serie de tiempo", def: "Datos ordenados en el tiempo (aquí, demanda por tienda por semana). Se descompone en tendencia, estacionalidad y ruido.", aliases: ["series de tiempo"], category: FC },
   { term: "Tendencia", def: "Movimiento de largo plazo de la serie; aquí, el crecimiento anual de la demanda por tienda.", category: FC },
   { term: "Nivel base", def: "Unidades por tienda por día de un trimestre de índice 1, al inicio del año que se pronostica.", category: FC },

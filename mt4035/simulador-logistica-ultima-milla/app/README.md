@@ -48,7 +48,7 @@ El modo profesor se activa con `?profesor=1`: muestra el puntaje parcial durante
 - `autoplay/adapter.ts`: adaptador para [`@mt4035/sim-tools`](../../simuladores-comun/tools/README.md).
 
 ```bash
-npm run autoplay -- --seeds 200 --search   # ~8 min en 10 núcleos; reporte en autoplay/reports/latest.md
+npm run autoplay -- --seeds 200 --search   # ~8 min en 10 núcleos; reporte en privado/mt4035/simulador-logistica-ultima-milla/autoplay-reports/latest.md
 npm run replay -- corrida.json
 npm run aggregate -- carpeta/ --out resumen.csv
 ```

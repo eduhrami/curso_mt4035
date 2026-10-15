@@ -32,6 +32,10 @@ export interface SearchSpec {
   bounds?: Record<string, readonly (string | number | boolean)[]>;
   /** Vector que reproduce la configuración as-is del escenario (punto de partida del ascenso). */
   baseline?(scenario: string): ParamVector;
+  /** Puntos de partida adicionales del ascenso (p. ej. diseños de referencia), además del baseline. */
+  starts?(scenario: string): ParamVector[];
+  /** Cuántos de los mejores candidatos aleatorios también arrancan un ascenso (por omisión 1). */
+  multiStart?: number;
   /** Parámetros acoplados que se exploran juntos (producto cartesiano) en cada ronda. */
   groups?: string[][];
   /**
@@ -62,6 +66,13 @@ export interface AutoplayAdapter<S = any, P = any> {
   strategies: string[];
   config(scenario: string, seed: number): GameConfig;
   score(reports: readonly EpochReport[], strategy: string, scenario: string): number;
+  /**
+   * Opcional: objetivo del bot buscador si difiere de `score` (p. ej. la utilidad acumulada, que es el
+   * puntaje definitivo, mientras las propiedades siguen en puntos del índice 0–100).
+   */
+  searchScore?(reports: readonly EpochReport[], strategy: string, scenario: string): number;
+  /** Nombre y unidad del objetivo de búsqueda para el reporte (p. ej. "Utilidad (M USD)"). */
+  searchScoreLabel?: string;
   bots: Bot<S>[];
   check: ReportCheck;
   /** KPIs para la cobertura de explicabilidad, con umbral absoluto mínimo por KPI. */
@@ -86,6 +97,8 @@ export interface RunRecord extends Task {
   /** Violaciones de invariantes detectadas por adapter.check. */
   problems: string[];
   scores: Record<string, number>;
+  /** Objetivo de búsqueda por estrategia (solo si el adaptador define searchScore). */
+  searchScores?: Record<string, number>;
   /** Promedio de cada KPI sobre las épocas jugadas. */
   kpiMeans: Record<string, number>;
   series: Record<string, number[]>;

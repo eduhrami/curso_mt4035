@@ -1,10 +1,15 @@
-/** Mapa esquemático de la red (SVG propio, AD-23): zonas, densidad de tiendas, CD y asignación zona→CD. */
-import { activeDcs, params, type ScmState } from "../src/index.ts";
+/** Mapa esquemático de la red (SVG propio, AD-23): zonas, densidad de tiendas, plantas de proveedores, CD y asignación zona→CD. */
+import { activeDcs, params, type ScmState, type SupplierSite } from "../src/index.ts";
 import { OPTIONS } from "./labels.ts";
 
 const SIZE = 300;
 /** Ancho de la etiqueta «Z#» según los dígitos del id. */
 const zoneTagWidth = (id: number) => 9 + 4.5 * String(id).length;
+const CAT_NAMES: Record<string, string> = { fresh: "frescos", chilled: "refrigerado", ambient: "abarrotes", frozen: "congelado" };
+
+/** Plantas de proveedores de la región (E-08): dato del escenario, no una decisión. */
+export const supplierSites = (state: ScmState) => params.regions[state.region].supplierSites as SupplierSite[];
+export const siteText = (x: SupplierSite) => `${x.label} — zona ${x.zone} · surte ${x.categories.map((c) => CAT_NAMES[c]).join(" y ")}${x.dedicated ? " · proveedor dedicado" : ""}`;
 
 export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state: ScmState; epoch: number; selectedZone?: number; onSelectZone?: (z: number) => void }) {
   const g = params.grid;
@@ -61,6 +66,19 @@ export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state
             </g>
           );
         })}
+        {supplierSites(state).map((x) => {
+          const { x: cx, y: cy } = centerOf(x.zone);
+          const r = cell * 0.14;
+          // Planta: diamante en la esquina inferior izquierda de la zona, para no tapar el CD.
+          const px = cx - cell / 4;
+          const py = cy + cell / 4;
+          return (
+            <g key={x.id} data-testid={`site-${x.id}`}>
+              <title>{siteText(x)}</title>
+              <polygon points={`${px},${py - r} ${px + r},${py} ${px},${py + r} ${px - r},${py}`} fill={x.dedicated ? "var(--warn)" : "var(--surface)"} stroke="var(--warn)" stroke-width={2} />
+            </g>
+          );
+        })}
         {state.dcs.map((d) => {
           const { x, y } = centerOf(d.zone);
           const built = activeIds.has(d.id);
@@ -68,7 +86,12 @@ export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state
         })}
       </svg>
       <figcaption class="small muted" style={{ textAlign: "center" }}>
-        <span class="chip" style={{ background: "var(--accent)", color: "var(--accent-contrast)", fontWeight: 700 }}>Z#</span> = número de zona · número grande (abajo a la derecha) = tiendas en la zona · Zonas de {Math.round(side / g)} km por lado · intensidad = tiendas · ● con inventario ▲ cross-dock ■ combinado · contorno punteado = en obra
+        <span class="chip" style={{ background: "var(--accent)", color: "var(--accent-contrast)", fontWeight: 700 }}>Z#</span> = número de zona · número grande (abajo a la derecha) = tiendas en la zona · Zonas de {Math.round(side / g)} km por lado · intensidad = tiendas · ● con inventario ▲ cross-dock ■ combinado · contorno punteado = en obra · ◆ planta de proveedores (rellena = dedicado)
+        {supplierSites(state).length > 0 ? (
+          <span style={{ display: "block" }}>Proveedores en la región: {supplierSites(state).map(siteText).join("; ")}. El resto llega de proveedores externos.</span>
+        ) : (
+          <span style={{ display: "block" }}>Los proveedores están fuera de la región: el flete al CD va incluido en el precio.</span>
+        )}
       </figcaption>
     </figure>
   );

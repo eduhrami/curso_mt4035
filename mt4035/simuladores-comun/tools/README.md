@@ -23,7 +23,7 @@ npm run replay -- corrida1.json corrida2.json               # verifica corridas 
 npm run aggregate -- carpeta/ --out resumen.csv             # CSV del grupo para el profesor
 ```
 
-El reporte queda en `autoplay/reports/` (`latest.md` y versiones con fecha). El comando devuelve código 1 si hay alarmas P1, así que sirve para CI.
+El reporte queda en el repositorio privado, `privado/mt4035/<simulador>/autoplay-reports/` (`latest.md` y versiones con fecha; ruta en `app/autoplay/reports-dir.ts`), porque contiene los óptimos de cada escenario. El comando devuelve código 1 si hay alarmas P1, así que sirve para CI.
 
 ## Rendimiento (SCM, 10 núcleos)
 

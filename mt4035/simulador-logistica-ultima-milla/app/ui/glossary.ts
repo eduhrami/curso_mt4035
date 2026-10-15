@@ -79,7 +79,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "Logística inversa", def: "Flujo de devoluciones del cliente de regreso a la empresa.", aliases: ["devoluciones"], category: CLI },
 
   // Pronóstico y series de tiempo
-  { term: "Pronóstico", def: "Estimación de la demanda futura. En el simulador (F-01) se captura en enero de cada año con parámetros estimados de los datos y dimensiona la flota contratada.", aliases: ["pronosticar", "pronosticas"], category: FC },
+  { term: "Pronóstico", def: "Estimación de la demanda futura. En el simulador se captura en enero de cada año con parámetros estimados de los datos y dimensiona la flota contratada.", aliases: ["pronosticar", "pronosticas"], category: FC },
   { term: "Serie de tiempo", def: "Datos ordenados en el tiempo (aquí, pedidos por día). Se descompone en tendencia, estacionalidad y ruido.", aliases: ["series de tiempo"], category: FC },
   { term: "Tendencia", def: "Movimiento de largo plazo de la serie; aquí, el crecimiento anual compuesto del canal en línea.", category: FC },
   { term: "Nivel base", def: "Pedidos de un día típico (sin pico ni quincena, índice semanal 1) al inicio del año que se pronostica.", category: FC },
