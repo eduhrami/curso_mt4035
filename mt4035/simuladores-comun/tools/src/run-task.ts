@@ -5,14 +5,19 @@ import type { AutoplayAdapter, RunRecord, Task } from "./types.ts";
 
 export function runTask<S, P>(adapter: AutoplayAdapter<S, P>, engine: Engine<S, P>, task: Task): RunRecord {
   const t0 = performance.now();
-  const base: RunRecord = { ...task, ok: false, problems: [], scores: {}, kpiMeans: {}, series: {}, coverage: 1, changes: 0, unexplained: [], ms: 0 };
+  const games = adapter.perStrategyRuns ? adapter.strategies.length : 1;
+  const base: RunRecord = { ...task, ok: false, games, problems: [], scores: {}, kpiMeans: {}, series: {}, coverage: 1, changes: 0, unexplained: [], ms: 0 };
   try {
     const bot = adapter.bots.find((b) => b.id === task.bot);
     if (!bot) throw new Error(`Bot desconocido: ${task.bot}`);
-    const { reports } = playGame(engine, adapter.config(task.scenario, task.seed), bot.policy(task.seed, task.scenario, task.args));
-    const problems = adapter.check(reports);
-    const scores = Object.fromEntries(adapter.strategies.map((st) => [st, adapter.score(reports, st, task.scenario)]));
-    const searchScores = adapter.searchScore && task.bot === adapter.search?.bot ? Object.fromEntries(adapter.strategies.map((st) => [st, adapter.searchScore!(reports, st, task.scenario)])) : undefined;
+    const play = (strategy?: string) => playGame(engine, adapter.config(task.scenario, task.seed, strategy), bot.policy(task.seed, task.scenario, task.args)).reports;
+    // Con perStrategyRuns, cada estrategia se califica con su propia partida; KPIs, series y cobertura salen de la primera.
+    const byStrategy = adapter.perStrategyRuns ? Object.fromEntries(adapter.strategies.map((st) => [st, play(st)])) : undefined;
+    const reports = byStrategy ? byStrategy[adapter.strategies[0]!]! : play();
+    const reportsOf = (st: string) => byStrategy?.[st] ?? reports;
+    const problems = [...new Set((byStrategy ? Object.values(byStrategy) : [reports]).flatMap((r) => adapter.check(r)))];
+    const scores = Object.fromEntries(adapter.strategies.map((st) => [st, adapter.score(reportsOf(st), st, task.scenario)]));
+    const searchScores = adapter.searchScore && task.bot === adapter.search?.bot ? Object.fromEntries(adapter.strategies.map((st) => [st, adapter.searchScore!(reportsOf(st), st, task.scenario)])) : undefined;
     const keys = Object.keys(reports[0]?.kpis ?? {});
     const kpiMeans = Object.fromEntries(keys.map((k) => [k, reports.reduce((a, r) => a + (r.kpis[k] ?? NaN), 0) / reports.length]));
     const series = Object.fromEntries(adapter.trackKpis.map((k) => [k, reports.map((r) => r.kpis[k] ?? NaN)]));

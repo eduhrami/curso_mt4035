@@ -10,7 +10,7 @@ import { scmTick } from "./tick.ts";
 import { DEFAULT_MARKET, type Params, type RegionId, type Scenario, type ScmState } from "./types.ts";
 
 export const SIM_ID = "mt4035-scm";
-export const SIM_VERSION = "0.4.0";
+export const SIM_VERSION = "0.6.0";
 export const params: Params = paramsJson;
 export const PARAMS_VERSION = params.version;
 /** Horizonte de la partida: 3 años × 4 trimestres (AD-37, igual que última milla). */
@@ -34,6 +34,11 @@ function onEpochStart(ctx: EpochContext<ScmState, Params>): void {
   const maturity = s.dec.info === "basic" ? 1 : Math.min(1, Math.max(0, (e - s.infoSince) * p.info.maturityPerEpoch));
   if (maturity !== s.infoMaturity) ctx.log({ kind: "trend", id: "D-30", kpis: ["OSA", "ITR", "WASTE", "LOST_SALES", "SALES", "EBITDA_PCT"], drivers: [{ label: "madurez del sistema de información", value: maturity, ref: "D-30" }] });
   s.infoMaturity = maturity;
+
+  // Madurez del CPFR (D-33): el pronóstico conjunto mejora durante varios trimestres después de implantarse.
+  const cpfr = s.dec.collaboration === "cpfr" ? Math.min(1, Math.max(0, (e - s.cpfrSince) * p.info.cpfr.maturityPerEpoch)) : 0;
+  if (cpfr !== s.cpfrMaturity) ctx.log({ kind: "trend", id: "D-33", kpis: ["OSA", "ITR", "WASTE", "LT", "OTIF", "LOST_SALES", "SALES", "EBITDA_PCT"], drivers: [{ label: "madurez del CPFR", value: Math.round(cpfr * 100) / 100, ref: "D-33" }] });
+  s.cpfrMaturity = cpfr;
 
   // Tiendas: cierres manuales por zona (D-09) que vencen esta época.
   const closing = s.pendingClosures.filter((c) => c.epoch <= e);

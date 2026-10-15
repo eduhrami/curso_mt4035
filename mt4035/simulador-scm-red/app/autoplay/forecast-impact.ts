@@ -6,7 +6,7 @@
  */
 import { writeFileSync } from "node:fs";
 import { createRng, type DecisionChanges, type GameState } from "@mt4035/sim-core";
-import { parseArgs } from "@mt4035/sim-tools";
+import { appendRunLedger, parseArgs } from "@mt4035/sim-tools";
 import { createScmEngine, EPOCHS, params, profitOf, scmConfig, truthForecast, type RegionId, type ScmState } from "../src/index.ts";
 import { bots, canonicalVector, searchSpace, vectorPolicy } from "./bots.ts";
 import { withBudget } from "./budget.ts";
@@ -19,9 +19,11 @@ const CANDIDATES = Number(a.flags.candidates ?? 50);
 const engine = createScmEngine();
 const REFERENCE = ["A", "B", "C", "D", "E", "G", "I"];
 
+let games = 0;
 function play(region: RegionId, polOf: (seed: number) => Pol, k: number, seeds: number[]): number {
   let tot = 0;
   for (const seed of seeds) {
+    games++;
     const pol = polOf(seed);
     let s = engine.createGame(scmConfig({ region, seed, test: { events: "on", noise: 1 } }));
     const reports = [];
@@ -81,4 +83,5 @@ ${rows.join("\n")}
 **Peso medio del pronóstico: ${((shares.reduce((x, y) => x + y, 0) / shares.length) * 100).toFixed(0)}%.** No se fuerza por región: donde la operación tiene mucho por mejorar, el diseño de la red pesa más; donde la operación ya es buena, el pronóstico es la palanca que queda.
 `;
 writeFileSync(`${REPORTS_DIR}/forecast-impact.md`, md);
+appendRunLedger(REPORTS_DIR, { tool: "forecast-impact", sim: engine.model.id, simVersion: engine.model.version, paramsVersion: params.version, tasks: games, games });
 process.stdout.write(md);

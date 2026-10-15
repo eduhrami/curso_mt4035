@@ -1,6 +1,6 @@
 /** Adaptador del simulador SCM para las herramientas de auto-juego (export default). */
 import type { AutoplayAdapter } from "@mt4035/sim-tools";
-import { CATEGORIES, createScmEngine, EPOCHS, params, profitFor, scmConfig, scoreRun, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
+import { CATEGORIES, createScmEngine, EPOCHS, params, profitOf, scmConfig, scoreRun, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
 import { baselineVector, bots, canonicalVector, searchSpace } from "./bots.ts";
 import { properties } from "./properties.ts";
 
@@ -11,10 +11,13 @@ const adapter: AutoplayAdapter<ScmState, Params> = {
   createEngine: () => createScmEngine(),
   scenarios: ["kaigan", "redriver", "valle"],
   strategies: ["freshness", "lowcost", "convenience"],
-  config: (scenario, seed) => scmConfig({ region: scenario as RegionId, seed }),
-  score: (reports, strategy, scenario) => scoreRun(reports, strategy as Strategy, params, scenario as RegionId).score,
-  // El buscador optimiza la utilidad acumulada (puntaje definitivo, AD-36/AD-39), en millones de USD.
-  searchScore: (reports, strategy, scenario) => profitFor(reports, strategy as Strategy, params, scenario as RegionId) / 1e6,
+  // La propuesta de valor fija el nivel de servicio (CSL): cada estrategia se juega en su propia partida.
+  config: (scenario, seed, strategy) => scmConfig({ region: scenario as RegionId, seed, ...(strategy ? { strategy: strategy as Strategy } : {}) }),
+  perStrategyRuns: true,
+  // Bots y buscador se comparan con la utilidad acumulada (puntaje definitivo, AD-36/AD-39), en millones de USD; ya
+  // incluye las penalizaciones por los guardrails de servicio de la propuesta. El índice 0–100 es diagnóstico.
+  score: (reports) => profitOf(reports) / 1e6,
+  searchScore: (reports) => profitOf(reports) / 1e6,
   searchScoreLabel: "Utilidad (M USD)",
   bots,
   check: (reports) => {
@@ -37,11 +40,10 @@ const adapter: AutoplayAdapter<ScmState, Params> = {
   search: {
     bot: "H",
     space: searchSpace as unknown as Record<string, readonly (string | number | boolean)[]>,
-    // CSL: el de frescos (el de no perecederos al máximo es la respuesta económica correcta: no caducan).
-    ordinal: ["dcCount", "cslFresh", "freshFreq", "ambientFreq"],
+    ordinal: ["dcCount", "freshFreq", "ambientFreq"],
     notBound: { dcCount: [-1] },
     baseline: (scenario) => baselineVector(scenario),
-    // Arranques con red nueva de CD: el ascenso desde la red actual rara vez da el salto «construir CD + mover flujos».
+    // Arranques con red nueva de CEDIS: el ascenso desde la red actual rara vez da el salto «construir varios CEDIS».
     starts: (scenario) =>
       [4, 8].flatMap((dcCount) =>
         (["stocking", "combined"] as const).map((dcType) => ({
@@ -49,20 +51,15 @@ const adapter: AutoplayAdapter<ScmState, Params> = {
           dcCount,
           dcType,
           dcSize: "small",
-          flowFresh: "dsd",
-          flowChilled: "dc",
-          flowAmbient: "dc",
-          flowFrozen: "dc",
           consolidation: dcType === "combined" ? "combined" : "supplier",
         })),
       ),
     multiStart: 3,
     canonicalize: (v, scenario) => canonicalVector(v as Parameters<typeof canonicalVector>[0], scenario) as typeof v,
     groups: [
-      ["dcCount", "dcType", "flowFresh", "flowChilled", "flowAmbient", "flowFrozen"],
-      ["dcCount", "dcType", "flowFresh", "flowAmbient"],
-      ["dcCount", "flowChilled", "flowFrozen"],
-      ["flowFresh", "freshFreq"],
+      ["dcCount", "dcType", "dcSize"],
+      ["dcCount", "freshFreq", "chilledFreq"],
+      ["dcType", "consolidation"],
     ],
   },
 };

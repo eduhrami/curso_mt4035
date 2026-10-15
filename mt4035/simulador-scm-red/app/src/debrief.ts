@@ -11,7 +11,7 @@ export interface DebriefQuestion {
 }
 
 export const DEBRIEF_GENERAL: DebriefQuestion[] = [
-  { id: "DB-01", question: "¿Qué propuesta de valor declaraste y qué decisiones de red y flujo (CD, cross-dock o inventario, DSD, frecuencia) tomaste para sostenerla? ¿Cuál fue tu decisión clave?", hint: "Menciona número y tipo de CD, flujo por categoría y frecuencia; explica por qué encaja con la región." },
+  { id: "DB-01", question: "¿Qué propuesta de valor declaraste y qué decisiones de red y flujo (número, ubicación y tipo de CEDIS, consolidación, frecuencia) tomaste para sostenerla? ¿Cuál fue tu decisión clave?", hint: "Menciona número, ubicación y tipo de CEDIS, consolidación y frecuencia; explica por qué encaja con la región." },
   { id: "DB-02", question: "¿Qué KPI trataste como primario y cuál como guardrail? Reporta sus valores al final y explica el trade-off entre ambos.", hint: "Explica por qué ese par según tu propuesta de valor y cita valores del reporte final." },
   { id: "DB-03", question: "¿Qué decisión tardó en mostrar efecto? ¿En qué trimestre la tomaste, cuándo se notó y en qué KPI?", hint: "El diálogo de confirmación indica cuándo surte efecto cada decisión." },
   { id: "DB-04", question: "¿Qué evento inesperado te afectó más y qué decisión previa lo agravó o lo amortiguó?", hint: "Usa «¿Por qué pasó esto?» en la bandeja de mensajes para rastrear la cadena causal." },
@@ -23,7 +23,7 @@ export const DEBRIEF_LAST: DebriefQuestion = { id: "DB-06", question: "Si volvie
 export const DEBRIEF_FORECAST: DebriefQuestion = {
   id: "DB-07",
   question: "¿Con qué método estimaste cada parámetro de tu pronóstico (nivel, crecimiento, índices trimestrales, CV y p95)? ¿Qué WAPE y sesgo tuviste cada año y qué corregiste al re-pronosticar?",
-  hint: "Describe tu análisis de los datos y cita la tabla de pronóstico del reporte final.",
+  hint: "Describe tu análisis de los datos y cita la tabla de pronóstico del reporte final. Considera también el azar: un año, un pronóstico sencillo puede acertar más que uno cuidadoso.",
 };
 
 export const DEBRIEF_CUSTOM: DebriefQuestion = {

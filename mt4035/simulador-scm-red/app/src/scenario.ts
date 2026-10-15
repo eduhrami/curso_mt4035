@@ -62,13 +62,13 @@ export function buildZones(p: Params, scn: Scenario, rng: Rng): Zone[] {
   });
 }
 
-/** CD iniciales en las zonas con más tiendas. */
-function initialDcs(zones: Zone[], count: number, type: DcState["type"], size: DcState["size"]): DcState[] {
-  return [...zones]
-    .sort((a, b) => b.stores - a.stores || a.id - b.id)
+/** CEDIS iniciales en las zonas indicadas por la región o, si no las indica, en las zonas con más tiendas. */
+function initialDcs(zones: Zone[], count: number, type: DcState["type"], size: DcState["size"], at?: number[]): DcState[] {
+  const chosen = at ? at.map((id) => zones[id]!) : [...zones].sort((a, b) => b.stores - a.stores || a.id - b.id);
+  return chosen
     .slice(0, count)
     .map((z, i) => ({
-      id: `CD-${i + 1}`,
+      id: `CEDIS-${i + 1}`,
       zone: z.id,
       type,
       size,
@@ -87,13 +87,12 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
   if (!r) throw new Error(`Región desconocida: ${scn.region}`);
   const ini = r.initial;
   const zones = buildZones(p, scn, rng);
-  const dcs = scn.greenfield ? [] : initialDcs(zones, ini.dcs.count, ini.dcs.type as DcState["type"], ini.dcs.size as DcState["size"]);
+  const dcs = scn.greenfield ? [] : initialDcs(zones, ini.dcs.count, ini.dcs.type as DcState["type"], ini.dcs.size as DcState["size"], (ini.dcs as { zones?: number[] }).zones);
   const dec: Decisions = {
     strategy: scn.strategy,
     openingStrategy: "mixed",
     // Proveedores dedicados: dato del escenario (plantas en el mapa, E-08), no una decisión del jugador.
     dedicated: dedicatedFromSites(r.supplierSites as SupplierSite[]),
-    flows: scn.greenfield ? perCat(() => "dsd" as const) : (ini.flows as Decisions["flows"]),
     freq: { ...ini.freq },
     consolidation: ini.consolidation as Decisions["consolidation"],
     fleet: ini.fleet as Decisions["fleet"],
@@ -101,7 +100,8 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     window: ini.window as Decisions["window"],
     maintenance: ini.maintenance as Decisions["maintenance"],
     policy: ini.policy as Decisions["policy"],
-    csl: { ...ini.csl },
+    // El nivel de servicio objetivo lo fija la propuesta de valor (no es una decisión del jugador).
+    csl: { ...p.strategyCsl[scn.strategy as "freshness" | "lowcost" | "convenience"] },
     assortment: { ...ini.assortment },
     receiving: ini.receiving as Decisions["receiving"],
     dcSafetyDays: ini.dcSafetyDays,
@@ -124,12 +124,14 @@ export function initialState(config: GameConfig<Scenario>, p: Params, rng: Rng):
     dec,
     infoMaturity: 1,
     infoSince: -10,
+    cpfrSince: -10,
+    cpfrMaturity: 0,
     pendingOpenings: [],
     pendingClosures: [],
     inventory: perCat(() => zones.map(() => -1)), // -1: se inicializa al nivel objetivo en el primer tick
     lastWaste: perCat(() => zones.map(() => 0)),
     highWaste: perCat(() => [] as number[]),
-    flags: { r01: false, r02: perCat(() => zones.map(() => false)), r04: false, r07: false },
+    flags: { r01: false, r02: perCat(() => zones.map(() => false)), r04: false, r07: false, freqCapped: [], unserved: [] },
     shocks: emptyShocks(),
     mixShift: 0,
     lastEpochOsa: 1,

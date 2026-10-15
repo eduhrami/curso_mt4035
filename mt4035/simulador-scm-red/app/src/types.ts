@@ -12,11 +12,12 @@ export type RegionId = "kaigan" | "redriver" | "valle";
 export type Strategy = "freshness" | "lowcost" | "convenience";
 export type DcType = "stocking" | "crossdock" | "combined";
 export type DcSize = "small" | "medium" | "large";
-export type Flow = "dc" | "dsd";
 export type Info = "basic" | "pos_daily" | "pos_terminal";
-export type Sharing = "no" | "weekly" | "daily";
-export type Forecast = "moving_avg" | "seasonal" | "causal";
-export type Collaboration = "arms" | "vmi" | "cpfr";
+export type Sharing = "no" | "yes";
+/** Básico: promedios móviles sin estacionalidad. Avanzado: suavizamiento exponencial con estacionalidad (Holt-Winters) y variables causales, con equipo de analítica. */
+export type Forecast = "basic" | "advanced";
+/** RMI: el minorista pronostica y repone (punto de partida). CPFR: planeación, pronóstico y reabasto colaborativos (mejora que decide el jugador). */
+export type Collaboration = "rmi" | "cpfr";
 export type Level = "low" | "mid" | "high";
 export type Policy = "rop" | "periodic" | "tanpin";
 export type Maintenance = "corrective" | "preventive" | "predictive";
@@ -101,7 +102,6 @@ export interface Decisions {
   strategy: Strategy;
   openingStrategy: OpeningStrategy;
   dedicated: { fresh: boolean; chilled: boolean };
-  flows: PerCat<Flow>;
   freq: PerCat<number>;
   consolidation: "supplier" | "combined";
   fleet: Fleet;
@@ -152,6 +152,9 @@ export interface ScmState {
   infoMaturity: number;
   /** Época desde la que opera el sistema de información vigente (para la curva de aprendizaje). */
   infoSince: number;
+  /** Época en que entró en operación el CPFR y su madurez 0–1 (el beneficio crece durante varios trimestres). */
+  cpfrSince: number;
+  cpfrMaturity: number;
   /** Lotes de apertura pendientes (D-08): tiendas y época en que abren. */
   pendingOpenings: { stores: number; epoch: number }[];
   /** Cierres manuales de tiendas por zona que vencen en la época indicada. */
@@ -161,7 +164,7 @@ export interface ScmState {
   lastWaste: PerCat<number[]>;
   /** Zonas con merma semanal > umbral de R-02 (las calcula el tick). */
   highWaste: PerCat<number[]>;
-  flags: { r01: boolean; r02: PerCat<boolean[]>; r04: boolean; r07: boolean };
+  flags: { r01: boolean; r02: PerCat<boolean[]>; r04: boolean; r07: boolean; /** Zonas donde la distancia al CEDIS limita la frecuencia de entrega (R-13). */ freqCapped: number[]; /** Zonas con tiendas y sin CEDIS activo que las surta (R-14). */ unserved: number[] };
   shocks: Shocks;
   mixShift: number;
   lastEpochOsa: number;

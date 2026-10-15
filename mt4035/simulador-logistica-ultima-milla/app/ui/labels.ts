@@ -99,7 +99,7 @@ export const IMPACT: Record<string, string> = {
   "F-01":
     "Tu pronóstico dimensiona lo que contratas para el año: la capacidad comprometida con el 3PL, los contratos de flota para los picos y el personal de surtido. Si te quedas corto, en los días fuertes faltan rutas: pagas flota de último momento (más cara), crece el Backlog y caen el OTD y la CSAT. Si te pasas, pagas flota y personal ociosos y sube el CPD. Acertar los picos (Hot Sale, Buen Fin, Navidad) y la quincena pesa más que acertar el promedio.",
   "D-01":
-    "Surtir desde el CD aprovecha su escala: el picking por pedido es barato y no toca el inventario de las tiendas, así que protege la OSA tienda. A cambio, el CD suele estar lejos de los clientes: las rutas son más largas, sube el Order Cycle Time y cuesta cumplir promesas rápidas. Más capacidad de picking evita que se forme Backlog en días pico.",
+    "Surtir desde el CEDIS aprovecha su escala: el picking por pedido es barato y no toca el inventario de las tiendas, así que protege la OSA tienda. A cambio, el CEDIS suele estar lejos de los clientes: las rutas son más largas, sube el Order Cycle Time y cuesta cumplir promesas rápidas. Más capacidad de picking evita que se forme Backlog en días pico.",
   "D-02":
     "Surtir desde tienda acerca el pedido al cliente: rutas cortas, entregas más rápidas y mejor OTD para promesas de mismo día. Pero el picking en tienda es más caro y compite con la operación de piso: si se usa demasiado, cae la OSA tienda y sube el error de surtido (baja el Perfect Order). Más pickers suben la capacidad y el costo; el tope de horas de piso protege a la tienda.",
   "D-03":
@@ -183,7 +183,7 @@ export const IMPACT: Record<string, string> = {
 export const LABELS: LabelMap = {
   "F-01": { help: "Se captura en enero de cada año con los datos observados hasta ese momento." },
   "D-01": {
-    help: "Surtido desde el CD. Para apagarlo necesitas otro nodo que ya esté operando.",
+    help: "Surtido desde el CEDIS. Para apagarlo necesitas otro nodo que ya esté operando.",
     fields: { active: "Activo", capacity: "Capacidad de picking" },
     options: { low: "2,000 pedidos/día", mid: "3,500 pedidos/día", high: "5,000 pedidos/día" },
   },
@@ -329,12 +329,12 @@ export const TERRITORY_TEXT: Record<PlayableTerritory, { title: string; tagline:
   megalopolis: {
     title: "Megalópolis Centro",
     tagline: "Urbano denso con tráfico severo y competencia de quick commerce.",
-    facts: ["45 tiendas, CD periférico a 25–40 km", "Tráfico lento (~15 km/h) y muy variable", "Clientes fuera de casa de día; edificios y cotos", "Lluvias e inundaciones (jun–sep); no circula los días de contingencia"],
+    facts: ["45 tiendas, CEDIS periférico a 25–40 km", "Tráfico lento (~15 km/h) y muy variable", "Clientes fuera de casa de día; edificios y cotos", "Lluvias e inundaciones (jun–sep); no circula los días de contingencia"],
   },
   bajio: {
     title: "Ciudad Bajío",
     tagline: "Ciudad media ordenada: direcciones de calidad y tráfico moderado.",
-    facts: ["15 tiendas, CD a 10–15 km", "Tráfico medio (~30 km/h)", "Fraccionamientos con caseta; presencia media", "Marketplaces como competencia"],
+    facts: ["15 tiendas, CEDIS a 10–15 km", "Tráfico medio (~30 km/h)", "Fraccionamientos con caseta; presencia media", "Marketplaces como competencia"],
   },
   norte: {
     title: "Región Norte",

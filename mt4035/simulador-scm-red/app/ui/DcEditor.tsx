@@ -28,18 +28,18 @@ export function DcEditor({ value, onChange, state, disabled }: CustomControlProp
     const used = new Set(dcs.map((d) => d.zone));
     const zone = selected ?? [...zones].filter((z) => !used.has(z.id)).sort((a, b) => b.stores - a.stores)[0]?.id ?? 0;
     let n = dcs.length + 1;
-    while (dcs.some((d) => d.id === `CD-${n}`) || existing.has(`CD-${n}`)) n++;
-    onChange([...dcs, { id: `CD-${n}`, zone, type: "stocking", size: "medium" }]);
+    while (dcs.some((d) => d.id === `CEDIS-${n}`) || existing.has(`CEDIS-${n}`)) n++;
+    onChange([...dcs, { id: `CEDIS-${n}`, zone, type: "stocking", size: "medium" }]);
   };
   return (
     <div class="stack" style={{ gap: "0.5rem" }}>
       <NetworkMap state={{ ...state.model, dcs: dcs.map((d) => existing.get(d.id) ?? { ...d, activeFrom: 999, prevType: d.type, prevSize: d.size, typeFrom: -1, sizeFrom: -1, downUntil: -1 }) }} epoch={state.epoch} selectedZone={selected} onSelectZone={disabled ? undefined : setSelected} />
-      <p class="small muted">Toca una zona del mapa para elegir dónde agregar el próximo CD.</p>
+      <p class="small muted">Toca una zona del mapa para elegir dónde agregar el próximo CEDIS.</p>
       <div class="table-scroll">
         <table>
           <thead>
             <tr>
-              <th>CD</th>
+              <th>CEDIS</th>
               <th>Zona</th>
               <th>Tipo</th>
               <th>Tamaño</th>
@@ -94,9 +94,9 @@ export function DcEditor({ value, onChange, state, disabled }: CustomControlProp
       </div>
       <div class="row">
         <button type="button" onClick={add} disabled={disabled || dcs.length >= 20}>
-          + Agregar CD{selected !== undefined ? ` en la zona Z${selected}` : ""}
+          + Agregar CEDIS{selected !== undefined ? ` en la zona Z${selected}` : ""}
         </button>
-        <span class="small muted">{dcs.length}/20 CD</span>
+        <span class="small muted">{dcs.length}/20 CEDIS</span>
       </div>
     </div>
   );

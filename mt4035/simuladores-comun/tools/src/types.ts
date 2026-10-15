@@ -64,7 +64,13 @@ export interface AutoplayAdapter<S = any, P = any> {
   /** Escenarios estructurales a recorrer (p. ej. regiones o territorios). */
   scenarios: string[];
   strategies: string[];
-  config(scenario: string, seed: number): GameConfig;
+  /** Configuración de la partida; con `perStrategyRuns`, también recibe la estrategia que se juega. */
+  config(scenario: string, seed: number, strategy?: string): GameConfig;
+  /**
+   * Si la estrategia cambia la operación (no solo el puntaje), cada estrategia se juega en su propia partida y se
+   * califica con ella. Sin esto, una sola partida califica todas las estrategias.
+   */
+  perStrategyRuns?: boolean;
   score(reports: readonly EpochReport[], strategy: string, scenario: string): number;
   /**
    * Opcional: objetivo del bot buscador si difiere de `score` (p. ej. la utilidad acumulada, que es el
@@ -93,6 +99,8 @@ export interface Task {
 
 export interface RunRecord extends Task {
   ok: boolean;
+  /** Partidas completas simuladas para este registro (una por estrategia con perStrategyRuns). */
+  games?: number;
   error?: string;
   /** Violaciones de invariantes detectadas por adapter.check. */
   problems: string[];

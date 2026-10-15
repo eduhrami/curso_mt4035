@@ -18,57 +18,66 @@ const topZones = (s: S, n: number) =>
     .sort((a, b) => b.stores - a.stores || a.id - b.id)
     .slice(0, n)
     .map((z) => z.id);
-const allDc = { fresh: "dc", chilled: "dc", ambient: "dc", frozen: "dc" } as const;
-const csl = (v: number) => ({ fresh: v, chilled: v, ambient: v, frozen: v });
 
-/** BOT-B · Trasplante del modelo Kaigan: 3×/día, cross-dock combinado, sin densificar. */
+/** BOT-B · Trasplante del modelo Kaigan: 2×/día, cross-dock combinado, sin densificar. */
 export function naiveTransplant(dcCount = 2): Policy<ScmState> {
   return (s, e) => {
     if (e !== 0) return {};
     const dcs: DcSpec[] = topZones(s, dcCount).map((zone, i) => ({ id: `N-${i + 1}`, zone, type: "combined", size: "medium" }));
-    return { "D-01": dcs, "D-10": allDc, "D-11": { fresh: 21, chilled: 21, ambient: 7, frozen: 3 }, "D-12": "combined", "D-14": { type: "multi", telemetry: true } };
+    return { "D-01": [...planned(s), ...dcs], "D-11": { fresh: 14, chilled: 14, ambient: 7, frozen: 3 }, "D-12": "combined" };
   };
 }
 
-/** BOT-C en Red River: CD regionales chicos con inventario (caben en el tope de inversión en dos años), frescos por DSD, información y consolidación. */
+/** BOT-C en Red River: conserva el CEDIS central y suma CEDIS regionales combinados chicos (caben en el tope de inversión en dos años), información y consolidación combinada. */
 export function adaptedDispersed(): Policy<ScmState> {
-  return (_s, e) => {
+  return (s, e) => {
     if (e === 0) {
-      const dcs: DcSpec[] = [7, 10, 25, 28].map((zone, i) => ({ id: `A-${i + 1}`, zone, type: "stocking", size: "small" }));
-      return { "D-01": dcs, "D-30": "pos_daily", "D-31": "weekly", "D-32": "seasonal", "D-23": "scan" };
+      const dcs: DcSpec[] = [7, 10, 25, 28].map((zone, i) => ({ id: `A-${i + 1}`, zone, type: "combined", size: "small" }));
+      return { "D-01": [...planned(s), ...dcs], "D-12": "combined", "D-30": "pos_daily", "D-31": "yes", "D-32": "advanced", "D-23": "scan" };
     }
     if (e === 3) {
-      return { "D-10": { fresh: "dsd", chilled: "dc", ambient: "dc", frozen: "dc" }, "D-11": { fresh: 7, chilled: 3, ambient: 2, frozen: 1 }, "D-24": 2, "D-20": "periodic", "D-16": "preventive" };
+      return { "D-11": { fresh: 7, chilled: 3, ambient: 2, frozen: 1 }, "D-24": 2, "D-20": "periodic" };
     }
     return {};
   };
 }
 
-/** BOT-C en Valle: CD convertidos a combinados por temperatura, frescos por CD, información y horas valle. */
+/** BOT-C en Valle: convierte sus CEDIS con inventario a combinados (los frescos dejan de envejecer en el CEDIS) con
+ * consolidación combinada, frescos 2×/día, POS con terminal y tanpin kanri, POS compartido. */
 export function adaptedValle(): Policy<ScmState> {
   return (s, e) => {
     if (e === 0) {
       return {
         "D-01": planned(s).map((d) => ({ ...d, type: "combined" as const })),
-        "D-30": "pos_daily",
-        "D-31": "weekly",
-        "D-32": "seasonal",
+        "D-12": "combined",
+        "D-11": { fresh: 14, chilled: 3, ambient: 1, frozen: 1 },
+        "D-30": "pos_terminal",
+        "D-31": "yes",
         "D-23": "scan",
-        "D-15": "offpeak",
-        "D-16": "preventive",
-        "D-24": 0,
       };
     }
-    if (e === 1) return { "D-10": allDc, "D-12": "combined", "D-11": { fresh: 14, chilled: 7, ambient: 3, frozen: 2 } };
+    // Tanpin kanri cuando la terminal ya está implantada.
+    if (e === 4) return { "D-20": "tanpin" };
     return {};
   };
 }
 
-/** BOT-C en Kaigan: amplía la red saturada con CD combinados (uno por año por el tope) y profundiza la colaboración. */
+/** BOT-C en Kaigan: convierte el CEDIS central a combinado y construye tres combinados a lo largo de la costa, con
+ * consolidación combinada, frescos 2×/día y CPFR desde el inicio (el tope reparte la red en dos años). */
 export function adaptedKaigan(): Policy<ScmState> {
   return (s, e) =>
     e === 0
-      ? { "D-01": [...planned(s), ...[20, 8].map((zone, i): DcSpec => ({ id: `K-${i + 1}`, zone, type: "combined", size: "medium" }))], "D-33": "cpfr", "D-16": "predictive" }
+      ? {
+          "D-01": [
+            ...planned(s).map((d) => ({ ...d, type: "combined" as const })),
+            { id: "K-1", zone: 0, type: "combined", size: "medium" },
+            { id: "K-2", zone: 24, type: "combined", size: "medium" },
+            { id: "K-3", zone: 30, type: "combined", size: "medium" },
+          ],
+          "D-12": "combined",
+          "D-11": { fresh: 14, chilled: 3, ambient: 2, frozen: 1 },
+          "D-33": "cpfr",
+        }
       : {};
 }
 
@@ -84,20 +93,14 @@ export function maximalist(): Policy<ScmState> {
       .map((zone, i): DcSpec => ({ id: `M-${i + 1}`, zone, type: "combined", size: "large" }));
     return {
       "D-01": [...cur, ...extra],
-      "D-10": allDc,
-      "D-11": { fresh: 21, chilled: 21, ambient: 7, frozen: 7 },
+      "D-11": { fresh: 14, chilled: 14, ambient: 7, frozen: 7 },
       "D-12": "combined",
-      "D-21": csl(0.99),
       "D-30": "pos_terminal",
-      "D-31": "daily",
-      "D-32": "causal",
+      "D-31": "yes",
+      "D-32": "advanced",
       "D-33": "cpfr",
       "D-34": "high",
-      "D-14": { type: "multi", telemetry: true },
-      "D-16": "predictive",
       "D-23": "scan",
-      "D-15": "offpeak",
-      "D-13": "own",
       "D-20": "tanpin",
     };
   };
@@ -111,21 +114,15 @@ export function minimalist(): Policy<ScmState> {
     const keep: DcSpec[] = cur.length ? [{ ...cur[0]!, type: "stocking" }] : [{ id: "MIN-1", zone: topZones(s, 1)[0]!, type: "stocking", size: "small" }];
     return {
       "D-01": keep,
-      "D-10": allDc,
       "D-11": { fresh: 7, chilled: 3, ambient: 1, frozen: 1 },
       "D-12": "supplier",
-      "D-21": csl(0.85),
       "D-30": "basic",
       "D-31": "no",
-      "D-32": "moving_avg",
-      "D-33": "arms",
+      "D-32": "basic",
+      "D-33": "rmi",
       "D-34": "low",
       "D-20": "periodic",
-      "D-16": "corrective",
-      "D-13": "spot",
       "D-23": "manual",
-      "D-15": "peak",
-      "D-14": { type: "mono", telemetry: false },
     };
   };
 }
@@ -138,25 +135,18 @@ export function randomPolicy(seed: number): Policy<ScmState> {
     const dcs = planned(s);
     const candidates: DecisionChanges[] = [
       { "D-11": { fresh: st.int(7, 21), chilled: st.int(3, 21), ambient: st.int(1, 7), frozen: st.int(1, 7) } },
-      { "D-21": { fresh: st.uniform(0.85, 0.99), chilled: st.uniform(0.85, 0.99), ambient: st.uniform(0.85, 0.99), frozen: st.uniform(0.85, 0.99) } },
-      { "D-31": pick(["no", "weekly", "daily"]) },
-      { "D-32": pick(["moving_avg", "seasonal", "causal"]) },
-      { "D-13": pick(["own", "dedicated", "spot"]) },
-      { "D-14": { type: pick(["mono", "multi"]), telemetry: st.bernoulli(0.5) } },
-      { "D-15": pick(["peak", "offpeak"]) },
-      { "D-16": pick(["corrective", "preventive", "predictive"]) },
+      { "D-31": pick(["no", "yes"]) },
+      { "D-32": pick(["basic", "advanced"]) },
       { "D-22": { skus: st.int(2000, 4000), local: st.bernoulli(0.5) } },
       { "D-23": pick(["manual", "scan"]) },
-      { "D-25": pick(["fifo", "discount"]) },
       { "D-34": pick(["low", "mid", "high"]) },
       { "D-05": pick(["dominance", "dispersed", "mixed"]) },
       { "D-08": st.int(0, 60) },
       { "D-30": pick(["basic", "pos_daily", "pos_terminal"]) },
-      { "D-33": pick(["arms", "vmi", "cpfr"]) },
+      { "D-33": pick(["rmi", "cpfr"]) },
       { "D-20": pick(["rop", "periodic", "tanpin"]) },
       { "D-24": st.uniform(0, 5) },
       { "D-12": pick(["supplier", "combined"]) },
-      { "D-10": { fresh: pick(["dc", "dsd"]), chilled: pick(["dc", "dsd"]), ambient: pick(["dc", "dsd"]), frozen: pick(["dc", "dsd"]) } },
       {
         "D-01": [
           ...dcs,
@@ -174,28 +164,24 @@ export function randomPolicy(seed: number): Policy<ScmState> {
   };
 }
 
-/** BOT-G · Reactivo: ajusta frecuencia y CSL con reglas simples sobre los KPIs de la época anterior. */
+/** BOT-G · Reactivo: ajusta la frecuencia con reglas simples sobre los KPIs de la época anterior (el CSL lo fija la estrategia). */
 export function reactive(): Policy<ScmState> {
   return (s): DecisionChanges => {
     const last = s.history[s.history.length - 1]?.kpis;
     if (!last) return {};
     const freq = { ...(engine.effectiveValue(s, "D-11") as ScmState["dec"]["freq"]) };
-    const c = { ...(engine.effectiveValue(s, "D-21") as ScmState["dec"]["csl"]) };
-    const fresh = (engine.effectiveValue(s, "D-10") as ScmState["dec"]["flows"]).fresh;
-    if ((last.OSA_FRESH! < 0.92 || last.WASTE_FRESH! > 0.08) && fresh === "dc") freq.fresh = Math.min(21, freq.fresh + 7);
+    if (last.OSA_FRESH! < 0.92 || last.WASTE_FRESH! > 0.08) freq.fresh = Math.min(14, freq.fresh + 7);
     if (last.CTS_PCT! > 0.12) {
       freq.ambient = Math.max(1, freq.ambient - 1);
       freq.chilled = Math.max(3, freq.chilled - 2);
     }
-    const step = last.OSA! < 0.93 ? 0.02 : last.WASTE! > 0.06 ? -0.02 : 0;
-    if (step) for (const k of Object.keys(c) as (keyof typeof c)[]) c[k] = Math.min(0.99, Math.max(0.85, c[k] + step));
-    return { "D-11": freq, "D-21": c };
+    return { "D-11": freq };
   };
 }
 
 /** BOT-I · Solo información: POS diario y compartido con proveedores, nada más (SCM-AUT-11). */
 export function infoOnly(): Policy<ScmState> {
-  return (_s, e) => (e === 0 ? { "D-30": "pos_daily", "D-31": "daily" } : {});
+  return (_s, e) => (e === 0 ? { "D-30": "pos_daily", "D-31": "yes" } : {});
 }
 
 export const bots: Bot<ScmState>[] = [
@@ -216,30 +202,20 @@ export const bots: Bot<ScmState>[] = [
 
 /** Espacio de búsqueda de BOT-H (casos de prueba §11.1). dcCount = −1 conserva la red actual. */
 export const searchSpace = {
-  dcCount: [-1, 0, 1, 2, 4, 6, 8, 12],
+  dcCount: [-1, 1, 2, 4, 6, 8, 12],
   dcType: ["stocking", "crossdock", "combined"],
   dcSize: ["small", "medium", "large"],
-  flowFresh: ["dc", "dsd"],
-  flowChilled: ["dc", "dsd"],
-  flowAmbient: ["dc", "dsd"],
-  flowFrozen: ["dc", "dsd"],
-  freshFreq: [7, 14, 21],
-  chilledFreq: [3, 7, 14, 21],
+  freshFreq: [7, 14],
+  chilledFreq: [3, 7, 14],
   ambientFreq: [1, 2, 3, 7],
   frozenFreq: [1, 2, 3, 7],
-  // CSL de frescos aparte: en perecederos, más stock de seguridad que la vida de anaquel aguanta se vuelve merma (R-02).
-  cslFresh: [0.85, 0.9, 0.93, 0.95, 0.97, 0.99],
-  csl: [0.85, 0.9, 0.93, 0.95, 0.97, 0.99],
   info: ["basic", "pos_daily", "pos_terminal"],
-  sharing: ["no", "weekly", "daily"],
-  forecast: ["moving_avg", "seasonal", "causal"],
-  collaboration: ["arms", "vmi", "cpfr"],
+  sharing: ["no", "yes"],
+  forecast: ["basic", "advanced"],
+  // Momento de implantar CPFR (desde RMI): el beneficio madura en varios trimestres, así que tarde ya no se paga.
+  cpfrAt: ["never", "A1", "A2", "A3"],
   consolidation: ["supplier", "combined"],
   receiving: ["manual", "scan"],
-  window: ["peak", "offpeak"],
-  maintenance: ["corrective", "preventive", "predictive"],
-  multiTemp: [false, true],
-  telemetry: [false, true],
   dcSafetyDays: [0, 1, 2, 4],
   policy: ["rop", "periodic", "tanpin"],
 } as const;
@@ -268,42 +244,34 @@ function vectorDcTypes(v: Vec, scenario: string): string[] {
   return Array.from({ length: v.dcCount }, () => v.dcType);
 }
 
-/** Vector efectivo (lo que vectorPolicy aplica de verdad): flujos, consolidación, días de CD, colaboración y política coherentes. */
+/** Vector efectivo (lo que vectorPolicy aplica de verdad): consolidación, días de CD, colaboración y política coherentes. */
 export function canonicalVector(v: Vec, scenario: string): Vec {
   const types = vectorDcTypes(v, scenario);
   const c: Vec = { ...v };
-  if (v.dcCount !== -1 && v.dcCount === 0) Object.assign(c, { dcType: "stocking", dcSize: "medium" });
-  if (!types.length) Object.assign(c, { flowFresh: "dsd", flowChilled: "dsd", flowAmbient: "dsd", flowFrozen: "dsd" });
   if (!types.includes("combined")) c.consolidation = "supplier";
   if (!types.includes("stocking")) c.dcSafetyDays = 0;
-  if (v.sharing === "no") c.collaboration = "arms";
+  if (v.sharing === "no") c.cpfrAt = "never";
   if (v.policy === "tanpin" && v.info !== "pos_terminal") c.policy = "periodic";
   return c;
 }
 
 /** BOT-H · Política a partir de un vector del espacio de búsqueda (se sanea para que siempre valide). */
 export function vectorPolicy(v: Vec): Policy<ScmState> {
+  const cpfrEpoch = { never: -1, A1: 0, A2: 4, A3: 8 }[v.cpfrAt];
   return (s, e) => {
-    if (e !== 0) return {};
+    if (e !== 0) return e === cpfrEpoch && v.sharing === "yes" ? { "D-33": "cpfr" } : {};
     const dcs: DcSpec[] =
       v.dcCount === -1 ? planned(s) : spreadZones(s, v.dcCount).map((zone, i) => ({ id: `H-${i + 1}`, zone, type: v.dcType, size: v.dcSize }));
-    const hasDc = dcs.length > 0;
-    const flow = (f: "dc" | "dsd") => (hasDc ? f : "dsd");
     const sharing = v.sharing;
     return {
       "D-01": dcs,
-      "D-10": { fresh: flow(v.flowFresh), chilled: flow(v.flowChilled), ambient: flow(v.flowAmbient), frozen: flow(v.flowFrozen) },
       "D-11": { fresh: v.freshFreq, chilled: v.chilledFreq, ambient: v.ambientFreq, frozen: v.frozenFreq },
-      "D-21": { fresh: v.cslFresh, chilled: v.csl, ambient: v.csl, frozen: v.csl },
       "D-30": v.info,
       "D-31": sharing,
       "D-32": v.forecast,
-      "D-33": sharing === "no" ? "arms" : v.collaboration,
+      ...(cpfrEpoch === 0 && sharing === "yes" ? { "D-33": "cpfr" } : {}),
       "D-12": v.consolidation === "combined" && dcs.some((d) => d.type === "combined") ? "combined" : "supplier",
       "D-23": v.receiving,
-      "D-15": v.window,
-      "D-16": v.maintenance,
-      "D-14": { type: v.multiTemp ? "multi" : "mono", telemetry: v.telemetry },
       "D-24": dcs.some((d) => d.type === "stocking") ? v.dcSafetyDays : 0,
       "D-20": v.policy === "tanpin" && v.info !== "pos_terminal" ? "periodic" : v.policy,
     };
@@ -318,26 +286,16 @@ export function baselineVector(scenario: string): Vec {
     dcCount: -1,
     dcType: "stocking",
     dcSize: "medium",
-    flowFresh: d.flows.fresh,
-    flowChilled: d.flows.chilled,
-    flowAmbient: d.flows.ambient,
-    flowFrozen: d.flows.frozen,
     freshFreq: nearest(searchSpace.freshFreq, d.freq.fresh),
     chilledFreq: nearest(searchSpace.chilledFreq, d.freq.chilled),
     ambientFreq: nearest(searchSpace.ambientFreq, d.freq.ambient),
     frozenFreq: nearest(searchSpace.frozenFreq, d.freq.frozen),
-    cslFresh: nearest(searchSpace.cslFresh, d.csl.fresh),
-    csl: nearest(searchSpace.csl, (d.csl.chilled + d.csl.ambient + d.csl.frozen) / 3),
     info: d.info,
     sharing: d.sharing,
     forecast: d.forecast,
-    collaboration: d.collaboration,
+    cpfrAt: d.collaboration === "cpfr" ? "A1" : "never",
     consolidation: d.consolidation,
     receiving: d.receiving,
-    window: d.window,
-    maintenance: d.maintenance,
-    multiTemp: d.vehicle.type === "multi",
-    telemetry: d.vehicle.telemetry,
     dcSafetyDays: nearest(searchSpace.dcSafetyDays, d.dcSafetyDays),
     policy: d.policy,
   };
@@ -360,4 +318,3 @@ for (const b of bots) {
   // Todos los bots respetan el tope de inversión anual (AD-43): lo que no cabe se difiere al año siguiente.
   b.policy = (seed, scn, args) => withForecast(withBudget(inner(seed, scn, args)), b.id === "H" ? searchForecastError(seed) : 1);
 }
-bots.push({ id: "L", label: "Estático sin pronosticar", purpose: "Con el pronóstico nominal pierde contra BOT-A, que pronostica bien (AUT-15)", policy: () => noop });

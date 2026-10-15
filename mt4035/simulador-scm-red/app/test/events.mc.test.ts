@@ -7,7 +7,7 @@ import { perTickProbability } from "@mt4035/sim-core";
 import { events } from "../src/events.ts";
 import { createScmEngine, params } from "../src/model.ts";
 import type { RegionId, ScmState } from "../src/types.ts";
-import { det, fakeCtx, paramsWith, start, sto } from "./helpers/run.ts";
+import { det, engine, fakeCtx, fixtureWith, start, sto } from "./helpers/run.ts";
 
 const N = 1000;
 const Z = 2.576; // IC 99%: 36 comparaciones simultáneas
@@ -32,7 +32,7 @@ function expectedP(state: ScmState, id: string, r01FromWeek1: boolean): number {
   return 1 - (1 - without) * (1 - withFlag) ** (ticks - 1);
 }
 
-function observed(region: RegionId, eng = createScmEngine()): Map<string, number> {
+function observed(region: RegionId, eng = engine): Map<string, number> {
   const hits = new Map<string, number>();
   for (let seed = 1; seed <= N; seed++) {
     const rep = eng.confirmEpoch(eng.createGame(sto(region, seed))).report;
@@ -45,7 +45,7 @@ describe("SCM-EVT Monte Carlo (P1)", () => {
   for (const region of ["kaigan", "redriver", "valle"] as const) {
     it(`EVT-01 ${region}: P(≥1 ocurrencia en A1-T1) de cada evento cae en el IC 99% esperado`, () => {
       const s0 = start(sto(region, 1)).model;
-      const r01 = createScmEngine().confirmEpoch(start(det(region))).report.rulesFired.some((f) => f.id === "R-01" && f.tick === 0);
+      const r01 = engine.confirmEpoch(start(det(region))).report.rulesFired.some((f) => f.id === "R-01" && f.tick === 0);
       const hits = observed(region);
       for (const def of events) {
         const p = expectedP(s0, def.id, r01);
@@ -57,7 +57,7 @@ describe("SCM-EVT Monte Carlo (P1)", () => {
   }
 
   it("EVT-02 Kaigan: con rutas de frescos > 4 h la falla de refrigeración (X-01) es ≈ 1.5× más frecuente", () => {
-    const slow = createScmEngine(paramsWith((p) => {
+    const slow = createScmEngine(fixtureWith((p) => {
       p.regions.kaigan.speedKmh = 8;
     }));
     const shortRoutes = observed("kaigan").get("X-01") ?? 0;

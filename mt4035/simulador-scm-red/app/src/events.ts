@@ -13,7 +13,7 @@ const quarter = (ctx: Ctx) => ctx.state.epoch % 4;
 const ev = (p: Params) => p.events;
 const storeZones = (ctx: Ctx) => ctx.state.zones.filter((z) => z.stores > 0).map((z) => z.id);
 const pick = <T>(xs: readonly T[], u: number): T | undefined => xs[Math.min(xs.length - 1, Math.floor(u * xs.length))];
-const usesDc = (ctx: Ctx) => Object.values(ctx.state.dec.flows).includes("dc") && activeDcs(ctx.state, ctx.state.epoch).length > 0;
+const usesDc = (ctx: Ctx) => activeDcs(ctx.state, ctx.state.epoch).length > 0;
 const catLabel = (ctx: Ctx, c: unknown) => ctx.params.categories[c as (typeof CATEGORIES)[number]]?.label.toLowerCase() ?? String(c);
 const totalSuppliers = (ctx: Ctx) => CATEGORIES.reduce((a, c) => a + ctx.params.regions[ctx.state.region].suppliers[c], 0);
 
@@ -86,7 +86,7 @@ export const events: Ev[] = [
     },
     message: (ctx) => ({
       title: "Sismo severo",
-      body: ctx.state.memo["X-03.dc"] ? `El ${ctx.state.memo["X-03.dc"]} queda fuera de servicio ${ctx.state.memo["X-03.weeks"]} semanas; sus zonas se atienden desde otro CD.` : "Sismo sin daños a la red.",
+      body: ctx.state.memo["X-03.dc"] ? `El ${ctx.state.memo["X-03.dc"]} queda fuera de servicio ${ctx.state.memo["X-03.weeks"]} semanas; sus zonas se atienden desde otro CEDIS.` : "Sismo sin daños a la red.",
       severity: "critico",
     }),
   },
@@ -97,7 +97,7 @@ export const events: Ev[] = [
     modifiers: [
       { label: "cross-dock sin amortiguador", ref: "R-06", factor: (ctx) => ev(ctx.params)["X-04"].crossdockMult, when: (ctx) => usesDc(ctx) && activeDcs(ctx.state, ctx.state.epoch).every((d) => d.type !== "stocking") },
       { label: "proveedores dedicados", ref: "E-08", factor: (ctx) => ev(ctx.params)["X-04"].dedicatedMult, when: (ctx) => ctx.state.dec.dedicated.fresh || ctx.state.dec.dedicated.chilled },
-      { label: "CPFR", ref: "D-33", factor: (ctx) => ev(ctx.params)["X-04"].cpfrMult, when: (ctx) => ctx.state.dec.collaboration === "cpfr" },
+      { label: "CPFR", ref: "D-33", factor: (ctx) => 1 - (1 - ev(ctx.params)["X-04"].cpfrMult) * ctx.state.cpfrMaturity, when: (ctx) => ctx.state.dec.collaboration === "cpfr" },
     ],
     duration: (sev) => 2 + Math.round(2 * sev),
     onStart: (ctx) => {
@@ -117,11 +117,11 @@ export const events: Ev[] = [
     perTick: (ctx) => {
       const x = ev(ctx.params)["X-05"];
       ctx.state.shocks.demandMult.ambient *= x.demandMult;
-      if (ctx.state.dec.forecast !== "causal") ctx.state.shocks.cvMult *= x.cvMultNoCausal;
+      if (ctx.state.dec.forecast !== "advanced") ctx.state.shocks.cvMult *= x.cvMultNoCausal;
     },
     message: (ctx) => ({
       title: "Ola de calor",
-      body: ctx.state.dec.forecast === "causal" ? "Bebidas y helados +40%; el pronóstico causal lo anticipó." : "Bebidas y helados +40% y el pronóstico no lo anticipó: más faltantes.",
+      body: ctx.state.dec.forecast === "advanced" ? "Bebidas y helados +40%; el pronóstico avanzado lo anticipó con el clima." : "Bebidas y helados +40% y el pronóstico no lo anticipó: más faltantes.",
       severity: "alerta",
     }),
   },

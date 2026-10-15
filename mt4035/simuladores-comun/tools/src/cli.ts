@@ -6,6 +6,7 @@
  *   replay    corrida1.json corrida2.json …
  *   aggregate carpeta/  → CSV resumen del grupo
  */
+import { appendRunLedger } from "./ledger.ts";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { kpiRows, parseExport, replay, toCSV, type Engine } from "@mt4035/sim-core";
@@ -86,6 +87,8 @@ export async function autoplayCli(adapterUrl: string, argv: readonly string[]): 
   writeFileSync(join(out, `coherencia-${stamp}.json`), JSON.stringify(rep, null, 2));
   writeFileSync(join(out, "latest.md"), md);
   if (flags.records === "true") writeFileSync(join(out, `registros-${stamp}.json`), JSON.stringify(records));
+  const cfg = adapter.config(scenarios[0]!, 1) as { simVersion?: string; paramsVersion?: string };
+  appendRunLedger(out, { tool: "autoplay", sim: adapter.sim, simVersion: cfg.simVersion, paramsVersion: cfg.paramsVersion });
   process.stdout.write(md + `\n\nTiempo total: ${((Date.now() - t0) / 1000).toFixed(1)} s · reporte en ${out}\n`);
   return rep.alarms.length ? 1 : 0;
 }

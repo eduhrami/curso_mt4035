@@ -10,8 +10,8 @@ import { NetworkMap } from "./NetworkMap.tsx";
 const COSTS: [string, string][] = [
   ["transport", "Reparto a tiendas"],
   ["inbound", "Flete de proveedores"],
-  ["handling", "Manejo en CD"],
-  ["dcFixed", "CD (fijo)"],
+  ["handling", "Manejo en CEDIS"],
+  ["dcFixed", "CEDIS (fijo)"],
   ["receivingCost", "Recepción en tienda"],
   ["carrying", "Inventario"],
 ];
@@ -110,7 +110,7 @@ export function Dashboard({ state }: { state: GameState<ScmState> }) {
         <h2>Red</h2>
         <NetworkMap state={state.model} epoch={state.epoch} />
         <p class="small">
-          {last.kpis.STORES?.toFixed(0)} tiendas · {last.kpis.DC_COUNT} CD operando · distancia media CD→tienda {fmt(last.kpis.DC_DIST_KM, "num0")} km · {fmt(last.kpis.STOPS_PER_ROUTE, "num1")} paradas por ruta
+          {last.kpis.STORES?.toFixed(0)} tiendas · {last.kpis.DC_COUNT} CEDIS operando · distancia media CEDIS→tienda {fmt(last.kpis.DC_DIST_KM, "num0")} km · {fmt(last.kpis.STOPS_PER_ROUTE, "num1")} paradas por ruta
         </p>
       </div>
     </div>
@@ -169,14 +169,14 @@ export const PNL: [string, string, 1 | -1][] = [
   ["WASTE_COST", "Merma (frescos caducados y fallas de frío)", -1],
   ["OVERSTOCK_COST", "Rebajas por comprar de más (pronóstico alto)", -1],
   ["TRANSPORT_COST", "Reparto a tiendas (transporte)", -1],
-  ["INBOUND_COST", "Flete de las plantas de proveedores al CD", -1],
-  ["HANDLING_COST", "Manejo en CD", -1],
-  ["DC_FIXED_COST", "Costo fijo de los CD", -1],
+  ["INBOUND_COST", "Flete de las plantas de proveedores al CEDIS", -1],
+  ["HANDLING_COST", "Manejo en CEDIS", -1],
+  ["DC_FIXED_COST", "Costo fijo de los CEDIS", -1],
   ["RECEIVING_COST", "Recepción en tienda", -1],
   ["CARRYING_COST", "Costo de mantener inventario", -1],
   ["IT_COST", "Tecnología y capacitación", -1],
   ["EBITDA", "EBITDA logístico", 1],
-  ["CAPEX", "Inversión (CD, aperturas de tiendas) y cargos (cierre de CD)", -1],
+  ["CAPEX", "Inversión (CEDIS, aperturas de tiendas) y cargos (cierre de CEDIS)", -1],
   ["SERVICE_PENALTY", "Penalizaciones por servicio (guardrails de tu propuesta de valor)", -1],
   ["PROFIT", "Utilidad", 1],
 ];

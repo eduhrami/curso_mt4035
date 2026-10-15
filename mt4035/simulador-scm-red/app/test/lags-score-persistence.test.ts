@@ -2,8 +2,9 @@
 import { describe, expect, it } from "vitest";
 import { buildExport, kpiRows, MemoryStorage, openStorage, parseExport, replay, RunRepository, toCSV, verifyChecksum } from "@mt4035/sim-core";
 import { playGame } from "@mt4035/sim-core/testing";
-import { capexBudget, createScmEngine, params, PARAMS_VERSION, profitFor, profitOf, scoreRun, scoreSpecs, SIM_VERSION } from "../src/index.ts";
+import { capexBudget, createScmEngine, params, PARAMS_VERSION, scoreRun, scoreSpecs, SIM_VERSION } from "../src/index.ts";
 import { det, engine, paramsWith, randomPolicy, run, start, sto } from "./helpers/run.ts";
+import { effectiveCv } from "../src/tick.ts";
 
 describe("SCM-LAG (P1)", () => {
   it("LAG-01 CD mediano decidido en A1-T1 opera desde A1-T4; el capex se carga en A1-T1", () => {
@@ -36,7 +37,7 @@ describe("SCM-LAG (P1)", () => {
     const over = capped.validate(s, { "D-08": n }); // A1-T2: otros ~6 M exceden el tope de 10 M
     expect(over.ok).toBe(false);
     expect(over.errors[0]!.message).toMatch(/Tope de inversión de A1/);
-    expect(capped.validate(s, { "D-01": [] }).ok).toBe(true); // sin capex no hay restricción
+    expect(capped.validate(s, { "D-11": { fresh: 7, chilled: 3, ambient: 2, frozen: 1 } }).ok).toBe(true); // sin capex no hay restricción
     for (let e = 1; e < 4; e++) s = capped.confirmEpoch(s).state;
     expect(capped.validate(s, { "D-08": n }).ok).toBe(true); // A2-T1: el tope se renueva
     expect(capped.validate(capped.createGame(det("redriver")), { "D-08": 3 * n }).ok).toBe(true); // budget "off" en pruebas
@@ -61,10 +62,21 @@ describe("SCM-LAG (P1)", () => {
     expect(r.reports[1]!.kpis.STORES).toBeLessThan(r.reports[0]!.kpis.STORES!);
   });
 
-  it("LAG-05 CPFR/VMI sin compartir POS se rechaza; con D-31 preparado se acepta", () => {
+  it("LAG-12 CPFR desde RMI: cobra la implementación, entra un trimestre después y su beneficio madura en tres", () => {
+    const s0 = start(det("redriver"));
+    expect(s0.model.dec.collaboration).toBe("rmi");
+    const r = run(s0, 6, (_s, e) => (e === 0 ? { "D-31": "yes", "D-33": "cpfr" } : {}));
+    expect(r.reports[0]!.ledger).toContainEqual(expect.objectContaining({ source: "D-33", amount: params.info.cpfr.implementation }));
+    const m = r.reports.map((x) => Math.round(x.kpis.CPFR_MATURITY! * 100) / 100);
+    expect(m).toEqual([0, 0, 0.33, 0.67, 1, 1]);
+    // Con el CPFR maduro, el error de pronóstico efectivo baja respecto de RMI.
+    expect(effectiveCv(r.state.model, params)).toBeLessThan(effectiveCv({ ...r.state.model, cpfrMaturity: 0 }, params));
+  });
+
+  it("LAG-05 CPFR sin compartir POS se rechaza; con el POS compartido preparado se acepta", () => {
     const s = start(det("redriver"));
     expect(engine.validate(s, { "D-33": "cpfr" }).errors[0]?.message).toMatch(/compartir POS/);
-    expect(engine.validate(s, { "D-33": "cpfr", "D-31": "daily" }).ok).toBe(true);
+    expect(engine.validate(s, { "D-33": "cpfr", "D-31": "yes" }).ok).toBe(true);
   });
 
   it("LAG-06 tanpin kanri sin terminal gráfica se rechaza", () => {
@@ -79,25 +91,15 @@ describe("SCM-LAG (P1)", () => {
 });
 
 describe("SCM-SCO (P1)", () => {
-  it("SCO-07 profitFor reproduce la utilidad de jugar la misma corrida con cada propuesta de valor", () => {
-    for (const region of ["redriver", "valle"] as const) {
-      const base = run(start(sto(region, 11, { strategy: "freshness" })), 12).reports;
-      for (const strategy of ["freshness", "lowcost", "convenience"] as const) {
-        const real = profitOf(run(start(sto(region, 11, { strategy })), 12).reports);
-        expect(profitFor(base, strategy, params, region), `${region}/${strategy}`).toBeCloseTo(real, -2);
-      }
-    }
-  });
-
   it("SCO-01 los pesos suman 1 por estrategia", () => {
     for (const st of ["freshness", "lowcost", "convenience"] as const) expect(scoreSpecs(st, params).reduce((a, s) => a + s.weight, 0)).toBeCloseTo(1, 12);
   });
 
   it("SCO-02 una corrida de OSA alta y costo alto puntúa más bajo frescura que bajo bajo costo", () => {
     const pricey = playGame(engine, det("kaigan"), (_s, e) =>
-      e === 0 ? { "D-21": { fresh: 0.95, chilled: 0.99, ambient: 0.99, frozen: 0.99 }, "D-11": { fresh: 21, chilled: 21, ambient: 7, frozen: 7 }, "D-13": "spot" } : {},
+      e === 0 ? { "D-11": { fresh: 14, chilled: 14, ambient: 7, frozen: 7 } } : {},
     ).reports;
-    expect(scoreRun(pricey, "freshness", params).score).toBeGreaterThan(scoreRun(pricey, "lowcost", params).score);
+    expect(scoreRun(pricey, "freshness", params, "kaigan").score).toBeGreaterThan(scoreRun(pricey, "lowcost", params, "kaigan").score);
   });
 
   it("SCO-03 el puntaje decrece de forma estricta con las violaciones de guardrail", () => {

@@ -23,7 +23,8 @@ export function effectiveCv(s: ScmState, p: Params): number {
   const seasonPenalty = 1 + amp * (fc.seasonPenalty[d.forecast] + pol.seasonPenalty);
   const skuRatio = d.assortment.skus / p.assortment.refSkus;
   const assort = Math.sqrt(skuRatio) * (d.assortment.local ? p.assortment.localCvMult : 1);
-  return p.markets.volatility[s.market.volatility] * info * fc.cvMult[d.forecast] * policyMult * seasonPenalty * assort * s.shocks.cvMult;
+  const cpfr = 1 - (1 - p.info.cpfr.cvMult) * s.cpfrMaturity;
+  return p.markets.volatility[s.market.volatility] * info * fc.cvMult[d.forecast] * policyMult * seasonPenalty * assort * cpfr * s.shocks.cvMult;
 }
 
 /** Bullwhip (Chen et al., 2000) atenuado por POS compartido. */
@@ -33,10 +34,21 @@ export function bullwhip(ltDays: number, s: ScmState, p: Params): number {
   return 1 + (raw - 1) * p.info.sharing.bwrMult[s.dec.sharing];
 }
 
+/** Efecto de la colaboración: de RMI hacia CPFR según la madurez del CPFR. */
+const collab = (m: { rmi: number; cpfr: number }, s: ScmState) => m.rmi + (m.cpfr - m.rmi) * s.cpfrMaturity;
+
+/** Frecuencia máxima por semana desde un CD según el tiempo de ida y vuelta a la zona (AD-49). */
+export function maxFreqPerWeek(distKm: number, speedKmh: number, p: Params): number {
+  const t = p.dc.maxFreqByRoundTrip;
+  const hours = (2 * distKm) / Math.max(speedKmh, 1);
+  const i = t.hours.findIndex((h) => hours <= h);
+  return i < 0 ? t.beyond : t.perWeek[i]!;
+}
+
 export function supplierLt(c: Category, s: ScmState, p: Params): number {
   const r = p.regions[s.region];
   const dedicated = (c === "fresh" || c === "chilled") && s.dec.dedicated[c] ? p.supplier.dedicatedLtMult : 1;
-  return r.supplierLtDays[c] * p.supplier.collabLtMult[s.dec.collaboration] * dedicated;
+  return r.supplierLtDays[c] * collab(p.supplier.collabLtMult, s) * dedicated;
 }
 
 export function demandMix(s: ScmState, p: Params): Record<Category, number> {
@@ -76,7 +88,7 @@ export function scmTick(ctx: Ctx): void {
 
   const prev = s.flags;
   s.highWaste = { fresh: [], chilled: [], ambient: [], frozen: [] };
-  s.flags = { r01: false, r02: perCat(() => s.zones.map(() => false)), r04: false, r07: false };
+  s.flags = { r01: false, r02: perCat(() => s.zones.map(() => false)), r04: false, r07: false, freqCapped: [], unserved: [] };
   const sh = s.shocks;
 
   // Mercado: proceso de demanda oculto de la partida (§4.4); el pronóstico del equipo (F-01) planea el inventario.
@@ -105,9 +117,9 @@ export function scmTick(ctx: Ctx): void {
   const ltSup = perCat((c) => supplierLt(c, s, p));
   const bwr = perCat((c) => bullwhip(ltSup[c], s, p));
   const frProv = perCat((c) =>
-    clamp(p.supplier.frBase[rel] + r.supplierFrAdj - p.supplier.bwrBeta * (bwr[c] - 1) + p.supplier.collabFrGain[d.collaboration], p.supplier.frFloor, 0.999) * sh.supplierFrMult[c],
+    clamp(p.supplier.frBase[rel] + r.supplierFrAdj - p.supplier.bwrBeta * (bwr[c] - 1) + collab(p.supplier.collabFrGain, s), p.supplier.frFloor, 0.999) * sh.supplierFrMult[c],
   );
-  const ltCv = p.supplier.ltCv[rel] * p.supplier.collabLtCvMult[d.collaboration];
+  const ltCv = p.supplier.ltCv[rel] * collab(p.supplier.collabLtCvMult, s);
 
   // Paradas y vehículos
   const stopH = p.stop.baseHours * p.stop.factor[`${d.window}_${d.receiving}` as keyof typeof p.stop.factor] * sh.stopMult;
@@ -127,7 +139,6 @@ export function scmTick(ctx: Ctx): void {
     const base = z.stores > 0 ? s.truth.level * growth * z.trust * z.competition * densityDemandMult(geo[zi]!.rho, p) * assortMult : 0;
     return { fresh: base * catFactor.fresh, chilled: base * catFactor.chilled, ambient: base * catFactor.ambient, frozen: base * catFactor.frozen };
   });
-  const usesDc = (zi: number, c: Category) => d.flows[c] === "dc" && assign[zi] !== null;
   const dcCases = new Map<string, number>();
   const dcStores = new Map<string, number>();
   s.zones.forEach((z, zi) => {
@@ -135,7 +146,7 @@ export function scmTick(ctx: Ctx): void {
   });
   s.zones.forEach((z, zi) => {
     for (const c of CATEGORIES) {
-      if (!usesDc(zi, c)) continue;
+      if (!assign[zi]) continue;
       const id = assign[zi]!.dc.dc.id;
       dcCases.set(id, (dcCases.get(id) ?? 0) + (demandRate[zi]![c] * z.stores) / p.categories[c].unitsPerCase);
     }
@@ -173,61 +184,72 @@ export function scmTick(ctx: Ctx): void {
       const cat = p.categories[c];
       const mu = demandRate[zi]![c];
       if (mu <= 0) continue;
-      const viaDc = usesDc(zi, c);
-      const dcA: ActiveDc | null = viaDc ? a!.dc : null;
-      const type = dcA?.type;
+      // Todo pasa por un CEDIS: una zona sin CEDIS activo (greenfield antes del primero, CEDIS caído sin respaldo)
+      // no recibe mercancía y pierde toda su venta (R-14).
+      if (!a) {
+        const noise = ctx.stream("demand", ctx.tick, zi * 10 + CATEGORIES.indexOf(c)).normal() * ctx.noise;
+        const demand = mu * 7 * n * Math.max(0, 1 + cvWeek * noise + shock);
+        m.demand! += demand;
+        m.lost! += demand;
+        m[CK[c].demand]! += demand;
+        zoneDemand += demand;
+        if (!s.flags.unserved.includes(zi)) s.flags.unserved.push(zi);
+        continue;
+      }
+      const dcA: ActiveDc = a.dc;
+      const type = dcA.type;
       const nSup = r.suppliers[c];
-      const consolidated = viaDc && (type === "stocking" || (type === "combined" && d.consolidation === "combined"));
-      const dsdFreq = p.supplier.dsdFreqPerWeek[c];
-      const perStoreWeek = viaDc ? d.freq[c] * (consolidated ? 1 : nSup) : dsdFreq * nSup;
-      const reviewDays = viaDc ? 7 / d.freq[c] : 7 / dsdFreq;
+      const consolidated = (type === "stocking" || (type === "combined" && d.consolidation === "combined"));
+      // La distancia al CD limita cuántas veces por semana se puede visitar la tienda (R-13).
+      const freq = Math.min(d.freq[c], maxFreqPerWeek(a.distKm, r.speedKmh * (1 - r.congestionMean), p));
+      if (freq < d.freq[c] && !s.flags.freqCapped.includes(zi)) s.flags.freqCapped.push(zi);
+      const perStoreWeek = freq * (consolidated ? 1 : nSup);
+      const reviewDays = 7 / freq;
       const dropCases = (mu * reviewDays) / cat.unitsPerCase / (consolidated ? 1 : nSup);
-      const util = viaDc ? dcUtil.get(dcA!.dc.id) ?? 0 : 0;
-      const capFactor = viaDc ? Math.min(1, 1 / Math.max(util, 1e-9)) : 1;
-      const highUtil = viaDc && util > p.dc.highUtil;
+      const util = dcUtil.get(dcA.dc.id) ?? 0;
+      const capFactor = Math.min(1, 1 / Math.max(util, 1e-9));
+      const highUtil = util > p.dc.highUtil;
       if (highUtil) s.flags.r07 = true;
 
-      // Tramo de entrada (E-08): de la planta del proveedor al CD, o a la tienda si es DSD. Sin planta en la región,
-      // el proveedor es externo: flete en el precio y lead time de la región (supplierDistKm solo para el DSD).
+      // Tramo de entrada (E-08): de la planta del proveedor al CEDIS. Sin planta en la región, el proveedor es
+      // externo: flete en el precio y lead time de la región.
       const sites = r.supplierSites as SupplierSite[];
-      const inboundKm = siteKm(viaDc ? s.zones[a!.dc.dc.zone]! : z, c, sites, s.zones, p, r.sideKm);
-      const inboundDays = viaDc && inboundKm !== null ? inboundKm / r.speedKmh / 24 : 0;
+      const inboundKm = siteKm(s.zones[dcA.dc.zone]!, c, sites, s.zones, p, r.sideKm);
+      const inboundDays = inboundKm !== null ? inboundKm / r.speedKmh / 24 : 0;
       const rt = route({
         maxStops: cat.maxStopsPerRoute,
-        distKm: viaDc ? a!.distKm : (inboundKm ?? r.supplierDistKm * p.circuity),
-        deltaKm: viaDc ? g.deltaKm : 0.7 / Math.sqrt(g.rho * r.dsdSharedDensity),
+        distKm: a.distKm,
+        deltaKm: g.deltaKm,
         dropCases,
-        capacityCases: viaDc ? capCases : p.vehicle.capacityCases.mono,
+        capacityCases: capCases,
         speedKmh: speed,
         stopHours: stopH,
         shiftHours: p.shiftHours,
       });
       const deliveriesWeek = n * perStoreWeek;
       const routesWeek = deliveriesWeek / rt.stops;
-      const kmCost = viaDc ? ownKm : r.kmCost;
-      const hourCost = viaDc ? ownHour : r.hourCost;
+      const kmCost = ownKm;
+      const hourCost = ownHour;
       const linehaulPremium = rt.relay ? p.vehicle.relayTeamPremium * 2 * rt.oneWayHours * hourCost : 0;
       const costPerRoute = kmCost * rt.km * fuel + hourCost * rt.routeHours + linehaulPremium;
-      // DSD: el proveedor cobra una tarifa por entrega incluida en el precio (rutas compartidas con otros clientes).
-      m.transport! += viaDc ? routesWeek * costPerRoute : deliveriesWeek * r.dsdFeePerDelivery * fuel;
+      m.transport! += routesWeek * costPerRoute;
       m.deliveries! += deliveriesWeek;
       zoneDeliveriesPerStoreWeek += perStoreWeek;
-      if (viaDc) {
-        m.dcDistKmW! += a!.distKm * deliveriesWeek;
-        m.dcDeliveries! += deliveriesWeek;
-        m.dcRoutes! += routesWeek;
-      }
+      m.dcDistKmW! += a.distKm * deliveriesWeek;
+      m.dcDeliveries! += deliveriesWeek;
+      m.dcRoutes! += routesWeek;
       if (c === "fresh") {
         m.freshRouteHoursW! += (rt.oneWayHours + rt.localHours) * deliveriesWeek;
         m.freshDeliveries! += deliveriesWeek;
-        if (viaDc) freshDelta.push(g.deltaKm);
+        // R-05 solo mira las zonas que sí reciben la frecuencia pedida (en las limitadas por distancia aplica R-13).
+        if (freq === d.freq.fresh) freshDelta.push(g.deltaKm);
       }
 
       // Lead time y edad del producto
-      const dwell = viaDc ? p.dc.dwellDays[type!] * (highUtil ? 1 + 2 * (util - p.dc.highUtil) : 1) : 0;
+      const dwell = p.dc.dwellDays[type] * (highUtil ? 1 + 2 * (util - p.dc.highUtil) : 1);
       const transitDays = rt.avgInVehicleHours / 24;
-      const leadDays = viaDc && type === "stocking" ? dwell + transitDays : ltSup[c] + inboundDays + dwell + transitDays;
-      const ageDays = viaDc && type === "stocking" ? ltSup[c] + inboundDays + p.dc.stockingCycleDays / 2 + d.dcSafetyDays + dwell + transitDays : ltSup[c] + inboundDays + dwell + transitDays;
+      const leadDays = type === "stocking" ? dwell + transitDays : ltSup[c] + inboundDays + dwell + transitDays;
+      const ageDays = type === "stocking" ? ltSup[c] + inboundDays + p.dc.stockingCycleDays / 2 + d.dcSafetyDays + dwell + transitDays : ltSup[c] + inboundDays + dwell + transitDays;
 
       // Inventario de seguridad y fill rate, planeados con el pronóstico (F-01): μ y σ del plan contra los reales.
       const z95 = normalInv(d.csl[c]);
@@ -254,7 +276,7 @@ export function scmTick(ctx: Ctx): void {
       let exc = 0;
       if (c !== "ambient") {
         const ex = p.excursion;
-        const veh = viaDc ? ex.vehicle[d.vehicle.type] * (d.vehicle.telemetry ? ex.telemetry : 1) * ex.maintenance[d.maintenance] : ex.vehicle.mono * ex.maintenance.corrective;
+        const veh = ex.vehicle[d.vehicle.type] * (d.vehicle.telemetry ? ex.telemetry : 1) * ex.maintenance[d.maintenance];
         exc = ex.p0 * (rt.avgInVehicleHours / ex.refHours) ** ex.alpha * veh * (prev.r01 ? ex.longRouteMult : 1);
         if (c === "fresh" && sh.excursionZone === zi) exc += sh.excursionLoss;
         exc = Math.min(exc, 0.9);
@@ -262,9 +284,9 @@ export function scmTick(ctx: Ctx): void {
 
       // Abasto del proveedor y amortiguador del CD
       // El CD con inventario amortigua con su stock de ciclo más los días de seguridad (R-06, R-11).
-      const buffer = viaDc && type === "stocking" ? Math.min(1, (p.dc.stockingCycleDays / 2 + d.dcSafetyDays) / Math.max(ltSup[c], 0.5)) : 0;
+      const buffer = type === "stocking" ? Math.min(1, (p.dc.stockingCycleDays / 2 + d.dcSafetyDays) / Math.max(ltSup[c], 0.5)) : 0;
       const shortfall = (1 - frProv[c]) * (1 - buffer);
-      const inFull = (1 - shortfall) * capFactor * (viaDc ? 1 - p.dc.pickErrorRate : 1) * (1 - cancel);
+      const inFull = (1 - shortfall) * capFactor * (1 - p.dc.pickErrorRate) * (1 - cancel);
       const supplyFactor = 1 - shortfall * p.supplier.shortfallToOos - (1 - capFactor) * 0.5 - cancel * 0.5;
       const recvErr = p.receiving.errRate[d.receiving] + (prev.r04 ? p.receiving.overloadErrAdd : 0);
       const r02 = prev.r02[c][zi] ? p.inventory.r02OsaMult : 1;
@@ -274,7 +296,7 @@ export function scmTick(ctx: Ctx): void {
 
       // Puntualidad
       const late = clamp(
-        p.late.base + p.late.congestionK * congSd * Math.sqrt(rt.routeHours) + (viaDc ? p.fleet.lateAdd[d.fleet] : 0.01) + (highUtil ? p.late.utilPenalty : 0),
+        p.late.base + p.late.congestionK * congSd * Math.sqrt(rt.routeHours) + p.fleet.lateAdd[d.fleet] + (highUtil ? p.late.utilPenalty : 0),
         0,
         0.5,
       );
@@ -312,19 +334,17 @@ export function scmTick(ctx: Ctx): void {
       m.cogs! += (sold + subst) * unitCost;
       m.gm! += sold * cat.price * margin + subst * cat.price * cat.margin * p.inventory.substituteMarginMult;
       m.wasteCost! += (wasteUnits + excUnits) * unitCost;
-      if (viaDc && inboundKm !== null) m.inbound! += (received / cat.unitsPerCase) * p.supplier.inboundCostPerCaseKm * inboundKm * fuel;
-      if (viaDc) {
-        m.handling! += (received / cat.unitsPerCase) * p.dc.handlingPerCase[type!] * (r.wage / 16);
-        if (type === "stocking") {
-          // Pooling (R-11): el stock de seguridad del CD protege la demanda agregada de sus tiendas;
-          // con demandas independientes, σ crece con √n, así que por tienda se divide entre √n.
-          const pooled = d.dcSafetyDays * mu * n / Math.sqrt(Math.max(1, dcStores.get(dcA!.dc.id) ?? 1));
-          m.dcInvValue! += ((p.dc.stockingCycleDays / 2) * mu * n + pooled) * unitCost;
-        }
+      if (inboundKm !== null) m.inbound! += (received / cat.unitsPerCase) * p.supplier.inboundCostPerCaseKm * inboundKm * fuel;
+      m.handling! += (received / cat.unitsPerCase) * p.dc.handlingPerCase[type] * (r.wage / 16);
+      if (type === "stocking") {
+        // Pooling (R-11): el stock de seguridad del CD protege la demanda agregada de sus tiendas;
+        // con demandas independientes, σ crece con √n, así que por tienda se divide entre √n.
+        const pooled = d.dcSafetyDays * mu * n / Math.sqrt(Math.max(1, dcStores.get(dcA.dc.id) ?? 1));
+        m.dcInvValue! += ((p.dc.stockingCycleDays / 2) * mu * n + pooled) * unitCost;
       }
       m.invValue! += invFin * unitCost;
       m.storeSsUnits! += n * ss;
-      if (viaDc && type === "stocking") m.dcSsUnits! += (d.dcSafetyDays * mu * n) / Math.sqrt(Math.max(1, dcStores.get(dcA!.dc.id) ?? 1));
+      if (type === "stocking") m.dcSsUnits! += (d.dcSafetyDays * mu * n) / Math.sqrt(Math.max(1, dcStores.get(dcA.dc.id) ?? 1));
       m.ltWeighted! += leadDays * demand;
       m.ltSdWeighted! += leadDays * ltCv * demand;
       m.bwrWeighted! += bwr[c] * demand;
@@ -356,13 +376,6 @@ export function scmTick(ctx: Ctx): void {
       }
     }
 
-    // Entregas directas no consolidables (revistas, tabaco)
-    const other = r.otherDirectPerDay * 7 * n;
-    m.deliveries! += other;
-    m.otifDeliveries! += other * 0.97;
-    m.transport! += other * 20 * (r.kmCost / 1.2) * fuel;
-    zoneDeliveriesPerStoreWeek += r.otherDirectPerDay * 7;
-
     // Recepción en tienda
     const perStoreDay = zoneDeliveriesPerStoreWeek / 7;
     maxDeliveriesPerStoreDay = Math.max(maxDeliveriesPerStoreDay, perStoreDay);
@@ -378,7 +391,7 @@ export function scmTick(ctx: Ctx): void {
 
   // Costos de TI y capacitación
   const it = p.info;
-  m.itOpex = m.stores! * (it.opexPerStoreWeek[d.info] + it.sharing.opexPerStoreWeek[d.sharing] + it.forecast.opexPerStoreWeek[d.forecast] + it.training.opexPerStoreWeek[d.training]);
+  m.itOpex = m.stores! * (it.opexPerStoreWeek[d.info] + it.sharing.opexPerStoreWeek[d.sharing] + it.forecast.opexPerStoreWeek[d.forecast] + it.training.opexPerStoreWeek[d.training]) + it.forecast.teamCostPerWeek[d.forecast] + (d.collaboration === "cpfr" ? it.cpfr.opexPerWeek : 0);
   m.carrying = (m.invValue! + m.dcInvValue!) * (p.inventory.carryRateYear / 52);
   m.freshRouteHours = m.freshDeliveries! > 0 ? m.freshRouteHoursW! / m.freshDeliveries! : 0;
   m.trucksPerStoreDay = m.stores! > 0 ? m.deliveries! / 7 / m.stores! : 0;

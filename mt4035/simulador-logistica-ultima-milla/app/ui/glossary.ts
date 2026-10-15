@@ -37,8 +37,8 @@ export const GLOSSARY: GlossaryEntry[] = [
   // Red de fulfillment
   { term: "Fulfillment", def: "Proceso de surtir un pedido: recibirlo, prepararlo (picking), empacarlo y entregarlo.", category: RED },
   { term: "Última milla", def: "Último tramo de la entrega: del nodo de surtido a la puerta del cliente. Suele ser el más caro por pedido.", category: RED },
-  { term: "CD", full: "Centro de distribución", def: "Almacén central desde el que se surten pedidos o se reabastecen tiendas.", category: RED },
-  { term: "SFD", full: "Ship-from-DC", def: "Surtir el pedido en línea desde el CD.", aliases: ["Ship-from-DC"], category: RED },
+  { term: "CEDIS", full: "Centro de distribución", def: "Almacén central desde el que se surten pedidos o se reabastecen tiendas.", aliases: ["CD", "centro de distribución"], category: RED },
+  { term: "SFD", full: "Ship-from-DC", def: "Surtir el pedido en línea desde el CEDIS.", aliases: ["Ship-from-DC"], category: RED },
   { term: "SFS", full: "Ship-from-Store", def: "Surtir el pedido en línea desde una tienda cercana al cliente, con personal de la tienda.", aliases: ["Ship-from-store"], category: RED },
   { term: "BOPIS", full: "Buy Online, Pick-up In Store", def: "Compra en línea y recoge en tienda.", category: RED },
   { term: "Dark store", def: "Tienda cerrada al público que funciona solo como almacén para pedidos en línea.", aliases: ["dark stores"], category: RED },

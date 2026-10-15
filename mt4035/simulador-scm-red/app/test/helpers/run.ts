@@ -5,7 +5,23 @@ import { createScmEngine, params as baseParams, scmConfig, type ScmConfigOptions
 import type { DcSpec, DcState, Params, RegionId, ScmState } from "../../src/types.ts";
 import { truthForecast } from "../../src/forecast.ts";
 
-export const engine = createScmEngine();
+/**
+ * Fijación de las pruebas de mecanismo: Kaigan con su red clásica (5 CEDIS combinados medianos en la costa y consolidación
+ * combinada), una operación que funciona y sirve de base para las pruebas pareadas. La red inicial que juegan los equipos
+ * (un CEDIS grande con inventario, AD-52) se prueba con `realEngine` en los escenarios (SCM-ESC-01, SCO-05).
+ */
+export const fixtureParams = paramsWith((p) => {
+  p.regions.kaigan.initial.dcs = { count: 5, type: "combined", size: "medium" } as typeof p.regions.kaigan.initial.dcs;
+  p.regions.kaigan.initial.consolidation = "combined";
+});
+export const engine = createScmEngine(fixtureParams);
+/** Como paramsWith, pero sobre la fijación de pruebas de mecanismo. */
+export function fixtureWith(mutate: (p: Params) => void): Params {
+  const p = structuredClone(fixtureParams);
+  mutate(p);
+  return p;
+}
+export const realEngine = createScmEngine();
 
 /**
  * Configuración determinista (eventos apagados, ruido 0) salvo que se indique otra cosa. Las pruebas de mecanismos
@@ -73,25 +89,18 @@ export function randomPolicy(seed: number, eng = engine) {
     const pick = <T>(xs: readonly T[]) => xs[st.int(0, xs.length - 1)]!;
     const candidates: DecisionChanges[] = [
       { "D-11": { fresh: st.int(7, 21), chilled: st.int(3, 21), ambient: st.int(1, 7), frozen: st.int(1, 7) } },
-      { "D-21": { fresh: st.uniform(0.85, 0.99), chilled: st.uniform(0.85, 0.99), ambient: st.uniform(0.85, 0.99), frozen: st.uniform(0.85, 0.99) } },
-      { "D-31": pick(["no", "weekly", "daily"]) },
-      { "D-32": pick(["moving_avg", "seasonal", "causal"]) },
-      { "D-13": pick(["own", "dedicated", "spot"]) },
-      { "D-14": { type: pick(["mono", "multi"]), telemetry: st.bernoulli(0.5) } },
-      { "D-15": pick(["peak", "offpeak"]) },
-      { "D-16": pick(["corrective", "preventive", "predictive"]) },
+      { "D-31": pick(["no", "yes"]) },
+      { "D-32": pick(["basic", "advanced"]) },
       { "D-22": { skus: st.int(2000, 4000), local: st.bernoulli(0.5) } },
       { "D-23": pick(["manual", "scan"]) },
-      { "D-25": pick(["fifo", "discount"]) },
       { "D-34": pick(["low", "mid", "high"]) },
       { "D-05": pick(["dominance", "dispersed", "mixed"]) },
       { "D-08": st.int(0, 60) },
       { "D-30": pick(["basic", "pos_daily", "pos_terminal"]) },
-      { "D-33": pick(["arms", "vmi", "cpfr"]) },
+      { "D-33": pick(["rmi", "cpfr"]) },
       { "D-20": pick(["rop", "periodic", "tanpin"]) },
       { "D-24": st.uniform(0, 5) },
       { "D-12": pick(["supplier", "combined"]) },
-      { "D-10": { fresh: pick(["dc", "dsd"]), chilled: pick(["dc", "dsd"]), ambient: pick(["dc", "dsd"]), frozen: pick(["dc", "dsd"]) } },
       {
         "D-01": [
           ...(eng.effectiveValue(s, "D-01") as DcSpec[]),

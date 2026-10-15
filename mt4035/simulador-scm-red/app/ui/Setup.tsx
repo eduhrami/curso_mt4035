@@ -38,7 +38,7 @@ export function Setup() {
           diseñar la red que la haga posible y demostrarlo con números. Cada trimestre revisas resultados, ajustas tus decisiones y confirmas.
         </p>
         <p>
-          La red que heredas no es la adecuada: en algunas regiones faltan centros de distribución y en otras sobran. Las plantas de los proveedores ya están en el mapa; tú decides cuántos CD tener y
+          La red que heredas no es la adecuada: en algunas regiones faltan centros de distribución y en otras sobran. Las plantas de los proveedores ya están en el mapa; tú decides cuántos CEDIS tener y
           dónde. El consejo te da un <strong>tope de inversión por año</strong>: no podrás hacerlo todo a la vez, así que prioriza.
         </p>
         <p class="small muted">Empresa y regiones ficticias, inspiradas en el caso Seven-Eleven Japan (Kellogg KEL026).</p>
@@ -74,7 +74,7 @@ export function Setup() {
         <label class="row">
           <input type="checkbox" checked={greenfield} onChange={(e) => setGreenfield((e.target as HTMLInputElement).checked)} />
           <span>
-            Empezar desde cero (<em>greenfield</em>): sin tiendas ni CD; abres tiendas con la decisión «Lote de apertura de tiendas».
+            Empezar desde cero (<em>greenfield</em>): sin tiendas ni CEDIS; abres tiendas con la decisión «Lote de apertura de tiendas».
           </span>
         </label>
       </section>

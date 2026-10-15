@@ -5,7 +5,7 @@
  */
 import type { AutoplayAdapter } from "@mt4035/sim-tools";
 import type { Policy } from "@mt4035/sim-core/testing";
-import { params, PRESETS, profitFor, scmConfig, truthForecast, type DcSpec, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
+import { params, PRESETS, profitOf, scmConfig, truthForecast, type DcSpec, type Params, type RegionId, type ScmState, type Strategy } from "../src/index.ts";
 import base from "./adapter.ts";
 import { bots, vectorPolicy } from "./bots.ts";
 import { withBudget } from "./budget.ts";
@@ -17,27 +17,27 @@ export interface NetworkArgs {
   dcs?: DcSpec[];
   /** Factor del pronóstico (error de nivel): 0.9 / 1.1 como un equipo típico (AD-40). */
   k?: number;
+  /** Decisiones adicionales que se fuerzan en A1-T1 (barridos de una decisión sobre la red de referencia). */
+  extra?: Record<string, unknown>;
 }
 
 export const regionOf = (scenario: string) => scenario.split("@")[0] as RegionId;
 
-/** El vector del buscador con la red de CD reemplazada por una lista explícita (flujos y dependencias coherentes). */
-export function explicitPolicy({ v, dcs }: NetworkArgs): Policy<ScmState> {
+/** El vector del buscador con la red de CEDIS reemplazada por una lista explícita (dependencias coherentes). */
+export function explicitPolicy({ v, dcs, extra }: NetworkArgs): Policy<ScmState> {
   const inner = vectorPolicy(v);
   return (s, e) => {
-    const ch = inner(s, e);
+    const ch = e === 0 && extra ? { ...inner(s, e), ...extra } : inner(s, e);
     if (e !== 0 || !dcs) return ch;
     // Los CD que ya existen conservan su zona de la partida (depende de la semilla); solo los nuevos llevan zona fija.
     const current = new Map(s.model.dcs.map((d) => [d.id, d.zone]));
     const net = dcs.map((d) => (current.has(d.id) ? { ...d, zone: current.get(d.id)! } : d));
-    const hasDc = net.length > 0;
-    const flows = ch["D-10"] as Record<string, "dc" | "dsd">;
     return {
       ...ch,
       "D-01": net,
-      "D-10": hasDc ? flows : { fresh: "dsd", chilled: "dsd", ambient: "dsd", frozen: "dsd" },
       "D-12": v.consolidation === "combined" && net.some((d) => d.type === "combined") ? "combined" : "supplier",
       "D-24": net.some((d) => d.type === "stocking") ? v.dcSafetyDays : 0,
+      ...(extra ?? {}),
     };
   };
 }
@@ -52,12 +52,13 @@ const withForecast =
 
 const adapter: AutoplayAdapter<ScmState, Params> = {
   ...base,
-  config: (scenario, seed) => {
+  config: (scenario, seed, strategy) => {
     const [region, preset] = scenario.split("@");
     const p = PRESETS.find((x) => x.id === preset);
-    return scmConfig({ region: region as RegionId, seed, ...(p ? { market: p.market, preset: p.id } : {}) });
+    return scmConfig({ region: region as RegionId, seed, ...(strategy ? { strategy: strategy as Strategy } : {}), ...(p ? { market: p.market, preset: p.id } : {}) });
   },
-  score: (reports, strategy, scenario) => profitFor(reports, strategy as Strategy, params, regionOf(scenario)) / 1e6,
+  perStrategyRuns: true,
+  score: (reports) => profitOf(reports) / 1e6,
   searchScore: undefined,
   bots: [
     // Los bots de referencia reciben la región (sin el escenario de mercado) y el mismo error de pronóstico (args.k).

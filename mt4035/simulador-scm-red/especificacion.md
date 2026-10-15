@@ -33,7 +33,7 @@ Con este simulador el alumno vive la pregunta central del caso SEJ: **¿una cade
 
 > **Hoshi Mart** (ほし, "estrella") es una cadena de tiendas de conveniencia. Se fundó en 1979 en la **Región Kaigan**, una franja costera muy poblada. Su ventaja es la **proximidad y la frescura**: tiendas pequeñas (~150 m²), abiertas 24/7, con ~3,000 SKUs por tienda elegidos entre un catálogo de 5,000. Una parte importante de sus ventas son comida preparada y productos frescos que se reponen varias veces al día.
 >
-> En 2026 Hoshi Mart compró **Prairie Stop**, una cadena estadounidense en problemas: 1,200 tiendas repartidas en el **Corredor Red River**, una región extensa de baja densidad. Prairie Stop se abastece por entrega directa del proveedor (*DSD*) y por mayoristas. Llegan decenas de camiones por tienda a la semana, la oferta de frescos es pobre y hay muchos faltantes.
+> En 2026 Hoshi Mart compró **Prairie Stop**, una cadena estadounidense en problemas: 1,200 tiendas repartidas en el **Corredor Red River**, una región extensa de baja densidad. Prairie Stop se abastece desde un solo CEDIS central: las tiendas lejanas reciben mercancía pocas veces por semana, la oferta de frescos es pobre y hay muchos faltantes.
 >
 > El consejo también evalúa entrar a **Valle Metropolitano**, una zona metropolitana latinoamericana con un núcleo urbano muy denso y una periferia extendida.
 >
@@ -81,7 +81,7 @@ Hay tres capas: **estructurales** (se fijan en el setup y no cambian), **dinámi
 | E-03 | Densidad de población / visitas por tienda al día | Muy alta / ~1,000 | Baja / ~350 | Alta en núcleo (~800) / media en periferia (~450) |
 | E-04 | Distancia típica entre tiendas | < 1 km dentro del *cluster* | 15–40 km | 0.5–2 km núcleo / 5–15 km periferia |
 | E-05 | Velocidad efectiva y congestión | Baja velocidad, congestión alta y predecible | Alta velocidad, congestión baja | Congestión alta y **muy variable** en el núcleo |
-| E-06 | Red *as-is* (sub-óptima a propósito, AD-44) | 5 CD combinados (*cross-dock* por temperatura), entregas 3×/día de frescos: la red no creció al ritmo de las tiendas (faltan CD) | DSD de ~40 proveedores + 2 mayoristas; 1 entrega/semana por proveedor (faltan CD) | 4 CD con inventario heredados de una expansión (sobran CD); frescos por DSD |
+| E-06 | Red *as-is* (sub-óptima a propósito, AD-44) | 1 CEDIS grande con inventario a la mitad de la costa (zona 12) para 1,800 tiendas: saturado y los frescos envejecen en él; la red no creció al ritmo de las tiendas (faltan CEDIS y son del tipo equivocado, AD-52) | 1 CEDIS central con inventario para 1,200 tiendas dispersas: las zonas lejanas reciben 1–3 visitas por semana (faltan CD, AD-51) | 4 CD con inventario heredados de una expansión (sobran CD) |
 | E-07 | Sistema de información *as-is* | POS con análisis diario; pedido por terminal | POS básico; pedido manual semanal | POS sin integración |
 | E-08 | Base de proveedores (plantas en el mapa, dato del escenario) | Concentrada y cercana, dispuesta a co-invertir: **planta dedicada de alimentos preparados** (frescos, zona 12) y **planta de lácteos y refrigerados** (zona 25, no dedicada) | Fragmentada y **externa a la región**: proveedores grandes con poder de negociación; no hay plantas en el mapa | Mixta; proveedores medianos con capacidad limitada: **central de abasto** (frescos y refrigerados, zona 14, núcleo) y **parque industrial** (abarrotes y congelados, zona 30, periferia) |
 | E-09 | Costo inmobiliario (CD y tienda) | Muy alto | Bajo | Alto en núcleo, bajo en periferia |
@@ -183,33 +183,29 @@ El ritmo anual de apertura o cierre (antes D-06) no es una decisión: es una pol
 
 | ID | Decisión | Opciones | Notas causales |
 |---|---|---|---|
-| D-10 | Política de entrega del proveedor | **Todo pasa por CD** · **DSD** · **Híbrido por categoría** | El DSD multiplica las entregas por tienda (SEJ: de 70 camiones/día en 1974 a 9 en 2006) |
-| D-11 | Frecuencia de reposición a tienda por categoría de temperatura | Caliente/frescos: 1×, 2× o 3×/día · Refrigerado: 1×/día a 3×/semana · Ambiente: 1×/día a 1×/semana | Más frecuencia sube el costo de transporte, la frescura y la OSA, y baja el inventario en tienda |
+| ~~D-10~~ | *Retirada (AD-51, 15-oct-2026).* Todo pasa por un CEDIS: la entrega directa del proveedor (DSD) no es opción, porque la gran mayoría de los proveedores no tiene capacidad de distribución. La decisión es cuántos CEDIS y dónde (D-01) | — | — |
+| D-11 | Frecuencia de reposición a tienda por categoría de temperatura | Frescos: 1× a 2×/día · Refrigerado: 3×/semana a 2×/día · Ambiente y congelado: 1×/semana a 1×/día. **Tope por distancia (AD-49):** el tiempo de ida y vuelta CEDIS→zona limita la frecuencia efectiva: hasta 2×/día cerca del CEDIS y hasta 1×/semana en las zonas más lejanas ⚠ | Más frecuencia sube el costo de transporte, la frescura y la OSA, y baja el inventario en tienda |
 | D-12 | Consolidación de carga | Por proveedor · **Combinada por temperatura** (varios proveedores en un camión) | La combinada reduce camiones por tienda y requiere CD combinado (D-03) |
-| D-13 | Flota | Propia · 3PL dedicado · 3PL spot | Costo fijo vs. variable; la confiabilidad se ve en los eventos |
-| D-14 | Tipo de vehículo | Mono-temperatura · **Multi-temperatura** · Con telemetría de temperatura (sí/no) | La telemetría baja la probabilidad y la severidad de la falla de cadena de frío |
-| D-15 | Ventanas de entrega en tienda | Horas pico de venta · Horas valle (*off-peak*) | Valle: menos congestión y menos interferencia con la venta, pero exige escaneo sin esperas (D-23) |
-| D-16 | Programa de mantenimiento de flota | Correctivo · Preventivo · Predictivo | Reduce averías y fallas de refrigeración |
 
 ### 5.4 Inventario y pedido: táctico
+
+**Datos fijos de la región (no son decisiones en este simulador):** flota (propia, 3PL dedicado o spot), tipo de vehículo y telemetría, ventana de entrega en tienda (horas pico o valle), mantenimiento de flota y retiro de frescos (FIFO). Se trabajan en el simulador de última milla. **Nivel de servicio (CSL) por categoría:** lo fija la propuesta de valor (`params.strategyCsl` ⚠): frescura 95% frescos / 96% resto; bajo costo 88% / 92%; conveniencia 92% frescos / 97–98% resto. Dimensiona el stock de seguridad; la disponibilidad real puede quedar abajo de la meta, y equilibrarla con merma y costo es parte del juego (AD-47).
 
 | ID | Decisión | Opciones | Notas causales |
 |---|---|---|---|
 | D-20 | Política de inventario en tienda | **ROP/EOQ** (revisión continua) · **Revisión periódica** (R, S) · **Pedido por hipótesis del clerk** (*tanpin kanri*, requiere D-30) | El alumno ve cuándo los supuestos de EOQ se rompen (perecederos, demanda no estacionaria) |
-| D-21 | Nivel de servicio objetivo por categoría | CSL 85%–99% | Define *z* en SS = z·σ·√(L+R) |
 | D-22 | Surtido por tienda | SKUs por tienda (2,000–4,000) · **Surtido local** vs. **estándar** | Más SKUs: más ventas potenciales, más SS total y más merma |
 | D-23 | Recepción en tienda | Conteo manual · **Escaneo contra pedido** | El escaneo reduce el tiempo por parada y los errores de recepción |
 | D-24 | Inventario de seguridad en CD (solo si D-03 = con inventario) | Días de cobertura | Pooling: centralizar reduce el SS total (raíz cuadrada) a cambio de *lead time* |
-| D-25 | Retiro de frescos | FIFO estricto · Descuento por caducidad próxima | El descuento reduce merma y margen |
 
 ### 5.5 Información y colaboración: habilitadores (retraso + curva de aprendizaje)
 
 | ID | Decisión | Opciones | Retraso | Efecto |
 |---|---|---|---|---|
 | D-30 | Sistema de información de tienda | POS básico · **POS con análisis diario** · **POS + terminal gráfica de pedido** (análisis por SKU y hora) | 1–2 trimestres + 1 de aprendizaje | Baja el error de pronóstico (CV efectivo) y habilita *tanpin kanri* |
-| D-31 | Compartir POS con proveedores | No · Semanal · Diario | 1–2 trimestres | Baja el **bullwhip** (BWR) y sube el fill rate del proveedor |
-| D-32 | Pronóstico | Promedio móvil · Estacional · **Causal** (clima, calendario, eventos locales) | 1–2 trimestres | Baja el error, sobre todo con estacionalidad o clima |
-| D-33 | Colaboración con proveedores | Arm's-length · VMI · **CPFR** | 2–3 trimestres | Lead time más corto y confiable; requiere D-31 |
+| D-31 | Compartir POS con proveedores | No · Sí (diario) | 1 trimestre | Baja el **bullwhip** (BWR ×0.15) y sube el fill rate del proveedor. Implementación: US$ 1 M por región + US$ 500 por tienda; opex US$ 5 por tienda-semana ⚠ |
+| D-32 | Método de pronóstico del sistema de tiendas | **Básico:** promedios móviles, sin estacionalidad · **Avanzado:** suavizamiento exponencial con tendencia y estacionalidad (Holt-Winters) más variables causales (clima, calendario, promociones), con equipo de analítica | 1 trimestre | El avanzado baja el error (CV ×0.9 y sin penalización estacional) y el bullwhip (ventana de 28 días). Implementación US$ 1 M + equipo US$ 20,000 por semana ⚠. Holt-Winters es el método estándar para series estacionales (Hyndman y Athanasopoulos, 2021); en minoristas se combina con variables causales (Fildes, Ma y Kolassa, 2022) |
+| D-33 | Colaboración con proveedores | **RMI** (punto de partida: el minorista pronostica y repone) · **CPFR** (planeación, pronóstico y reabasto colaborativos; Fliedner, 2003) | 1 trimestre + 3 de maduración | El CPFR madura gradualmente: baja el error de pronóstico (CV ×0.85), el lead time (×0.8) y su variabilidad (×0.7) y sube el fill rate. Implementación US$ 2.5 M + equipo US$ 15,000 por semana ⚠. Requiere D-31. El momento importa: tarde ya no se recupera dentro de la partida |
 | D-34 | Inversión en capacitación de tienda | Baja · Media · Alta | 1 trimestre | Multiplica el beneficio de D-30 y D-20 (*tanpin kanri*) |
 
 ---
@@ -235,7 +231,8 @@ Frecuencia (D-11) ──┬─► costo de transporte (+)
 Merma ──► unidades vendibles (−) ──► P(out-of-stock) (+) ──► lost sales ──► confianza del cliente (−) ──► demanda base futura (−)
 Sistema de info (D-30/32) ──► error de pronóstico (−) ──► SS requerido (−) y OSA (+)
 POS compartido (D-31) ──► BWR (−) ──► fill rate proveedor→CD (+) ──► OTIF (+)
-DSD (D-10) ──► camiones por tienda/día (+) ──► costo de recepción y congestión (+) ──► tiempo de personal fuera de piso (+)
+Consolidación por proveedor (D-12) ──► camiones por tienda/día (+) ──► costo de recepción y congestión (+) ──► tiempo de personal fuera de piso (+)
+N.º y ubicación de CEDIS (D-01) ──► tiempo de ida y vuelta (−) ──► frecuencia máxima por zona (+, R-13); sin CEDIS activo, la zona no vende (R-14)
 Cluster (D-05) ──► paradas por ruta (+), reconocimiento de marca (+), canibalización (+)
 ```
 
@@ -248,19 +245,19 @@ Cluster (D-05) ──► paradas por ruta (+), reconocimiento de marca (+), cani
 - Paradas por ruta: `s = min( Cap_vehículo / drop_por_tienda , (T_turno − 2·d̄/v) / (t_parada + δ/v) )`.
 - Duración de la ruta: `T_ruta = 2·d̄/v + s·(t_parada + δ/v)`, con `v = v_base · (1 − congestión_t)` y congestión aleatoria por escenario (E-05).
 - **Costo por entrega a tienda:** `CTS_entrega = (c_km · (2·d̄ + s·δ) + c_hora · T_ruta) / s`.
-- Entregas por tienda al día: con consolidación combinada `= Σ_categorías frecuencia_c`; con DSD `= Σ_proveedores frecuencia_p`.
+- Entregas por tienda al día: con consolidación combinada o CEDIS con inventario `= Σ_categorías frecuencia_c`; por proveedor `= Σ_proveedores frecuencia_c` (frecuencias efectivas, después del tope por distancia).
 
 **Frescura y merma** (por categoría perecedera *c*):
 
 - Vida útil restante al llegar a anaquel: `VU_rem = VU_c − (t_proveedor→CD + t_estancia_CD + T_ruta/2)`. La estancia en *cross-dock* es de horas; en CD con inventario, de días.
 - Cobertura del pedido: `Cob = R_c + SS_días`, con `R_c = 1 / frecuencia_c`.
 - Merma base: `merma_c = m0 + m1 · max(0, Cob − VU_rem) / Cob`.
-- Exposición de frío: `P(excursión) = p0 · (T_ruta / T_ref)^α · f_vehículo(D-14) · f_mantenimiento(D-16)`. Una excursión destruye una fracción del lote en ruta.
+- Exposición de frío: `P(excursión) = p0 · (T_ruta / T_ref)^α · f_vehículo · f_mantenimiento` (datos de la región). Una excursión destruye una fracción del lote en ruta.
 
 **Demanda, faltantes y lost sales:**
 
 - Demanda por tienda: `μ = μ_base(región) · f_crec(t) · f_estac(t) · (1 − canibalización(densidad_cluster)) · confianza_zona · f_estrategia`.
-- CV efectivo: `CV_ef = CV_E22 · (1 − g_info · madurez_D30) · (1 − g_pron(D-32))`.
+- CV efectivo: `CV_ef = CV_E22 · (1 − g_info · madurez_D30) · (1 − g_pron(D-32)) · (1 − g_cpfr · madurez_CPFR)`.
 - `SS = z(CSL) · CV_ef · μ · √(L + R)`.
 - Fill rate por categoría: `FR = 1 − σ·√(L+R)·G(z) / (μ·R)`, donde G es la función de pérdida normal. La merma reduce el inventario disponible **antes** de calcular el faltante.
 - `OSA ≈ FR` ajustado por errores de recepción (D-23) y por excursiones de frío.
@@ -269,7 +266,7 @@ Cluster (D-05) ──► paradas por ruta (+), reconocimiento de marca (+), cani
 **Bullwhip y proveedores:**
 
 - `BWR = 1 + 2L/p + 2L²/p²` (Chen et al., 2000), donde p es la ventana del pronóstico. Con POS compartido diario, el proveedor pronostica con la demanda final y el BWR se acerca a 1.
-- Fill rate del proveedor al CD: `FR_prov = FR_base(E-27) − β · (BWR − 1) + γ · colaboración(D-33)`.
+- Fill rate del proveedor al CD: `FR_prov = FR_base(E-27) − β · (BWR − 1) + γ · madurez_CPFR`.
 
 **Finanzas por época:** ventas · margen bruto − merma − margen perdido − costo de transporte − costo fijo de CD − costo de recepción en tienda − costo de inventario (h% × inventario promedio) − opex de TI − amortización del capex.
 
@@ -283,10 +280,10 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
 - **Rutas:**
   - hay un tope operativo de paradas por categoría (frescos 8, por las ventanas de comida);
   - si la troncal ida y vuelta no cabe en medio turno, se hace con relevo y el lazo local usa un turno completo.
-- **DSD:** el proveedor cobra una tarifa por entrega incluida en el precio, porque reparte en rutas compartidas con otros clientes. Las frecuencias son por categoría: frescos 3×/semana, refrigerado 2×, ambiente y congelado 1×.
+- **Todo pasa por un CEDIS (AD-51, 15-oct-2026):** no hay entrega directa del proveedor. Un CEDIS con inventario almacena todas las categorías, incluidos los frescos, que envejecen ahí: para frescos de vida corta conviene un CEDIS *cross-dock* o combinado, y descubrirlo es parte del juego. Una zona con tiendas y sin CEDIS activo (greenfield antes del primero, o el único CEDIS caído por un evento) no recibe mercancía y pierde toda su venta (R-14). La red no puede quedar vacía con tiendas abiertas, y abrir tiendas exige al menos un CEDIS planeado.
 - **Tramo de entrada (E-08, 14-oct-2026):** cada región define sus plantas de proveedores (`regions.*.supplierSites`: zona, categorías y si es dedicado). Para una categoría con planta en la región, Hoshi Mart recoge en la planta y paga el flete al CD: `costo_entrada = cajas · c_caja_km (0.01 USD) · d(planta, CD) · combustible`, y el tránsito `d / v` se suma al lead time y a la edad del producto (merma de frescos). En DSD, la distancia de reparto del proveedor es la de su planta a la zona. Sin planta, el proveedor es externo: su flete va en el precio y su lead time es el de la región. Por eso la ubicación del CD es un trade-off: cerca de la planta baja el flete de entrada y la edad de los frescos; cerca de las tiendas baja el reparto. Una planta dedicada (Kaigan, frescos) acorta el lead time del proveedor ×0.5 y mitiga X-04 y X-09.
 - **Sistema de información (D-30, 14-oct-2026, AD-40):** POS diario: capex US$ 1,500 por tienda, US$ 10 por tienda-semana, CV ×0.75, 1 trimestre de implantación; con terminal: US$ 4,000, US$ 20, CV ×0.6, 2 trimestres; madura en un trimestre. Calibrado para que se recupere en ≤ 2 años con un error de pronóstico de ±10% sobre la operación óptima de Red River y Valle. Con pronóstico perfecto casi no aporta: su valor principal es corregir con las ventas reales el pronóstico equivocado del equipo (`forecast.planning.infoMult`).
-- **Tope de gasto anual en decisiones (AD-43):** la suma de los costos de decisiones confirmados en los cuatro trimestres de un año no puede pasar de `money.capexBudgetPerYear` de la región (Kaigan US$ 20 M, Red River US$ 7 M, Valle US$ 6 M ⚠). Cuentan todas las decisiones con costo: CD nuevos, conversiones, ampliaciones y cierres (indemnización); lotes de apertura y cierres de tiendas; escaneo y POS. Un turno que lo excede no se puede confirmar. Se renueva en T1. Obliga a priorizar y a escalonar: en Red River la red regional se construye en dos años y en Valle los cierres de CD toman dos años. En Kaigan el tope deja margen para gastar más de lo que la utilidad justifica: decidir cuánto gastar es parte de la reflexión.
+- **Tope de gasto anual en decisiones (AD-43):** la suma de los costos de decisiones confirmados en los cuatro trimestres de un año no puede pasar de `money.capexBudgetPerYear` de la región (Kaigan US$ 20 M, Red River US$ 12 M, Valle US$ 15 M ⚠). Cuentan todas las decisiones con costo: CD nuevos, conversiones, ampliaciones y cierres (indemnización); lotes de apertura y cierres de tiendas; escaneo y POS. Un turno que lo excede no se puede confirmar. Se renueva en T1. Obliga a priorizar y a escalonar: en Red River la red regional se construye en dos años y en Valle los cierres de CD toman dos años. En Kaigan el tope deja margen para gastar más de lo que la utilidad justifica: decidir cuánto gastar es parte de la reflexión.
 - **Inventario de tienda:** stock de seguridad + stock de ciclo + **inventario de exhibición** (días por categoría, multiplicado por región según el tamaño de tienda). La exhibición de perecederos cuenta en la cobertura de frescura.
 - **CD con inventario:** guarda stock de ciclo (2 días) más los días de seguridad de D-24. Ambos amortiguan las fallas del proveedor; el cross-dock no amortigua (R-06).
 - **Fill rate:** se usa la fórmula de revisión periódica de la §6.3. Con el CSL fijo, reponer más seguido baja un poco el fill rate de los no perecederos; en los perecederos lo domina la reducción de merma.
@@ -295,12 +292,12 @@ La implementación en `app/` concreta la §6.3 así. Los valores están en `app/
 
 **Ajustes de la calibración por auto-juego (F3, 4-oct-2026):**
 
-- **Puntaje normalizado por región (§7.3, SCO-05):** cada región tiene sus propios rangos de normalización y guardrails, calibrados a su frontera alcanzable. Así el *as-is* puntúa en una banda comparable: Kaigan ~53, Valle ~40, Red River ~31. ⚠ Propuesta pendiente de confirmar.
+- **Puntaje normalizado por región (§7.3, SCO-05):** cada región tiene sus propios rangos de normalización y guardrails, recalibrados el 15-oct-2026 con una regla única: el rango va de la operación inicial (con 25% de la brecha hacia peor) a la red de referencia (con 50% de la brecha hacia mejor); los guardrails piden no empeorar el servicio heredado (OSA −0.5 pp, CTS +5%, OTIF −1 pp, ventas perdidas +0.5 pp), y cada propuesta de valor suma sus deltas para las penalizaciones de la utilidad (el de frescos de la propuesta de frescura es OSA base −7 pp). El *as-is* puntúa en una banda comparable en Red River (16–20) y Valle (~17); Kaigan arranca en el piso del índice, porque su red inicial está lejos de la ideal a propósito (AD-52). ⚠ Propuesta pendiente de confirmar.
 - **Costo fijo del CD:** solo la mitad escala con el índice inmobiliario regional; personal y operación no. Con esto, el número óptimo de CD por tienda es menor en Red River que en Kaigan (CAU-02), como en los datos reales.
 - **Densidad:** la curva de demanda combina reconocimiento de marca (+30%, saturación a ρ ≈ 0.8) y canibalización (k = 0.1). Da un óptimo interior de densidad (CAU-17) y deja la demanda de Kaigan igual.
 - **Pooling en el CD (R-11):** el stock de seguridad del CD protege la demanda agregada; por tienda se divide entre √(tiendas atendidas).
 - **Horas valle sin escaneo:** la parada tarda 1.5× porque el chofer espera a que alguien reciba. Eso anula el beneficio de la menor congestión nocturna (CAU-12).
-- **Pronóstico estacional:** captura la mitad del efecto estacional; el causal, todo (CAU-20).
+- **Pronóstico:** el básico (promedios móviles) no captura la estacionalidad; el avanzado la captura completa (CAU-20).
 - **X-10:** el combustible encarece el costo por km +25%, lo que equivale a ~+10% del transporte total.
 
 ### 6.4 Reglas de causa–efecto explícitas (catálogo inicial)
@@ -312,8 +309,8 @@ Cada regla se registra en el log y alimenta los mensajes. El alumno siempre pued
 | R-01 | Duración de ruta > 4 h en categoría fresca | P(spoilage) ×1.5 y la merma sube por menor VU_rem |
 | R-02 | Merma > 6% en una semana **en una zona** (por categoría) | P(out-of-stock) de esa categoría en esa zona sube la semana siguiente; si persiste, baja la confianza de la zona |
 | R-03 | OSA < 90% dos semanas seguidas | Baja la demanda base de la zona el siguiente trimestre (los clientes "dejan de volver") |
-| R-04 | DSD activo y > 15 entregas por tienda al día | Costo de recepción +; P(error de recepción) +; personal fuera de piso, OSA − |
-| R-05 | Frecuencia 3×/día en región con δ > 10 km | El costo de transporte se dispara y el motor emite una alerta de modelo no alineado con la geografía |
+| R-04 | > 15 entregas por tienda al día (proveedores sin consolidar) | Costo de recepción +; P(error de recepción) +; personal fuera de piso, OSA − |
+| R-05 | Frecuencia de frescos 2×/día en región con δ > 10 km (solo zonas que reciben esa frecuencia) | El costo de transporte se dispara y el motor emite una alerta de modelo no alineado con la geografía |
 | R-06 | Cross-dock sin inventario + proveedor poco confiable (E-27) | Una falla del proveedor se transmite completa a tienda (sin amortiguador) |
 | R-07 | Utilización del CD > 90% | Se alarga la estancia en CD, cae la frescura y sube P(retraso) |
 | R-08 | POS compartido + CPFR maduro | Lead time del proveedor −20% y variabilidad −30% |
@@ -321,6 +318,8 @@ Cada regla se registra en el log y alimenta los mensajes. El alumno siempre pued
 | R-10 | Clusters densos (dominancia) | Paradas/ruta +, CTS −, canibalización + (el jugador debe encontrar el punto óptimo) |
 | R-11 | CD con inventario + ventaja de *pooling* | SS total ×√(n_tiendas_agrupadas)/n en ambiente; poco útil en frescos de vida corta |
 | R-12 | Entrega en horas valle + escaneo | Tiempo por parada −30%; sin escaneo, el chofer espera y el beneficio se pierde |
+| R-13 | Tiempo de ida y vuelta CEDIS→zona mayor que el que permite la frecuencia pedida (AD-49) | La zona recibe la frecuencia máxima que permite la distancia; el motor avisa cuántas zonas quedan limitadas |
+| R-14 | Zona con tiendas y sin CEDIS activo (AD-51) | La zona no recibe mercancía: pierde toda su venta hasta que entra un CEDIS |
 
 ---
 
@@ -387,10 +386,10 @@ Estado de resultados trimestral de la cadena (KPIs en USD): margen bruto de lo v
 
 | Región | Peso del pronóstico |
 |---|---|
-| Kaigan | ≈ 38% (con la red saturada, ampliarla es la primera palanca; con frescos de vida corta, pronosticar de menos cuesta caro) |
-| Red River | ≈ 38% |
-| Valle Metropolitano | ≈ 47% |
-| **Promedio** | **≈ 41%** |
+| Kaigan | ≈ 6% (con un solo CEDIS, casi toda la brecha la explica la red: construir y convertir es la primera palanca) |
+| Red River | ≈ 34% |
+| Valle Metropolitano | ≈ 19% |
+| **Promedio** | **≈ 20%** |
 
 No se fuerza una brecha por región: en qué casos pesa más el pronóstico es parte del aprendizaje.
 
@@ -406,13 +405,13 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 | X-02 | **Tifón** (Kaigan) / **tormenta de nieve** (Red River) / **lluvia torrencial** (Valle) | Estacional: 5%–25% | — | Más CD (redundancia), SS en CD con inventario | Cierre de rutas 2–7 días; pico de demanda previo (compras de pánico) |
 | X-03 | **Sismo severo** (Kaigan) | 1% | — | Red con ≥ 2 CD por zona | Un CD fuera 4–8 semanas |
 | X-04 | **Proveedor clave no entrega** | 4% (E-27 baja: 10%) | Cross-dock sin amortiguador (R-06), proveedor único | Proveedores dedicados, CPFR, SS en CD | FR del proveedor cae 40% durante 2–4 semanas |
-| X-05 | **Ola de calor** | Estacional 10% | — | Pronóstico causal (D-32), frecuencia alta | Bebidas y helados +40%; con pronóstico simple, faltantes |
+| X-05 | **Ola de calor** | Estacional 10% | — | Pronóstico avanzado (D-32), frecuencia alta | Bebidas y helados +40%; con pronóstico simple, faltantes |
 | X-06 | **Competidor abre tiendas en tu *cluster*** | E-24 agresiva: 15% | Baja densidad propia (no se cumple la dominancia) | Cluster denso y OSA alta | −8% de demanda en la zona |
 | X-07 | **Escasez de choferes** | E-25 escaso: 12% | Flota propia con sueldos bajos | 3PL dedicado | Capacidad de flota −15%; entregas canceladas |
 | X-08 | **Caída del sistema POS / pedidos** | 3% | Sistema nuevo (madurez < 0.5) | Madurez alta, capacitación | 1–3 días de pedidos a ciegas (repite el último pedido) |
 | X-09 | **Retiro sanitario** (*food safety recall*) | 2% | Muchos proveedores pequeños | Proveedores dedicados con control | Retiro de una categoría por 1 semana; golpe a la confianza |
 | X-10 | **Choque en el precio del combustible** | E-23 volátil: 10% | Rutas largas, alta frecuencia | Consolidación combinada | Costo de transporte +25% durante el trimestre |
-| X-11 | **Congestión urbana extraordinaria** (obras, eventos) | Valle: 15% | Entregas en horas pico | Horas valle (D-15) | T_ruta +30% → retrasos y merma |
+| X-11 | **Congestión urbana extraordinaria** (obras, eventos) | Valle: 15% | Entregas en horas pico | Horas valle (dato de la región) | T_ruta +30% → retrasos y merma |
 | X-12 | **Restricción regulatoria de carga** | Valle/Kaigan: 5% | Camiones grandes | Vehículos chicos, horas valle | Ventanas de entrega más estrechas |
 
 **Cadenas de eventos:** algunos eventos cambian probabilidades futuras. Ejemplos: X-01 repetido → R-02 → R-03 (pérdida de clientes). X-04 con cross-dock puro → OSA desplomada → X-06 más probable porque el competidor aprovecha.
@@ -485,6 +484,9 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 - Chopra, S. (2022). *Seven-Eleven Japan Co.: Supply chain strategy and structure* (Case KEL026). Kellogg School of Management. Densidad, *clusters* de 50–60 tiendas, 158 CD combinados, entregas 3×/día, de 70 a 9 camiones por tienda.
 - Johnson, P. F., & Mark, K. (2019). *Walmart: Supply chain management* (Case W19317). Ivey Publishing. Red de CD, *cross-docking* a escala, EDLP.
 - Chen, F., Drezner, Z., Ryan, J. K., & Simchi-Levi, D. (2000). Quantifying the bullwhip effect in a simple supply chain. *Management Science, 46*(3), 436–443. Fórmula del BWR.
+- Fildes, R., Ma, S., & Kolassa, S. (2022). Retail forecasting: Research and practice. *International Journal of Forecasting, 38*(4), 1283–1318. Pronóstico en minoristas con variables causales (D-32).
+- Fliedner, G. (2003). CPFR: An emerging supply chain tool. *Industrial Management & Data Systems, 103*(1), 14–21. CPFR (D-33).
+- Hyndman, R. J., & Athanasopoulos, G. (2021). *Forecasting: Principles and practice* (3rd ed.). OTexts. Suavizamiento exponencial con estacionalidad (Holt-Winters) (D-32).
 - Lee, H. L., Padmanabhan, V., & Whang, S. (1997). Information distortion in a supply chain: The bullwhip effect. *Management Science, 43*(4), 546–558.
 - Corsten, D., & Gruen, T. (2003). Desperately seeking shelf availability. *International Journal of Retail & Distribution Management, 31*(12), 605–617. Reacción del cliente ante el faltante.
 - Sachs, A.-L. (2015). *Retail analytics: Integrated forecasting and inventory management for perishable products*. Springer. Supuestos rotos y perecederos.
@@ -493,8 +495,11 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 
 ## 13. Decisiones pendientes
 
-- [ ] Validar los montos ⚠ del tope de inversión anual (Kaigan US$ 15 M, Red River US$ 7 M, Valle US$ 6 M), del flete de entrada (US$ 0.01 por caja-km) y de la ubicación de las plantas de proveedores (AD-41, AD-43).
-- [ ] SCM-AUT-06 (P2) falla por frecuencias en el límite del rango (frescos 3×/día en Kaigan, abarrotes 1×/semana en regiones dispersas), que son respuestas económicas razonables. Decidir si la propiedad deja de contar las frecuencias o se amplía el rango de frecuencias.
+- [ ] Validar los montos ⚠ del tope de inversión anual (Kaigan US$ 20 M, Red River US$ 12 M, Valle US$ 15 M), del flete de entrada (US$ 0.01 por caja-km) y de la ubicación de las plantas de proveedores (AD-41, AD-43).
+- [x] SCM-AUT-06 (P2) ya no cuenta las frecuencias. Queda en 4 de 9 porque el CSL de frescos óptimo está en el mínimo permitido (85%) en Red River y en Valle con bajo costo y conveniencia. Se acepta como respuesta del modelo (15-oct-2026); la guía del instructor lo usa en el plenario.
+- [ ] Revisar la calibración de la merma de frescos (R-02): una versión más suave movería el CSL de frescos óptimo al interior (≈88–93%). Afecta la red de referencia y el peso del pronóstico; requiere recalibrar con auto-juego y justificar el valor con datos.
+- [x] Frecuencia limitada por la distancia al CEDIS (AD-49, 15-oct-2026): máximo 2 visitas al día cerca del CEDIS y 1 por semana en las zonas más lejanas. Falta un límite de capacidad (flota, choferes, ventanas de recepción).
+- [ ] Validar con operadores los umbrales ⚠ de tiempo de ida y vuelta y frecuencia máxima (`params.dc.maxFreqByRoundTrip`). Sin experiencia práctica documentada no hay forma de fijarlos.
 - [x] Duración de una partida en clase: 12 épocas manuales (3 años), homologada con última milla (AD-37, 14-oct-2026); ≈4 min por época en ~45–50 min de juego.
 - [ ] Validar los rangos numéricos de la §6.3 y los p_base de la §8 con datos del caso y benchmarks.
 - [ ] Definir si se juega una sola región o la comparación Kaigan vs. Red River es obligatoria.

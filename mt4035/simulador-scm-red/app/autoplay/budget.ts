@@ -2,7 +2,7 @@
  * Tope de gasto anual en decisiones (AD-43) en el auto-juego: el bot invierte como un equipo. Lo que cabe en el año se
  * ejecuta de inmediato; lo que no, se difiere y se reintenta en el primer trimestre (T1) de cada año, cuando el tope se
  * renueva. Prioridad por plazo de impacto, porque lo que tarda más en rendir debe decidirse antes para recuperarse
- * dentro de la partida: red de CD (cada cambio por separado), POS, escaneo, cierres de tiendas y aperturas. Lo que
+ * dentro de la partida: red de CD (cada cambio por separado), POS, pronóstico avanzado, POS compartido, CPFR, escaneo, cierres de tiendas y aperturas. Lo que
  * depende de algo diferido (p. ej. flujos por un CD que aún no se construye) también se difiere.
  */
 import type { DecisionChanges, GameState } from "@mt4035/sim-core";
@@ -11,7 +11,7 @@ import { capexBudget, createScmEngine, type DcSpec, type ScmState } from "../src
 
 const engine = createScmEngine();
 const specs = new Map(engine.model.decisions.map((d) => [d.id, d]));
-const PRIORITY = ["D-01", "D-30", "D-23", "D-09", "D-08"];
+const PRIORITY = ["D-01", "D-30", "D-32", "D-31", "D-33", "D-23", "D-09", "D-08"];
 const SIZES = ["large", "medium", "small"] as const;
 
 /** Costo inmediato de la decisión (todas las decisiones con costo consumen el tope). */
@@ -30,7 +30,9 @@ export function withBudget(pol: Policy<ScmState>): Policy<ScmState> {
     let remaining = b.remaining;
     const out: DecisionChanges = {};
     for (const [id, v] of Object.entries(wanted)) if (!PRIORITY.includes(id) && costOf(s, id, v) <= 0) out[id] = v;
-    for (const id of PRIORITY) {
+    // Prioridad fija; cualquier otra decisión con costo va al final (nunca se descarta en silencio).
+    const order = [...PRIORITY, ...Object.keys(wanted).filter((id) => !PRIORITY.includes(id) && costOf(s, id, wanted[id]) > 0)];
+    for (const id of order) {
       if (!(id in wanted)) continue;
       const v = wanted[id];
       if (id === "D-01") {

@@ -34,7 +34,7 @@ export function Setup() {
       <div class="card stack">
         <h1>Mercado Alba · Dirección de Logística y Última Milla</h1>
         <p>
-          Los pedidos en línea de Mercado Alba crecen a doble dígito, pero la operación se improvisó: todo sale del CD con camionetas de un 3PL, la promesa es «día siguiente de 9 a 21 h», casi
+          Los pedidos en línea de Mercado Alba crecen a doble dígito, pero la operación se improvisó: todo sale del CEDIS con camionetas de un 3PL, la promesa es «día siguiente de 9 a 21 h», casi
           1 de cada 5 entregas falla al primer intento y los frescos llegan tibios. Tienes <strong>3 años (12 trimestres)</strong> para decidir desde dónde surtes, qué prometes, con qué flota y cómo
           ruteas, y demostrar que el servicio mejora sin que el costo destruya el margen. Cada trimestre ajustas tus decisiones y confirmas; tu puntaje es la <strong>utilidad acumulada</strong> del canal en línea.
         </p>

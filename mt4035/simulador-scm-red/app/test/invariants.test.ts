@@ -5,7 +5,7 @@ import { playGame, allKpiValues } from "@mt4035/sim-core/testing";
 import { route } from "../src/network.ts";
 import { params } from "../src/model.ts";
 import { CATEGORIES } from "../src/types.ts";
-import { det, engine, randomPolicy, run, start, sto } from "./helpers/run.ts";
+import { builtDcs, det, engine, randomPolicy, run, start, sto, withOverrides } from "./helpers/run.ts";
 
 const RATIO_KPIS = ["OSA", "OTIF", "OFR", "WASTE", "LOST_SALES", "INFO_MATURITY", "TRUST", ...CATEGORIES.flatMap((c) => [`OSA_${c.toUpperCase()}`, `WASTE_${c.toUpperCase()}`])];
 
@@ -38,7 +38,7 @@ describe("SCM-INV (P1)", () => {
   });
 
   it("INV-04 solo confirmEpoch avanza", () => {
-    const s = engine.stage(start(det("kaigan")), { "D-15": "peak" }).state;
+    const s = engine.stage(start(det("redriver")), { "D-23": "scan" }).state;
     expect(s.epoch).toBe(0);
     expect(engine.stage(s, {}).state.epoch).toBe(0);
     expect(engine.confirmEpoch(s).state.epoch).toBe(1);
@@ -102,14 +102,19 @@ describe("SCM-INV (P1)", () => {
     );
   });
 
-  it("INV-12 entregas por tienda al día = Σ frecuencias (consolidado) o Σ proveedores × frecuencia (DSD)", () => {
-    const k = run(start(det("kaigan")), 1).reports[0]!.kpis;
+  it("INV-12 entregas por tienda al día = Σ frecuencias (consolidado) o Σ proveedores × frecuencia (por proveedor)", () => {
+    // Red con un CEDIS cerca de cada zona: ninguna frecuencia queda limitada por distancia (R-13).
+    const near = [7, 10, 25, 28].map((zone, i) => ({ id: `T${i}`, zone, type: "combined" as const, size: "large" as const }));
+    const kr = run(withOverrides(start(det("kaigan")), { dcs: builtDcs(near) }), 1).reports[0]!;
+    expect(kr.rulesFired.some((f) => f.id === "R-13")).toBe(false);
+    const k = kr.kpis;
     const kf = params.regions.kaigan.initial.freq;
-    expect(k.TRUCKS).toBeCloseTo((kf.fresh + kf.chilled + kf.ambient + kf.frozen) / 7 + params.regions.kaigan.otherDirectPerDay, 9);
-    const rr = run(start(det("redriver")), 1).reports[0]!.kpis;
-    const sup = params.regions.redriver.suppliers;
-    const f = params.supplier.dsdFreqPerWeek;
-    expect(rr.TRUCKS).toBeCloseTo((sup.fresh * f.fresh + sup.chilled * f.chilled + sup.ambient * f.ambient + sup.frozen * f.frozen) / 7, 9);
+    expect(k.TRUCKS).toBeCloseTo((kf.fresh + kf.chilled + kf.ambient + kf.frozen) / 7, 9);
+    // Cross-dock sin consolidar: cada proveedor llega en su propio camión.
+    const xd = near.map((d) => ({ ...d, type: "crossdock" as const }));
+    const ks = run(withOverrides(start(det("kaigan")), { dcs: builtDcs(xd), "dec.consolidation": "supplier" }), 1).reports[0]!.kpis;
+    const sup = params.regions.kaigan.suppliers;
+    expect(ks.TRUCKS).toBeCloseTo((sup.fresh * kf.fresh + sup.chilled * kf.chilled + sup.ambient * kf.ambient + sup.frozen * kf.frozen) / 7, 9);
   });
 
   it("INV-14 todo evento trae mensaje y causa con drivers; toda regla disparada queda en el log", () => {
@@ -128,8 +133,8 @@ describe("SCM-INV (P1)", () => {
 
   it("INV-16 decisiones fuera de rango o incompatibles se rechazan sin alterar el estado", () => {
     const s0 = start(det("redriver"));
-    const bad = engine.stage(s0, { "D-11": { fresh: 30, chilled: 7, ambient: 7, frozen: 2 }, "D-10": { fresh: "dc", chilled: "dc", ambient: "dc", frozen: "dc" }, "D-99": 1 });
-    expect(bad.errors.map((e) => e.id).sort()).toEqual(["D-10", "D-11", "D-99"]);
+    const bad = engine.stage(s0, { "D-11": { fresh: 30, chilled: 7, ambient: 7, frozen: 2 }, "D-12": "combined", "D-99": 1 });
+    expect(bad.errors.map((e) => e.id).sort()).toEqual(["D-11", "D-12", "D-99"]);
     expect(bad.state).toBe(s0);
   });
 

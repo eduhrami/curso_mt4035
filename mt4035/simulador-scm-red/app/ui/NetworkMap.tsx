@@ -43,7 +43,7 @@ export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state
   };
   return (
     <figure style={{ margin: 0 }}>
-      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width="100%" style={{ maxWidth: 420, display: "block", margin: "0 auto" }} role="img" aria-label={`Mapa esquemático de ${side} × ${side} km con ${state.dcs.length} CD`}>
+      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} width="100%" style={{ maxWidth: 420, display: "block", margin: "0 auto" }} role="img" aria-label={`Mapa esquemático de ${side} × ${side} km con ${state.dcs.length} CEDIS`}>
         {state.zones.map((z) => {
           const { x, y } = centerOf(z.id);
           const n = nearest(z.id);
@@ -90,7 +90,7 @@ export function NetworkMap({ state, epoch, selectedZone, onSelectZone }: { state
         {supplierSites(state).length > 0 ? (
           <span style={{ display: "block" }}>Proveedores en la región: {supplierSites(state).map(siteText).join("; ")}. El resto llega de proveedores externos.</span>
         ) : (
-          <span style={{ display: "block" }}>Los proveedores están fuera de la región: el flete al CD va incluido en el precio.</span>
+          <span style={{ display: "block" }}>Los proveedores están fuera de la región: el flete al CEDIS va incluido en el precio.</span>
         )}
       </figcaption>
     </figure>

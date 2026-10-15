@@ -19,8 +19,6 @@ export const OPTIONS: Record<string, string> = {
   dominance: "Dominancia (clusters)",
   dispersed: "Dispersa",
   mixed: "Mixta",
-  dc: "Por CD",
-  dsd: "Directo (DSD)",
   supplier: "Por proveedor",
   combined: "Combinada por temperatura",
   own: "Propia",
@@ -39,18 +37,11 @@ export const OPTIONS: Record<string, string> = {
   manual: "Conteo manual",
   scan: "Escaneo contra pedido",
   fifo: "FIFO estricto",
-  discount: "Descuento por caducidad",
   basic: "POS básico",
   pos_daily: "POS con análisis diario",
   pos_terminal: "POS + terminal gráfica",
   no: "No",
-  weekly: "Semanal",
-  daily: "Diario",
-  moving_avg: "Promedio móvil",
-  seasonal: "Estacional",
-  causal: "Causal",
-  arms: "Arm's-length",
-  vmi: "VMI",
+  yes: "Sí",
   cpfr: "CPFR",
   low: "Baja",
   mid: "Media",
@@ -71,81 +62,60 @@ export const IMPACT: Record<string, string> = {
   "F-01":
     "Tu pronóstico fija cuánto piden las tiendas durante el año. Si te quedas corto, baja la OSA y suben las ventas perdidas; si te pasas, compras de más: sube el inventario (baja la ITR), sube la merma de frescos y aparecen rebajas que restan utilidad. El CV que captures dimensiona el stock de seguridad: subestimarlo deja a las tiendas sin protección ante picos. Con POS diario la reposición corrige parte del error con las ventas reales, así que equivocarse cuesta menos.",
   "D-01":
-    "Más CD acercan la mercancía a las tiendas: baja la distancia de reparto y el costo de transporte, sube la OTIF y, en frescos, baja la merma porque el producto pasa menos tiempo en ruta. A cambio sube el costo fijo (renta, personal) y la inversión, y cada CD tarda 2–4 trimestres en operar. La ubicación es un trade-off: cerca de las plantas de proveedores (◆ en el mapa) baja el flete de entrada y la edad de los frescos; cerca de las tiendas baja el reparto. El tipo también importa: el CD con inventario amortigua fallas del proveedor y permite stock de seguridad agregado (pooling), pero envejece el producto; el cross-dock y el combinado mueven rápido sin almacenar, y el combinado es el único que permite consolidar varias temperaturas en un camión. Un CD saturado sube la merma y baja la OTIF.",
+    "Más CEDIS acercan la mercancía a las tiendas: baja la distancia de reparto y el costo de transporte, sube la OTIF y, en frescos, baja la merma porque el producto pasa menos tiempo en ruta. A cambio sube el costo fijo (renta, personal) y la inversión, y cada CEDIS tarda 2–4 trimestres en operar. La ubicación es un trade-off: cerca de las plantas de proveedores (◆ en el mapa) baja el flete de entrada y la edad de los frescos; cerca de las tiendas baja el reparto. El tipo también importa: el CEDIS con inventario amortigua fallas del proveedor y permite stock de seguridad agregado (pooling), pero envejece el producto, y los frescos de vida corta pierden días de anaquel guardados en él; el cross-dock y el combinado mueven rápido sin almacenar, y el combinado es el único que permite consolidar varias temperaturas en un camión. La distancia también fija cuántas veces por semana puedes visitar cada tienda: cerca de un CEDIS, hasta 2 veces al día; muy lejos, 1 vez por semana. Un CEDIS saturado sube la merma y baja la OTIF. Todas las tiendas se surten desde un CEDIS: la red nunca puede quedar vacía, y una zona sin CEDIS en operación no recibe mercancía.",
   "D-05":
     "Define dónde caen las tiendas nuevas. La dominancia concentra aperturas en zonas donde ya hay tiendas: sube la densidad y las paradas por ruta, y baja el costo de servir por tienda (CTS), pero a partir de cierta densidad las tiendas se canibalizan y baja la venta por tienda. La apertura dispersa capta más mercado nuevo, pero alarga las rutas y sube el CTS. Solo cuenta cuando abres tiendas.",
   "D-08":
-    "Cada tienda nueva suma ventas y margen bruto, pero cuesta inversión el trimestre en que decides el lote y abre el trimestre siguiente. Más tiendas también llenan los CD: si la capacidad no alcanza, sube la utilización y con ella la merma y los retrasos. Dónde caen depende de la estrategia de apertura.",
+    "Cada tienda nueva suma ventas y margen bruto, pero cuesta inversión el trimestre en que decides el lote y abre el trimestre siguiente. Más tiendas también llenan los CEDIS: si la capacidad no alcanza, sube la utilización y con ella la merma y los retrasos. Dónde caen depende de la estrategia de apertura.",
   "D-09":
-    "Cerrar tiendas quita sus ventas y su margen, pero también su costo de servirlas: conviene en zonas donde las tiendas están tan dispersas o tan lejos de los CD que el reparto cuesta más de lo que dejan, o donde se canibalizan entre sí. Cada cierre cuesta una indemnización y el efecto en el costo de servir (CTS) aparece el trimestre siguiente. Las tiendas cerradas no vuelven: para crecer otra vez hay que abrir lotes nuevos.",
-  "D-10":
-    "Por CD, varios proveedores llegan a la tienda en un solo camión: bajan los camiones por tienda, el tiempo de recepción y los errores, y mejora la frescura si el CD está bien ubicado; pero pagas manejo en CD y reparto propio. Con entrega directa (DSD) el proveedor reparte y cobra una tarifa por entrega: no necesitas CD, pero la tienda recibe muchos camiones (sube el costo de recepción y, por encima de 15 entregas al día, el personal sale del piso y baja la OSA). Suele convenir por CD en regiones densas y DSD donde la red no alcanza.",
+    "Cerrar tiendas quita sus ventas y su margen, pero también su costo de servirlas: conviene en zonas donde las tiendas están tan dispersas o tan lejos de los CEDIS que el reparto cuesta más de lo que dejan, o donde se canibalizan entre sí. Cada cierre cuesta una indemnización y el efecto en el costo de servir (CTS) aparece el trimestre siguiente. Las tiendas cerradas no vuelven: para crecer otra vez hay que abrir lotes nuevos.",
   "D-11":
-    "Más entregas por semana bajan la cobertura de cada pedido: el producto llega más fresco (baja la merma), baja el inventario en tienda (sube la ITR) y sube la OSA. A cambio, cada entrega adicional cuesta transporte y recepción, así que sube el CTS. En frescos de vida corta la frecuencia alta suele pagarse; en abarrotes casi nunca.",
+    "Más entregas por semana bajan la cobertura de cada pedido: el producto llega más fresco (baja la merma), baja el inventario en tienda (sube la ITR) y sube la OSA. A cambio, cada entrega adicional cuesta transporte y recepción, así que sube el CTS. En frescos de vida corta la frecuencia alta suele pagarse; en abarrotes casi nunca. El máximo es de 2 visitas al día (14 por semana), y solo para tiendas cerca de un CEDIS: entre más lejos esté la tienda, menos visitas caben en la semana (hasta 1 por semana en las más lejanas). Pedir más de lo que permite la distancia no tiene efecto en esas zonas.",
   "D-12":
-    "La consolidación combinada junta varios proveedores de la misma temperatura en un camión desde un CD combinado: bajan drásticamente los camiones por tienda y el costo de recepción, y sube la OTIF. Por proveedor, cada uno llega por separado aunque pase por el CD. Requiere un CD combinado.",
-  "D-13":
-    "Con flota propia pagas un costo fijo mayor, pero tienes la flota disponible cuando hay escasez de choferes o picos. El 3PL dedicado reserva capacidad con un costo intermedio. El spot es barato en condiciones normales, pero en escasez cancela viajes: baja la OTIF y la OSA justo cuando más importa.",
-  "D-14":
-    "El vehículo multitemperatura permite llevar varias temperaturas en un viaje y baja las fallas de cadena de frío. La telemetría detecta excursiones de temperatura a tiempo: bajan la probabilidad y la severidad de la pérdida en ruta (merma de frescos y refrigerados). Ambos suben el costo por kilómetro.",
-  "D-15":
-    "Entregar en horas valle reduce la congestión: las rutas son más cortas, baja el costo de transporte y sube la OTIF, y la recepción no interfiere con la venta. Pero solo funciona con recepción por escaneo; sin ella, el chofer espera a que alguien reciba y el beneficio desaparece.",
-  "D-16":
-    "El mantenimiento preventivo y el predictivo cuestan más que el correctivo, pero reducen las averías y las fallas de refrigeración: baja la merma por excursiones de frío y sube la OTIF. Pesa más en regiones con rutas largas o clima extremo.",
+    "La consolidación combinada junta varios proveedores de la misma temperatura en un camión desde un CEDIS combinado: bajan drásticamente los camiones por tienda y el costo de recepción, y sube la OTIF. Por proveedor, cada uno llega por separado aunque pase por el CEDIS. Requiere un CEDIS combinado.",
   "D-20":
     "La política fija cómo repone cada tienda. El punto de reorden (ROP/EOQ) supone demanda estable: con estacionalidad y perecederos falla y sube la merma o los faltantes. La revisión periódica es más robusta ante la estacionalidad. El tanpin kanri (el encargado pide con hipótesis sobre clima y eventos) baja el error de pronóstico y con él el stock de seguridad y la merma, sube la OSA; requiere POS con terminal y rinde el doble con capacitación alta.",
-  "D-21":
-    "Un CSL más alto sube el stock de seguridad (SS = z·σ·√(L+R)): sube la OSA y bajan las ventas perdidas, pero sube el inventario (baja la ITR, sube el costo de mantenerlo). En frescos, el inventario extra caduca: sube la merma y, si una zona tira mucho, el encargado pide de menos y la OSA cae. Por eso el CSL óptimo de frescos suele ser más bajo que el de abarrotes.",
   "D-22":
     "Más SKUs por tienda suben la venta potencial (el cliente encuentra más), pero reparten el anaquel: sube el stock de seguridad total, sube la merma y baja la ITR. El surtido local, con POS que lo respalde, adapta la mezcla a cada zona y sube la venta.",
   "D-23":
     "La recepción por escaneo contra pedido reduce el tiempo por parada (rutas más cortas, menor costo de transporte) y los errores de recepción, que restan OSA. Es indispensable para entregar en horas valle. Cuesta una inversión por tienda.",
   "D-24":
-    "Días de stock de seguridad en los CD con inventario: amortiguan las fallas del proveedor (sube el fill rate hacia tiendas, baja el riesgo de faltantes en eventos). Como el CD junta la demanda de muchas tiendas, protege con menos inventario total que repartirlo en tiendas (pooling). A cambio sube el inventario en CD y su costo, y los frescos envejecen.",
-  "D-25":
-    "Con descuento por caducidad próxima se vende lo que iba a tirarse: baja la merma, pero baja el margen de esos productos. FIFO estricto conserva el margen, pero tira más. Conviene cuando la merma de frescos es alta.",
+    "Días de stock de seguridad en los CEDIS con inventario: amortiguan las fallas del proveedor (sube el fill rate hacia tiendas, baja el riesgo de faltantes en eventos). Como el CEDIS junta la demanda de muchas tiendas, protege con menos inventario total que repartirlo en tiendas (pooling). A cambio sube el inventario en CEDIS y su costo, y los frescos envejecen.",
   "D-30":
     "Un mejor sistema de información en tienda reduce el error de pronóstico (CV efectivo): baja el stock de seguridad necesario y sube la OSA con el mismo inventario. Además, con POS diario la reposición corrige rápido un pronóstico equivocado, así que equivocarse cuesta menos. Cuesta inversión por tienda y operación semanal; tarda 1–2 trimestres en implantarse y uno en madurar, y con un error de pronóstico típico se paga en menos de dos años. La terminal gráfica habilita tanpin kanri.",
   "D-31":
-    "Compartir el POS con los proveedores les deja pronosticar con tu demanda real: baja el efecto látigo (BWR), sube su fill rate y con él la OTIF y la OSA. Es requisito para VMI y CPFR. Su costo operativo es bajo.",
+    "Compartir el POS diario con los proveedores les deja planear con tu demanda real: baja el efecto látigo (BWR), sube su fill rate y con él la OTIF y la OSA. Cuesta una integración inicial con los proveedores (consume el tope del año) y una cuota semanal por tienda. Rinde más donde la demanda es volátil o los proveedores son poco confiables; donde la operación ya es estable, puede no pagarse. Es requisito para el CPFR.",
   "D-32":
-    "El método de pronóstico del sistema de tiendas define cuánto ve hacia atrás: el promedio móvil reacciona tarde a la estacionalidad (más error en los cambios de temporada); el estacional la corrige; el causal además usa clima, calendario y eventos y baja el CV. Menos error significa menos stock de seguridad, menos merma y más OSA, y también un BWR más bajo. Es distinto del pronóstico anual que capturas en la pestaña «Pronóstico».",
+    "El pronóstico básico usa promedios móviles: es gratis, pero reacciona tarde y no ve la estacionalidad, así que en los cambios de temporada el error sube y con él el stock de seguridad, la merma y los faltantes. El avanzado (suavizamiento exponencial con estacionalidad, tipo Holt-Winters, más variables causales como clima, calendario y promociones) baja el error y el efecto látigo, pero requiere implementar el modelo y mantener un equipo de analítica cada semana. Se paga donde la estacionalidad pesa y el volumen es grande; en operaciones chicas o estables, el costo del equipo puede superar el beneficio. Es distinto del pronóstico anual que capturas en la pestaña «Pronóstico».",
   "D-33":
-    "Colaborar con los proveedores acorta y hace más confiable su lead time: VMI y sobre todo CPFR bajan el stock de seguridad necesario, suben el fill rate y la OTIF y amortiguan el efecto látigo. Requiere compartir POS y tarda en dar resultados.",
+    "Partes de RMI: tú pronosticas y repones, y los proveedores solo surten lo que pides. El CPFR (planeación, pronóstico y reabasto colaborativos) suma el pronóstico del proveedor al tuyo: baja el error de pronóstico, acorta y estabiliza el lead time y sube el fill rate. Cuesta una implementación (consume el tope del año) y un equipo de planeación conjunta cada semana, y su beneficio crece poco a poco: entra un trimestre después de decidirlo y madura en tres más. Por eso el momento importa: implementado temprano se paga con creces; tarde, ya no alcanza a recuperarse antes de que termine el juego. Requiere compartir el POS con los proveedores.",
   "D-34":
     "La capacitación de los encargados multiplica el beneficio del tanpin kanri: con capacitación alta la reducción del error de pronóstico es cerca del doble que con baja. Sin tanpin kanri casi no cambia los KPIs y solo suma costo operativo.",
 };
 
 export const LABELS: LabelMap = {
   "F-01": { help: "Se captura en T1 de cada año con los datos observados hasta ese momento." },
-  "D-01": { help: "Cada CD tarda 2–4 trimestres en construirse según su tamaño. No se puede mover de zona ni reducir." },
-  "D-05": { help: "Decide dónde se ubican las tiendas nuevas: concentradas alrededor de tus CD o repartidas." },
+  "D-01": { help: "Cada CEDIS tarda 2–4 trimestres en construirse según su tamaño. No se puede mover de zona ni reducir." },
+  "D-05": { help: "Decide dónde se ubican las tiendas nuevas: concentradas alrededor de tus CEDIS o repartidas." },
   "D-08": { help: "Abre un lote de tiendas el trimestre siguiente. Indispensable si empiezas desde cero.", unit: "tiendas" },
   "D-09": { help: "Cierra tiendas de una zona el trimestre siguiente. Cada cierre cuesta una indemnización, que consume el tope de inversión del año.", fields: { zone: "Zona", stores: "Tiendas a cerrar" } },
-  "D-10": { help: "Por CD consolida entregas; directo (DSD) evita el CD pero llena la tienda de camiones.", fields: CATS },
-  "D-11": { help: "Entregas por semana a cada tienda. Más frecuencia: más frescura y más costo de transporte.", fields: CATS, unit: "/sem" },
-  "D-12": { help: "Combinada: un camión por temperatura con varios proveedores. Requiere un CD combinado." },
-  "D-13": {},
-  "D-14": { help: "Multi-temperatura y telemetría reducen las fallas de cadena de frío.", fields: { type: "Vehículo", telemetry: "Telemetría" } },
-  "D-15": { help: "En horas valle hay menos tráfico, pero sin escaneo el chofer espera a que alguien reciba." },
-  "D-16": {},
+  "D-11": { help: "Entregas por semana a cada tienda. Más frecuencia: más frescura y más costo de transporte. Máximo 14 (2 al día) y menos en tiendas lejos del CEDIS.", fields: CATS, unit: "/sem" },
+  "D-12": { help: "Combinada: un camión por temperatura con varios proveedores. Requiere un CEDIS combinado." },
   "D-20": { help: "Tanpin kanri (pedido por hipótesis del encargado) requiere POS + terminal gráfica." },
-  "D-21": { help: "Nivel de servicio objetivo por ciclo: define el stock de seguridad.", fields: CATS, format: "pct", step: 0.01 },
   "D-22": { help: "Más SKUs: más ventas potenciales, más stock de seguridad y más merma.", fields: { skus: "SKUs por tienda", local: "Surtido local" } },
   "D-23": { help: "El escaneo acelera la recepción y reduce errores." },
-  "D-24": { help: "Días de stock de seguridad en el CD (solo CD con inventario). Amortigua fallas del proveedor.", unit: "días", step: 0.5 },
-  "D-25": {},
+  "D-24": { help: "Días de stock de seguridad en el CEDIS (solo CEDIS con inventario). Amortigua fallas del proveedor.", unit: "días", step: 0.5 },
   "D-30": { help: "Reduce el error de pronóstico. Tarda 1–2 trimestres en implantarse y uno más en madurar." },
-  "D-31": { help: "Los proveedores pronostican con tu demanda real: baja el efecto bullwhip." },
-  "D-32": {},
-  "D-33": { help: "VMI y CPFR requieren compartir POS." },
+  "D-31": { help: "Los proveedores reciben tu POS diario. Implementación inicial más cuota semanal por tienda.", options: { no: "No", yes: "Sí, a diario" } },
+  "D-32": { help: "Básico: promedios móviles. Avanzado: modelo con estacionalidad y variables causales, con equipo de analítica.", options: { basic: "Básico (promedios móviles)", advanced: "Avanzado (equipo de analítica)" } },
+  "D-33": { help: "Partes de RMI (tú pronosticas y repones). El CPFR requiere compartir POS, entra un trimestre después y madura en tres.", options: { rmi: "RMI (tú pronosticas y repones)", cpfr: "CPFR (pronóstico colaborativo)" } },
   "D-34": { help: "Multiplica el beneficio de tanpin kanri." },
 };
 for (const [id, impact] of Object.entries(IMPACT)) LABELS[id] = { ...LABELS[id], impact };
 
 export const KPI_META: KpiMeta[] = [
   { id: "OSA", acronym: "OSA", name: "Disponibilidad en anaquel", formula: "Tiempo con stock / tiempo total", format: "pct", higherIsBetter: true },
-  { id: "OTIF", acronym: "OTIF", name: "A tiempo y completo (CD→tienda)", formula: "Entregas a tiempo y completas / entregas", format: "pct", higherIsBetter: true },
+  { id: "OTIF", acronym: "OTIF", name: "A tiempo y completo (CEDIS→tienda)", formula: "Entregas a tiempo y completas / entregas", format: "pct", higherIsBetter: true },
   { id: "CTS_PCT", acronym: "CTS", name: "Costo logístico / ventas", formula: "Costo logístico total / ventas", format: "pct", higherIsBetter: false },
   { id: "WASTE", acronym: "Waste", name: "Merma", formula: "Unidades mermadas / recibidas", format: "pct", higherIsBetter: false },
   { id: "LOST_SALES", acronym: "Lost Sales", name: "Ventas perdidas", formula: "Demanda no atendida ni sustituida / demanda", format: "pct", higherIsBetter: false },
@@ -204,17 +174,17 @@ export const REGION_TEXT: Record<RegionId, { title: string; tagline: string; fac
   kaigan: {
     title: "Kaigan",
     tagline: "Franja costera muy densa (tipo Japón). La red original de Hoshi Mart, que no creció al ritmo de las tiendas.",
-    facts: ["1,800 tiendas en clusters", "5 CD combinados por temperatura, saturados", "Frescos 3 veces al día", "Planta dedicada de alimentos preparados (zona 12)"],
+    facts: ["1,800 tiendas en clusters", "Un solo CEDIS grande con inventario para 1,800 tiendas, saturado", "Frescos 2 veces al día cerca de los CEDIS, menos en las zonas lejanas", "Planta dedicada de alimentos preparados (zona 12)"],
   },
   redriver: {
     title: "Red River",
     tagline: "Corredor extenso y disperso (tipo EE.UU.). Prairie Stop, recién adquirida.",
-    facts: ["1,200 tiendas dispersas", "Sin CD: 40+ proveedores entregan directo (DSD)", "Pocos frescos, muchos faltantes", "Pedido manual, POS básico"],
+    facts: ["1,200 tiendas dispersas", "Un solo CEDIS central con inventario para toda la región", "Pocos frescos, muchos faltantes", "Pedido manual, POS básico"],
   },
   valle: {
     title: "Valle Metropolitano",
     tagline: "Núcleo urbano congestionado y periferia extendida (tipo México).",
-    facts: ["600 tiendas: 70% en el núcleo", "4 CD con inventario heredados de una expansión", "Central de abasto en el núcleo y parque industrial en la periferia", "Congestión alta y muy variable"],
+    facts: ["600 tiendas: 70% en el núcleo", "4 CEDIS con inventario heredados de una expansión", "Central de abasto en el núcleo y parque industrial en la periferia", "Congestión alta y muy variable"],
   },
 };
 
@@ -241,8 +211,8 @@ export function describeValue(id: string, v: unknown): string {
     const f = v as { year: number; level: number; growth: number; quarters: number[]; cv: number; p95: number };
     return `A${f.year + 1}: nivel ${f.level.toFixed(1)} unid./tienda/día, crecimiento ${(f.growth * 100).toFixed(1)}%, trimestres ${f.quarters.map((q) => `×${q.toFixed(2)}`).join("/")}, CV ${(f.cv * 100).toFixed(1)}%, p95 ${f.p95.toFixed(1)}`;
   }
-  const opt = (x: unknown) => OPTIONS[String(x)] ?? String(x);
-  if (id === "D-01" && Array.isArray(v)) return v.length ? v.map((d) => `${d.id}: zona ${d.zone}, ${opt(d.type)}, ${opt(d.size)}`).join(" · ") : "sin CD";
+  const opt = (x: unknown) => LABELS[id]?.options?.[String(x)] ?? OPTIONS[String(x)] ?? String(x);
+  if (id === "D-01" && Array.isArray(v)) return v.length ? v.map((d) => `${d.id}: zona ${d.zone}, ${opt(d.type)}, ${opt(d.size)}`).join(" · ") : "sin CEDIS";
   if (typeof v === "number") return Number.isInteger(v) ? String(v) : v.toFixed(2);
   if (typeof v === "string") return opt(v);
   if (typeof v === "boolean") return v ? "Sí" : "No";
@@ -260,15 +230,17 @@ const RULE_EVENT_NAMES: Record<string, string> = {
   "R-01": "Rutas de frescos de más de 4 h",
   "R-02": "Merma alta en una zona",
   "R-03": "Disponibilidad baja dos semanas seguidas",
-  "R-04": "Demasiadas entregas directas por tienda",
+  "R-04": "Demasiados camiones por tienda",
   "R-05": "Frecuencia muy alta en región dispersa",
   "R-06": "Cross-dock con proveedor poco confiable",
-  "R-07": "CD saturado",
+  "R-07": "CEDIS saturado",
   "R-08": "POS compartido + CPFR maduro",
   "R-09": "Tanpin kanri sin capacitación",
   "R-10": "Clusters densos",
-  "R-11": "Pooling en CD con inventario",
+  "R-11": "Pooling en CEDIS con inventario",
   "R-12": "Entrega en horas valle con escaneo",
+  "R-13": "Distancia al CEDIS que limita la frecuencia",
+  "R-14": "Tiendas sin CEDIS que las surta",
   "X-01": "Falla de refrigeración en ruta",
   "X-02": "Clima extremo",
   "X-03": "Sismo severo",

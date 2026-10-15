@@ -16,7 +16,7 @@ export function TerritoryMap({ state }: { state: LmState }) {
   return (
     <figure style={{ margin: 0 }} class="stack">
       <p class="small">
-        <strong>CD</strong> {d.sfd.active ? `activo · capacidad de ${params.nodes.cd.capacity[d.sfd.capacity].toLocaleString("es-MX")} pedidos/día` : "apagado"}
+        <strong>CEDIS</strong> {d.sfd.active ? `activo · capacidad de ${params.nodes.cd.capacity[d.sfd.capacity].toLocaleString("es-MX")} pedidos/día` : "apagado"}
         {d.bopis ? " · recoger en tienda activo" : ""}
       </p>
       <div class="zone-grid" role="list" aria-label={`Zonas de ${t.label}`}>
@@ -44,9 +44,9 @@ export function TerritoryMap({ state }: { state: LmState }) {
                 <span class="zone-stores">{z.stores}</span> <span class="muted">tiendas</span>
               </div>
               <div class="muted">
-                {Math.round(z.share * 100)}% de la demanda · {z.distCd} km del CD
+                {Math.round(z.share * 100)}% de la demanda · {z.distCd} km del CEDIS
               </div>
-              <div class="icons">{icons.length ? icons.join(" · ") : <span class="muted">Solo desde el CD</span>}</div>
+              <div class="icons">{icons.length ? icons.join(" · ") : <span class="muted">Solo desde el CEDIS</span>}</div>
               <div class="muted">
                 Confianza {Math.round(zs.trust * 100)}%{zs.competition < 1 ? ` · competencia −${Math.round((1 - zs.competition) * 100)}%` : ""}
               </div>

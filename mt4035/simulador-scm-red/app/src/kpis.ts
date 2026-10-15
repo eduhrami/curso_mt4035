@@ -46,6 +46,7 @@ export function aggregate(ctx: EpochContext<ScmState, Params>): Record<string, n
     EBITDA: tot("ebitda"),
     EBITDA_PCT: ratio(tot("ebitda"), revenue),
     INFO_MATURITY: ctx.state.infoMaturity,
+    CPFR_MATURITY: ctx.state.cpfrMaturity,
     TRUST: ratio(tot("trustW"), tot("stores"), 1),
     DC_DIST_KM: ratio(tot("dcDistKmW"), tot("dcDeliveries")),
     STOPS_PER_ROUTE: ratio(tot("dcDeliveries"), tot("dcRoutes")),

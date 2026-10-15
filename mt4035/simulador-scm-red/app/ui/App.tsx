@@ -52,7 +52,7 @@ function TopBar() {
             Utilidad: {fmtMoney(profit)}
           </span>
           {s.phase !== "FINAL" && capexBudget(s) && (
-            <span class="chip" data-testid="budget-chip" title="Tope de gasto en decisiones del año: CD nuevos, conversiones, ampliaciones y cierres; aperturas y cierres de tiendas; escaneo y POS. Se renueva cada T1.">
+            <span class="chip" data-testid="budget-chip" title="Tope de gasto en decisiones del año: CEDIS nuevos, conversiones, ampliaciones y cierres; aperturas y cierres de tiendas; escaneo y POS. Se renueva cada T1.">
               Inversión A{capexBudget(s)!.year + 1}: {fmtMoney(Math.max(0, capexBudget(s)!.remaining))} de {fmtMoney(capexBudget(s)!.budget)}
             </span>
           )}

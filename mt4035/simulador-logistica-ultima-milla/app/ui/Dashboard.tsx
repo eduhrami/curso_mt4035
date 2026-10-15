@@ -45,7 +45,7 @@ export function Dashboard({ state }: { state: GameState<LmState> }) {
         <div class="card stack">
           <h2>Antes del primer trimestre</h2>
           <p>
-            Revisa la operación <em>as-is</em> de {TERRITORY_TEXT[territory].title}: solo surtido desde el CD, camionetas de un 3PL, día siguiente con ventana de todo el día, sin ETA ni
+            Revisa la operación <em>as-is</em> de {TERRITORY_TEXT[territory].title}: solo surtido desde el CEDIS, camionetas de un 3PL, día siguiente con ventana de todo el día, sin ETA ni
             validación de direcciones. Ajusta las decisiones que quieras en el panel izquierdo y confirma el trimestre <strong>A1-T1</strong>: corre enero, febrero y marzo con esas decisiones. Puedes confirmar sin cambios para ver cómo opera hoy.
           </p>
         </div>

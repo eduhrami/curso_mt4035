@@ -1,5 +1,5 @@
 {
-  "version": "p3",
+  "version": "p5",
   "note": "⚠ Calibración preliminar (F2). Se ajusta con auto-juego en F3. Montos en USD; tiempos en días u horas según el sufijo.",
   "epochs": 12,
   "weeksPerEpoch": 13,
@@ -171,7 +171,23 @@
     "closurePenaltyMult": 0.3,
     "pickErrorRate": 0.003,
     "highUtil": 0.9,
-    "fixedRealEstateShare": 0.5
+    "fixedRealEstateShare": 0.5,
+    "maxFreqByRoundTrip": {
+      "note": "⚠ Frecuencia máxima de entrega desde el CEDIS según el tiempo de ida y vuelta CEDIS→zona (velocidad de la región con su congestión media): cerca, hasta 2 visitas al día; lejos, hasta 1 por semana (AD-49). Supuesto sin datos de práctica real: validar con operadores.",
+      "hours": [
+        5,
+        10,
+        18,
+        28
+      ],
+      "perWeek": [
+        14,
+        7,
+        3,
+        2
+      ],
+      "beyond": 1
+    }
   },
   "supplier": {
     "frBase": {
@@ -186,30 +202,21 @@
     },
     "bwrBeta": 0.02,
     "collabFrGain": {
-      "arms": 0.0,
-      "vmi": 0.01,
+      "rmi": 0.0,
       "cpfr": 0.02
     },
     "collabLtMult": {
-      "arms": 1.0,
-      "vmi": 0.9,
+      "rmi": 1.0,
       "cpfr": 0.8
     },
     "collabLtCvMult": {
-      "arms": 1.0,
-      "vmi": 0.85,
+      "rmi": 1.0,
       "cpfr": 0.7
     },
     "dedicatedLtMult": 0.5,
     "inboundCostPerCaseKm": 0.01,
     "inboundNote": "Proveedor con planta en la región (supplierSites): Hoshi Mart recoge en la planta y paga el flete al CD (USD por caja-km, camión completo ida y vuelta). Con proveedores externos el flete va en el precio.",
     "shortfallToOos": 0.6,
-    "dsdFreqPerWeek": {
-      "fresh": 3,
-      "chilled": 2,
-      "ambient": 1,
-      "frozen": 1
-    },
     "frFloor": 0.5
   },
   "info": {
@@ -236,37 +243,43 @@
       "pos_terminal": 20
     },
     "sharing": {
+      "note": "Sí: el proveedor recibe el POS diario (bullwhip ×0.15). Implementación una vez (integración por región + por tienda) y opex semanal por tienda (AD-47).",
       "bwrMult": {
         "no": 1.0,
-        "weekly": 0.5,
-        "daily": 0.15
+        "yes": 0.15
+      },
+      "implementation": {
+        "fixed": 1000000,
+        "perStore": 500
       },
       "opexPerStoreWeek": {
         "no": 0,
-        "weekly": 3,
-        "daily": 5
+        "yes": 5
       }
     },
     "forecast": {
+      "note": "Básico: promedios móviles sin estacionalidad. Avanzado: suavizamiento exponencial con estacionalidad (Holt-Winters) y variables causales (clima, calendario, promociones), con equipo de analítica: implementación y costo fijo semanal del equipo por región (AD-47).",
       "window": {
-        "moving_avg": 7,
-        "seasonal": 14,
-        "causal": 28
+        "basic": 7,
+        "advanced": 28
       },
       "seasonPenalty": {
-        "moving_avg": 2.0,
-        "seasonal": 0.5,
-        "causal": 0.0
+        "basic": 2.0,
+        "advanced": 0.0
       },
       "cvMult": {
-        "moving_avg": 1.0,
-        "seasonal": 1.0,
-        "causal": 0.9
+        "basic": 1.0,
+        "advanced": 0.9
+      },
+      "lagEpochs": 1,
+      "implementation": 1000000,
+      "teamCostPerWeek": {
+        "basic": 0,
+        "advanced": 20000
       },
       "opexPerStoreWeek": {
-        "moving_avg": 0,
-        "seasonal": 2,
-        "causal": 5
+        "basic": 0,
+        "advanced": 0
       }
     },
     "policy": {
@@ -294,6 +307,14 @@
         "mid": 10,
         "high": 25
       }
+    },
+    "cpfr": {
+      "note": "⚠ CPFR (planeación, pronóstico y reabasto colaborativos): implementación una vez y equipo de planeación conjunta cada semana. Entra en operación 1 trimestre después y madura en 3 trimestres: baja el error de pronóstico (CV) y el lead time y mejora el fill rate del proveedor respecto de RMI (el minorista pronostica solo) (AD-48).",
+      "implementation": 2500000,
+      "opexPerWeek": 15000,
+      "lagEpochs": 1,
+      "maturityPerEpoch": 0.3333,
+      "cvMult": 0.85
     }
   },
   "assortment": {
@@ -369,8 +390,24 @@
   "regions": {
     "kaigan": {
       "supplierSites": [
-        { "id": "P-FR", "zone": 12, "label": "Planta dedicada de alimentos preparados", "categories": ["fresh"], "dedicated": true },
-        { "id": "P-RF", "zone": 25, "label": "Planta de lácteos y refrigerados", "categories": ["chilled"], "dedicated": false }
+        {
+          "id": "P-FR",
+          "zone": 12,
+          "label": "Planta dedicada de alimentos preparados",
+          "categories": [
+            "fresh"
+          ],
+          "dedicated": true
+        },
+        {
+          "id": "P-RF",
+          "zone": 25,
+          "label": "Planta de lácteos y refrigerados",
+          "categories": [
+            "chilled"
+          ],
+          "dedicated": false
+        }
       ],
       "label": "Kaigan",
       "sideKm": 122,
@@ -387,7 +424,6 @@
       "wage": 16,
       "realEstate": 1.0,
       "storeCapexMult": 1.5,
-      "supplierDistKm": 30,
       "supplierLtDays": {
         "fresh": 0.3,
         "chilled": 1,
@@ -400,7 +436,6 @@
         "ambient": 20,
         "frozen": 4
       },
-      "dsdSharedDensity": 4,
       "mix": {
         "fresh": 0.3,
         "chilled": 0.2,
@@ -408,28 +443,25 @@
         "frozen": 0.08
       },
       "freshShelfLifeDays": 1.0,
-      "otherDirectPerDay": 1.5,
       "climate": "typhoon",
       "regulatedLoading": true,
       "initial": {
         "dcs": {
-          "count": 5,
-          "type": "combined",
-          "size": "medium"
-        },
-        "flows": {
-          "fresh": "dc",
-          "chilled": "dc",
-          "ambient": "dc",
-          "frozen": "dc"
+          "count": 1,
+          "type": "stocking",
+          "size": "large",
+          "zones": [
+            12
+          ],
+          "note": "Un CEDIS grande con inventario a la mitad de la costa: red muy lejos de la ideal a propósito, para explorar construir y convertir (AD-44, AD-52)."
         },
         "freq": {
-          "fresh": 21,
-          "chilled": 21,
+          "fresh": 14,
+          "chilled": 14,
           "ambient": 7,
           "frozen": 3
         },
-        "consolidation": "combined",
+        "consolidation": "supplier",
         "fleet": "dedicated",
         "vehicle": {
           "type": "multi",
@@ -438,12 +470,6 @@
         "window": "offpeak",
         "maintenance": "preventive",
         "policy": "tanpin",
-        "csl": {
-          "fresh": 0.95,
-          "chilled": 0.96,
-          "ambient": 0.97,
-          "frozen": 0.96
-        },
         "assortment": {
           "skus": 3000,
           "local": true
@@ -452,12 +478,11 @@
         "dcSafetyDays": 0,
         "retirement": "fifo",
         "info": "pos_terminal",
-        "sharing": "daily",
-        "forecast": "seasonal",
-        "collaboration": "vmi",
+        "sharing": "yes",
+        "forecast": "advanced",
+        "collaboration": "rmi",
         "training": "high"
       },
-      "dsdFeePerDelivery": 20,
       "supplierFrAdj": 0.03,
       "presentationMult": 1.0
     },
@@ -478,7 +503,6 @@
       "wage": 15,
       "realEstate": 0.45,
       "storeCapexMult": 0.8,
-      "supplierDistKm": 80,
       "supplierLtDays": {
         "fresh": 2.0,
         "chilled": 3,
@@ -491,7 +515,6 @@
         "ambient": 16,
         "frozen": 3
       },
-      "dsdSharedDensity": 8,
       "mix": {
         "fresh": 0.1,
         "chilled": 0.18,
@@ -499,20 +522,17 @@
         "frozen": 0.08
       },
       "freshShelfLifeDays": 5.0,
-      "otherDirectPerDay": 0,
       "climate": "snow",
       "regulatedLoading": false,
       "initial": {
         "dcs": {
-          "count": 0,
+          "count": 1,
           "type": "stocking",
-          "size": "medium"
-        },
-        "flows": {
-          "fresh": "dsd",
-          "chilled": "dsd",
-          "ambient": "dsd",
-          "frozen": "dsd"
+          "size": "medium",
+          "zones": [
+            14
+          ],
+          "note": "Un CEDIS central con inventario: red insuficiente a propósito (AD-44, AD-51)."
         },
         "freq": {
           "fresh": 7,
@@ -529,12 +549,6 @@
         "window": "peak",
         "maintenance": "corrective",
         "policy": "rop",
-        "csl": {
-          "fresh": 0.92,
-          "chilled": 0.92,
-          "ambient": 0.92,
-          "frozen": 0.92
-        },
         "assortment": {
           "skus": 3000,
           "local": false
@@ -544,18 +558,35 @@
         "retirement": "fifo",
         "info": "basic",
         "sharing": "no",
-        "forecast": "moving_avg",
-        "collaboration": "arms",
+        "forecast": "basic",
+        "collaboration": "rmi",
         "training": "low"
       },
-      "dsdFeePerDelivery": 35,
       "supplierFrAdj": 0.0,
       "presentationMult": 1.6
     },
     "valle": {
       "supplierSites": [
-        { "id": "P-CA", "zone": 14, "label": "Central de abasto (frescos y refrigerados)", "categories": ["fresh", "chilled"], "dedicated": false },
-        { "id": "P-PI", "zone": 30, "label": "Parque industrial (abarrotes y congelados)", "categories": ["ambient", "frozen"], "dedicated": false }
+        {
+          "id": "P-CA",
+          "zone": 14,
+          "label": "Central de abasto (frescos y refrigerados)",
+          "categories": [
+            "fresh",
+            "chilled"
+          ],
+          "dedicated": false
+        },
+        {
+          "id": "P-PI",
+          "zone": 30,
+          "label": "Parque industrial (abarrotes y congelados)",
+          "categories": [
+            "ambient",
+            "frozen"
+          ],
+          "dedicated": false
+        }
       ],
       "label": "Valle Metropolitano",
       "sideKm": 182,
@@ -572,7 +603,6 @@
       "wage": 5,
       "realEstate": 1.1,
       "storeCapexMult": 0.6,
-      "supplierDistKm": 40,
       "supplierLtDays": {
         "fresh": 0.5,
         "chilled": 2,
@@ -585,7 +615,6 @@
         "ambient": 16,
         "frozen": 4
       },
-      "dsdSharedDensity": 5,
       "mix": {
         "fresh": 0.2,
         "chilled": 0.2,
@@ -593,7 +622,6 @@
         "frozen": 0.08
       },
       "freshShelfLifeDays": 3.5,
-      "otherDirectPerDay": 0.5,
       "climate": "rain",
       "regulatedLoading": true,
       "initial": {
@@ -601,12 +629,6 @@
           "count": 4,
           "type": "stocking",
           "size": "medium"
-        },
-        "flows": {
-          "fresh": "dsd",
-          "chilled": "dc",
-          "ambient": "dc",
-          "frozen": "dc"
         },
         "freq": {
           "fresh": 7,
@@ -623,12 +645,6 @@
         "window": "peak",
         "maintenance": "corrective",
         "policy": "periodic",
-        "csl": {
-          "fresh": 0.93,
-          "chilled": 0.93,
-          "ambient": 0.94,
-          "frozen": 0.93
-        },
         "assortment": {
           "skus": 3000,
           "local": false
@@ -638,11 +654,10 @@
         "retirement": "fifo",
         "info": "basic",
         "sharing": "no",
-        "forecast": "moving_avg",
-        "collaboration": "arms",
+        "forecast": "basic",
+        "collaboration": "rmi",
         "training": "mid"
       },
-      "dsdFeePerDelivery": 10,
       "supplierFrAdj": -0.01,
       "presentationMult": 1.2
     }
@@ -838,53 +853,53 @@
       "kaigan": {
         "ranges": {
           "OSA": {
-            "worst": 0.95,
+            "worst": 0.893,
             "best": 0.995
           },
           "WASTE": {
-            "worst": 0.03,
+            "worst": 0.091,
             "best": 0.005
           },
           "CTS_PCT": {
-            "worst": 0.07,
-            "best": 0.03
+            "worst": 0.043,
+            "best": 0.031
           },
           "ITR": {
-            "worst": 40,
-            "best": 100
+            "worst": 49.7,
+            "best": 77.8
           },
           "LOST_SALES": {
-            "worst": 0.03,
-            "best": 0.005
+            "worst": 0.047,
+            "best": 0.006
           },
           "EBITDA_PCT": {
-            "worst": 0.2,
-            "best": 0.3
+            "worst": 0.168,
+            "best": 0.264
           }
         },
         "guardrails": [
           {
             "kpi": "OSA",
             "op": ">=",
-            "value": 0.96,
+            "value": 0.91,
             "penalty": 0.5
           },
           {
             "kpi": "CTS_PCT",
             "op": "<=",
-            "value": 0.07,
+            "value": 0.05,
             "penalty": 0.5
           },
           {
             "kpi": "OTIF",
             "op": ">=",
-            "value": 0.94,
+            "value": 0.89,
             "penalty": 0.5
           },
           {
             "kpi": "LOST_SALES",
             "op": "<=",
-            "value": 0.025,
+            "value": 0.05,
             "penalty": 0.5
           }
         ]
@@ -892,53 +907,53 @@
       "redriver": {
         "ranges": {
           "OSA": {
-            "worst": 0.85,
-            "best": 0.97
+            "worst": 0.86,
+            "best": 0.994
           },
           "WASTE": {
-            "worst": 0.1,
-            "best": 0.01
+            "worst": 0.083,
+            "best": 0.0
           },
           "CTS_PCT": {
-            "worst": 0.2,
-            "best": 0.06
+            "worst": 0.265,
+            "best": 0.087
           },
           "ITR": {
-            "worst": 10,
-            "best": 40
+            "worst": 25.6,
+            "best": 28.4
           },
           "LOST_SALES": {
-            "worst": 0.08,
+            "worst": 0.066,
             "best": 0.01
           },
           "EBITDA_PCT": {
-            "worst": 0.0,
-            "best": 0.22
+            "worst": -0.073,
+            "best": 0.19
           }
         },
         "guardrails": [
           {
             "kpi": "OSA",
             "op": ">=",
-            "value": 0.89,
+            "value": 0.87,
             "penalty": 0.5
           },
           {
             "kpi": "CTS_PCT",
             "op": "<=",
-            "value": 0.15,
+            "value": 0.26,
             "penalty": 0.5
           },
           {
             "kpi": "OTIF",
             "op": ">=",
-            "value": 0.86,
+            "value": 0.83,
             "penalty": 0.5
           },
           {
             "kpi": "LOST_SALES",
             "op": "<=",
-            "value": 0.06,
+            "value": 0.065,
             "penalty": 0.5
           }
         ]
@@ -946,58 +961,59 @@
       "valle": {
         "ranges": {
           "OSA": {
-            "worst": 0.88,
-            "best": 0.98
+            "worst": 0.833,
+            "best": 0.995
           },
           "WASTE": {
-            "worst": 0.1,
-            "best": 0.01
+            "worst": 0.237,
+            "best": 0.0
           },
           "CTS_PCT": {
-            "worst": 0.08,
-            "best": 0.02
+            "worst": 0.114,
+            "best": 0.05
           },
           "ITR": {
-            "worst": 15,
-            "best": 60
+            "worst": 34.9,
+            "best": 40.8
           },
           "LOST_SALES": {
-            "worst": 0.06,
-            "best": 0.01
+            "worst": 0.083,
+            "best": 0.003
           },
           "EBITDA_PCT": {
-            "worst": 0.1,
-            "best": 0.28
+            "worst": -0.082,
+            "best": 0.301
           }
         },
         "guardrails": [
           {
             "kpi": "OSA",
             "op": ">=",
-            "value": 0.93,
+            "value": 0.85,
             "penalty": 0.5
           },
           {
             "kpi": "CTS_PCT",
             "op": "<=",
-            "value": 0.08,
+            "value": 0.12,
             "penalty": 0.5
           },
           {
             "kpi": "OTIF",
             "op": ">=",
-            "value": 0.85,
+            "value": 0.82,
             "penalty": 0.5
           },
           {
             "kpi": "LOST_SALES",
             "op": "<=",
-            "value": 0.04,
+            "value": 0.08,
             "penalty": 0.5
           }
         ]
       }
-    }
+    },
+    "note": "⚠ Rangos y guardrails por región recalibrados el 15-oct-2026 (AD-51) con una regla única: rango de la operación inicial (−25% de la brecha) a la red de referencia (+50% de la brecha); guardrails = el servicio de la operación heredada (no empeorarlo: OSA −0.5 pp, CTS +5%, OTIF −1 pp, ventas perdidas +0.5 pp); las propuestas de valor suman sus deltas (money.serviceGuardrails). 20 semillas, A2–A3."
   },
   "forecast": {
     "truth": {
@@ -1065,8 +1081,8 @@
     "capexBudgetNote": "⚠ Tope de inversión por año (USD): suma del capex de decisiones (CD, aperturas, escaneo, POS) confirmado en los cuatro trimestres del año. 0 = sin tope. Calibrado contra el plan óptimo de cada región (AD-43): obliga a escalonar en Red River; en Kaigan cabe un CD combinado al año; en Valle no limita el plan de referencia.",
     "capexBudgetPerYear": {
       "kaigan": 20000000,
-      "redriver": 7000000,
-      "valle": 6000000
+      "redriver": 12000000,
+      "valle": 15000000
     },
     "servicePenaltyShare": 0.02,
     "serviceGuardrails": {
@@ -1080,7 +1096,7 @@
           "kpi": "OSA_FRESH",
           "op": ">=",
           "base": "OSA",
-          "delta": -0.02
+          "delta": -0.07
         }
       ],
       "lowcost": [
@@ -1104,5 +1120,26 @@
       ]
     },
     "note": "Guardrails de servicio según la propuesta de valor declarada: umbral = guardrail calibrado de la región (o el de 'base') + delta. Cada trimestre con un guardrail roto resta servicePenaltyShare × ventas del trimestre de la utilidad (penalizaciones y pérdida de clientes)."
+  },
+  "strategyCsl": {
+    "note": "⚠ Nivel de servicio objetivo (CSL) por categoría que fija la propuesta de valor: dimensiona el stock de seguridad. La disponibilidad real puede quedar abajo de la meta (AD-47).",
+    "freshness": {
+      "fresh": 0.95,
+      "chilled": 0.96,
+      "ambient": 0.96,
+      "frozen": 0.96
+    },
+    "lowcost": {
+      "fresh": 0.88,
+      "chilled": 0.92,
+      "ambient": 0.92,
+      "frozen": 0.92
+    },
+    "convenience": {
+      "fresh": 0.92,
+      "chilled": 0.97,
+      "ambient": 0.98,
+      "frozen": 0.97
+    }
   }
 }

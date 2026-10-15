@@ -105,7 +105,7 @@ export const decisions: Spec<any>[] = [
   },
   {
     id: "D-01",
-    label: "Red de CD (zona, tipo y tamaño de cada CD)",
+    label: "Red de CEDIS (zona, tipo y tamaño de cada CEDIS)",
     tab: "Red",
     schema: z.array(dcSchema).max(20),
     current: (s) => s.dcs.map(({ id, zone, type, size }) => ({ id, zone, type, size })),
@@ -114,22 +114,24 @@ export const decisions: Spec<any>[] = [
       const { investment, closures } = networkCosts(v, s, p);
       return [
         { kind: "capex", amount: investment },
-        { kind: "penalty", amount: closures, note: "indemnización por cierre de CD" },
+        { kind: "penalty", amount: closures, note: "indemnización por cierre de CEDIS" },
       ];
     },
     irreversible: true,
     validate: (v, view) => {
       const ids = new Set<string>();
       for (const dc of v) {
-        if (ids.has(dc.id)) return `ID de CD repetido: ${dc.id}`;
+        if (ids.has(dc.id)) return `ID de CEDIS repetido: ${dc.id}`;
         ids.add(dc.id);
       }
       for (const prev of plannedDcs(view.previous("D-01"))) {
         const n = v.find((x) => x.id === prev.id);
         if (!n) continue;
-        if (n.zone !== prev.zone) return `${prev.id}: no se puede mover un CD de zona (ciérralo y abre otro)`;
+        if (n.zone !== prev.zone) return `${prev.id}: no se puede mover un CEDIS de zona (ciérralo y abre otro)`;
         if (SIZE_ORDER[n.size] < SIZE_ORDER[prev.size]) return `${prev.id}: solo se permite ampliar la capacidad`;
       }
+      // Todo pasa por un CEDIS: con tiendas abiertas, la red no puede quedarse vacía.
+      if (v.length === 0 && view.state.zones.some((z) => z.stores > 0)) return "La red necesita al menos un CEDIS: sin CEDIS las tiendas no reciben mercancía";
       return null;
     },
     apply: (s, v, p) => applyNetwork(s, v, p),
@@ -153,6 +155,7 @@ export const decisions: Spec<any>[] = [
     schema: z.number().int().min(0).max(500),
     current: () => 0,
     cost: (v, s, p) => v * p.stores.capex * p.regions[s.region].storeCapexMult,
+    validate: (v, view) => (v > 0 && plannedDcs(view.effective("D-01")).length === 0 ? "Antes de abrir tiendas necesitas al menos un CEDIS que las surta" : null),
     apply: (s, v, p) => {
       if (v > 0) s.pendingOpenings.push({ stores: v, epoch: s.epoch + p.stores.lagEpochs });
     },
@@ -177,25 +180,12 @@ export const decisions: Spec<any>[] = [
     kpis: ["SALES", "CTS_STORE", "EBITDA_PCT"],
   },
   {
-    id: "D-10",
-    label: "Flujo por categoría: por CD o entrega directa (DSD)",
-    tab: "Flujo",
-    schema: perCatSchema(() => z.enum(["dc", "dsd"])),
-    current: (s) => ({ ...s.dec.flows }),
-    validate: (v, view) =>
-      Object.values(v).includes("dc") && plannedDcs(view.effective("D-01")).length === 0 ? "El flujo por CD requiere al menos un CD en la red" : null,
-    apply: (s, v) => {
-      s.dec.flows = { ...v };
-    },
-    kpis: ["TRUCKS", "CTS_PCT", "OSA", "OTIF", "LT", "WASTE", "ITR", "EBITDA_PCT", "LOST_SALES", "SALES"],
-  },
-  {
     id: "D-11",
     label: "Frecuencia de reposición a tienda (entregas por semana)",
     tab: "Flujo",
     schema: z.object({
-      fresh: z.number().int().min(7).max(21),
-      chilled: z.number().int().min(3).max(21),
+      fresh: z.number().int().min(7).max(14),
+      chilled: z.number().int().min(3).max(14),
       ambient: z.number().int().min(1).max(7),
       frozen: z.number().int().min(1).max(7),
     }),
@@ -212,55 +202,11 @@ export const decisions: Spec<any>[] = [
     schema: z.enum(["supplier", "combined"]),
     current: (s) => s.dec.consolidation,
     validate: (v, view) =>
-      v === "combined" && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "combined") ? "La consolidación combinada requiere un CD combinado por temperatura" : null,
+      v === "combined" && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "combined") ? "La consolidación combinada requiere un CEDIS combinado por temperatura" : null,
     apply: (s, v) => {
       s.dec.consolidation = v;
     },
     kpis: ["TRUCKS", "CTS_PCT", "EBITDA_PCT"],
-  },
-  {
-    id: "D-13",
-    label: "Flota",
-    tab: "Flujo",
-    schema: z.enum(["own", "dedicated", "spot"]),
-    current: (s) => s.dec.fleet,
-    apply: (s, v) => {
-      s.dec.fleet = v;
-    },
-    kpis: ["CTS_PCT", "OTIF", "EBITDA_PCT"],
-  },
-  {
-    id: "D-14",
-    label: "Tipo de vehículo y telemetría",
-    tab: "Flujo",
-    schema: z.object({ type: z.enum(["mono", "multi"]), telemetry: z.boolean() }),
-    current: (s) => ({ ...s.dec.vehicle }),
-    apply: (s, v) => {
-      s.dec.vehicle = { ...v };
-    },
-    kpis: ["WASTE", "CTS_PCT", "EBITDA_PCT"],
-  },
-  {
-    id: "D-15",
-    label: "Ventana de entrega en tienda",
-    tab: "Flujo",
-    schema: z.enum(["peak", "offpeak"]),
-    current: (s) => s.dec.window,
-    apply: (s, v) => {
-      s.dec.window = v;
-    },
-    kpis: ["CTS_PCT", "OTIF", "WASTE", "EBITDA_PCT"],
-  },
-  {
-    id: "D-16",
-    label: "Mantenimiento de flota",
-    tab: "Flujo",
-    schema: z.enum(["corrective", "preventive", "predictive"]),
-    current: (s) => s.dec.maintenance,
-    apply: (s, v) => {
-      s.dec.maintenance = v;
-    },
-    kpis: ["WASTE", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },
   {
     id: "D-20",
@@ -273,17 +219,6 @@ export const decisions: Spec<any>[] = [
       s.dec.policy = v;
     },
     kpis: ["OSA", "WASTE", "ITR", "EBITDA_PCT", "LOST_SALES", "SALES"],
-  },
-  {
-    id: "D-21",
-    label: "Nivel de servicio objetivo (CSL) por categoría",
-    tab: "Inventario",
-    schema: perCatSchema(() => z.number().min(0.85).max(0.99)),
-    current: (s) => ({ ...s.dec.csl }),
-    apply: (s, v) => {
-      s.dec.csl = { ...v };
-    },
-    kpis: ["OSA", "ITR", "WASTE", "LOST_SALES", "EBITDA_PCT", "SALES"],
   },
   {
     id: "D-22",
@@ -310,27 +245,16 @@ export const decisions: Spec<any>[] = [
   },
   {
     id: "D-24",
-    label: "Inventario de seguridad en CD (días)",
+    label: "Inventario de seguridad en CEDIS (días)",
     tab: "Inventario",
     schema: z.number().min(0).max(7),
     current: (s) => s.dec.dcSafetyDays,
     validate: (v, view) =>
-      v > 0 && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "stocking") ? "El inventario en CD requiere un CD con inventario" : null,
+      v > 0 && !plannedDcs(view.effective("D-01")).some((dc) => dc.type === "stocking") ? "El inventario en CEDIS requiere un CEDIS con inventario" : null,
     apply: (s, v) => {
       s.dec.dcSafetyDays = v;
     },
     kpis: ["OSA", "ITR", "WASTE", "EBITDA_PCT", "LOST_SALES", "SALES"],
-  },
-  {
-    id: "D-25",
-    label: "Retiro de frescos",
-    tab: "Inventario",
-    schema: z.enum(["fifo", "discount"]),
-    current: (s) => s.dec.retirement,
-    apply: (s, v) => {
-      s.dec.retirement = v;
-    },
-    kpis: ["WASTE", "EBITDA_PCT"],
   },
   {
     id: "D-30",
@@ -353,9 +277,11 @@ export const decisions: Spec<any>[] = [
     id: "D-31",
     label: "Compartir POS con proveedores",
     tab: "Información",
-    schema: z.enum(["no", "weekly", "daily"]),
+    schema: z.enum(["no", "yes"]),
     current: (s) => s.dec.sharing,
     lag: () => 1,
+    // Implementación: integración con los proveedores (costo fijo por región + por tienda); luego opex semanal.
+    cost: (v, s, p) => (v === "yes" && s.dec.sharing !== "yes" ? p.info.sharing.implementation.fixed + p.info.sharing.implementation.perStore * storeCount(s) : 0),
     apply: (s, v) => {
       s.dec.sharing = v;
     },
@@ -363,11 +289,13 @@ export const decisions: Spec<any>[] = [
   },
   {
     id: "D-32",
-    label: "Pronóstico",
+    label: "Método de pronóstico del sistema de tiendas",
     tab: "Información",
-    schema: z.enum(["moving_avg", "seasonal", "causal"]),
+    schema: z.enum(["basic", "advanced"]),
     current: (s) => s.dec.forecast,
-    lag: () => 1,
+    lag: (_v, _s, p) => p.info.forecast.lagEpochs,
+    // Avanzado: implementación del modelo y del equipo de analítica; luego costo fijo del equipo cada semana.
+    cost: (v, s, p) => (v === "advanced" && s.dec.forecast !== "advanced" ? p.info.forecast.implementation : 0),
     apply: (s, v) => {
       s.dec.forecast = v;
     },
@@ -375,14 +303,20 @@ export const decisions: Spec<any>[] = [
   },
   {
     id: "D-33",
-    label: "Colaboración con proveedores",
+    label: "Colaboración con proveedores: implementar CPFR",
     tab: "Información",
-    schema: z.enum(["arms", "vmi", "cpfr"]),
+    schema: z.enum(["rmi", "cpfr"]),
     current: (s) => s.dec.collaboration,
-    lag: () => 2,
-    validate: (v, view) => (v !== "arms" && view.effective("D-31") === "no" ? "VMI y CPFR requieren compartir POS con proveedores" : null),
+    lag: (_v, _s, p) => p.info.cpfr.lagEpochs,
+    // Implementación del CPFR (procesos, equipo y acuerdos con proveedores); luego opex semanal del equipo.
+    cost: (v, s, p) => (v === "cpfr" && s.dec.collaboration !== "cpfr" ? p.info.cpfr.implementation : 0),
+    validate: (v, view) => (v === "cpfr" && view.effective("D-31") === "no" ? "CPFR requiere compartir POS con proveedores" : null),
     apply: (s, v) => {
-      s.dec.collaboration = v;
+      if (s.dec.collaboration !== v) {
+        s.dec.collaboration = v;
+        s.cpfrSince = s.epoch;
+        s.cpfrMaturity = 0;
+      }
     },
     kpis: ["LT", "OTIF", "OSA", "EBITDA_PCT", "LOST_SALES", "SALES"],
   },

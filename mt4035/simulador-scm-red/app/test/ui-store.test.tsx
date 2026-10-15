@@ -24,18 +24,18 @@ describe("ui-kit · store", () => {
   it("un cambio igual al valor vigente no queda en el borrador; uno inválido muestra error", () => {
     const st = mkStore();
     st.start(scmConfig({ region: "redriver", test: { events: "off", noise: 0 } }));
-    st.setDecision("D-15", "peak");
+    st.setDecision("D-23", "manual");
     expect(st.changedIds.value).toEqual([]);
-    st.setDecision("D-10", { fresh: "dc", chilled: "dsd", ambient: "dsd", frozen: "dsd" });
-    expect(st.errors.value["D-10"]).toMatch(/CD/);
-    st.resetDecision("D-10");
+    st.setDecision("D-12", "combined");
+    expect(st.errors.value["D-12"]).toMatch(/CEDIS/);
+    st.resetDecision("D-12");
     expect(st.errors.value).toEqual({});
   });
 
   it("confirmar avanza la época, guarda la corrida y se puede volver a cargar con replay", async () => {
     const st = mkStore();
     st.start(scmConfig({ region: "valle", seed: 5 }));
-    st.setDecision("D-15", "offpeak");
+    st.setDecision("D-23", "scan");
     await st.confirm();
     await st.confirm();
     expect(st.state.value!.epoch).toBe(2);

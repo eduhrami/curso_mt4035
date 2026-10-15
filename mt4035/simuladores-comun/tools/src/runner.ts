@@ -17,6 +17,14 @@ export function makeTasks(o: Pick<RunOptions, "bots" | "scenarios" | "seeds">): 
   return o.scenarios.flatMap((scenario) => o.seeds.flatMap((seed) => o.bots.map((bot) => ({ bot, scenario, seed }))));
 }
 
+/** Contador de simulaciones del proceso (para el registro acumulado de corridas, ledger.ts). */
+const counter = { tasks: 0, games: 0 };
+const count = (r: RunRecord) => {
+  counter.tasks += 1;
+  counter.games += r.games ?? 1;
+};
+export const simulationCount = (): { tasks: number; games: number } => ({ ...counter });
+
 const taskKey = (r: Task) => `${r.scenario}|${String(r.seed).padStart(8, "0")}|${r.bot}|${JSON.stringify(r.args ?? null)}`;
 
 /**
@@ -57,6 +65,7 @@ export class WorkerPool {
     if (this.size === 0) {
       return tasks.map((t, i) => {
         const r = runTask(this.adapter!, this.engine!, t);
+        count(r);
         onProgress?.(i + 1, tasks.length);
         return r;
       });
@@ -77,6 +86,7 @@ export class WorkerPool {
             };
             const onMsg = (msg: RunRecord) => {
               results.push(msg);
+              count(msg);
               onProgress?.(++done, tasks.length);
               feed();
             };

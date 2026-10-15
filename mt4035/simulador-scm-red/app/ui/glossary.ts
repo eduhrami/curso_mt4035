@@ -12,7 +12,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   // Indicadores
   { term: "KPI", full: "Key Performance Indicator", def: "Indicador clave de desempeño: una métrica que resume qué tan bien se cumple un objetivo.", aliases: ["KPIs"], category: KPI },
   { term: "OSA", full: "On-Shelf Availability", def: "Disponibilidad en anaquel: porcentaje del tiempo en que el producto está en el anaquel cuando el cliente lo busca. Tiempo con stock / tiempo total.", category: KPI },
-  { term: "OTIF", full: "On-Time In-Full", def: "Entregas del CD a la tienda que llegan a tiempo y completas / total de entregas.", category: KPI },
+  { term: "OTIF", full: "On-Time In-Full", def: "Entregas del CEDIS a la tienda que llegan a tiempo y completas / total de entregas.", category: KPI },
   { term: "OFR", full: "Order Fill Rate", def: "Porcentaje de pedidos surtidos completos (todo o nada por pedido).", category: KPI },
   { term: "CTS", full: "Cost-to-Serve", def: "Costo de servir: costo logístico total de abastecer a las tiendas. En el simulador se expresa como % de las ventas o por tienda.", category: KPI },
   { term: "Waste", full: "Merma", def: "Unidades que se pierden (caducan o se dañan) / unidades recibidas. Pesa sobre todo en frescos.", aliases: ["merma"], category: KPI },
@@ -28,25 +28,23 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "Guardrail", def: "KPI de contención: un límite que no debe romperse mientras se mejora el KPI primario (p. ej., mejorar el servicio sin disparar el costo).", aliases: ["guardrails"], category: KPI },
 
   // Red, flujo y transporte
-  { term: "CD", full: "Centro de distribución", def: "Instalación que recibe mercancía de proveedores y la reparte a las tiendas. Puede guardar inventario o solo cruzarlo (cross-dock).", category: RED },
-  { term: "Planta de proveedores", def: "Instalación de un proveedor dentro de la región (◆ en el mapa). Es un dato del escenario: no la decides tú. Si es dedicada, trabaja solo para Hoshi Mart y su lead time es más corto. Un CD cerca de la planta paga menos flete de entrada; uno cerca de las tiendas, menos reparto.", aliases: ["plantas de proveedores", "planta dedicada", "proveedor dedicado", "proveedores dedicados"], category: RED },
-  { term: "Flete de entrada", def: "Costo de traer la mercancía de la planta del proveedor al CD (por caja y kilómetro). Con proveedores externos a la región va incluido en el precio.", aliases: ["flete de proveedores"], category: RED },
-  { term: "Cross-dock", def: "Operación en la que la mercancía entra al CD y sale casi de inmediato hacia las tiendas, sin almacenarse.", aliases: ["cross-docking"], category: RED },
-  { term: "DSD", full: "Direct Store Delivery", def: "Entrega directa del proveedor a la tienda, sin pasar por un CD.", category: RED },
-  { term: "3PL", full: "Third-Party Logistics", def: "Operador logístico externo que presta transporte o almacenaje. «Dedicado» reserva recursos para la empresa; «spot» se contrata al momento.", category: RED },
+  { term: "CEDIS", full: "Centro de distribución", def: "Instalación que recibe mercancía de proveedores y la reparte a las tiendas. Puede guardar inventario o solo cruzarlo (cross-dock). La distancia del CEDIS a cada tienda fija cuántas veces por semana se le puede entregar: cerca, hasta 2 veces al día; muy lejos, 1 vez por semana.", aliases: ["CD", "centro de distribución", "centros de distribución"], category: RED },
+  { term: "Planta de proveedores", def: "Instalación de un proveedor dentro de la región (◆ en el mapa). Es un dato del escenario: no la decides tú. Si es dedicada, trabaja solo para Hoshi Mart y su lead time es más corto. Un CEDIS cerca de la planta paga menos flete de entrada; uno cerca de las tiendas, menos reparto.", aliases: ["plantas de proveedores", "planta dedicada", "proveedor dedicado", "proveedores dedicados"], category: RED },
+  { term: "Flete de entrada", def: "Costo de traer la mercancía de la planta del proveedor al CEDIS (por caja y kilómetro). Con proveedores externos a la región va incluido en el precio.", aliases: ["flete de proveedores"], category: RED },
+  { term: "Cross-dock", def: "Operación en la que la mercancía entra al CEDIS y sale casi de inmediato hacia las tiendas, sin almacenarse.", aliases: ["cross-docking"], category: RED },
   { term: "Consolidación", def: "Juntar en un mismo envío la carga de varios proveedores o categorías para llenar mejor los camiones.", category: RED },
   { term: "Multi-temperatura", def: "Vehículo con compartimentos a distintas temperaturas, que permite llevar frescos, refrigerados y congelados en un solo viaje.", category: RED },
   { term: "Telemetría", def: "Sensores en el vehículo que reportan ubicación, temperatura y estado en tiempo real.", category: RED },
   { term: "Horas valle", def: "Horarios de baja actividad (tráfico y ventas) en los que se puede entregar a tienda con menos congestión.", category: RED },
-  { term: "Dominancia", def: "Estrategia de apertura que concentra tiendas en zonas compactas (clusters) alrededor de los CD para ganar densidad.", aliases: ["clusters", "cluster"], category: RED },
-  { term: "Greenfield", def: "Empezar desde cero, sin tiendas ni CD existentes.", category: RED },
-  { term: "Capex", full: "Capital Expenditure", def: "Inversión de capital: gasto en activos de largo plazo, como construir o ampliar un CD.", category: RED },
+  { term: "Dominancia", def: "Estrategia de apertura que concentra tiendas en zonas compactas (clusters) alrededor de los CEDIS para ganar densidad.", aliases: ["clusters", "cluster"], category: RED },
+  { term: "Greenfield", def: "Empezar desde cero, sin tiendas ni CEDIS existentes.", category: RED },
+  { term: "Capex", full: "Capital Expenditure", def: "Inversión de capital: gasto en activos de largo plazo, como construir o ampliar un CEDIS.", category: RED },
 
   // Inventario y tienda
   { term: "ROP", full: "Reorder Point", def: "Punto de reorden: nivel de inventario en el que se lanza un nuevo pedido (revisión continua).", category: INV },
   { term: "EOQ", full: "Economic Order Quantity", def: "Cantidad económica de pedido: el tamaño de lote que equilibra el costo de pedir y el de mantener inventario.", category: INV },
   { term: "Revisión periódica", def: "Política de inventario que revisa y pide cada cierto intervalo fijo, en lugar de hacerlo al cruzar un punto de reorden.", category: INV },
-  { term: "CSL", full: "Cycle Service Level", def: "Nivel de servicio por ciclo: probabilidad de no quedarse sin stock durante un ciclo de reposición. Determina el stock de seguridad.", category: INV },
+  { term: "CSL", full: "Cycle Service Level", def: "Nivel de servicio por ciclo: probabilidad de no quedarse sin stock durante un ciclo de reposición. Determina el stock de seguridad. Aquí lo fija tu propuesta de valor por categoría; la disponibilidad real (OSA) puede quedar abajo de esa meta.", category: INV },
   { term: "Stock de seguridad", def: "Inventario adicional para absorber la variabilidad de la demanda y del lead time.", aliases: ["inventario de seguridad"], category: INV },
   { term: "SKU", full: "Stock Keeping Unit", def: "Unidad de inventario: cada producto distinto (por presentación, tamaño, etc.) que se gestiona por separado.", aliases: ["SKUs"], category: INV },
   { term: "FIFO", full: "First In, First Out", def: "Primero en entrar, primero en salir: se venden primero las unidades más antiguas.", category: INV },
@@ -54,15 +52,15 @@ export const GLOSSARY: GlossaryEntry[] = [
 
   // Información y colaboración
   { term: "POS", full: "Point of Sale", def: "Punto de venta: el sistema de caja que registra cada venta. Sus datos permiten pronosticar y compartir la demanda real.", category: INFO },
-  { term: "VMI", full: "Vendor-Managed Inventory", def: "Inventario administrado por el proveedor: el proveedor decide cuándo y cuánto reponer con la información del cliente.", category: INFO },
-  { term: "CPFR", full: "Collaborative Planning, Forecasting and Replenishment", def: "Planeación, pronóstico y reposición colaborativos entre cliente y proveedor.", category: INFO },
+  { term: "RMI", full: "Retailer-Managed Inventory", def: "Inventario administrado por el minorista: tú pronosticas y decides cuándo y cuánto reponer; el proveedor solo surte lo que pides. Es el punto de partida.", category: INFO },
+  { term: "CPFR", full: "Collaborative Planning, Forecasting and Replenishment", def: "Planeación, pronóstico y reposición colaborativos entre cliente y proveedor: los dos comparten datos y acuerdan un pronóstico. Baja el error y el lead time, pero cuesta implementarlo y madura en varios trimestres.", category: INFO },
   { term: "Arm's-length", def: "Relación transaccional con el proveedor, sin compartir información ni planear en conjunto.", category: INFO },
-  { term: "Pronóstico causal", def: "Pronóstico que explica la demanda con sus causas (clima, calendario, promociones), no solo con su historia.", category: INFO },
+  { term: "Pronóstico avanzado", def: "Modelo de suavizamiento exponencial con tendencia y estacionalidad (Holt-Winters) más variables causales (clima, calendario, promociones), operado por un equipo de analítica. El básico usa promedios móviles y no ve la estacionalidad.", aliases: ["Holt-Winters", "pronóstico causal"], category: INFO },
 
   // Dinero
   { term: "Utilidad", def: "Puntaje definitivo: EBITDA logístico (margen bruto − merma − rebajas − costos logísticos − TI) − inversión − penalizaciones por servicio, acumulado en los 12 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },
   { term: "Penalización por servicio", def: "Cada trimestre en que rompes un guardrail de servicio de tu propuesta de valor (p. ej., OSA mínima) pierdes un % de las ventas del trimestre: penalizaciones y clientes que se van.", aliases: ["penalizaciones por servicio"], category: "Dinero" },
-  { term: "Tope de inversión", def: "Máximo que puedes gastar en decisiones en un año (CD nuevos, conversiones, ampliaciones y cierres; aperturas y cierres de tiendas; escaneo y POS). Si un trimestre lo excede no lo puedes confirmar: prioriza o difiere al año siguiente. Se renueva cada T1. Las indemnizaciones por cerrar CD o tiendas también lo consumen.", aliases: ["presupuesto de inversión"], category: "Dinero" },
+  { term: "Tope de inversión", def: "Máximo que puedes gastar en decisiones en un año (CEDIS nuevos, conversiones, ampliaciones y cierres; aperturas y cierres de tiendas; escaneo y POS). Si un trimestre lo excede no lo puedes confirmar: prioriza o difiere al año siguiente. Se renueva cada T1. Las indemnizaciones por cerrar CEDIS o tiendas también lo consumen.", aliases: ["presupuesto de inversión"], category: "Dinero" },
   { term: "Rebajas", def: "Pérdida por comprar más de lo que se vende cuando el pronóstico es alto: la mercancía sobrante se vende con descuento o se desecha.", category: "Dinero" },
 
   // Pronóstico y series de tiempo

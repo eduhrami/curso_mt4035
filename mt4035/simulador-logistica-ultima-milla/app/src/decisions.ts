@@ -40,7 +40,7 @@ function needsNode(view: DecisionView<LmState>): string | null {
     (now.sfs.share > 0 && (view.effective("D-02") as Decisions["sfs"]).share > 0) ||
     (now.darkStores > 0 && (view.effective("D-04") as number) > 0) ||
     (now.mfc > 0 && (view.effective("D-05") as number) > 0);
-  return ok ? null : "Sin el CD necesitas otro nodo de surtido ya operando (tiendas, dark stores o MFC)";
+  return ok ? null : "Sin el CEDIS necesitas otro nodo de surtido ya operando (tiendas, dark stores o MFC)";
 }
 
 const FIN = ["CPD", "CPD_P95", "MARGIN_PCT", "SHIP_PCT"];
@@ -67,7 +67,7 @@ export const decisions: Spec<any>[] = [
       return null;
     },
   }),
-  field("D-01", "sfd", "Ship-from-DC (surtido desde el CD)", "Red", z.object({ active: z.boolean(), capacity: z.enum(["low", "mid", "high"]) }), [...SERVICE, ...FIN, "NODE_UTIL", "BACKLOG"], {
+  field("D-01", "sfd", "Ship-from-DC (surtido desde el CEDIS)", "Red", z.object({ active: z.boolean(), capacity: z.enum(["low", "mid", "high"]) }), [...SERVICE, ...FIN, "NODE_UTIL", "BACKLOG"], {
     validate: (_v, view) => needsNode(view),
   }),
   field("D-02", "sfs", "Ship-from-store (surtido desde tienda)", "Red", z.object({ share: z.number().min(0).max(1), pickers: z.enum(["2", "4", "6"]) }), [...SERVICE, ...FIN, "STORE_OSA", "NODE_UTIL"], { lag: () => 1, validate: (_v, view) => needsNode(view) }),

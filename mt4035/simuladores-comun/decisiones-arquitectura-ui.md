@@ -379,18 +379,19 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 ### AD-43 ✔ Tope de gasto anual en decisiones (SCM, 14-oct-2026)
 
-- **Criterio:** los costos de decisiones de un año tienen un tope por región (`money.capexBudgetPerYear`): Kaigan US$ 20 M, Red River US$ 7 M, Valle US$ 6 M ⚠. Cuentan todas las decisiones con costo: CD nuevos, conversiones, ampliaciones y cierres (indemnización); lotes de apertura y cierres de tiendas; escaneo y POS. Con las redes de referencia, el tope obliga a escalonar en Red River (red regional en dos años) y en Valle (cierres de CD en dos años). En Kaigan deja margen para gastar más de lo que la utilidad justifica: decidir cuánto gastar es parte de la reflexión del alumno.
+- **Criterio:** los costos de decisiones de un año tienen un tope por región (`money.capexBudgetPerYear`): Kaigan US$ 20 M, Red River US$ 12 M, Valle US$ 15 M ⚠. Cuentan todas las decisiones con costo: CD nuevos, conversiones, ampliaciones y cierres (indemnización); lotes de apertura y cierres de tiendas; escaneo y POS. Con las redes de referencia, el tope obliga a escalonar en Red River (red regional en dos años) y en Valle (cierres de CD en dos años). En Kaigan deja margen para gastar más de lo que la utilidad justifica: decidir cuánto gastar es parte de la reflexión del alumno.
 - **Motor:** `sim-core` admite restricciones del turno completo (`ModelDef.validateTurn(state, costs, params)`), evaluadas después de validar cada decisión con el costo inmediato de cada cambio, y un desglose del costo por tipo de cargo (`DecisionSpec.costs`; D-01 separa inversión e indemnización en el ledger). SCM suma lo gastado en el año (ledger de las épocas del año, fuente `D-xx`) y rechaza el turno que excede el tope con un mensaje que dice cuánto queda. Se renueva en T1. `GameConfig.test.budget: "off"` lo desactiva en las pruebas de mecanismos (SCM-LAG-10 lo prueba activo).
 - **UI:** la barra superior muestra «Inversión A#: queda X de Y».
 - **Auto-juego (`withBudget`, `app/autoplay/budget.ts`):** el bot invierte como un equipo. Lo que cabe se ejecuta; lo que no, se reintenta en T1 de cada año, cuando el tope se renueva, con prioridad por plazo de impacto: red de CD (cada conversión, cierre o CD nuevo por separado), POS, escaneo, cierres y aperturas de tiendas. Lo de efecto más largo va primero para que se recupere antes de que termine la partida. Lo que depende de algo diferido también se difiere. Un CD que no cabe ni con el tope completo baja de tamaño.
 - **Buscador:** al final elige, para cada estrategia, el mejor de todo lo evaluado en la región, incluidos los ascensos de las otras estrategias (una corrida puntúa las tres).
+- **SCM-AUT-06 (15-oct-2026):** solo cuentan el número de CD y el CSL de frescos. Las frecuencias se excluyen porque el modelo no tiene un límite de capacidad (flota, choferes, andenes) que haga infactible visitar más veces: una frecuencia en el extremo no indica un problema de calibración.
 
 ### AD-44 ✔ Redes iniciales sub-óptimas (SCM, 14-oct-2026)
 
 - **Criterio:** las tres regiones arrancan lejos de su red óptima para que diseñar la red sea la primera decisión. Óptimo estructural medido con la red ya existente desde el inicio (sin sesgo de costo de cierre, ±10% de error de pronóstico): Kaigan 6–12 CD combinados (meseta; el máximo en 10–12), Red River 6–8 CD de inventario chicos, Valle 1–2 CD de inventario chicos.
 - **Efecto en el peso del pronóstico:** con redes por diseñar, la operación pesa más en las tres regiones: el pronóstico explica ≈ 41% de la brecha de utilidad (Kaigan 38%, Red River 38%, Valle 47%; spec §7.6).
 - **Redes de referencia resultantes** (`network-optima`, con tope): Kaigan construye 1 CD combinado; Red River, 3 CD de inventario chicos en dos años; Valle conserva sus 4 CD con frescura y cierra 2 con bajo costo o conveniencia (la propuesta de valor decide la red).
-- **Redes iniciales:** Kaigan 5 CD combinados (la red no creció al ritmo de las tiendas: faltan CD; por debajo de 6 la utilidad cae fuerte y de 6 a 12 es casi plana), Red River sin CD (faltan), Valle 4 CD de inventario medianos heredados de una expansión (sobran). Con esto, la operación inicial puntúa más bajo (SCO-05 acepta 10–60).
+- **Redes iniciales:** Kaigan 1 CEDIS grande con inventario (AD-52), Red River 1 CEDIS central con inventario (AD-51), Valle 4 CD de inventario medianos heredados de una expansión (sobran y son del tipo equivocado). Con esto, la operación inicial puntúa más bajo (SCO-05 acepta 10–60).
 
 ### AD-45 ✔ «¿Cómo impacta?» en lugar de «Mueve:» (ambos simuladores, 14-oct-2026)
 
@@ -400,7 +401,56 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 
 - **Criterio:** los códigos de la especificación (D-xx, R-xx, X-xx, E-xx, F-01, AD-xx) no significan nada para el alumno: no aparecen en la interfaz ni en el glosario. El ui-kit ya no muestra el código de cada decisión, del diálogo de confirmación ni de los mensajes; la explicación causal de un KPI muestra el nombre de la causa (`causeNames`, `CAUSE_NAMES` en `app/ui/labels.ts` de cada simulador). Los textos nombran la decisión o el concepto. Los códigos siguen en el código, las pruebas, la especificación y la exportación JSON. La prueba de punta a punta del SCM revisa que ninguna pestaña los muestre.
 
+
+### AD-47 ✔ Solo decisiones con dilema (SCM, 15-oct-2026)
+
+- **Criterio:** una decisión se queda si su mejor opción cambia según la región, la propuesta de valor o el momento, y se pondera contra el tope de gasto y las otras opciones. Un barrido opción por opción sobre la red de referencia mostró decisiones donde la misma opción ganaba en las 9 combinaciones sin costo relevante.
+- **Datos fijos de la región:** flota, tipo de vehículo y telemetría, ventana de entrega, mantenimiento de flota y retiro de frescos dejan de ser decisiones. Toman el valor inicial de la región y se trabajan en el simulador de última milla.
+- **Nivel de servicio por la estrategia:** el CSL por categoría lo fija la propuesta de valor (`params.strategyCsl`). La disponibilidad real puede quedar abajo de la meta.
+- **Binarias con costo:** compartir POS es sí o no, con implementación (consume el tope) y opex por tienda. El pronóstico del sistema de tiendas es básico (promedios móviles) o avanzado (Holt-Winters con variables causales y equipo de analítica: implementación y costo fijo semanal). Ambas convienen solo en algunas regiones o propuestas.
+- **Se queda:** la capacitación, porque cambia el resultado en Kaigan (con *tanpin kanri*).
+- **Auto-juego:** como la estrategia cambia la operación (CSL), `sim-tools` admite `perStrategyRuns`: cada estrategia se juega en su propia partida y se califica con ella (`config(scenario, seed, strategy)`). Se retiró `profitFor`. SCM-AUT-06 evalúa solo el número de CD. La validación cuesta el triple.
+
+### AD-48 ✔ CPFR como mejora con momento óptimo (SCM, 15-oct-2026)
+
+- **Criterio:** todas las regiones parten de RMI (*Retailer-Managed Inventory*): el minorista pronostica y repone. CPFR es la mejora: suma el pronóstico del proveedor. VMI sale del modelo.
+- **Mecánica:** cuesta una implementación (US$ 2.5 M, consume el tope) y un equipo de planeación conjunta (US$ 15,000 por semana) ⚠. Requiere compartir POS. Entra un trimestre después y madura en tres (`cpfrMaturity`, KPI `CPFR_MATURITY`). Con la madurez, los efectos van de RMI a CPFR: CV ×0.85, lead time ×0.8, variabilidad del lead time ×0.7, fill rate +2 pp. La regla R-08 exige CPFR maduro.
+- **El momento importa:** en Kaigan, implantarlo en A1 suma mucho más que en A2; en A3 apenas se paga. En Red River y Valle compite por el tope con la red y el POS.
+- **Auto-juego:** el buscador decide el año (`cpfrAt`: nunca, A1, A2 o A3) y `withBudget` lo prioriza después de la red, el POS y el pronóstico.
+
+### AD-49 ✔ La distancia al CEDIS limita la frecuencia de entrega (SCM, 15-oct-2026)
+
+- **Criterio (Eduardo):** la cantidad y la ubicación de los CEDIS determinan cuántas veces por semana se puede visitar cada tienda. El máximo global es de **2 visitas al día** (14 por semana) para tiendas cerca de un CEDIS. Conforme la tienda se aleja, el máximo baja hasta **1 visita por semana**.
+- **Mecánica:** el tope depende del tiempo de ida y vuelta CEDIS→zona, con la velocidad de la región y su congestión media (`params.dc.maxFreqByRoundTrip`): ≤ 5 h → 14/semana; ≤ 10 h → 7; ≤ 18 h → 3; ≤ 28 h → 2; más → 1 ⚠. La frecuencia efectiva de cada zona y categoría es `min(D-11, tope)`. D-11 conserva su rango de decisión (frescos 7–14, refrigerado 3–14).
+- **Reglas:** R-13 avisa cuántas zonas quedan limitadas por distancia. R-05 (frecuencia alta con tiendas dispersas) solo considera las zonas que sí reciben la frecuencia pedida, para que el alumno no reciba dos mensajes contradictorios sobre la misma zona.
+- **Umbrales sin respaldo empírico:** los cortes de horas y frecuencias son supuestos de diseño. No hay forma de fijarlos sin experiencia práctica documentada de operadores; se marcan ⚠ hasta validarlos.
+- **Efectos en la calibración:** con 2 visitas al día como máximo, Kaigan *as-is* baja a ~6.4 camiones por tienda al día y la referencia SEJ con 8 CEDIS queda en OSA ≈ 95.5% y merma de frescos ≈ 13% (SEJ repone ciertos frescos 3 veces al día). Pruebas: REG-13 nueva; INV-12, REG-05, CAU-02/03/04 y ESC-01 ajustadas.
+
+### AD-50 ✔ CEDIS como sigla del centro de distribución (ambos simuladores, 15-oct-2026)
+
+- **Criterio (Eduardo):** por convención regional, la interfaz, el glosario, los mensajes y las guías usan **CEDIS** (centro de distribución). El glosario conserva «CD» como alias.
+- **Alcance:** solo texto visible para el alumno, incluidos los nombres de los CEDIS iniciales y nuevos (`CEDIS-1`…). Los identificadores del código (`dc`, `DC_COUNT`, `D-01`) y la documentación técnica pueden seguir usando «CD».
+
+### AD-51 ✔ Todo pasa por un CEDIS: se retira la entrega directa (SCM, 15-oct-2026)
+
+- **Criterio (Eduardo):** delegar la distribución a los proveedores no es factible. En la práctica solo unos cuantos proveedores estratégicos entregan directo a tienda; la gran mayoría no tiene capacidad de distribución. La decisión de red es **cuántos CEDIS y dónde** (D-01, con tipo y tamaño), no CEDIS vs. DSD.
+- **Se retira D-10** (flujo por categoría) junto con los parámetros del DSD (`dsdFreqPerWeek`, `dsdFeePerDelivery`, `dsdSharedDensity`, `supplierDistKm`) y las entregas directas fijas por tienda (`otherDirectPerDay`): no se modelan proveedores estratégicos con entrega directa.
+- **Red River arranca con 1 CEDIS central con inventario** (zona 14, mediano; `initial.dcs.zones`) en lugar de 0. Sigue siendo una red insuficiente a propósito (AD-44): las zonas lejanas reciben 1–3 visitas por semana.
+- **Frescos en CEDIS con inventario (Eduardo):** se almacenan como el resto y envejecen. Es deliberado: el alumno debe explorar CEDIS *cross-dock* o combinados para los frescos. Con las redes iniciales de Red River y Valle (solo CEDIS con inventario), la merma de frescos supera 45% y la operación pierde dinero; en Red River, sumar 4 CEDIS combinados al central rinde más que sumar 4 con inventario (≈190 vs. ≈138 M USD en 3 años, merma de frescos 6% vs. 15%, prueba determinista). BOT-C de Red River usa CEDIS combinados.
+- **Sin CEDIS no hay venta (R-14):** una zona con tiendas y sin CEDIS activo (greenfield antes del primero, el único CEDIS caído) no recibe mercancía y pierde toda su venta. Validaciones: la red no puede quedar vacía con tiendas abiertas, y abrir tiendas exige al menos un CEDIS planeado.
+- **R-04** (más de 15 camiones por tienda al día) se queda: con consolidación por proveedor, cada proveedor llega en su propio camión.
+- **Tope de Valle de US$ 6 M a 15 M/año (Eduardo):** con 6 M, convertir un CEDIS (≈ US$ 4 M) desplazaba la inversión en información y perdía, así que la referencia de Valle nunca exploraba CEDIS combinados aunque sin tope ganaban ≈ 80 M en 3 años.
+- **Recalibración del índice y del auto-juego:** los bots y las propiedades de coherencia se comparan con la utilidad acumulada (el índice 0–100 quedaba saturado en el piso); SCM-AUT-02 solo exige que el trasplante pierda contra el diseño adaptado; SCM-AUT-09 usa una medida sin escala (σ(A) < 20% de la diferencia C − A); BOT-L es el diseño adaptado sin pronosticar (SCM-AUT-15 compara C contra L). Rangos y guardrails por región: ver especificación §6.3b. BOT-C de Red River y de Valle usan CEDIS combinados. La red de referencia prueba conversiones de tipo y CEDIS nuevos de cualquier tipo, con la consolidación combinada junto a los combinados.
+- **Versiones:** `params` p5, `SIM_VERSION` 0.6.0 (las exportaciones previas no se pueden volver a jugar). Pruebas: REG-14 nueva; INV-12, CAU-01/02/07/15, ESC-02/04/06/07/10, LAG-10 e INV-16 ajustadas; CAU-08 retirada. Auto-juego: el espacio de búsqueda pierde los flujos por categoría y el «0 CEDIS»; SCM-AUT-08 pasa a «frescos ≤ 1×/día y CEDIS con inventario en Red River».
 ---
+
+### AD-52 ✔ Kaigan arranca lejos de la red ideal; el pronóstico como reflexión (SCM, 15-oct-2026)
+
+- **Criterio (Eduardo):** con 5 CEDIS combinados, Kaigan empezaba demasiado cerca de la solución. Ahora arranca con **un solo CEDIS grande con inventario** a la mitad de la costa (zona 12) y consolidación por proveedor, para que el equipo explore construir y/o convertir. Las tres regiones arrancan con CEDIS con inventario donde los frescos envejecen.
+- **Pruebas de mecanismo con fijación:** las pruebas pareadas que usaban Kaigan como operación que funciona corren sobre una fijación con la red clásica (5 CEDIS combinados, `fixtureParams` en `test/helpers/run.ts`), como el «minicaso» de última milla. Las de escenario (SCM-ESC-01, SCO-05) usan la red real (`realEngine`).
+- **SCM-AUT-04 en Kaigan:** con un CEDIS para 1,800 tiendas, invertir todo el tope es casi lo correcto: el maximalista (BOT-D) queda dentro del ruido del diseño adaptado (gana ≈ 30% de las semillas en bajo costo). Se reporta como nota y no cuenta como falla en Kaigan. BOT-C de Kaigan convierte el CEDIS central y construye 3 combinados.
+- **Referencia de Kaigan:** el diseño de la política adaptada (BOT-C: convertir el CEDIS central a combinado y construir 3 combinados medianos, consolidación combinada, frescos 2×/día, CPFR). Supera a la red refinada por `network-optima`, que con un arranque tan lejano queda en un óptimo local. Los rangos del índice no se recalibran: Kaigan arranca en el piso del índice y SCM-SCO-05 se evalúa en Red River y Valle.
+- **Se retira SCM-AUT-15** («pronosticar bien gana al nominal en ≥ 80% de las semillas») y BOT-L. Un pronóstico es una estimación de una variable aleatoria: en una sola partida, un pronóstico ingenuo puede acertar más que uno elaborado por azar, como en otros fenómenos (en la competencia M4, solo uno de los métodos puros de aprendizaje automático superó a un pronóstico ingenuo; Makridakis, Spiliotis y Assimakopoulos, 2018). Queda como reflexión en el debrief (DB-07) y en la guía del instructor; el valor del pronóstico se mide en promedio con `forecast-impact`.
 
 ## 4. Ruta de implementación
 

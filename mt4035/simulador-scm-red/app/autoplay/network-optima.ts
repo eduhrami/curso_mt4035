@@ -10,8 +10,8 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseArgs, WorkerPool, type Task } from "@mt4035/sim-tools";
-import { createScmEngine, PRESETS, scmConfig, type DcSpec, type RegionId, type Strategy } from "../src/index.ts";
+import { appendRunLedger, parseArgs, WorkerPool, type Task } from "@mt4035/sim-tools";
+import { createScmEngine, params, PRESETS, scmConfig, type DcSpec, type RegionId, type Strategy } from "../src/index.ts";
 import { regionOf, type NetworkArgs, type Vec } from "./adapter-network.ts";
 import { searchSpace, vectorPolicy } from "./bots.ts";
 import { REPORTS_DIR } from "./reports-dir.ts";
@@ -64,6 +64,9 @@ const dcsOf = (scenario: string, v: Vec): DcSpec[] => {
   const s = engine.createGame(scmConfig({ region: regionOf(scenario) }));
   return vectorPolicy(v)(s, 0)["D-01"] as DcSpec[];
 };
+const TYPES = ["stocking", "crossdock", "combined"] as const;
+/** Con un CEDIS combinado en la red, la consolidación combinada se prueba junto con él. */
+const withCons = (v: Vec, type: string): Vec => (type === "combined" && v.consolidation !== "combined" ? { ...v, consolidation: "combined" } : v);
 const initialDcs = (scenario: string) => engine.createGame(scmConfig({ region: regionOf(scenario) })).model.dcs.map(({ id, zone, type, size }) => ({ id, zone, type, size }));
 
 async function best(scenario: string, strategy: Strategy, seeds: number[], cands: NetworkArgs[], cur: NetworkArgs, curP: number): Promise<[NetworkArgs, number, boolean]> {
@@ -94,7 +97,7 @@ async function ascend(scenario: string, strategy: Strategy, seeds: number[], sta
   return [cur, curP];
 }
 
-/** Refina la ubicación: mover un CD a otra zona, quitar uno o agregar uno (mismo tipo y tamaño). */
+/** Refina la red: mover un CEDIS nuevo a otra zona, quitar uno, convertir el tipo de uno o agregar uno de cualquier tipo. */
 async function refine(scenario: string, strategy: Strategy, seeds: number[], start: NetworkArgs): Promise<[NetworkArgs, number]> {
   const existing = new Set(initialDcs(scenario).map((d) => d.id));
   let cur: NetworkArgs = { v: start.v, dcs: start.dcs ?? dcsOf(scenario, start.v) };
@@ -103,13 +106,21 @@ async function refine(scenario: string, strategy: Strategy, seeds: number[], sta
     const dcs = cur.dcs!;
     const used = new Set(dcs.map((d) => d.zone));
     const free = Array.from({ length: 36 }, (_, z) => z).filter((z) => !used.has(z));
-    // Un CD agregado copia el tipo y tamaño de los nuevos o, si no hay, de la red existente (p. ej. combinados en Kaigan).
+    // Un CEDIS agregado copia el tamaño de los nuevos o, si no hay, de la red existente; el tipo se prueba completo.
     const proto = dcs.find((d) => !existing.has(d.id)) ?? dcs[0] ?? { type: cur.v.dcType, size: cur.v.dcSize };
     const cands: NetworkArgs[] = [
       // Mover: solo los CD nuevos (uno existente no se puede mover de zona).
       ...dcs.flatMap((d, i) => (existing.has(d.id) ? [] : free.map((zone) => ({ v: cur.v, dcs: dcs.map((x, j) => (j === i ? { ...x, zone } : x)) })))),
       ...dcs.map((_, i) => ({ v: cur.v, dcs: dcs.filter((_, j) => j !== i) })),
-      ...free.map((zone) => ({ v: cur.v, dcs: [...dcs, { id: `R-${dcs.length + 1}-${zone}`, zone, type: proto.type, size: proto.size } as DcSpec] })),
+      // Convertir el tipo de uno o de todos (p. ej. con inventario → combinado para los frescos). Convertir a combinado se
+      // prueba también con la consolidación combinada: por separado, ninguno de los dos pasos mejora y el ascenso no los junta.
+      ...TYPES.flatMap((type) => {
+        const v = withCons(cur.v, type);
+        const one = dcs.flatMap((d, i) => (d.type === type ? [] : [{ v, dcs: dcs.map((x, j) => (j === i ? { ...x, type } : x)) }]));
+        const all = dcs.some((d) => d.type !== type) ? [{ v, dcs: dcs.map((x) => ({ ...x, type })) }] : [];
+        return [...one, ...all, ...(v !== cur.v ? one.map((c) => ({ ...c, v: cur.v })) : [])];
+      }),
+      ...free.flatMap((zone) => TYPES.map((type) => ({ v: withCons(cur.v, type), dcs: [...dcs, { id: `R-${dcs.length + 1}-${zone}`, zone, type, size: proto.size } as DcSpec] }))),
     ];
     let ok: boolean;
     [cur, curP, ok] = await best(scenario, strategy, seeds, cands, cur, curP);
@@ -188,18 +199,14 @@ function network(scenario: string, args: NetworkArgs): string {
   const added = dcs.filter((d) => !existing.has(d.id));
   const closed = [...existing.values()].filter((d) => !dcs.some((x) => x.id === d.id));
   const group = (xs: DcSpec[]) => Object.entries(xs.reduce<Record<string, number[]>>((acc, d) => ({ ...acc, [`${n(d.type)} ${n(d.size)}`]: [...(acc[`${n(d.type)} ${n(d.size)}`] ?? []), d.zone] }), {})).map(([k, zs]) => `${zs.length} ${k} (zonas ${zs.sort((x, y) => x - y).join(", ")})`).join("; ");
-  return [kept.length ? `conservar ${kept.length} actuales` : "", added.length ? `construir ${group(added)}` : "", closed.length ? `cerrar zonas ${closed.map((d) => d.zone).join(", ")}` : ""].filter(Boolean).join(" · ");
+  const same = kept.filter((d) => existing.get(d.id)!.type === d.type && existing.get(d.id)!.size === d.size);
+  const changed = kept.filter((d) => !same.includes(d));
+  return [same.length ? `conservar ${same.length} actuales` : "", changed.length ? `convertir ${group(changed)}` : "", added.length ? `construir ${group(added)}` : "", closed.length ? `cerrar zonas ${closed.map((d) => d.zone).join(", ")}` : ""].filter(Boolean).join(" · ");
 }
-const ops = (v: Vec, hasDc: boolean) => {
-  const f = (c: "Fresh" | "Chilled" | "Ambient" | "Frozen", freq: number) => {
-    const flow = hasDc ? v[`flow${c}`] : "dsd";
-    return flow === "dsd" ? "DSD" : `CD ${freq}`;
-  };
-  return `${f("Fresh", v.freshFreq)} / ${f("Chilled", v.chilledFreq)} / ${f("Ambient", v.ambientFreq)} / ${f("Frozen", v.frozenFreq)}`;
-};
+const ops = (v: Vec) => `${v.freshFreq} / ${v.chilledFreq} / ${v.ambientFreq} / ${v.frozenFreq} por semana`;
 const extra = (v: Vec, hasDc: boolean) =>
-  [`CSL frescos ${v.cslFresh}, resto ${v.csl}`, hasDc && v.dcSafetyDays ? `${v.dcSafetyDays} d de SS en CD` : "", v.multiTemp ? "camión multitemperatura" : "", v.consolidation === "combined" && hasDc ? "consolidación combinada" : ""].filter(Boolean).join(", ");
-const info = (v: Vec) => `${v.info} · ${v.sharing} · ${v.forecast} · ${v.collaboration} · ${v.receiving} · ${v.window} · ${v.maintenance} · ${v.policy} · telemetría ${v.telemetry ? "sí" : "no"}`;
+  [hasDc && v.dcSafetyDays ? `${v.dcSafetyDays} d de SS en CD` : "", v.consolidation === "combined" && hasDc ? "consolidación combinada" : ""].filter(Boolean).join(", ") || "—";
+const info = (v: Vec) => `POS ${v.info} · POS compartido ${v.sharing} · pronóstico ${v.forecast} · CPFR ${v.cpfrAt} · recepción ${v.receiving} · ${v.policy}`;
 const M = (x: number) => x.toFixed(0);
 const pct = (x: number, b: number) => `${x >= b ? "+" : ""}${(((x - b) / Math.abs(b)) * 100).toFixed(0)}%`;
 const table = (rs: Row[]) => [
@@ -207,7 +214,7 @@ const table = (rs: Row[]) => [
   "|---|---|---|---|---|---|---|---|",
   ...rs.map((r) => {
     const hasDc = (r.args.dcs ?? dcsOf(r.scenario, r.args.v)).length > 0;
-    return `| ${r.scenario.split("@").map(n).join(" · ")} | ${n(r.strategy)} | ${network(r.scenario, r.args)} | ${ops(r.args.v, hasDc)} | ${extra(r.args.v, hasDc)} | ${M(r.profit)} | ${M(r.asIs)} (${pct(r.profit, r.asIs)}) | ${M(r.adapted)} (${pct(r.profit, r.adapted)}) |`;
+    return `| ${r.scenario.split("@").map(n).join(" · ")} | ${n(r.strategy)} | ${network(r.scenario, r.args)} | ${ops(r.args.v)} | ${extra(r.args.v, hasDc)} | ${M(r.profit)} | ${M(r.asIs)} (${pct(r.profit, r.asIs)}) | ${M(r.adapted)} (${pct(r.profit, r.adapted)}) |`;
   }),
 ];
 const infoRows = rows.map((r) => info(r.args.v));
@@ -234,4 +241,5 @@ const md = [
 ].join("\n");
 writeFileSync(OUT, md);
 writeFileSync(OUT.replace(/\.md$/, ".json"), JSON.stringify(rows, null, 2));
+appendRunLedger(REPORTS_DIR, { tool: "network-optima", sim: engine.model.id, simVersion: engine.model.version, paramsVersion: params.version });
 console.log(`Reporte en ${OUT}`);

@@ -4,7 +4,7 @@ import { events } from "../src/events.ts";
 import { rules } from "../src/rules.ts";
 import { params } from "../src/model.ts";
 import type { ScmState } from "../src/types.ts";
-import { det, engine, fakeCtx, run, start, withOverrides } from "./helpers/run.ts";
+import { builtDcs, det, engine, fakeCtx, run, start, withOverrides } from "./helpers/run.ts";
 
 const rule = (id: string) => rules.find((r) => r.id === id)!;
 const event = (id: string) => events.find((e) => e.id === id)!;
@@ -59,22 +59,51 @@ describe("SCM-REG (P1)", () => {
     expect(s.zones[0]!.trust).toBeCloseTo(1 - params.trust.drop, 12);
     expect(params.trust.recover).toBeLessThan(params.trust.drop);
     // Integración: Red River con CSL bajo pierde confianza; al corregir, recuperarla tarda más que perderla.
-    const low = { fresh: 0.85, chilled: 0.85, ambient: 0.85, frozen: 0.85 };
+    const low = { fresh: 0.7, chilled: 0.7, ambient: 0.7, frozen: 0.7 };
     const fix = { fresh: 0.99, chilled: 0.99, ambient: 0.99, frozen: 0.99 };
-    const r = run(start(det("redriver")), 8, (_s, e) => (e === 0 ? { "D-21": low } : e === 2 ? { "D-21": fix, "D-31": "daily", "D-23": "scan" } : {}));
-    const trust = r.reports.map((x) => x.kpis.TRUST!);
+    // El CSL lo fija la estrategia: se fuerza en el estado para aislar el mecanismo.
+    const first = run(withOverrides(start(det("redriver")), { "dec.csl": low }), 2);
+    const rest = run(withOverrides(first.state, { "dec.csl": fix }), 6, (_s, e) => (e === 2 ? { "D-31": "yes", "D-23": "scan" } : {}));
+    const trust = [...first.reports, ...rest.reports].map((x) => x.kpis.TRUST!);
     const drop = 1 - trust[1]!;
     expect(drop).toBeGreaterThan(0);
     const recoveredAt = trust.findIndex((t, i) => i > 1 && t >= 1 - 1e-9);
     expect(recoveredAt === -1 || recoveredAt - 2 > 2).toBe(true);
   });
 
-  it("REG-05 R-05: δ = 9.9 km no alerta; δ = 10.1 km con frescos 3×/día por CD alerta", () => {
+  it("REG-05 R-05: δ = 9.9 km no alerta; δ = 10.1 km con frescos 2×/día por CEDIS alerta", () => {
     const s = kaigan();
+    s.dec.freq.fresh = 14;
     expect(rule("R-05").when(fakeCtx(s, { deltaDcMeanFresh: 9.9 }))).toBe(false);
     expect(rule("R-05").when(fakeCtx(s, { deltaDcMeanFresh: 10.1 }))).toBe(true);
-    s.dec.freq.fresh = 14;
+    s.dec.freq.fresh = 7;
     expect(rule("R-05").when(fakeCtx(s, { deltaDcMeanFresh: 10.1 }))).toBe(false);
+  });
+
+  it("REG-14 R-14: todo pasa por un CEDIS; la red no puede quedar vacía con tiendas abiertas y una zona sin CEDIS activo no vende", () => {
+    const s0 = start(det("redriver"));
+    expect(engine.validate(s0, { "D-01": [] }).ok).toBe(false);
+    // El único CEDIS fuera de servicio todo el trimestre: ninguna zona recibe mercancía.
+    const down = withOverrides(s0, { dcs: s0.model.dcs.map((d) => ({ ...d, downUntil: 1e6 })) });
+    const r = run(down, 1).reports[0]!;
+    expect(r.rulesFired.some((f) => f.id === "R-14")).toBe(true);
+    expect(r.kpis.SALES).toBe(0);
+    expect(run(start(det("redriver")), 1).reports[0]!.rulesFired.some((f) => f.id === "R-14")).toBe(false);
+  });
+
+  it("REG-13 R-13: la distancia al CEDIS limita la frecuencia; con un CEDIS cerca de cada zona no se dispara", () => {
+    const fired = (r: { rulesFired: { id: string }[] }) => r.rulesFired.some((f) => f.id === "R-13");
+    // Kaigan inicial: CEDIS en un borde, las zonas lejanas no reciben 2 visitas al día.
+    const kg = run(start(det("kaigan")), 1).reports[0]!;
+    expect(fired(kg)).toBe(true);
+    const near = [7, 10, 25, 28].map((zone, i) => ({ id: `T${i}`, zone, type: "combined" as const, size: "large" as const }));
+    expect(fired(run(withOverrides(start(det("kaigan")), { dcs: builtDcs(near) }), 1).reports[0]!)).toBe(false);
+    // Red River inicial: un solo CEDIS central no alcanza a visitar a diario las zonas lejanas.
+    expect(fired(run(start(det("redriver")), 1).reports[0]!)).toBe(true);
+    // Las zonas limitadas reciben menos entregas que las pedidas.
+    expect(kg.kpis.TRUCKS).toBeLessThan(
+      (Object.values(params.regions.kaigan.initial.freq) as number[]).reduce((a, b) => a + b, 0) / 7,
+    );
   });
 
   it("REG-06/EVT-06 R-06: una falla de proveedor pega más con cross-dock sin inventario que con CD con inventario", () => {

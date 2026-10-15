@@ -63,14 +63,14 @@ test("partida completa de 12 trimestres en Kaigan y exportación verificable con
   expect(errors).toEqual([]);
 });
 
-test("agregar un CD pide confirmar lo irreversible y queda como proyecto en curso", async ({ page }) => {
+test("agregar un CEDIS pide confirmar lo irreversible y queda como proyecto en curso", async ({ page }) => {
   await begin(page, "Red River");
   await captureForecast(page);
   await page.getByRole("tab", { name: "Red" }).click();
-  await page.getByRole("button", { name: /Agregar CD/ }).click();
+  await page.getByRole("button", { name: /Agregar CEDIS/ }).click();
   await page.getByTestId("review").click();
   const dialog = page.getByRole("dialog");
-  await expect(dialog.getByText(/Red de CD/).first()).toBeVisible();
+  await expect(dialog.getByText(/Red de CEDIS/).first()).toBeVisible();
   await expect(page.getByTestId("confirm-run")).toBeDisabled();
   await dialog.getByRole("checkbox").check();
   await page.getByTestId("confirm-run").click();
@@ -82,9 +82,8 @@ test("un turno que excede el tope de inversión anual muestra el aviso y no se p
   await begin(page, "Red River");
   await captureForecast(page);
   await page.getByRole("tab", { name: "Red" }).click();
-  // Dos CD medianos con inventario en Red River: ~US$ 11.9 M contra un tope de US$ 7 M.
-  await page.getByRole("button", { name: /Agregar CD/ }).click();
-  await page.getByRole("button", { name: /Agregar CD/ }).click();
+  // Tres CEDIS medianos con inventario en Red River: ~US$ 17.9 M contra un tope de US$ 12 M.
+  for (let i = 0; i < 3; i++) await page.getByRole("button", { name: /Agregar CEDIS/ }).click();
   await expect(page.getByRole("alert").first()).toContainText("Tope de inversión de A1");
   await expect(page.getByTestId("review")).toBeDisabled();
 });
@@ -92,8 +91,8 @@ test("un turno que excede el tope de inversión anual muestra el aviso y no se p
 test("una decisión inválida muestra el error y bloquea la confirmación", async ({ page }) => {
   await begin(page, "Red River");
   await page.getByRole("tab", { name: "Flujo" }).click();
-  await page.getByRole("radiogroup", { name: /Ambiente/ }).getByRole("radio", { name: "Por CD" }).click();
-  await expect(page.getByRole("alert").first()).toContainText("al menos un CD");
+  await page.getByRole("radio", { name: "Combinada por temperatura" }).click();
+  await expect(page.getByRole("alert").first()).toContainText("requiere un CEDIS combinado");
   await expect(page.getByTestId("review")).toBeDisabled();
 });
 
@@ -193,7 +192,7 @@ test("«¿Cómo impacta?» explica cada decisión y el mapa ubica las plantas de
   const d01 = page.locator('[data-decision="D-01"]');
   await expect(d01.getByText("Mueve:")).toHaveCount(0);
   await d01.getByRole("button", { name: /¿Cómo impacta/ }).hover();
-  await expect(d01.getByRole("tooltip")).toContainText("Más CD acercan la mercancía");
+  await expect(d01.getByRole("tooltip")).toContainText("Más CEDIS acercan la mercancía");
   await expect(page.getByTestId("site-P-FR").first()).toBeVisible();
   await expect(page.locator("figcaption").first()).toContainText("Planta dedicada de alimentos preparados — zona 12");
   await expect(page.getByTestId("budget-chip")).toContainText("Inversión A1");

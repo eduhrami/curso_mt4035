@@ -10,19 +10,18 @@ const oneEpoch = (overrides: Record<string, unknown>, region: "kaigan" | "redriv
   run(withOverrides(start(det(region)), overrides), 1).reports[0]!;
 
 const rrDcs = (zones: number[], type: DcSpec["type"] = "stocking"): DcSpec[] => zones.map((zone, i) => ({ id: `T${i}`, zone, type, size: "medium" }));
-const viaDc = { fresh: "dsd", chilled: "dc", ambient: "dc", frozen: "dc" };
 
 describe("SCM-CAU (P1)", () => {
   it("CAU-01 Red River: +1 CD operativo ⇒ distancia CD→tienda ↓, transporte ↓, costo fijo de CD ↑", () => {
-    const base = oneEpoch({ dcs: builtDcs(rrDcs([14, 21])), "dec.flows": viaDc }, "redriver");
-    const plus = oneEpoch({ dcs: builtDcs(rrDcs([14, 21, 3])), "dec.flows": viaDc }, "redriver");
+    const base = oneEpoch({ dcs: builtDcs(rrDcs([14, 21])) }, "redriver");
+    const plus = oneEpoch({ dcs: builtDcs(rrDcs([14, 21, 3])) }, "redriver");
     expect(plus.kpis.DC_DIST_KM).toBeLessThan(base.kpis.DC_DIST_KM!);
     expect(sumMetric(plus, "transport")).toBeLessThan(sumMetric(base, "transport"));
     expect(sumMetric(plus, "dcFixed")).toBeGreaterThan(sumMetric(base, "dcFixed"));
   });
 
-  it("CAU-03 Kaigan: frecuencia de frescos 7 → 14 → 21 ⇒ transporte ↑, merma de frescos ↓, inventario ↓; OSA de frescos 21 ≥ 7", () => {
-    const [f7, f14, f21] = [7, 14, 21].map((f) => oneEpoch({ "dec.freq.fresh": f }));
+  it("CAU-03 Kaigan: frecuencia de frescos 3 → 7 → 14 ⇒ transporte ↑, merma de frescos ↓, inventario ↓; OSA de frescos 14 ≥ 3", () => {
+    const [f7, f14, f21] = [3, 7, 14].map((f) => oneEpoch({ "dec.freq.fresh": f }));
     expect(sumMetric(f14!, "transport")).toBeGreaterThan(sumMetric(f7!, "transport"));
     expect(sumMetric(f21!, "transport")).toBeGreaterThan(sumMetric(f14!, "transport"));
     expect(f14!.kpis.WASTE_FRESH).toBeLessThanOrEqual(f7!.kpis.WASTE_FRESH!);
@@ -33,19 +32,21 @@ describe("SCM-CAU (P1)", () => {
     expect(f21!.kpis.OSA_FRESH).toBeGreaterThanOrEqual(f7!.kpis.OSA_FRESH!);
   });
 
-  it("CAU-04 frescos 1× → 3×/día cuesta mucho más por tienda en Red River que en Kaigan; R-05 se dispara solo en Red River", () => {
-    const allDc = { fresh: "dc", chilled: "dc", ambient: "dc", frozen: "dc" };
-    const rrBase = { dcs: builtDcs(rrDcs([7, 10, 25, 28], "combined")), "dec.flows": allDc, "dec.consolidation": "combined" };
-    const inc = (region: "kaigan" | "redriver", extra: Record<string, unknown>) => {
-      const lo = oneEpoch({ ...extra, "dec.freq.fresh": 7 }, region);
-      const hi = oneEpoch({ ...extra, "dec.freq.fresh": 21 }, region);
-      return { perStore: (sumMetric(hi, "transport") - sumMetric(lo, "transport")) / hi.kpis.STORES!, hi };
+  it("CAU-04 frescos 1× → 2×/día: en Kaigan con CEDIS cercanos sube el transporte; en Red River la distancia lo impide (R-13) y casi no cambia", () => {
+    const base = { dcs: builtDcs(rrDcs([7, 10, 25, 28], "combined")), "dec.consolidation": "combined" };
+    const inc = (region: "kaigan" | "redriver") => {
+      const lo = oneEpoch({ ...base, "dec.freq.fresh": 7 }, region);
+      const hi = oneEpoch({ ...base, "dec.freq.fresh": 14 }, region);
+      return { trucks: hi.kpis.TRUCKS! - lo.kpis.TRUCKS!, hi };
     };
-    const rr = inc("redriver", rrBase);
-    const kg = inc("kaigan", {});
-    expect(rr.perStore).toBeGreaterThan(2 * kg.perStore);
-    expect(rr.hi.rulesFired.some((f) => f.id === "R-05")).toBe(true);
-    expect(kg.hi.rulesFired.some((f) => f.id === "R-05")).toBe(false);
+    const kg = inc("kaigan");
+    const rr = inc("redriver");
+    // Kaigan: todas las zonas a menos de 2 h del CEDIS reciben las 7 visitas adicionales por semana.
+    expect(kg.trucks).toBeCloseTo(1, 6);
+    expect(kg.hi.rulesFired.some((f) => f.id === "R-13")).toBe(false);
+    // Red River: con la misma red, la mayoría de las zonas queda lejos y la frecuencia efectiva apenas sube.
+    expect(rr.trucks).toBeLessThan(0.5 * kg.trucks);
+    expect(rr.hi.rulesFired.some((f) => f.id === "R-13")).toBe(true);
   });
 
   it("CAU-05 Kaigan: CSL de no perecederos 90% → 99% ⇒ inventario ↑, OSA ↑, costo de inventario ↑, ITR ↓", () => {
@@ -70,21 +71,14 @@ describe("SCM-CAU (P1)", () => {
     expect(sumMetric(rHi.reports[0]!, "invValue")).toBeLessThan(sumMetric(rLo.reports[0]!, "invValue"));
   });
 
-  it("CAU-07 Red River: compartir POS no → diario ⇒ BWR ↓ (hacia 1) y OTIF ↑", () => {
-    const no = oneEpoch({}, "redriver");
-    const daily = oneEpoch({ "dec.sharing": "daily" }, "redriver");
+  it("CAU-07 Red River: compartir POS no → sí ⇒ BWR ↓ (hacia 1) y OTIF ↑", () => {
+    // Red sin saturar y cross-dock: sin el amortiguador del CEDIS con inventario, la mejora del proveedor llega a la tienda.
+    const dcs = builtDcs(rrDcs([7, 10, 25, 28], "crossdock"));
+    const no = oneEpoch({ dcs }, "redriver");
+    const daily = oneEpoch({ dcs, "dec.sharing": "yes" }, "redriver");
     expect(daily.kpis.BWR).toBeLessThan(no.kpis.BWR!);
     expect(daily.kpis.BWR).toBeLessThan(1.5);
     expect(daily.kpis.OTIF).toBeGreaterThan(no.kpis.OTIF!);
-  });
-
-  it("CAU-08 Red River: DSD → por CD (CD operativos) ⇒ camiones por tienda ↓, costo de recepción ↓, OSA ↑ o =", () => {
-    const dcs = builtDcs(rrDcs([7, 10, 25, 28]));
-    const dsd = oneEpoch({ dcs }, "redriver");
-    const dc = oneEpoch({ dcs, "dec.flows": viaDc }, "redriver");
-    expect(dc.kpis.TRUCKS).toBeLessThan(dsd.kpis.TRUCKS!);
-    expect(sumMetric(dc, "receivingCost")).toBeLessThan(sumMetric(dsd, "receivingCost"));
-    expect(dc.kpis.OSA).toBeGreaterThanOrEqual(dsd.kpis.OSA!);
   });
 
   it("CAU-09 Kaigan: consolidación por proveedor → combinada ⇒ camiones por tienda de decenas a < 12", () => {
