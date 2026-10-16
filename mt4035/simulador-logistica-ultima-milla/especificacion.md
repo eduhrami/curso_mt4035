@@ -586,7 +586,8 @@ Probabilidad por época (mes): `p = p_base(territorio, mes) · Π modificadores(
 - [x] Decidir si ambos simuladores comparten el motor base (PRNG, persistencia, mensajes, comparador) como librería común. Sí: `@mt4035/sim-core`.
 - [x] Herramienta del profesor para volver a correr y agregar los JSON del grupo. `npm run replay` y `npm run aggregate` (F6); el modo profesor en la UI llega en F7.
 - [ ] Revisar con auto-juego las semillas y la dificultad relativa de los escenarios EM-01…EM-04 (§4.3), y confirmar si el profesor asigna escenario y semilla por equipo.
-- [ ] Validar en clase los rangos del proceso de demanda (§4.3b), la escala de calificación del pronóstico (§7.4) y el costo de la capacidad ociosa (§5.0). Decidir si conviene un ejemplo resuelto de descomposición (S1/S3) como apoyo.
+- [ ] Validar en clase los rangos del proceso de demanda (§4.3b), la escala de calificación del pronóstico (§7.4) y el costo de la capacidad ociosa (§5.0).
+- [ ] **Meta de utilidad para autoevaluarse (como AD-53 del SCM):** calcular con el auto-juego la mejor utilidad acumulada de 3 años por territorio × estrategia de servicio × escenario de mercado (EM-01…EM-04 con su semilla, más el mercado base), con un error de pronóstico realista; guardarla en `app/src/targets.json` (solo cifras, sin decisiones) y mostrar la tarjeta «Meta de referencia» en el dashboard y el reporte final, con la aclaración de que son jugadas de prueba y no necesariamente el máximo posible. Reutilizar el componente del SCM (`ui/ProfitTarget.tsx`), idealmente movido al ui-kit. Falta un equivalente de `network-optima`: hoy el buscador de última milla (BOT-I) optimiza por escenario base, no por escenario de mercado. Decidir si conviene un ejemplo resuelto de descomposición (S1/S3) como apoyo.
 
 ---
 

@@ -482,6 +482,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - [ ] Normalización del puntaje por región o territorio (SCM-SCO-05, LOG-SCO-05). En SCM está implementada como propuesta (rangos y guardrails por región en `params.v1.json`, especificación §6.3b); falta confirmarla.
 - [ ] Duración objetivo de una partida (20 y 36 épocas manuales): ¿solo en clase o clase + casa?
 - [ ] Confirmar GitHub Pages como canal de publicación frente a solo subir el archivo a Canvas.
+- [ ] Extender la meta de utilidad (AD-53) al simulador de última milla: ver su especificación §13.
 
 ---
 
