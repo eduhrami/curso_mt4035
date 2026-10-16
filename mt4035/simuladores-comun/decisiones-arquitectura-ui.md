@@ -483,6 +483,7 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - [ ] Duración objetivo de una partida (20 y 36 épocas manuales): ¿solo en clase o clase + casa?
 - [ ] Confirmar GitHub Pages como canal de publicación frente a solo subir el archivo a Canvas.
 - [ ] Extender la meta de utilidad (AD-53) al simulador de última milla: ver su especificación §13.
+- [ ] Trabajo futuro: pronóstico propio del equipo (sin método impuesto), totalizado o por categoría, en el SCM: ver su especificación §13.
 
 ---
 

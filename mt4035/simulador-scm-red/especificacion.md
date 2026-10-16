@@ -137,6 +137,7 @@ La demanda de cada zona y categoría es esa base × confianza, competencia, dens
 | Choque semanal común | Normal con CV por E-22: baja 2–4%, media 4–7%, alta 7–11% | CV del residuo semanal y p95 semanal |
 
 - **Datos:** desde la pestaña «Pronóstico» el equipo descarga un CSV con **104 semanas de historia** (H1, H2) y, en T1 de A2 y A3, también las semanas jugadas. Columnas: `semana, anio, trimestre, semana_del_anio, frescos, refrigerado, ambiente, congelado, total` (unidades por tienda por día). Es la demanda del **mercado** por tienda (ventas comparables), sin el efecto de las decisiones del equipo ni el número de tiendas. Con envejecimiento (E-26), la mezcla se desplaza hacia frescos igual que en el motor.
+- **Columna para estimar:** los parámetros de F-01 se estiman con la columna `total` (suma de las cuatro categorías), que es la serie con la que el motor compara el pronóstico. Las columnas por categoría sirven para explorar: muestran que la estacionalidad difiere por categoría y, con envejecimiento, el desplazamiento de ambiente a frescos (el total no cambia). La pestaña «Pronóstico» lo indica.
 - **Lo que ya no se muestra:** crecimiento, estacionalidad y volatilidad en las fichas de escenario; los mensajes de tendencia citan el pronóstico del equipo.
 - Sustituye la estacionalidad sinusoidal semanal del modelo anterior por índices trimestrales (escalonados), para que el pronóstico trimestral pueda ser exacto.
 
@@ -509,6 +510,7 @@ Probabilidad por época: `p = p_base(región, perfil) · Π modificadores(decisi
 - [ ] Herramienta del profesor para volver a correr y agregar los JSON de todo el grupo.
 - [ ] Revisar con auto-juego las semillas y la dificultad relativa de los escenarios EM-01…EM-04 (§4.3), y confirmar si el profesor asigna escenario y semilla por equipo.
 - [ ] Validar en clase los rangos del proceso de demanda (§4.4) y el peso del pronóstico (§7.4).
+- [ ] Trabajo futuro: pronóstico propio. Permitir que el equipo cargue su propio pronóstico (por ejemplo, un CSV semanal con media y p95) sin forzarlo a un método ni a los parámetros de F-01, ya sea **totalizado** o **por categoría** (frescos, refrigerado, ambiente, congelado). Requiere definir el formato de carga, cómo se traduce a inventario objetivo y stock de seguridad por categoría, cómo se mide su precisión (§7.4) y cómo viaja en el JSON exportado para el replay.
 
 ---
 

@@ -69,7 +69,7 @@ export function ForecastEditor({ value, onChange, state, disabled }: CustomContr
     <div class="stack" style={{ gap: "0.75rem" }} data-testid="forecast-editor">
       <div class="stack" style={{ gap: "0.35rem" }}>
         <p class="small" style={{ margin: 0 }}>
-          Descarga la demanda semanal por tienda de la región ({HISTORY_YEARS} años de historia{e > 0 ? " y los trimestres que ya jugaste" : ""}), analízala por fuera (Excel, Python, R) y captura los parámetros que estimes. Tu pronóstico{" "}
+          Descarga la demanda semanal por tienda de la región ({HISTORY_YEARS} años de historia{e > 0 ? " y los trimestres que ya jugaste" : ""}), analízala por fuera (Excel, Python, R) y captura los parámetros que estimes. <strong>Estímalos con la columna «total»</strong> (suma de las cuatro categorías); las columnas por categoría sirven para explorar. Tu pronóstico{" "}
           <strong>fija el inventario objetivo y el stock de seguridad de las tiendas</strong>: quedarte corto baja la OSA; pasarte sube la merma y el inventario. Las dos cosas bajan tu <strong>utilidad</strong>; su precisión es además el {Math.round(params.forecast.score.weight * 100)}% del índice de desempeño.
         </p>
         <div class="row">
