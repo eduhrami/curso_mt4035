@@ -38,8 +38,8 @@ export function Setup() {
           diseñar la red que la haga posible y demostrarlo con números. Cada trimestre revisas resultados, ajustas tus decisiones y confirmas.
         </p>
         <p>
-          La red que heredas no es la adecuada: en algunas regiones faltan centros de distribución y en otras sobran. Las plantas de los proveedores ya están en el mapa; tú decides cuántos CEDIS tener y
-          dónde. El consejo te da un <strong>tope de inversión por año</strong>: no podrás hacerlo todo a la vez, así que prioriza.
+          Heredas la red actual de cada región. Las plantas de los proveedores ya están en el mapa; tú decides cuántos CEDIS tener,
+          dónde y de qué tipo. El consejo te da un <strong>tope de inversión por año</strong>: no podrás hacerlo todo a la vez, así que prioriza.
         </p>
         <p class="small muted">Empresa y regiones ficticias, inspiradas en el caso Seven-Eleven Japan (Kellogg KEL026).</p>
         <p class="small" style={{ margin: 0 }}>

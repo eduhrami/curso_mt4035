@@ -173,18 +173,18 @@ export const STRATEGY_TEXT: Record<Strategy, string> = {
 export const REGION_TEXT: Record<RegionId, { title: string; tagline: string; facts: string[] }> = {
   kaigan: {
     title: "Kaigan",
-    tagline: "Franja costera muy densa (tipo Japón). La red original de Hoshi Mart, que no creció al ritmo de las tiendas.",
-    facts: ["1,800 tiendas en clusters", "Un solo CEDIS grande con inventario para 1,800 tiendas, saturado", "Frescos 2 veces al día cerca de los CEDIS, menos en las zonas lejanas", "Planta dedicada de alimentos preparados (zona 12)"],
+    tagline: "Franja costera de ~120 km (tipo Japón). Región de origen de Hoshi Mart.",
+    facts: ["1,800 tiendas agrupadas a lo largo de la costa", "1 CEDIS grande con inventario (zona 12)", "Frescos: 30% de las ventas; entregas programadas 2 veces al día", "Planta dedicada de alimentos preparados (zona 12)"],
   },
   redriver: {
     title: "Red River",
-    tagline: "Corredor extenso y disperso (tipo EE.UU.). Prairie Stop, recién adquirida.",
-    facts: ["1,200 tiendas dispersas", "Un solo CEDIS central con inventario para toda la región", "Pocos frescos, muchos faltantes", "Pedido manual, POS básico"],
+    tagline: "Corredor de ~630 km (tipo EE.UU.). Prairie Stop, recién adquirida.",
+    facts: ["1,200 tiendas repartidas en todo el corredor", "1 CEDIS mediano con inventario (zona 14)", "Frescos: 10% de las ventas", "Pedido por punto de reorden, POS básico"],
   },
   valle: {
     title: "Valle Metropolitano",
-    tagline: "Núcleo urbano congestionado y periferia extendida (tipo México).",
-    facts: ["600 tiendas: 70% en el núcleo", "4 CEDIS con inventario heredados de una expansión", "Central de abasto en el núcleo y parque industrial en la periferia", "Congestión alta y muy variable"],
+    tagline: "Zona metropolitana de ~180 km con núcleo urbano y periferia (tipo México).",
+    facts: ["600 tiendas: 70% en el núcleo", "4 CEDIS medianos con inventario", "Central de abasto en el núcleo y parque industrial en la periferia", "Frescos: 20% de las ventas; el tráfico reduce la velocidad 35% en promedio (±12 pp)"],
   },
 };
 

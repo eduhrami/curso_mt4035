@@ -339,7 +339,7 @@ export const TERRITORY_TEXT: Record<PlayableTerritory, { title: string; tagline:
   norte: {
     title: "Región Norte",
     tagline: "Ciudad principal + 4 ciudades lejanas + zona rural, con calor extremo.",
-    facts: ["60% de la demanda en la ciudad principal", "Ciudades a 80–250 km; zona rural dispersa", "30% de pedidos con pago contra entrega", "Calor extremo (may–ago); pocos repartidores crowdsourced"],
+    facts: ["60% de la demanda en la ciudad principal", "Ciudades a 80–250 km; zona rural dispersa", "30% de pedidos con pago contra entrega", "Calor de mayo a agosto"],
   },
 };
 
