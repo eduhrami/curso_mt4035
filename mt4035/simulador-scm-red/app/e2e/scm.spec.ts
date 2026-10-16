@@ -153,6 +153,9 @@ test("una corrida con escenario predefinido lo muestra en la barra superior", as
   await page.getByRole("radio", { name: /^Kaigan/ }).click();
   await page.getByTestId("start").click();
   await expect(page.getByTestId("scenario-label")).toHaveText("Presión de costos");
+  // Meta de utilidad de referencia para autoevaluarse (región × propuesta × escenario).
+  await expect(page.getByTestId("profit-target")).toContainText("jugadas de prueba");
+  await expect(page.getByTestId("profit-target-value")).toContainText("US$");
 });
 
 test("el glosario se abre desde el inicio y los términos muestran su definición al pasar el mouse", async ({ page }) => {

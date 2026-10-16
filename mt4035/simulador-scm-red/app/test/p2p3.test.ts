@@ -4,7 +4,7 @@ import { playGame } from "@mt4035/sim-core/testing";
 import { effectiveCv, supplierLt } from "../src/tick.ts";
 import { events } from "../src/events.ts";
 import { rules } from "../src/rules.ts";
-import { createScmEngine, EPOCHS, params, scoreRun } from "../src/index.ts";
+import { createScmEngine, DEFAULT_MARKET, EPOCHS, params, PRESETS, profitTarget, scoreRun } from "../src/index.ts";
 import type { DcSpec, ScmState } from "../src/types.ts";
 import { adaptedDispersed, naiveTransplant } from "../autoplay/bots.ts";
 import { builtDcs, det, engine, fakeCtx, meanKpi, paramsWith, realEngine, run, start, sumMetric, withOverrides } from "./helpers/run.ts";
@@ -200,6 +200,20 @@ describe("SCM P2/P3 — escenarios", () => {
 });
 
 describe("SCM P2 — reglas, eventos, retrasos y puntaje", () => {
+  it("meta de utilidad: hay una por región × propuesta × escenario predefinido y por mercado base; ninguna en greenfield", () => {
+    for (const region of ["kaigan", "redriver", "valle"] as const)
+      for (const st of ["freshness", "lowcost", "convenience"] as const) {
+        expect(profitTarget({ region, strategy: st, market: DEFAULT_MARKET }, st, 1)).not.toBeNull();
+        for (const p of PRESETS) {
+          const t = profitTarget({ region, strategy: st, market: p.market, preset: p.id }, st, p.seed)!;
+          expect(t.preset).toBe(p.id);
+          expect(t.sameSeed).toBe(true);
+          expect(Number.isFinite(t.value)).toBe(true);
+        }
+      }
+    expect(profitTarget({ region: "valle", strategy: "lowcost", market: DEFAULT_MARKET, greenfield: true }, "lowcost", 1)).toBeNull();
+  });
+
   it("REG-04 R-04: 15 entregas por tienda al día con DSD no dispara; 16 dispara", () => {
     const s = start(det("redriver")).model;
     expect(rule("R-04").when(fakeCtx(s, { maxDeliveriesPerStoreDay: 15 }))).toBe(false);

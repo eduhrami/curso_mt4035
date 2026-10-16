@@ -1,0 +1,91 @@
+{
+  "note": "Utilidad acumulada de 3 años (M USD) en jugadas de prueba del simulador: no necesariamente el máximo posible.",
+  "generatedAt": "2026-10-16",
+  "targets": {
+    "base": {
+      "kaigan": {
+        "freshness": 394,
+        "lowcost": 661,
+        "convenience": 455
+      },
+      "redriver": {
+        "freshness": 183,
+        "lowcost": 189,
+        "convenience": 193
+      },
+      "valle": {
+        "freshness": 413,
+        "lowcost": 420,
+        "convenience": 420
+      }
+    },
+    "EM-01": {
+      "kaigan": {
+        "freshness": 556,
+        "lowcost": 846,
+        "convenience": 676
+      },
+      "redriver": {
+        "freshness": 162,
+        "lowcost": 174,
+        "convenience": 176
+      },
+      "valle": {
+        "freshness": 394,
+        "lowcost": 400,
+        "convenience": 400
+      }
+    },
+    "EM-02": {
+      "kaigan": {
+        "freshness": 232,
+        "lowcost": 568,
+        "convenience": 297
+      },
+      "redriver": {
+        "freshness": 40,
+        "lowcost": 59,
+        "convenience": 58
+      },
+      "valle": {
+        "freshness": 276,
+        "lowcost": 283,
+        "convenience": 287
+      }
+    },
+    "EM-03": {
+      "kaigan": {
+        "freshness": 569,
+        "lowcost": 844,
+        "convenience": 686
+      },
+      "redriver": {
+        "freshness": 125,
+        "lowcost": 130,
+        "convenience": 135
+      },
+      "valle": {
+        "freshness": 376,
+        "lowcost": 383,
+        "convenience": 382
+      }
+    },
+    "EM-04": {
+      "kaigan": {
+        "freshness": 534,
+        "lowcost": 859,
+        "convenience": 641
+      },
+      "redriver": {
+        "freshness": 191,
+        "lowcost": 196,
+        "convenience": 201
+      },
+      "valle": {
+        "freshness": 425,
+        "lowcost": 433,
+        "convenience": 436
+      }
+    }
+  }
+}

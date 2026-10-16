@@ -5,6 +5,7 @@ import type { GameState } from "@mt4035/sim-core";
 import { debriefFor, EPOCHS, params, YEARS, type ScmState, type Strategy } from "../src/index.ts";
 import { describeValue, kpiMetaFor, OPTIONS, REGION_TEXT, scenarioLabel } from "./labels.ts";
 import { engine, finalScore, regionOf, screen, store } from "./game.ts";
+import { ProfitTargetCard } from "./ProfitTarget.tsx";
 
 const FC_W = params.forecast.score.weight;
 
@@ -66,6 +67,8 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
           </p>
         )}
       </div>
+
+      <ProfitTargetCard state={state} final />
 
       <div class="card stack">
         <h2>Estado de resultados de los {EPOCHS} trimestres</h2>

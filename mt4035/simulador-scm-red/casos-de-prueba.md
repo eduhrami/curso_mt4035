@@ -206,6 +206,7 @@ Cada regla se prueba **justo debajo** y **justo arriba** de su umbral, usando `o
 | SCM-SCO-03 | Se agregan violaciones de guardrail a una corrida | El puntaje es estrictamente decreciente con el número de violaciones | §7.2 | P1 |
 | SCM-SCO-04 | Cualquier corrida | Puntaje ∈ [0, 100] | §7.3 | P1 |
 | SCM-SCO-05 | *As-is* de cada región, estrategia por omisión | La operación (sin el pronóstico) puntúa entre 5 y 60 en Red River y Valle; Kaigan arranca en el piso del índice a propósito (AD-52), para que ninguna sea injugable. La banda es amplia porque las redes iniciales son sub-óptimas a propósito (AD-44) | §7.3 | P2 |
+| SCM-SCO-08 | Meta de utilidad (AD-53) | Hay una meta por región × propuesta × escenario predefinido (con su semilla) y una del mercado base; ninguna en *greenfield* | AD-53 | P2 |
 
 ---
 

@@ -15,6 +15,7 @@ import { createScmEngine, params, PRESETS, scmConfig, type DcSpec, type RegionId
 import { regionOf, type NetworkArgs, type Vec } from "./adapter-network.ts";
 import { searchSpace, vectorPolicy } from "./bots.ts";
 import { REPORTS_DIR } from "./reports-dir.ts";
+import { writeTargets } from "./targets.ts";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const a = parseArgs(process.argv.slice(2));
@@ -241,5 +242,6 @@ const md = [
 ].join("\n");
 writeFileSync(OUT, md);
 writeFileSync(OUT.replace(/\.md$/, ".json"), JSON.stringify(rows, null, 2));
+writeTargets(rows);
 appendRunLedger(REPORTS_DIR, { tool: "network-optima", sim: engine.model.id, simVersion: engine.model.version, paramsVersion: params.version });
 console.log(`Reporte en ${OUT}`);

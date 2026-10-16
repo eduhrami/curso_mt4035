@@ -452,6 +452,12 @@ SETUP → DISEÑO_INICIAL (época 0) → DECIDIENDO ⇄ (deshacer) → CONFIRMAN
 - **Referencia de Kaigan:** el diseño de la política adaptada (BOT-C: convertir el CEDIS central a combinado y construir 3 combinados medianos, consolidación combinada, frescos 2×/día, CPFR). Supera a la red refinada por `network-optima`, que con un arranque tan lejano queda en un óptimo local. Los rangos del índice no se recalibran: Kaigan arranca en el piso del índice y SCM-SCO-05 se evalúa en Red River y Valle.
 - **Se retira SCM-AUT-15** («pronosticar bien gana al nominal en ≥ 80% de las semillas») y BOT-L. Un pronóstico es una estimación de una variable aleatoria: en una sola partida, un pronóstico ingenuo puede acertar más que uno elaborado por azar, como en otros fenómenos (en la competencia M4, solo uno de los métodos puros de aprendizaje automático superó a un pronóstico ingenuo; Makridakis, Spiliotis y Assimakopoulos, 2018). Queda como reflexión en el debrief (DB-07) y en la guía del instructor; el valor del pronóstico se mide en promedio con `forecast-impact`.
 
+### AD-53 ✔ Meta de utilidad para autoevaluarse (SCM, 16-oct-2026)
+
+- **Criterio (Eduardo):** el alumno ve cuál es la utilidad que puede lograr con decisiones bien alineadas, para autoevaluarse.
+- **Fuente:** por región × propuesta × escenario de mercado, la mejor utilidad acumulada de 3 años entre la red de referencia y la política adaptada (BOT-C), con ±10% de error de pronóstico (`autoplay/targets.ts` → `src/targets.json`; se regenera al final de `npm run network-optima`). Solo cifras, sin decisiones, así que vive en el repositorio público. Los escenarios predefinidos usan su semilla; el perfil propio usa la referencia del mercado base.
+- **Interfaz:** tarjeta «Meta de referencia» antes del primer trimestre, en el dashboard (cuánto lleva el equipo y qué % de la meta) y en el reporte final. Aclara que son valores de jugadas de prueba del simulador y no necesariamente el máximo posible; con escenario propio u otra semilla, solo orientativa. No aparece en *greenfield*.
+
 ## 4. Ruta de implementación
 
 | Fase | Entregable | Criterio de salida |

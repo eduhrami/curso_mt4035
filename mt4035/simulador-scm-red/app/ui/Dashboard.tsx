@@ -6,6 +6,7 @@ import { scoreRun, params, type ScmState, type Strategy } from "../src/index.ts"
 import { CAUSE_NAMES, KPI_NAMES, kpiMetaFor, OPTIONS, REGION_TEXT } from "./labels.ts";
 import { engine, professor, regionOf, store } from "./game.ts";
 import { NetworkMap } from "./NetworkMap.tsx";
+import { ProfitTargetCard } from "./ProfitTarget.tsx";
 
 const COSTS: [string, string][] = [
   ["transport", "Reparto a tiendas"],
@@ -38,6 +39,7 @@ export function Dashboard({ state }: { state: GameState<ScmState> }) {
             confirmar sin cambios para ver cómo opera la red actual.
           </p>
         </div>
+        <ProfitTargetCard state={state} />
         <div class="card">
           <h2>Red actual</h2>
           <NetworkMap state={state.model} epoch={state.epoch} />
@@ -58,6 +60,7 @@ export function Dashboard({ state }: { state: GameState<ScmState> }) {
   return (
     <div class="stack">
       {professor && <ProfessorScore state={state} />}
+      <ProfitTargetCard state={state} />
       <div class="grid-auto" role="list" aria-label="Indicadores del trimestre">
         {metas.slice(0, 9).map((m) => (
           <KpiCard key={m.id} meta={m} report={last} prev={prev} onExplain={setKpi} selected={m.id === kpi} />
