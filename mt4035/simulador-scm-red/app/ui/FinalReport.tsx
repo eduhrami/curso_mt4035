@@ -46,7 +46,7 @@ export function FinalReport({ state }: { state: GameState<ScmState> }) {
           </span>
         </div>
         <p class="small muted" style={{ margin: 0 }}>
-          Índice de desempeño {result.score.toFixed(1)}/100 (diagnóstico: operación según tu propuesta de valor 70% + precisión del pronóstico 30%) · con otra propuesta:{" "}
+          Índice de desempeño {result.score.toFixed(1)}/100 (diagnóstico: operación según tu propuesta de valor y precisión del pronóstico) · con otra propuesta:{" "}
           {others.map((s) => `${OPTIONS[s]} ${finalScore(state, s).score.toFixed(1)}`).join(" · ")}
         </p>
         <div class="row no-print">

@@ -58,7 +58,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   { term: "RMI", full: "Retailer-Managed Inventory", def: "Inventario administrado por el minorista: tú pronosticas y decides cuándo y cuánto reponer; el proveedor solo surte lo que pides. Es el punto de partida.", category: INFO },
   { term: "CPFR", full: "Collaborative Planning, Forecasting and Replenishment", def: "Planeación, pronóstico y reposición colaborativos entre cliente y proveedor: los dos comparten datos y acuerdan un pronóstico. Baja el error y el lead time, pero cuesta implementarlo y madura en varios trimestres.", category: INFO },
   { term: "Arm's-length", def: "Relación transaccional con el proveedor, sin compartir información ni planear en conjunto.", category: INFO },
-  { term: "Pronóstico avanzado", def: "Modelo de suavizamiento exponencial con tendencia y estacionalidad (Holt-Winters) más variables causales (clima, calendario, promociones), operado por un equipo de analítica. El básico usa promedios móviles y no ve la estacionalidad.", aliases: ["Holt-Winters", "pronóstico causal"], category: INFO },
+  { term: "Pronóstico avanzado", def: "Sistema de pronóstico de las tiendas operado por un equipo de analítica: tiene menor error que el básico, sobre todo en los cambios de temporada, y reduce el efecto látigo. Cuesta implementarlo y mantener al equipo. Es distinto del pronóstico anual que captura el equipo.", category: INFO },
 
   // Dinero
   { term: "Utilidad", def: "Puntaje definitivo: EBITDA logístico (margen bruto − merma − rebajas − costos logísticos − TI) − inversión − penalizaciones por servicio, acumulado en los 12 trimestres.", aliases: ["utilidad acumulada"], category: "Dinero" },

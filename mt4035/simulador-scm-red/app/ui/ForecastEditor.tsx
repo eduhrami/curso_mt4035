@@ -70,7 +70,10 @@ export function ForecastEditor({ value, onChange, state, disabled }: CustomContr
       <div class="stack" style={{ gap: "0.35rem" }}>
         <p class="small" style={{ margin: 0 }}>
           Descarga la demanda semanal por tienda de la región ({HISTORY_YEARS} años de historia{e > 0 ? " y los trimestres que ya jugaste" : ""}), analízala por fuera (Excel, Python, R) y captura los parámetros que estimes. <strong>Estímalos con la columna «total»</strong> (suma de las cuatro categorías); las columnas por categoría sirven para explorar. Tu pronóstico{" "}
-          <strong>fija el inventario objetivo y el stock de seguridad de las tiendas</strong>: quedarte corto baja la OSA; pasarte sube la merma y el inventario. Las dos cosas bajan tu <strong>utilidad</strong>; su precisión es además el {Math.round(params.forecast.score.weight * 100)}% del índice de desempeño.
+          <strong>fija el inventario objetivo y el stock de seguridad de las tiendas</strong>: quedarte corto baja la OSA; pasarte sube la merma y el inventario. Las dos cosas bajan tu <strong>utilidad</strong>: a mayor precisión del pronóstico, mejores resultados.
+        </p>
+        <p class="small" style={{ margin: 0 }} data-testid="forecast-model">
+          <strong>Modelo: descomposición multiplicativa.</strong> Captura sus parámetros. Para cada semana, pronóstico = nivel base × (1 + crecimiento anual)<sup>(semanas desde el inicio del año / 52)</sup> × índice del trimestre (T1–T4, promedio 1); el índice es el mismo en las 13 semanas del trimestre. Así puedes replicar el pronóstico en una hoja de cálculo: en la historia, la columna «semana» cuenta desde el inicio de A1 (es negativa antes). Residuo semanal = real / pronóstico − 1; el CV es la desviación estándar de los residuos, y el p95 es el valor que solo 5% de las semanas del año supera.
         </p>
         <div class="row">
           <button type="button" onClick={csv} data-testid="download-demand">
