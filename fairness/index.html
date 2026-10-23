@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulador de Fairness</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2230; --muted:#5d6676; --line:#e1e5eb; --soft:#f0f2f6;
+  --accent:#2f5bea; --accent-ink:#ffffff;
+  --tp:#009E73; --fn:#CC79A7; --fp:#E69F00; --tn:#8e99aa;
+  --bad:#c0392b; --bad-bg:#fdecea; --good:#1a7f52; --good-bg:#e6f5ee; --neutral:#5d6676; --neutral-bg:#eef0f4;
+  --warn:#9a6a00; --warn-bg:#fff4d6;
+  --ga:#0072B2; --gb:#8a4fb0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b; --panel:#1b1f28; --ink:#e7eaf0; --muted:#9aa3b2; --line:#2d333f; --soft:#232834;
+    --accent:#7c9bff; --accent-ink:#0f1320;
+    --tn:#6c7789; --bad:#ff7b6e; --bad-bg:#3a1f1d; --good:#52d293; --good-bg:#16332a; --neutral:#a7afbd; --neutral-bg:#262b36;
+    --warn:#f2c14e; --warn-bg:#3a3018; --ga:#56B4E9; --gb:#c79bea;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151b; --panel:#1b1f28; --ink:#e7eaf0; --muted:#9aa3b2; --line:#2d333f; --soft:#232834;
+  --accent:#7c9bff; --accent-ink:#0f1320;
+  --tn:#6c7789; --bad:#ff7b6e; --bad-bg:#3a1f1d; --good:#52d293; --good-bg:#16332a; --neutral:#a7afbd; --neutral-bg:#262b36;
+  --warn:#f2c14e; --warn-bg:#3a3018; --ga:#56B4E9; --gb:#c79bea;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.hdr{display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.hdr h1{font-size:18px;margin:0}
+.hdr .sub{color:var(--muted);font-size:13px}
+.hdr .sp{flex:1}
+button,select,textarea,input{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+main{padding:16px 0 48px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+h2{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h2 .n{background:var(--accent);color:var(--accent-ink);border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+h3{font-size:14px;margin:0 0 6px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.disclaimer{font-size:12px;color:var(--muted);padding:8px 0 0}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.case-btn{text-align:left;border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:10px 12px;cursor:pointer}
+.case-btn.on{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset;background:var(--panel)}
+.case-btn b{display:block;font-size:14px}
+.case-btn span{font-size:12px;color:var(--muted)}
+.brief{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;margin-top:14px}
+.brief p{margin:0 0 8px}
+.objective{border-left:4px solid var(--accent);background:var(--soft);padding:10px 12px;border-radius:0 8px 8px 0}
+.objective q{font-style:italic}
+.note{font-size:12.5px;background:var(--warn-bg);color:var(--ink);border-radius:8px;padding:8px 10px;margin-top:8px}
+.grp{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dA{background:var(--ga)} .dB{background:var(--gb)}
+.cfg{display:grid;grid-template-columns:1fr 1.2fr;gap:20px}
+.strats{display:flex;flex-direction:column;gap:6px}
+.strats label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:8px 10px;cursor:pointer}
+.strats label.on{border-color:var(--accent);background:var(--soft)}
+.strats small{display:block;color:var(--muted);font-size:12px}
+.slider{margin:10px 0 14px}
+.slider .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.slider input[type=range]{width:100%;accent-color:var(--accent)}
+.slider .val{font-variant-numeric:tabular-nums;font-weight:700}
+.slider.disabled input{opacity:.45}
+.tag{display:inline-block;font-size:11px;border-radius:999px;padding:1px 8px;background:var(--neutral-bg);color:var(--neutral);font-weight:600;white-space:nowrap}
+.tag.bad{background:var(--bad-bg);color:var(--bad)} .tag.good{background:var(--good-bg);color:var(--good)} .tag.warn{background:var(--warn-bg);color:var(--warn)}
+.warnbox{background:var(--warn-bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:8px}
+.groups2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.gpanel{border:1px solid var(--line);border-radius:10px;padding:12px}
+.gpanel h3{display:flex;align-items:center;gap:8px;justify-content:space-between}
+table.cm{border-collapse:separate;border-spacing:4px;width:100%;font-size:13px}
+table.cm th{font-weight:600;color:var(--muted);font-size:12px;text-align:center;padding:2px}
+table.cm th.rh{text-align:right}
+table.cm td{border-radius:8px;padding:8px;text-align:center;border:2px solid transparent;transition:transform .1s}
+table.cm td .k{font-weight:700;font-size:12px}
+table.cm td .c{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+table.cm td .m{font-size:11px;opacity:.9}
+td.tp{background:color-mix(in srgb,var(--tp) 22%,transparent)} td.fn{background:color-mix(in srgb,var(--fn) 25%,transparent)}
+td.fp{background:color-mix(in srgb,var(--fp) 25%,transparent)} td.tn{background:color-mix(in srgb,var(--tn) 22%,transparent)}
+td.hl{border-color:var(--ink)!important;transform:scale(1.03)}
+.hist svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.waffle{display:grid;grid-template-columns:repeat(40,1fr);gap:2px;margin-top:8px}
+.waffle i{aspect-ratio:1;border-radius:2px;display:block}
+.formulas{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:14px}
+.fcard{border:1px solid var(--line);border-radius:10px;padding:12px;cursor:default}
+.fcard.sel{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.fcard .fair{font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.03em}
+.fcard .q{font-size:12.5px;color:var(--muted);margin:2px 0 8px}
+.eq{display:flex;align-items:center;gap:8px;font-family:"Cambria Math","Times New Roman",serif;font-size:17px;margin:6px 0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.15}
+.frac span:first-child{border-bottom:1.5px solid currentColor;padding:0 4px}
+.frac span:last-child{padding:0 4px}
+.words{font-family:"Cambria Math","Times New Roman",serif;font-size:14px;color:var(--muted)}
+.subst{font-size:13px;font-variant-numeric:tabular-nums;margin-top:6px}
+.subst div{display:flex;justify-content:space-between;gap:8px}
+.gapline{margin-top:6px;display:flex;justify-content:space-between;align-items:center;font-size:13px;border-top:1px dashed var(--line);padding-top:6px}
+.bar{height:6px;background:var(--soft);border-radius:3px;position:relative;margin-top:4px}
+.bar b{position:absolute;top:0;bottom:0;border-radius:3px}
+.imp{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:13px}
+.voices{display:flex;flex-direction:column;gap:10px}
+.msg{display:flex;gap:10px;align-items:flex-start}
+.av{flex:0 0 38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff}
+.bubble{flex:1;border:1px solid var(--line);border-radius:4px 12px 12px 12px;padding:8px 12px;background:var(--soft)}
+.bubble.bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line))}
+.bubble.good{border-color:color-mix(in srgb,var(--good) 45%,var(--line))}
+.who{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px}
+.who b{font-size:13.5px}
+.who .role{color:var(--muted)}
+.bubble p{margin:4px 0 0}
+.lens{font-size:11px;color:var(--muted);margin-top:4px}
+.two{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+.press{display:flex;flex-direction:column;gap:10px}
+.news{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel)}
+.news .outlet{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;justify-content:space-between;gap:6px}
+.news h4{font-family:Georgia,"Times New Roman",serif;font-size:17px;margin:4px 0;line-height:1.25}
+.news p{margin:0;font-size:13px;color:var(--muted)}
+.news.bad{border-left:4px solid var(--bad)} .news.good{border-left:4px solid var(--good)}
+.score{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.verdict{border-radius:10px;padding:12px 14px;margin-top:10px}
+.verdict.ok{background:var(--good-bg)} .verdict.ko{background:var(--bad-bg)}
+.verdict h3{font-size:16px}
+.verdict ul{margin:6px 0 0;padding-left:18px}
+textarea{width:100%;min-height:70px;border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--panel)}
+.log{font-size:13px;margin-top:10px}
+.log li{margin-bottom:4px}
+details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--panel);margin-bottom:12px}
+details summary{cursor:pointer;font-weight:600}
+table.tr{border-collapse:collapse;width:100%;font-size:13px;margin-top:10px}
+table.tr th,table.tr td{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+table.tr th{color:var(--muted);font-size:12px}
+.refs li{font-size:13px;margin-bottom:4px}
+.stepper{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.stepper button{flex:1;min-width:120px;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:600;color:var(--muted)}
+.stepper button .n{background:var(--soft);color:var(--muted);border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:13px}
+.stepper button.on{border-color:var(--accent);color:var(--ink);box-shadow:0 0 0 2px var(--accent) inset}
+.stepper button.on .n,.stepper button.done .n{background:var(--accent);color:var(--accent-ink)}
+.stepper button:disabled{opacity:.5;cursor:not-allowed}
+.navrow{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:4px 0 16px}
+.recap{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:10px 14px;margin-bottom:16px;font-size:13.5px}
+.recap p{margin:2px 0}
+.choice{font-size:13.5px;margin:6px 0;padding:6px 10px;border-radius:8px;background:var(--panel)}
+.brief>*,.cfg>*,.groups2>*,.two>*,.gpanel{min-width:0}
+@media (max-width:860px){
+  .brief,.cfg,.groups2,.two{grid-template-columns:1fr}
+  table.cm td .c{font-size:18px}
+}
+@media print{header{position:static} .btn{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hdr">
+    <div>
+      <h1 id="t-title"></h1>
+      <div class="sub" id="t-subtitle"></div>
+    </div>
+    <div class="sp"></div>
+    <button class="btn" id="btn-lang" type="button"></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <nav class="stepper" id="stepper" aria-label="steps">
+    <button type="button" data-scr="1"><span class="n">1</span><span id="t-nav1"></span></button>
+    <button type="button" data-scr="2"><span class="n">2</span><span id="t-nav2"></span></button>
+    <button type="button" data-scr="3"><span class="n">3</span><span id="t-nav3"></span></button>
+  </nav>
+
+  <!-- Pantalla 1: caso y explicación -->
+  <div class="screen" id="scr-1">
+    <details id="guide">
+      <summary id="t-guide"></summary>
+      <div id="guide-body"></div>
+    </details>
+    <section class="card">
+      <h2 id="t-step1"></h2>
+      <div class="cases" id="cases"></div>
+      <div class="brief" id="brief"></div>
+    </section>
+    <div class="navrow"><span></span><button class="btn primary" type="button" id="btn-next1"></button></div>
+  </div>
+
+  <!-- Pantalla 2: decisiones del alumno -->
+  <div class="screen" id="scr-2" hidden>
+    <div class="recap" id="recap2"></div>
+    <section class="card">
+      <h2 id="t-step2"></h2>
+      <div class="cfg">
+        <div>
+          <h3 id="t-strategy"></h3>
+          <div class="strats" id="strats"></div>
+        </div>
+        <div>
+          <h3 id="t-thresholds"></h3>
+          <p class="small muted" id="t-thrhelp"></p>
+          <div class="slider" id="sl-B">
+            <div class="row"><label for="in-B" id="lb-B"></label><span class="val" id="v-B"></span></div>
+            <input type="range" id="in-B" min="0" max="100" step="0.5">
+          </div>
+          <div class="slider" id="sl-A">
+            <div class="row"><label for="in-A" id="lb-A"></label><span class="val" id="v-A"></span></div>
+            <input type="range" id="in-A" min="0" max="100" step="0.5">
+          </div>
+          <div id="cfg-warn"></div>
+          <div class="imp" id="imp"></div>
+        </div>
+      </div>
+    </section>
+    <section class="card">
+      <h2 id="t-step3"></h2>
+      <div class="groups2" id="groups"></div>
+      <div class="legend" id="legend"></div>
+      <div class="formulas" id="formulas"></div>
+    </section>
+    <section class="card">
+      <h2 id="t-stepJ"></h2>
+      <p class="small muted" id="t-evalhelp"></p>
+      <label for="justif" class="small" id="t-justif"></label>
+      <textarea id="justif"></textarea>
+      <div id="justif-warn"></div>
+    </section>
+    <div class="navrow">
+      <button class="btn" type="button" id="btn-back2"></button>
+      <button class="btn primary" type="button" id="btn-deploy"></button>
+    </div>
+  </div>
+
+  <!-- Pantalla 3: resultados y conclusión -->
+  <div class="screen" id="scr-3" hidden>
+    <div class="recap" id="recap3"></div>
+    <div class="two">
+      <section class="card">
+        <h2 id="t-step4"></h2>
+        <div class="score" id="vscore"></div>
+        <div class="voices" id="voices"></div>
+      </section>
+      <section class="card">
+        <h2 id="t-step5"></h2>
+        <div class="press" id="press"></div>
+      </section>
+    </div>
+    <section class="card">
+      <h2 id="t-step6"></h2>
+      <div id="verdict"></div>
+      <h3 style="margin-top:14px" id="t-logTitle"></h3>
+      <ol class="log" id="log"></ol>
+      <button class="btn" id="btn-dl" type="button"></button>
+    </section>
+    <div class="navrow">
+      <button class="btn" type="button" id="btn-back3"></button>
+      <button class="btn primary" type="button" id="btn-other"></button>
+    </div>
+  </div>
+
+  <p class="disclaimer" id="t-disclaimer"></p>
+</main>
+
+<script>
+"use strict";
+// ---------------------------------------------------------------------------
+// Configuración general
+// ---------------------------------------------------------------------------
+const TOL = 0.03;          // brecha máxima (3 pp) para considerar una métrica "cumplida"
+const N_PER_GROUP = 1000;  // personas simuladas por grupo
+const MK = { dp: "sr", eo: "tpr", pp: "ppv" }; // estrategia -> tasa que se iguala
+
+// ---------------------------------------------------------------------------
+// Textos de interfaz
+// ---------------------------------------------------------------------------
+const UI = {
+  es: {
+    title: "Simulador de Fairness",
+    subtitle: "MT4034 · Aplicaciones, gestión y gobernanza de la IA — métricas de equidad algorítmica",
+    lang: "English",
+    guide: "Guía de la práctica, traductor de métricas y referencias",
+    nav1: "Caso", nav2: "Decisión", nav3: "Resultados",
+    step1: "Elige el caso y lee su objetivo social",
+    step2: "¿Qué métrica de equidad optimizas?",
+    step3: "Matriz de confusión y tasas por grupo",
+    stepJ: "Justifica tu decisión",
+    step4: "Voces de los participantes (simuladas)",
+    step5: "Cobertura de prensa (ficticia)",
+    step6: "Conclusión y retroalimentación",
+    next1: "Continuar: tomar la decisión →",
+    back2: "← Volver al caso",
+    deploy: "Desplegar el modelo y ver resultados →",
+    back3: "← Ajustar mi decisión",
+    other: "Elegir otro caso",
+    recapCase: "Caso: {c}",
+    recapDecision: "Tu decisión: {s} · umbrales {A} = {tA}, {B} = {tB}",
+    justifNeeded: "Escribe tu justificación antes de desplegar el modelo.",
+    yourJustif: "Tu justificación:",
+    choiceRight: "Elección de métrica: correcta. Optimizaste {m}, que es la que materializa el objetivo del caso.",
+    choiceWrong: "Elección de métrica: incorrecta. Optimizaste {s}; el objetivo del caso pedía {m}.",
+    choiceNone: "Elección de métrica: no declaraste una métrica ({s}). El caso pedía {m}.",
+    choiceManualOk: "Elección de métrica: con umbrales manuales lograste cumplir {m}, la que pide el caso.",
+    logH: "Bitácora de intentos",
+    context: "Contexto", decision: "Decisión del modelo", positive: "Positivo real", objective: "Objetivo social del caso",
+    groups: "Grupos", baseRate: "tasa base",
+    strategy: "Métrica a optimizar",
+    strat: {
+      single: ["Sin restricción (umbral único)", "El mismo umbral para ambos grupos. Ninguna métrica de equidad se fuerza."],
+      dp: ["Paridad demográfica", "Ajusta el umbral de {A} para igualar la tasa de selección (VP + FP) / N."],
+      eo: ["Igualdad de oportunidad", "Ajusta el umbral de {A} para igualar la TPR: VP / (VP + FN)."],
+      pp: ["Paridad predictiva", "Ajusta el umbral de {A} para igualar la precisión (PPV): VP / (VP + FP)."],
+      manual: ["Manual (umbrales libres)", "Mueve ambos umbrales y observa qué métrica se cumple."]
+    },
+    thresholds: "Umbrales de decisión",
+    thrhelp: "El modelo asigna un puntaje de 0 a 100 (probabilidad estimada de merecer el resultado favorable). Resultado favorable si puntaje ≥ umbral.",
+    thrB: "Umbral para {B} (grupo de referencia)",
+    thrA: "Umbral para {A}",
+    auto: "calculado para cumplir la métrica",
+    degenerate: "Solución trivial: casi todos (o casi nadie) reciben el resultado favorable. Las métricas se igualan, pero el modelo deja de discriminar entre casos.",
+    imp: "Teorema de imposibilidad: con tasas base distintas ({brA} vs {brB}), un modelo con errores no puede cumplir las tres a la vez.",
+    real: "Real", pred: "Predicción",
+    cells: { tp: "VP", fp: "FP", fn: "FN", tn: "VN" },
+    cellsLong: { tp: "Verdadero positivo", fp: "Falso positivo", fn: "Falso negativo", tn: "Verdadero negativo" },
+    histUp: "↑ {pos}", histDown: "↓ {neg}", histThr: "umbral",
+    waffle: "Cada cuadro ≈ 5 personas",
+    fRef: "Referencia de errores (no se optimiza)",
+    gap: "Brecha", met: "se cumple", notMet: "no se cumple",
+    tone: { bad: "Percibe injusticia", good: "Percibe justicia", priv: "Sin agravio" },
+    vscore: "{g} de {n} participantes perciben el sistema como justo",
+    lens: "Lente: {m}",
+    pressNone: "Sin cobertura relevante.",
+    fictional: "medio ficticio",
+    evalhelp: "Antes de desplegar, explica por qué elegiste esa métrica en términos del objetivo social del caso. En la pantalla de resultados verás cómo reaccionan los participantes y la prensa, y recibirás retroalimentación sobre tu elección.",
+    justif: "Justificación (¿qué error es más grave en este caso y para quién?)",
+    dl: "Descargar bitácora (.txt)",
+    aligned: "Alineado con el objetivo social",
+    misaligned: "Desalineado con el objetivo social",
+    lucky: "Alineado por coincidencia",
+    luckyTxt: "Con este umbral la brecha en la métrica objetivo quedó pequeña, pero tu estrategia optimiza otra métrica. Mueve el umbral de referencia: la alineación no se sostiene porque no es lo que el modelo está garantizando.",
+    targetIs: "Métrica que materializa el objetivo del caso: {m}.",
+    gapIs: "Brecha resultante en esa métrica: {g} puntos ({a} vs {b}).",
+    costs: "Costos que acepta esta configuración (métricas que se rompen):",
+    noCosts: "No se rompe ninguna otra métrica relevante.",
+    complaints: "Participantes que perciben injusticia:",
+    degenerateV: "La configuración es trivial (casi todos o casi nadie recibe el resultado favorable); la igualdad de métricas no tiene valor práctico.",
+    logEntry: "{t} · {case} · {strat} · umbrales {A}={tA}, {B}={tB} · {v}",
+    disclaimer: "Datos simulados (1,000 personas por grupo, puntajes calibrados con semilla fija). Personajes, diálogos y medios son ficticios y tienen fines didácticos; los casos se inspiran en hechos documentados citados en la guía.",
+    logTitle: "Bitácora del simulador de fairness — MT4034",
+    justifLabel: "Justificación"
+  },
+  en: {
+    title: "Fairness Simulator",
+    subtitle: "MT4034 · AI Applications, Management and Governance — algorithmic fairness metrics",
+    lang: "Español",
+    guide: "Practice guide, metric translator and references",
+    nav1: "Case", nav2: "Decision", nav3: "Results",
+    step1: "Choose the case and read its social objective",
+    step2: "Which fairness metric do you optimize?",
+    step3: "Confusion matrix and rates by group",
+    stepJ: "Justify your decision",
+    step4: "Stakeholder voices (simulated)",
+    step5: "Press coverage (fictional)",
+    step6: "Conclusion and feedback",
+    next1: "Continue: make the decision →",
+    back2: "← Back to the case",
+    deploy: "Deploy the model and see results →",
+    back3: "← Adjust my decision",
+    other: "Choose another case",
+    recapCase: "Case: {c}",
+    recapDecision: "Your decision: {s} · thresholds {A} = {tA}, {B} = {tB}",
+    justifNeeded: "Write your justification before deploying the model.",
+    yourJustif: "Your justification:",
+    choiceRight: "Metric choice: correct. You optimized {m}, which embodies the case objective.",
+    choiceWrong: "Metric choice: incorrect. You optimized {s}; the case objective called for {m}.",
+    choiceNone: "Metric choice: you did not declare a metric ({s}). The case called for {m}.",
+    choiceManualOk: "Metric choice: with manual thresholds you managed to satisfy {m}, the one the case calls for.",
+    logH: "Attempt log",
+    context: "Context", decision: "Model decision", positive: "Actual positive", objective: "Social objective of the case",
+    groups: "Groups", baseRate: "base rate",
+    strategy: "Metric to optimize",
+    strat: {
+      single: ["No constraint (single threshold)", "The same threshold for both groups. No fairness metric is enforced."],
+      dp: ["Demographic parity", "Adjusts the threshold for {A} to equalize the selection rate (TP + FP) / N."],
+      eo: ["Equal opportunity", "Adjusts the threshold for {A} to equalize the TPR: TP / (TP + FN)."],
+      pp: ["Predictive parity", "Adjusts the threshold for {A} to equalize precision (PPV): TP / (TP + FP)."],
+      manual: ["Manual (free thresholds)", "Move both thresholds and see which metric holds."]
+    },
+    thresholds: "Decision thresholds",
+    thrhelp: "The model assigns a 0–100 score (estimated probability of deserving the favorable outcome). Favorable outcome if score ≥ threshold.",
+    thrB: "Threshold for {B} (reference group)",
+    thrA: "Threshold for {A}",
+    auto: "computed to satisfy the metric",
+    degenerate: "Trivial solution: almost everyone (or almost no one) gets the favorable outcome. The metrics match, but the model no longer discriminates between cases.",
+    imp: "Impossibility theorem: with different base rates ({brA} vs {brB}), a model that makes errors cannot satisfy all three at once.",
+    real: "Actual", pred: "Prediction",
+    cells: { tp: "TP", fp: "FP", fn: "FN", tn: "TN" },
+    cellsLong: { tp: "True positive", fp: "False positive", fn: "False negative", tn: "True negative" },
+    histUp: "↑ {pos}", histDown: "↓ {neg}", histThr: "threshold",
+    waffle: "Each square ≈ 5 people",
+    fRef: "Error reference (not optimized)",
+    gap: "Gap", met: "holds", notMet: "does not hold",
+    tone: { bad: "Perceives injustice", good: "Perceives fairness", priv: "No grievance" },
+    vscore: "{g} of {n} stakeholders perceive the system as fair",
+    lens: "Lens: {m}",
+    pressNone: "No relevant coverage.",
+    fictional: "fictional outlet",
+    evalhelp: "Before deploying, explain why you chose that metric in terms of the case's social objective. On the results screen you will see how stakeholders and the press react, and you will get feedback on your choice.",
+    justif: "Justification (which error is most serious in this case, and for whom?)",
+    dl: "Download log (.txt)",
+    aligned: "Aligned with the social objective",
+    misaligned: "Misaligned with the social objective",
+    lucky: "Aligned by coincidence",
+    luckyTxt: "At this threshold the gap on the target metric happens to be small, but your strategy optimizes a different metric. Move the reference threshold: the alignment does not hold because it is not what the model guarantees.",
+    targetIs: "Metric that embodies the case objective: {m}.",
+    gapIs: "Resulting gap on that metric: {g} points ({a} vs {b}).",
+    costs: "Costs this configuration accepts (metrics that break):",
+    noCosts: "No other relevant metric breaks.",
+    complaints: "Stakeholders who perceive injustice:",
+    degenerateV: "The configuration is trivial (almost everyone or almost no one gets the favorable outcome); equal metrics have no practical value.",
+    logEntry: "{t} · {case} · {strat} · thresholds {A}={tA}, {B}={tB} · {v}",
+    disclaimer: "Simulated data (1,000 people per group, calibrated scores with a fixed seed). Characters, dialogues and outlets are fictional and for teaching purposes; the cases are inspired by documented events cited in the guide.",
+    logTitle: "Fairness simulator log — MT4034",
+    justifLabel: "Justification"
+  }
+};
+
+// Definición de las tasas (convención del curso: VP, FP, FN, VN)
+const METRICS = {
+  sr:  { cells: ["tp", "fp"], num: ["tp", "fp"], den: ["n"],
+         es: { fair: "Paridad demográfica", name: "Tasa de selección", q: "¿Cada grupo recibe el resultado favorable en la misma proporción?", words: "P(favorable | grupo)" },
+         en: { fair: "Demographic parity", name: "Selection rate", q: "Does each group receive the favorable outcome at the same rate?", words: "P(favorable | group)" } },
+  tpr: { cells: ["tp", "fn"], num: ["tp"], den: ["tp", "fn"],
+         es: { fair: "Igualdad de oportunidad", name: "Tasa de verdaderos positivos (TPR)", q: "¿Quienes sí lo merecen tienen la misma probabilidad de obtenerlo?", words: "P(favorable | merece, grupo)" },
+         en: { fair: "Equal opportunity", name: "True positive rate (TPR)", q: "Do those who deserve it have the same chance of getting it?", words: "P(favorable | deserves, group)" } },
+  ppv: { cells: ["tp", "fp"], num: ["tp"], den: ["tp", "fp"],
+         es: { fair: "Paridad predictiva", name: "Precisión (PPV)", q: "¿Una decisión favorable significa lo mismo en cada grupo?", words: "P(merece | favorable, grupo)" },
+         en: { fair: "Predictive parity", name: "Precision (PPV)", q: "Does a favorable decision mean the same thing in each group?", words: "P(deserves | favorable, group)" } },
+  fpr: { cells: ["fp", "tn"], num: ["fp"], den: ["fp", "tn"],
+         es: { fair: "Referencia", name: "Tasa de falsos positivos (FPR)", q: "¿Quien no lo merece lo recibe con la misma frecuencia en cada grupo?", words: "P(favorable | no merece, grupo)" },
+         en: { fair: "Reference", name: "False positive rate (FPR)", q: "Does someone who doesn't deserve it get it equally often in each group?", words: "P(favorable | does not deserve, group)" } }
+};
+
+// ---------------------------------------------------------------------------
+// Casos. Convención del simulador: "positivo" = merece el resultado favorable.
+// Cada persona tiene una "lente": la tasa a través de la cual vive la decisión.
+//   - group: la persona compara su grupo contra el otro (bad / good / priv)
+//   - sin group: rol institucional, reacciona a la brecha absoluta
+//   - lentes personalizadas (safety, capacity, default, impact): ver `custom`
+// ---------------------------------------------------------------------------
+const CASES = [
+{
+  id: "compas", seed: 11, sd: 1.4, tB: 60,
+  groups: {
+    A: { base: 0.48, bias: 0, es: { name: "Afroamericanos", pl: "acusados afroamericanos" }, en: { name: "Black defendants", pl: "Black defendants" } },
+    B: { base: 0.61, bias: 0, es: { name: "Blancos", pl: "acusados blancos" }, en: { name: "White defendants", pl: "white defendants" } }
+  },
+  objective: "eo",
+  custom: { safety: (R) => ({ bad: R.T.fprAll > 0.25, sev: R.T.fprAll - 0.25 }) },
+  es: {
+    title: "Libertad previa al juicio", tag: "Justicia penal · inspirado en COMPAS (ProPublica, 2016)",
+    context: "Un tribunal de condado usa un puntaje de riesgo para decidir quién espera su juicio en libertad. En 2016, ProPublica analizó el algoritmo COMPAS en Broward, Florida: el proveedor (Northpointe) sostenía que el puntaje estaba calibrado —un mismo puntaje implicaba un riesgo similar en ambos grupos—, pero entre quienes no reincidieron, los acusados afroamericanos habían sido marcados como de alto riesgo casi al doble de la tasa de los blancos.",
+    decision: "LIBERAR (resultado favorable) o DETENER hasta el juicio.",
+    positive: "La persona NO reincide en dos años (merece la libertad).",
+    objectiveTxt: "La Corte Suprema estatal establece: «Ninguna persona que no va a reincidir debe perder su libertad por su raza. Encarcelar a quien no reincidiría es el error más grave que puede cometer este sistema».",
+    note: "Convención: aquí «positivo» = no reincide. En la lámina del curso el positivo es «reincide»; igualar la TPR de este simulador equivale a igualar la tasa de falsos positivos de la lámina (los marcados como alto riesgo que no reinciden).",
+    labels: { posReal: "No reincide", negReal: "Reincide", posPred: "Liberar", negPred: "Detener" }
+  },
+  en: {
+    title: "Pretrial release", tag: "Criminal justice · inspired by COMPAS (ProPublica, 2016)",
+    context: "A county court uses a risk score to decide who awaits trial at liberty. In 2016, ProPublica analyzed the COMPAS algorithm in Broward County, Florida: the vendor (Northpointe) argued the score was calibrated —the same score implied similar risk in both groups— but among people who did not reoffend, Black defendants had been labeled high risk at almost twice the rate of white defendants.",
+    decision: "RELEASE (favorable outcome) or DETAIN until trial.",
+    positive: "The person does NOT reoffend within two years (deserves release).",
+    objectiveTxt: "The state Supreme Court rules: “No person who would not reoffend should lose their liberty because of their race. Jailing someone who would not reoffend is the gravest error this system can make.”",
+    note: "Convention: here “positive” = does not reoffend. In the course slides the positive is “reoffends”; equalizing this simulator's TPR is equivalent to equalizing the slides' false positive rate (people labeled high risk who do not reoffend).",
+    labels: { posReal: "Does not reoffend", negReal: "Reoffends", posPred: "Release", negPred: "Detain" }
+  },
+  personas: [
+    { name: "Darnell W.", init: "DW", group: "A", lens: "tpr",
+      extra: { lens: "fpr" },
+      es: { role: "Acusado afroamericano · no reincidió",
+        bad: "Yo no volví a delinquir y aun así me dejaron preso. De los afroamericanos que no reincidimos liberan al {tprA}; de los blancos, al {tprB}. A nosotros nunca nos sueltan.",
+        good: "Por fin: si no vas a reincidir, tu oportunidad de salir libre es la misma que la de un blanco ({tprA} vs {tprB}). Es lo mínimo que pedíamos.",
+        priv: "Esta vez no me quejo: a los nuestros que no reinciden los liberan un poco más ({tprA} vs {tprB}).",
+        extra: " Y a los blancos los sueltan aunque vuelvan a delinquir: salió libre el {fprB} de los blancos que reincidieron, contra el {fprA} de los nuestros." },
+      en: { role: "Black defendant · did not reoffend",
+        bad: "I never reoffended and they still kept me locked up. Of Black defendants who don't reoffend, {tprA} get released; of white defendants, {tprB}. They never let us out.",
+        good: "Finally: if you're not going to reoffend, your chance of walking out is the same as a white defendant's ({tprA} vs {tprB}). That's the least we asked for.",
+        priv: "No complaints this time: those of us who don't reoffend are released a bit more often ({tprA} vs {tprB}).",
+        extra: " And they let white defendants out even when they go on to reoffend: {fprB} of white reoffenders walked free, versus {fprA} of ours." } },
+    { name: "Brad K.", init: "BK", group: "B", lens: "tpr",
+      es: { role: "Acusado blanco · no reincidió",
+        bad: "Nunca he reincidido y me negaron la libertad. Sueltan al {tprA} de los afroamericanos que no reinciden y solo al {tprB} de nosotros. ¿Ahora te castigan por ser blanco?",
+        good: "Me midieron con la misma vara que a todos: quienes no reincidimos salimos en la misma proporción ({tprB} vs {tprA}).",
+        priv: "A mí me soltaron rápido; mi abogado dice que con mi puntaje es casi automático." },
+      en: { role: "White defendant · did not reoffend",
+        bad: "I've never reoffended and they denied me release. They let out {tprA} of Black defendants who don't reoffend and only {tprB} of us. So now you get punished for being white?",
+        good: "They measured me with the same yardstick as everyone: those of us who don't reoffend are released at the same rate ({tprB} vs {tprA}).",
+        priv: "They let me out fast; my lawyer says with my score it's almost automatic." } },
+    { name: "Jueza Elena Martínez", init: "EM", group: null, lens: "ppv",
+      es: { role: "Jueza de audiencias",
+        bad: "Cuando el sistema recomienda liberar, con un acusado blanco acierta el {ppvB} de las veces y con uno afroamericano el {ppvA}. Si la misma recomendación no significa lo mismo, ¿cómo la defiendo en audiencia?",
+        good: "Una recomendación de libertad significa lo mismo para cualquier acusado: no reincide el {ppvA} y el {ppvB}. Puedo leer el puntaje igual para todos." },
+      en: { name: "Judge Elena Martínez", role: "Trial court judge",
+        bad: "When the system recommends release, it is right {ppvB} of the time for a white defendant and {ppvA} for a Black defendant. If the same recommendation doesn't mean the same thing, how do I defend it in court?",
+        good: "A release recommendation means the same for any defendant: {ppvA} and {ppvB} do not reoffend. I can read the score the same way for everyone." } },
+    { name: "Marta Ruiz", init: "MR", group: null, lens: "safety",
+      es: { role: "Vocera, Asociación de Víctimas",
+        bad: "Se liberó a {fpAll} personas que volvieron a delinquir: el {fprAll} de todos los reincidentes salió libre. Alguien tiene que responder a las víctimas.",
+        good: "Liberados que reincidieron: {fpAll} ({fprAll} de los reincidentes). Vigilamos, pero el sistema no está soltando a cualquiera." },
+      en: { role: "Spokesperson, Victims' Association",
+        bad: "{fpAll} people who went on to reoffend were released: {fprAll} of all reoffenders walked free. Someone has to answer to the victims.",
+        good: "Released people who reoffended: {fpAll} ({fprAll} of reoffenders). We're watching, but the system isn't letting just anyone out." } },
+    { name: "Keisha J.", init: "KJ", group: null, lens: "sr",
+      es: { role: "Coordinadora, ONG de derechos civiles",
+        bad: "El condado libera al {xhi} de los {hi_pl} y solo al {xlo} de los {lo_pl}. Una brecha de {gap} puntos en libertad es una brecha racial, la mires como la mires.",
+        good: "Las tasas de liberación ya son parecidas ({srA} vs {srB}). Ahora hay que vigilar que se sostenga." },
+      en: { role: "Coordinator, civil rights NGO",
+        bad: "The county releases {xhi} of {hi_pl} and only {xlo} of {lo_pl}. A {gap}-point gap in liberty is a racial gap, however you slice it.",
+        good: "Release rates are now similar ({srA} vs {srB}). Now we have to make sure it lasts." } }
+  ],
+  press: [
+    { lens: "tpr", kind: "bad", outlet: "La Gaceta del Condado",
+      es: { h: "Algoritmo judicial deja en prisión a {lo_pl} que no reincidirían", s: "Entre quienes no vuelven a delinquir, sale libre el {xhi} de los {hi_pl} y solo el {xlo} de los {lo_pl}: una brecha de {gap} puntos." },
+      en: { h: "Court algorithm keeps {lo_pl} who would not reoffend behind bars", s: "Among those who do not reoffend, {xhi} of {hi_pl} are released but only {xlo} of {lo_pl}: a {gap}-point gap." } },
+    { lens: "fpr", kind: "bad", outlet: "Pulso Digital",
+      es: { h: "Los {hi_pl} que reinciden salen libres con más frecuencia", s: "El {xhi} de los {hi_pl} que reincidieron había sido liberado, contra el {xlo} de los {lo_pl}." },
+      en: { h: "{hi_pl} who reoffend are released more often", s: "{xhi} of {hi_pl} who reoffended had been released, versus {xlo} of {lo_pl}." } },
+    { lens: "ppv", kind: "bad", outlet: "Crónica Tribunal",
+      es: { h: "Jueces cuestionan el puntaje: «liberar» no significa lo mismo para todos", s: "Entre los liberados, no reincide el {xhi} en un grupo y el {xlo} en el otro." },
+      en: { h: "Judges question the score: “release” doesn't mean the same for everyone", s: "Among those released, {xhi} in one group do not reoffend versus {xlo} in the other." } },
+    { lens: "sr", kind: "bad", outlet: "Voz Ciudadana",
+      es: { h: "Brecha racial en las liberaciones: {xhi} contra {xlo}", s: "Organizaciones civiles exigen explicar por qué el condado libera a {hi_pl} en mayor proporción." },
+      en: { h: "Racial gap in releases: {xhi} versus {xlo}", s: "Civil society groups demand to know why the county releases {hi_pl} at a higher rate." } },
+    { lens: "safety", kind: "bad", outlet: "Noticias 24",
+      es: { h: "Liberados por el algoritmo reincidieron: {fpAll} casos", s: "La Asociación de Víctimas pide suspender el sistema: salió libre el {fprAll} de los reincidentes." },
+      en: { h: "People released by the algorithm reoffended: {fpAll} cases", s: "The Victims' Association asks to suspend the system: {fprAll} of reoffenders were released." } },
+    { lens: "tpr", kind: "good", outlet: "La Gaceta del Condado",
+      es: { h: "Corte celebra: quien no reincidirá tiene la misma probabilidad de libertad, sin importar su raza", s: "La tasa de liberación entre quienes no reinciden es {tprA} ({A}) y {tprB} ({B})." },
+      en: { h: "Court hails result: those who won't reoffend have the same chance of release regardless of race", s: "The release rate among those who do not reoffend is {tprA} ({A}) and {tprB} ({B})." } }
+  ],
+  fb: {
+    es: {
+      eo: "La Corte define la justicia por el error que hay que evitar entre quienes merecen el resultado favorable: que una persona que no reincidiría pierda su libertad. Igualdad de oportunidad iguala P(liberado | no reincide) entre grupos. Es la elección típica en justicia penal, donde el falso positivo de la lámina (marcar como peligroso a quien no lo es) causa daño directo. Costo: con tasas base distintas se rompen la paridad predictiva y la demográfica, y suele aumentar el número de reincidentes liberados; esos costos deben gestionarse (supervisión, medidas cautelares), no ignorarse.",
+      pp: "Es la defensa de Northpointe: una recomendación «significa lo mismo» en ambos grupos. Pero con tasas base distintas, la calibración obliga a que los errores recaigan sobre el grupo con mayor tasa de reincidencia observada: los afroamericanos que no reinciden son detenidos con más frecuencia y los blancos que reinciden salen más. Es exactamente el hallazgo de ProPublica y no responde a la pregunta de la Corte.",
+      dp: "Igualar las tasas de liberación ignora que las tasas base observadas difieren. No garantiza que quienes no reincidirían tengan la misma probabilidad de salir, y puede liberar a muchos más reincidentes en un grupo. Es una meta de distribución agregada, no la que fija la Corte."
+    },
+    en: {
+      eo: "The Court defines fairness by the error to avoid among those who deserve the favorable outcome: someone who would not reoffend losing their liberty. Equal opportunity equalizes P(released | does not reoffend) across groups. It is the typical choice in criminal justice, where the slides' false positive (labeling a harmless person as dangerous) causes direct harm. Cost: with different base rates, predictive and demographic parity break, and the number of released reoffenders usually rises; those costs must be managed (supervision, conditions), not ignored.",
+      pp: "This is Northpointe's defense: a recommendation “means the same” in both groups. But with different base rates, calibration forces errors onto the group with the higher observed reoffense rate: Black defendants who would not reoffend are detained more often and white reoffenders are released more often. That is exactly ProPublica's finding, and it does not answer the Court's question.",
+      dp: "Equalizing release rates ignores that observed base rates differ. It does not guarantee that people who would not reoffend have the same chance of release, and it may release many more reoffenders in one group. It is an aggregate distribution goal, not the one set by the Court."
+    }
+  }
+},
+{
+  id: "salud", seed: 21, sd: 1.1, tB: 30, cap: 650,
+  groups: {
+    A: { base: 0.40, bias: -1.3, es: { name: "Pacientes rurales", pl: "pacientes rurales" }, en: { name: "Rural patients", pl: "rural patients" } },
+    B: { base: 0.22, bias: 0, es: { name: "Pacientes urbanos", pl: "pacientes urbanos" }, en: { name: "Urban patients", pl: "urban patients" } }
+  },
+  objective: "eo",
+  custom: { capacity: (R, c) => ({ bad: R.T.sel > c.cap, sev: (R.T.sel - c.cap) / c.cap }) },
+  es: {
+    title: "Programa de cuidado para pacientes crónicos", tag: "Salud · inspirado en Obermeyer et al. (2019)",
+    context: "Una red hospitalaria pública asigna lugares en un programa de seguimiento intensivo para pacientes crónicos. Obermeyer et al. (2019) documentaron que un algoritmo comercial usaba el gasto médico como sustituto de la necesidad y por eso detectaba menos a pacientes negros igual de enfermos. Aquí ocurre algo análogo: los pacientes rurales gastan menos por falta de acceso, de modo que el puntaje subestima su necesidad, aunque su prevalencia de necesidad alta es mayor.",
+    decision: "INSCRIBIR en el programa (resultado favorable) o NO inscribir.",
+    positive: "El paciente realmente tiene necesidad alta de cuidado.",
+    objectiveTxt: "La Secretaría de Salud fija: «Todo paciente con necesidad alta debe tener la misma probabilidad de entrar al programa, viva donde viva. Dejar fuera a quien lo necesita es el error más caro: termina en hospitalizaciones evitables». El presupuesto alcanza para unos 650 lugares.",
+    note: "El puntaje está sesgado contra los pacientes rurales (proxy de gasto). Observa qué ocurre con un umbral único.",
+    labels: { posReal: "Necesidad alta", negReal: "Necesidad baja", posPred: "Inscribir", negPred: "No inscribir" }
+  },
+  en: {
+    title: "Chronic care program", tag: "Health · inspired by Obermeyer et al. (2019)",
+    context: "A public hospital network allocates places in an intensive follow-up program for chronic patients. Obermeyer et al. (2019) documented that a commercial algorithm used medical spending as a proxy for need and therefore detected fewer equally sick Black patients. Something analogous happens here: rural patients spend less because of poor access, so the score underestimates their need, even though their prevalence of high need is greater.",
+    decision: "ENROLL in the program (favorable outcome) or DO NOT enroll.",
+    positive: "The patient truly has high care needs.",
+    objectiveTxt: "The Health Ministry states: “Every patient with high needs must have the same chance of entering the program, wherever they live. Leaving out someone who needs it is the costliest error: it ends in avoidable hospitalizations.” The budget covers about 650 places.",
+    note: "The score is biased against rural patients (spending proxy). Watch what happens with a single threshold.",
+    labels: { posReal: "High need", negReal: "Low need", posPred: "Enroll", negPred: "Do not enroll" }
+  },
+  personas: [
+    { name: "Rosa Hernández", init: "RH", group: "A", lens: "tpr", extra: { lens: "fpr" },
+      es: { role: "Paciente rural con diabetes descompensada",
+        bad: "Estoy igual de enferma que mi prima de la ciudad y a ella sí la metieron al programa. De los pacientes del campo que lo necesitamos entra el {tprA}; de la ciudad, el {tprB}.",
+        good: "Me dijeron que, si lo necesitas, entras igual vengas del rancho o de la ciudad ({tprA} vs {tprB}). Ya tengo mi primera cita.",
+        priv: "A mí me dieron lugar pronto. Ojalá a todos los que lo necesitan.",
+        extra: " Y en la ciudad meten hasta a quien no lo necesita: entra el {fprB} de los que están bien, aquí el {fprA}." },
+      en: { role: "Rural patient with uncontrolled diabetes",
+        bad: "I'm just as sick as my cousin in the city and she got into the program. Of us country patients who need it, {tprA} get in; in the city, {tprB}.",
+        good: "They told me that if you need it, you get in the same whether you're from a village or the city ({tprA} vs {tprB}). I already have my first appointment.",
+        priv: "I got a place quickly. I hope everyone who needs it does too.",
+        extra: " And in the city they enroll even people who don't need it: {fprB} of those who are fine get in, here {fprA}." } },
+    { name: "Javier Ortega", init: "JO", group: "B", lens: "tpr",
+      es: { role: "Paciente urbano con insuficiencia cardiaca",
+        bad: "Necesito el programa y me dejaron fuera. Entra el {tprA} de los pacientes rurales que lo necesitan y solo el {tprB} de los urbanos. ¿Vivir en la ciudad me quita el derecho?",
+        good: "Me trataron como a cualquiera que lo necesita, sin importar dónde vivo ({tprB} vs {tprA}).",
+        priv: "Entré sin problema al programa." },
+      en: { role: "Urban patient with heart failure",
+        bad: "I need the program and they left me out. {tprA} of rural patients who need it get in and only {tprB} of urban ones. Does living in the city take away my right?",
+        good: "They treated me like anyone else who needs it, regardless of where I live ({tprB} vs {tprA}).",
+        priv: "I got into the program without any trouble." } },
+    { name: "Dra. Laura Ibarra", init: "LI", group: null, lens: "ppv",
+      es: { role: "Directora médica",
+        bad: "De los pacientes que el algoritmo inscribe, realmente lo necesita el {xhi} en un grupo y solo el {xlo} en el otro. Cada lugar mal asignado le falta a alguien.",
+        good: "Un «inscrito» significa lo mismo en ambos grupos ({ppvA} vs {ppvB}): los lugares se usan con el mismo criterio clínico." },
+      en: { name: "Dr. Laura Ibarra", role: "Medical director",
+        bad: "Of the patients the algorithm enrolls, {xhi} truly need it in one group and only {xlo} in the other. Every misallocated place is missing for someone else.",
+        good: "An “enrolled” patient means the same in both groups ({ppvA} vs {ppvB}): places are used with the same clinical criterion." } },
+    { name: "Andrés Salgado", init: "AS", group: null, lens: "capacity",
+      es: { role: "Director de finanzas del hospital",
+        bad: "Inscribimos a {sel} pacientes y el presupuesto alcanza para {cap}. O conseguimos más recursos o el programa colapsa.",
+        good: "Inscritos: {sel} de {cap} lugares disponibles. El programa es sostenible." },
+      en: { role: "Hospital finance director",
+        bad: "We enrolled {sel} patients and the budget covers {cap}. Either we find more resources or the program collapses.",
+        good: "Enrolled: {sel} of {cap} available places. The program is sustainable." } },
+    { name: "Patricia Lomelí", init: "PL", group: null, lens: "sr",
+      es: { role: "Comité ciudadano de usuarios",
+        bad: "El programa inscribe al {xhi} de los {hi_pl} y solo al {xlo} de los {lo_pl}. Si los recursos son públicos, ¿por qué no se reparten igual?",
+        good: "La proporción de inscritos es similar en el campo y en la ciudad ({srA} vs {srB})." },
+      en: { role: "Citizen users' committee",
+        bad: "The program enrolls {xhi} of {hi_pl} and only {xlo} of {lo_pl}. If the resources are public, why aren't they shared equally?",
+        good: "The share of enrolled patients is similar in the countryside and the city ({srA} vs {srB})." } }
+  ],
+  press: [
+    { lens: "tpr", kind: "bad", outlet: "Salud Pública Hoy",
+      es: { h: "Algoritmo de salud deja fuera a {lo_pl} que sí necesitaban atención", s: "Entre los pacientes con necesidad alta, entra el {xhi} de los {hi_pl} y solo el {xlo} de los {lo_pl}." },
+      en: { h: "Health algorithm leaves out {lo_pl} who did need care", s: "Among high-need patients, {xhi} of {hi_pl} get in but only {xlo} of {lo_pl}." } },
+    { lens: "ppv", kind: "bad", outlet: "El Faro Médico",
+      es: { h: "Lugares del programa se van a pacientes que no los necesitaban", s: "Entre los inscritos, tiene necesidad alta el {xhi} de un grupo y apenas el {xlo} del otro." },
+      en: { h: "Program places go to patients who did not need them", s: "Among enrolled patients, {xhi} in one group have high needs versus just {xlo} in the other." } },
+    { lens: "sr", kind: "bad", outlet: "Diario Regional",
+      es: { h: "Polémica por el reparto del programa: {xhi} contra {xlo}", s: "Usuarios denuncian que los {lo_pl} acceden en menor proporción." },
+      en: { h: "Controversy over program allocation: {xhi} versus {xlo}", s: "Users complain that {lo_pl} get access at a lower rate." } },
+    { lens: "capacity", kind: "bad", outlet: "Finanzas Públicas",
+      es: { h: "Programa saturado: {sel} inscritos para {cap} lugares", s: "La dirección financiera advierte que el modelo excede el presupuesto." },
+      en: { h: "Program overloaded: {sel} enrolled for {cap} places", s: "The finance office warns the model exceeds the budget." } },
+    { lens: "tpr", kind: "good", outlet: "Salud Pública Hoy",
+      es: { h: "Acceso equitativo: quien lo necesita entra, viva donde viva", s: "Entre pacientes con necesidad alta, entra el {tprA} de los rurales y el {tprB} de los urbanos." },
+      en: { h: "Equitable access: those who need it get in, wherever they live", s: "Among high-need patients, {tprA} of rural and {tprB} of urban patients get in." } }
+  ],
+  fb: {
+    es: {
+      eo: "El objetivo define el error más caro: dejar fuera a quien sí necesita el programa (falso negativo). Igualdad de oportunidad iguala P(inscrito | necesidad alta). Con el puntaje sesgado por el proxy de gasto, el umbral único deja fuera a muchos pacientes rurales; igualar la TPR lo corrige. Costo: se inscribe una proporción mayor de pacientes rurales (paridad demográfica rota) y la precisión difiere. Revisa también la capacidad: puedes subir el umbral de referencia y conservar la igualdad.",
+      pp: "Igualar la precisión protege el uso eficiente de los lugares, pero no responde al objetivo de acceso para quien lo necesita. Con prevalencias distintas y un puntaje sesgado, puede producir inscripciones muy desiguales y exceder la capacidad.",
+      dp: "Repartir los lugares en la misma proporción ignora que la necesidad no es igual: los pacientes rurales tienen mayor prevalencia de necesidad alta, así que la paridad demográfica deja fuera a muchos que sí lo necesitan."
+    },
+    en: {
+      eo: "The objective defines the costliest error: leaving out someone who does need the program (false negative). Equal opportunity equalizes P(enrolled | high need). With the score biased by the spending proxy, a single threshold leaves many rural patients out; equalizing TPR corrects that. Cost: a larger share of rural patients is enrolled (demographic parity breaks) and precision differs. Also check capacity: you can raise the reference threshold and keep equality.",
+      pp: "Equalizing precision protects efficient use of places, but it does not address the objective of access for those who need it. With different prevalences and a biased score, it can produce very unequal enrollment and exceed capacity.",
+      dp: "Allocating places at the same rate ignores that need is not equal: rural patients have a higher prevalence of high need, so demographic parity leaves out many who do need it."
+    }
+  }
+},
+{
+  id: "credito", seed: 31, sd: 1.0, tB: 75,
+  groups: {
+    A: { base: 0.68, bias: 0, es: { name: "Trabajadores informales", pl: "trabajadores informales" }, en: { name: "Informal workers", pl: "informal workers" } },
+    B: { base: 0.85, bias: 0, es: { name: "Trabajadores formales", pl: "trabajadores formales" }, en: { name: "Formal workers", pl: "formal workers" } }
+  },
+  objective: "pp",
+  custom: { default: (R) => ({ bad: R.T.defRate > 0.14, sev: R.T.defRate - 0.14 }) },
+  es: {
+    title: "Microcréditos para negocios", tag: "Crédito · fintech",
+    context: "Una fintech mexicana otorga microcréditos con un modelo de puntaje y un único producto con la misma tasa de interés para todos. El consejo y el supervisor financiero exigen que el puntaje se pueda auditar con un solo significado: que una aprobación represente el mismo riesgo en cualquier segmento.",
+    decision: "APROBAR el crédito (resultado favorable) o RECHAZAR.",
+    positive: "El solicitante paga el crédito completo.",
+    objectiveTxt: "El consejo y el supervisor establecen: «Un aprobado debe significar la misma probabilidad de pago en cualquier segmento. Solo así la tasa única es justa —ningún segmento subsidia a otro— y el puntaje se puede explicar y auditar». Los fondeadores retiran recursos si la morosidad supera 14%.",
+    note: "Las metas de inclusión financiera son legítimas, pero en este caso el mandato se refiere al significado del puntaje.",
+    labels: { posReal: "Paga", negReal: "No paga", posPred: "Aprobar", negPred: "Rechazar" }
+  },
+  en: {
+    title: "Small-business microloans", tag: "Credit · fintech",
+    context: "A Mexican fintech grants microloans with a scoring model and a single product with the same interest rate for everyone. The board and the financial supervisor require that the score can be audited with a single meaning: an approval must represent the same risk in any segment.",
+    decision: "APPROVE the loan (favorable outcome) or REJECT.",
+    positive: "The applicant repays the loan in full.",
+    objectiveTxt: "The board and the supervisor state: “An approval must mean the same probability of repayment in any segment. Only then is the single rate fair —no segment subsidizes another— and the score can be explained and audited.” Funders withdraw if defaults exceed 14%.",
+    note: "Financial inclusion goals are legitimate, but in this case the mandate concerns the meaning of the score.",
+    labels: { posReal: "Repays", negReal: "Defaults", posPred: "Approve", negPred: "Reject" }
+  },
+  personas: [
+    { name: "Lupita Torres", init: "LT", group: "A", lens: "tpr",
+      es: { role: "Comerciante informal · siempre ha pagado",
+        bad: "Llevo diez años pagando mis tandas y mi crédito de mercancía a tiempo, y me lo negaron. De los informales que sí pagamos aprueban al {tprA}; de los asalariados, al {tprB}.",
+        good: "Si pagas, te aprueban casi igual que a un asalariado ({tprA} vs {tprB}). Por fin cuenta mi historial.",
+        priv: "Me aprobaron a la primera." },
+      en: { role: "Informal vendor · always repaid",
+        bad: "I've paid my savings circles and my merchandise credit on time for ten years, and they turned me down. Of informal workers who do repay, {tprA} get approved; of salaried workers, {tprB}.",
+        good: "If you repay, you get approved almost like a salaried worker ({tprA} vs {tprB}). My track record finally counts.",
+        priv: "I was approved on the first try." } },
+    { name: "Ricardo Peña", init: "RP", group: "B", lens: "tpr",
+      es: { role: "Empleado formal · buen pagador",
+        bad: "Tengo nómina y nunca me he atrasado, y me rechazaron. Aprueban al {tprA} de los informales que pagan y al {tprB} de nosotros.",
+        good: "Me evaluaron igual que a cualquiera que paga ({tprB} vs {tprA}).",
+        priv: "Con mi recibo de nómina me aprobaron en minutos." },
+      en: { role: "Salaried employee · good payer",
+        bad: "I'm on payroll and have never been late, and they rejected me. They approve {tprA} of informal workers who repay and {tprB} of us.",
+        good: "They assessed me like anyone else who repays ({tprB} vs {tprA}).",
+        priv: "With my payslip I was approved in minutes." } },
+    { name: "Sofía Garza", init: "SG", group: null, lens: "ppv",
+      es: { role: "Directora de riesgos",
+        bad: "Entre los aprobados, paga el {xhi} de los {hi_pl} y el {xlo} de los {lo_pl}. Con una sola tasa de interés, un segmento subsidia al otro y no puedo justificarlo ante el comité ni ante el supervisor.",
+        good: "Un «aprobado» significa la misma probabilidad de pago en ambos segmentos ({ppvA} vs {ppvB}). Puedo cobrar la misma tasa y defenderla." },
+      en: { role: "Chief risk officer",
+        bad: "Among approved applicants, {xhi} of {hi_pl} repay versus {xlo} of {lo_pl}. With a single interest rate, one segment subsidizes the other and I can't justify it to the committee or the supervisor.",
+        good: "An “approval” means the same probability of repayment in both segments ({ppvA} vs {ppvB}). I can charge the same rate and defend it." } },
+    { name: "Fondo Andino", init: "FA", group: null, lens: "default",
+      es: { role: "Fondeador institucional",
+        bad: "La morosidad de la cartera nueva es de {defRate}. Por encima de 14% retiramos el fondeo.",
+        good: "Morosidad de {defRate}: dentro de nuestro apetito de riesgo." },
+      en: { name: "Andino Fund", role: "Institutional funder",
+        bad: "Default on the new portfolio is {defRate}. Above 14% we withdraw funding.",
+        good: "Default of {defRate}: within our risk appetite." } },
+    { name: "Carmen Ávila", init: "CA", group: null, lens: "sr",
+      es: { role: "Red de Inclusión Financiera (ONG)",
+        bad: "Solo el {xlo} de los {lo_pl} obtiene crédito, frente al {xhi} de los {hi_pl}. Así se perpetúa la exclusión financiera.",
+        good: "El acceso al crédito es similar entre segmentos ({srA} vs {srB})." },
+      en: { role: "Financial Inclusion Network (NGO)",
+        bad: "Only {xlo} of {lo_pl} get credit, versus {xhi} of {hi_pl}. That is how financial exclusion perpetuates itself.",
+        good: "Access to credit is similar across segments ({srA} vs {srB})." } }
+  ],
+  press: [
+    { lens: "ppv", kind: "bad", outlet: "Finanzas Abiertas",
+      es: { h: "En la fintech, un «aprobado» no vale igual en todos los segmentos", s: "Entre los aprobados paga el {xhi} de los {hi_pl} y el {xlo} de los {lo_pl}; analistas advierten subsidios cruzados." },
+      en: { h: "At the fintech, an “approval” isn't worth the same in every segment", s: "Among approved applicants, {xhi} of {hi_pl} repay versus {xlo} of {lo_pl}; analysts warn of cross-subsidies." } },
+    { lens: "default", kind: "bad", outlet: "Mercados Hoy",
+      es: { h: "Morosidad de {defRate} enciende alertas entre fondeadores", s: "El fondeo de la fintech podría retirarse si la cartera no se corrige." },
+      en: { h: "{defRate} default rate sets off alarms among funders", s: "The fintech's funding could be withdrawn if the portfolio is not corrected." } },
+    { lens: "tpr", kind: "bad", outlet: "Pulso Digital",
+      es: { h: "Buenos pagadores rechazados: la fintech aprueba al {xlo} de los {lo_pl} cumplidos", s: "Entre quienes sí pagan, se aprueba al {xhi} de los {hi_pl}." },
+      en: { h: "Good payers rejected: the fintech approves {xlo} of reliable {lo_pl}", s: "Among those who do repay, {xhi} of {hi_pl} are approved." } },
+    { lens: "sr", kind: "bad", outlet: "Voz Ciudadana",
+      es: { h: "Exclusión financiera: solo el {xlo} de los {lo_pl} obtiene crédito", s: "Frente al {xhi} de los {hi_pl}, según datos del propio modelo." },
+      en: { h: "Financial exclusion: only {xlo} of {lo_pl} get credit", s: "Versus {xhi} of {hi_pl}, according to the model's own data." } },
+    { lens: "ppv", kind: "good", outlet: "Finanzas Abiertas",
+      es: { h: "Supervisor valida el modelo: un aprobado significa lo mismo en todos los segmentos", s: "La probabilidad de pago entre aprobados es {ppvA} y {ppvB}." },
+      en: { h: "Supervisor validates the model: an approval means the same in all segments", s: "The repayment probability among approved applicants is {ppvA} and {ppvB}." } }
+  ],
+  fb: {
+    es: {
+      pp: "El mandato es que el puntaje conserve su significado: P(paga | aprobado) igual entre segmentos. Paridad predictiva es la elección típica en crédito y seguros, donde la decisión depende de confiar en el puntaje y la tasa única solo es justa si el riesgo aprobado es el mismo. Costo: los informales que sí pagan se aprueban con menor frecuencia (igualdad de oportunidad rota) y su acceso es menor (paridad demográfica rota). Ese costo debe atenderse con otros instrumentos (productos para construir historial, datos alternativos), no deformando el significado del puntaje.",
+      eo: "Igualar la aprobación de los buenos pagadores es una meta valiosa de inclusión, pero el «aprobado» informal y el formal dejan de significar lo mismo: con tasa única, la cartera de un segmento subsidia a la del otro y la morosidad sube. No es lo que piden el consejo y el supervisor.",
+      dp: "Igualar el acceso obliga a aprobar informales con menor probabilidad de pago (o a rechazar formales solventes); el puntaje pierde significado y la morosidad sube. Es una meta de inclusión, no la que fija este caso."
+    },
+    en: {
+      pp: "The mandate is for the score to keep its meaning: P(repays | approved) equal across segments. Predictive parity is the typical choice in credit and insurance, where the decision depends on trusting the score and a single rate is only fair if the approved risk is the same. Cost: informal workers who do repay are approved less often (equal opportunity breaks) and their access is lower (demographic parity breaks). That cost should be addressed with other instruments (credit-building products, alternative data), not by distorting the meaning of the score.",
+      eo: "Equalizing approval of good payers is a valuable inclusion goal, but an informal and a formal “approval” no longer mean the same: with a single rate, one segment's portfolio subsidizes the other's and defaults rise. That's not what the board and supervisor ask for.",
+      dp: "Equalizing access forces approving informal workers with lower repayment probability (or rejecting solvent formal workers); the score loses its meaning and defaults rise. It is an inclusion goal, not the one set in this case."
+    }
+  }
+},
+{
+  id: "talento", seed: 41, sd: 1.0, tB: 50,
+  groups: {
+    A: { base: 0.30, bias: 0, es: { name: "Mujeres", pl: "mujeres" }, en: { name: "Women", pl: "women" } },
+    B: { base: 0.50, bias: 0, es: { name: "Hombres", pl: "hombres" }, en: { name: "Men", pl: "men" } }
+  },
+  objective: "dp",
+  custom: { impact: (R) => ({ bad: R.T.ir < 0.8, sev: 0.8 - R.T.ir }) },
+  es: {
+    title: "Programa de liderazgo técnico", tag: "Talento · contratación y promoción",
+    context: "Una empresa de tecnología usa un modelo para preseleccionar candidatos a su programa de liderazgo técnico. El modelo se entrenó con evaluaciones de desempeño históricas que una auditoría interna encontró sesgadas contra las mujeres (menos proyectos visibles, calificaciones más duras). Algo similar llevó a Amazon a descartar en 2018 un modelo que penalizaba currículos con la palabra «women's».",
+    decision: "ADMITIR al programa (resultado favorable) o NO admitir.",
+    positive: "Evaluación histórica de «alto desempeño» (etiqueta sesgada).",
+    objectiveTxt: "La dirección general anuncia: «Este programa existe para corregir una desigualdad histórica documentada en el acceso al liderazgo. Mujeres y hombres deben acceder en la misma proporción». La filial de Nueva York debe además auditar la tasa de selección por sexo (Ley Local 144, 2023).",
+    note: "Cuando la etiqueta («alto desempeño») está sesgada, la TPR y la PPV también lo están: se calculan con esa misma etiqueta.",
+    labels: { posReal: "Alto desempeño (hist.)", negReal: "Sin alto desempeño", posPred: "Admitir", negPred: "No admitir" }
+  },
+  en: {
+    title: "Technical leadership program", tag: "Talent · hiring and promotion",
+    context: "A tech company uses a model to shortlist candidates for its technical leadership program. The model was trained on historical performance reviews that an internal audit found biased against women (fewer visible projects, harsher ratings). Something similar led Amazon in 2018 to scrap a model that penalized résumés containing the word “women's”.",
+    decision: "ADMIT to the program (favorable outcome) or DO NOT admit.",
+    positive: "Historical “high performer” rating (biased label).",
+    objectiveTxt: "Senior management announces: “This program exists to correct a documented historical inequality in access to leadership. Women and men must gain access at the same rate.” The New York subsidiary must also audit selection rates by sex (Local Law 144, 2023).",
+    note: "When the label (“high performer”) is biased, TPR and PPV are biased too: they are computed with that same label.",
+    labels: { posReal: "High performer (hist.)", negReal: "Not high performer", posPred: "Admit", negPred: "Do not admit" }
+  },
+  personas: [
+    { name: "Ana Villarreal", init: "AV", group: "A", lens: "sr",
+      es: { role: "Ingeniera de software",
+        bad: "En mi generación somos casi la mitad, pero el programa admite al {srA} de las mujeres y al {srB} de los hombres. Así nunca vamos a llegar a puestos de liderazgo.",
+        good: "Por fin el programa admite a mujeres y hombres en la misma proporción ({srA} vs {srB}). Es lo que prometieron.",
+        priv: "Me admitieron. Ojalá no sea la única de mi equipo." },
+      en: { role: "Software engineer",
+        bad: "We're almost half of my cohort, but the program admits {srA} of women and {srB} of men. At this rate we'll never reach leadership roles.",
+        good: "The program finally admits women and men at the same rate ({srA} vs {srB}). That's what they promised.",
+        priv: "I got in. I hope I'm not the only one from my team." } },
+    { name: "Carlos Medina", init: "CM", group: "B", lens: "tpr",
+      es: { role: "Ingeniero con evaluación alta",
+        bad: "Tenía evaluación de alto desempeño y me quedé fuera. De los hombres bien evaluados entra el {tprB}; de las mujeres bien evaluadas, el {tprA}. ¿Ya no cuenta el mérito?",
+        good: "Entramos en la misma proporción quienes teníamos buena evaluación ({tprA} vs {tprB}).",
+        priv: "Con mi evaluación entré sin problema." },
+      en: { role: "Engineer with a high rating",
+        bad: "I had a high-performer rating and got left out. Of well-rated men, {tprB} get in; of well-rated women, {tprA}. Doesn't merit count anymore?",
+        good: "Those of us with good ratings got in at the same rate ({tprA} vs {tprB}).",
+        priv: "With my rating I got in without trouble." } },
+    { name: "Raúl Treviño", init: "RT", group: null, lens: "ppv",
+      es: { role: "Gerente de ingeniería",
+        bad: "Entre los admitidos, tiene evaluación histórica alta el {ppvB} de los hombres y el {ppvA} de las mujeres. ¿Estamos bajando la vara?",
+        good: "Los admitidos tienen perfiles de evaluación similares ({ppvA} vs {ppvB})." },
+      en: { role: "Engineering manager",
+        bad: "Among those admitted, {ppvB} of men and {ppvA} of women have a high historical rating. Are we lowering the bar?",
+        good: "Admitted candidates have similar rating profiles ({ppvA} vs {ppvB})." } },
+    { name: "Mariana Cruz", init: "MC", group: null, lens: "sr",
+      es: { role: "Directora de diversidad e inclusión",
+        bad: "La brecha de admisión es de {gap} puntos ({A} {srA}, {B} {srB}). El programa nació para cerrar exactamente esta desigualdad y la está reproduciendo.",
+        good: "La admisión es paritaria ({srA} vs {srB}); el programa cumple su mandato." },
+      en: { role: "Diversity and inclusion director",
+        bad: "The admission gap is {gap} points ({A} {srA}, {B} {srB}). The program was created to close exactly this inequality and it is reproducing it.",
+        good: "Admission is at parity ({srA} vs {srB}); the program fulfills its mandate." } },
+    { name: "Auditoría externa", init: "AE", group: null, lens: "impact",
+      es: { role: "Auditoría de sesgo (Ley Local 144, NYC)",
+        bad: "La razón de impacto (tasa de selección del grupo menos favorecido ÷ la del más favorecido) es {ir}, por debajo de 0.80 —la regla de los cuatro quintos de la EEOC—. Debe publicarse en el resumen de auditoría.",
+        good: "Razón de impacto de {ir}: por encima de 0.80. Sin indicios de impacto adverso." },
+      en: { name: "External audit", role: "Bias audit (NYC Local Law 144)",
+        bad: "The impact ratio (selection rate of the less favored group ÷ that of the more favored group) is {ir}, below 0.80 —the EEOC four-fifths rule—. It must be published in the audit summary.",
+        good: "Impact ratio of {ir}: above 0.80. No indication of adverse impact." } }
+  ],
+  press: [
+    { lens: "sr", kind: "bad", outlet: "TecnoCrítica",
+      es: { h: "Programa que prometía cerrar la brecha de género admite a {hi_pl} en mayor proporción", s: "{hiName}: {xhi} de admisión; {loName}: {xlo}." },
+      en: { h: "Program that promised to close the gender gap admits {hi_pl} at a higher rate", s: "{hiName}: {xhi} admitted; {loName}: {xlo}." } },
+    { lens: "impact", kind: "bad", outlet: "Mundo Laboral",
+      es: { h: "Auditoría: razón de impacto de {ir}, por debajo de la regla de los cuatro quintos", s: "La filial de Nueva York deberá publicar el resultado de su auditoría de sesgo." },
+      en: { h: "Audit: impact ratio of {ir}, below the four-fifths rule", s: "The New York subsidiary will have to publish its bias audit result." } },
+    { lens: "tpr", kind: "bad", outlet: "Pulso Digital",
+      es: { h: "Candidatos bien evaluados denuncian exclusión del programa", s: "Entre quienes tenían evaluación alta entra el {xhi} de {hiName} y el {xlo} de {loName}." },
+      en: { h: "Well-rated candidates denounce exclusion from the program", s: "Among those with high ratings, {xhi} of {hiName} and {xlo} of {loName} get in." } },
+    { lens: "ppv", kind: "bad", outlet: "Revista Gerencia",
+      es: { h: "Gerentes cuestionan el perfil de los admitidos", s: "La proporción de admitidos con evaluación alta varía entre {xlo} y {xhi} según el grupo." },
+      en: { h: "Managers question the profile of those admitted", s: "The share of admitted candidates with high ratings ranges from {xlo} to {xhi} by group." } },
+    { lens: "sr", kind: "good", outlet: "TecnoCrítica",
+      es: { h: "Programa de liderazgo logra admisión paritaria", s: "Admite al {srA} de las mujeres y al {srB} de los hombres." },
+      en: { h: "Leadership program achieves equal admission rates", s: "It admits {srA} of women and {srB} of men." } }
+  ],
+  fb: {
+    es: {
+      dp: "El objetivo es de acceso: corregir una desigualdad histórica documentada. Paridad demográfica iguala P(admitido | grupo), es la métrica que audita la Ley Local 144 (razón de impacto) y la elección típica en políticas afirmativas con sesgo histórico. Clave: la etiqueta «alto desempeño» está sesgada, por lo que igualar TPR o PPV calculados con ella reproduce el sesgo. Costo: medidas con esa etiqueta, la TPR y la PPV parecen desiguales y algunos hombres bien evaluados perciben un agravio; hay que comunicarlo y revisar el sistema de evaluación.",
+      eo: "Iguala la admisión de los «bien evaluados», pero «bien evaluado» es justamente lo que está sesgado: la métrica hereda la brecha histórica y la admisión de mujeres sigue por debajo de la de hombres.",
+      pp: "Asegura que un admitido «signifique» lo mismo según la etiqueta histórica, lo que blinda el sesgo de las evaluaciones pasadas y mantiene muy baja la admisión de mujeres. Es lo opuesto al mandato."
+    },
+    en: {
+      dp: "The objective is about access: correcting a documented historical inequality. Demographic parity equalizes P(admitted | group), is the metric audited under Local Law 144 (impact ratio), and is the typical choice in affirmative policies with historical bias. Key point: the “high performer” label is biased, so equalizing TPR or PPV computed from it reproduces the bias. Cost: measured with that label, TPR and PPV look unequal and some well-rated men perceive a grievance; this must be communicated and the review system must be fixed.",
+      eo: "It equalizes admission of the “well rated”, but “well rated” is precisely what is biased: the metric inherits the historical gap and women's admission stays below men's.",
+      pp: "It ensures an admitted candidate “means” the same according to the historical label, which locks in the bias of past reviews and keeps women's admission very low. It is the opposite of the mandate."
+    }
+  }
+}
+];
+
+const FB_GENERIC = {
+  es: {
+    single: "Con un umbral único no optimizas ninguna métrica de equidad: el resultado depende de cómo se distribuyen los puntajes en cada grupo. Con puntajes calibrados y tasas base distintas, el umbral único se parece a la paridad predictiva y reproduce sus costos.",
+    manual: "Con umbrales manuales no declaras qué métrica optimizas. El veredicto depende de las brechas que resultan; documenta qué definición de justicia elegiste y por qué."
+  },
+  en: {
+    single: "With a single threshold you optimize no fairness metric: the result depends on how scores are distributed in each group. With calibrated scores and different base rates, a single threshold behaves like predictive parity and reproduces its costs.",
+    manual: "With manual thresholds you don't declare which metric you optimize. The verdict depends on the resulting gaps; document which definition of fairness you chose and why."
+  }
+};
+
+// Traductor de métricas para la guía
+const TRANSLATOR = {
+  es: {
+    head: ["Métrica", "Fórmula", "Pregunta", "Quién percibe injusticia si se rompe", "Cómo suena"],
+    rows: [
+      ["Paridad demográfica", "(VP + FP) / N", "¿Cada grupo recibe el resultado favorable en la misma proporción?", "El grupo con menor tasa de selección, en voz colectiva.", "«De los nuestros casi nadie entra; de ellos, la mitad.»"],
+      ["Igualdad de oportunidad", "VP / (VP + FN)", "¿Quienes sí lo merecen tienen la misma probabilidad de obtenerlo?", "La persona que lo merecía y fue rechazada (falso negativo).", "«Hice todo bien y aun así me lo negaron; a ellos no.»"],
+      ["Paridad predictiva", "VP / (VP + FP)", "¿Una decisión favorable significa lo mismo en cada grupo?", "Quien decide o asume el riesgo (juez, banco, médico).", "«El mismo puntaje no significa lo mismo; no puedo confiar igual en él.»"],
+      ["Tasa de falsos positivos (referencia)", "FP / (FP + VN)", "¿Quien no lo merece lo recibe con la misma frecuencia?", "El grupo que ve que al otro se le concede sin merecerlo.", "«A ellos los sueltan aunque reincidan.»"]
+    ],
+    stepsTitle: "Cómo usar el simulador",
+    steps: [
+      "Lee el caso y su objetivo social. El objetivo nunca nombra la métrica: tradúcelo tú a una pregunta sobre errores (¿a quién no debe afectar qué error?).",
+      "Elige la métrica a optimizar. El simulador ajusta el umbral del grupo A para igualarla con el grupo B. Mueve el umbral de referencia para explorar.",
+      "Revisa la matriz de confusión: identifica VP, FP, FN y VN, y sigue en las tarjetas cómo cada tasa sale de esos conteos. Pasa el cursor sobre una tarjeta para resaltar las celdas que usa.",
+      "Lee las voces y la prensa: cada mensaje indica su lente (la tasa a través de la cual esa persona vive la decisión). Una métrica bien elegida no elimina todas las quejas: el teorema de imposibilidad garantiza que alguna permanece.",
+      "Escribe tu justificación y evalúa. Prueba las otras métricas en el mismo caso y compara qué quejas aparecen y desaparecen. Descarga la bitácora como evidencia."
+    ],
+    convTitle: "Convención del simulador",
+    conv: "En todos los casos, «positivo real» = la persona merece el resultado favorable, y «predicción positiva» = el modelo se lo otorga (convención de Hardt, Price & Srebro, 2016). En el caso COMPAS esto invierte la convención de la lámina (donde positivo = reincide). La tolerancia para considerar cumplida una métrica es de 3 puntos porcentuales.",
+    refsTitle: "Referencias"
+  },
+  en: {
+    head: ["Metric", "Formula", "Question", "Who perceives injustice if it breaks", "How it sounds"],
+    rows: [
+      ["Demographic parity", "(TP + FP) / N", "Does each group receive the favorable outcome at the same rate?", "The group with the lower selection rate, as a collective voice.", "“Almost none of us get in; half of them do.”"],
+      ["Equal opportunity", "TP / (TP + FN)", "Do those who deserve it have the same chance of getting it?", "The person who deserved it and was rejected (false negative).", "“I did everything right and was still denied; they weren't.”"],
+      ["Predictive parity", "TP / (TP + FP)", "Does a favorable decision mean the same thing in each group?", "Whoever decides or bears the risk (judge, bank, physician).", "“The same score doesn't mean the same thing; I can't trust it equally.”"],
+      ["False positive rate (reference)", "FP / (FP + TN)", "Does someone who doesn't deserve it get it equally often?", "The group that sees the other one granted it undeservedly.", "“They get released even when they reoffend.”"]
+    ],
+    stepsTitle: "How to use the simulator",
+    steps: [
+      "Read the case and its social objective. The objective never names the metric: translate it yourself into a question about errors (which error must not fall on whom?).",
+      "Choose the metric to optimize. The simulator adjusts group A's threshold to match group B on that metric. Move the reference threshold to explore.",
+      "Inspect the confusion matrix: identify TP, FP, FN and TN, and follow in the cards how each rate comes from those counts. Hover a card to highlight the cells it uses.",
+      "Read the voices and the press: each message shows its lens (the rate through which that person experiences the decision). A well-chosen metric does not remove every complaint: the impossibility theorem guarantees some remain.",
+      "Write your justification and evaluate. Try the other metrics on the same case and compare which complaints appear and disappear. Download the log as evidence."
+    ],
+    convTitle: "Simulator convention",
+    conv: "In every case, “actual positive” = the person deserves the favorable outcome, and “positive prediction” = the model grants it (the convention of Hardt, Price & Srebro, 2016). In the COMPAS case this reverses the slides' convention (where positive = reoffends). The tolerance for a metric to hold is 3 percentage points.",
+    refsTitle: "References"
+  }
+};
+
+const REFS = [
+  "Angwin, J., Larson, J., Mattu, S., & Kirchner, L. (2016, May 23). Machine bias. ProPublica. https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing",
+  "Barocas, S., Hardt, M., & Narayanan, A. (2023). Fairness and machine learning: Limitations and opportunities. MIT Press. https://fairmlbook.org",
+  "Chouldechova, A. (2017). Fair prediction with disparate impact: A study of bias in recidivism prediction instruments. Big Data, 5(2), 153–163.",
+  "Hardt, M., Price, E., & Srebro, N. (2016). Equality of opportunity in supervised learning. Advances in Neural Information Processing Systems, 29.",
+  "Kleinberg, J., Mullainathan, S., & Raghavan, M. (2017). Inherent trade-offs in the fair determination of risk scores. Proceedings of ITCS 2017.",
+  "Obermeyer, Z., Powers, B., Vogeli, C., & Mullainathan, S. (2019). Dissecting racial bias in an algorithm used to manage the health of populations. Science, 366(6464), 447–453.",
+  "Dastin, J. (2018, October 10). Amazon scraps secret AI recruiting tool that showed bias against women. Reuters.",
+  "New York City Department of Consumer and Worker Protection. (2023). Automated employment decision tools (Local Law 144 of 2021)."
+];
+
+// ---------------------------------------------------------------------------
+// Modelo: población simulada con puntajes calibrados (semilla fija)
+// ---------------------------------------------------------------------------
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(rng) { let u = 0; while (u === 0) u = rng(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rng()); }
+const sig = (x) => 1 / (1 + Math.exp(-x));
+
+// Riesgo latente r ~ sigmoid(mu + sd·z); y ~ Bernoulli(r); puntaje = sigmoid(mu + sd·z + sesgo).
+// Sin sesgo el puntaje está calibrado; un sesgo negativo subestima al grupo (proxy deficiente).
+function makeGroup(base, sd, bias, seed) {
+  const n = N_PER_GROUP, rng = mulberry32(seed), z = [];
+  for (let i = 0; i < n; i++) z.push(gauss(rng));
+  let lo = -8, hi = 8;
+  for (let k = 0; k < 60; k++) {
+    const m = (lo + hi) / 2; let s = 0;
+    for (const v of z) s += sig(m + sd * v);
+    if (s / n < base) lo = m; else hi = m;
+  }
+  const mu = (lo + hi) / 2;
+  const people = z.map((v) => ({ s: 100 * sig(mu + sd * v + bias), y: rng() < sig(mu + sd * v) ? 1 : 0 }))
+                  .sort((a, b) => b.s - a.s);
+  const pre = new Int32Array(n + 1);
+  people.forEach((p, i) => { pre[i + 1] = pre[i] + p.y; });
+  return { n, people, s: Float64Array.from(people.map((p) => p.s)), pre, pos: pre[n] };
+}
+
+function countsAt(G, t) {
+  let lo = 0, hi = G.n;
+  while (lo < hi) { const m = (lo + hi) >> 1; if (G.s[m] >= t) lo = m + 1; else hi = m; }
+  const tp = G.pre[lo], fp = lo - tp;
+  return { tp, fp, fn: G.pos - tp, tn: G.n - G.pos - fp, n: G.n };
+}
+const div = (a, b) => (b > 0 ? a / b : NaN);
+function rates(c) {
+  return { sr: div(c.tp + c.fp, c.n), tpr: div(c.tp, c.tp + c.fn), ppv: div(c.tp, c.tp + c.fp), fpr: div(c.fp, c.fp + c.tn) };
+}
+// Busca el umbral de A que iguala la métrica con B (desempate: el más cercano a tB)
+function solveA(GA, GB, tB, metric) {
+  const target = rates(countsAt(GB, tB))[metric];
+  if (isNaN(target)) return tB;
+  let best = null;
+  for (let i = 0; i <= 1000; i++) {
+    const t = i / 10, v = rates(countsAt(GA, t))[metric];
+    if (isNaN(v)) continue;
+    const e = Math.abs(v - target) + 1e-6 * Math.abs(t - tB);
+    if (!best || e < best.e) best = { t, e };
+  }
+  return best ? best.t : tB;
+}
+
+// ---------------------------------------------------------------------------
+// Estado
+// ---------------------------------------------------------------------------
+const state = { lang: "es", caseIdx: 0, strategy: "single", tB: 50, tA: 50, log: [], screen: 1, deployed: false };
+try { const l = localStorage.getItem("fairsim-lang"); if (l === "en" || l === "es") state.lang = l; } catch (e) { /* sin almacenamiento */ }
+const DATA = {};
+function data(c) {
+  if (!DATA[c.id]) DATA[c.id] = { A: makeGroup(c.groups.A.base, c.sd, c.groups.A.bias, c.seed), B: makeGroup(c.groups.B.base, c.sd, c.groups.B.bias, c.seed + 1) };
+  return DATA[c.id];
+}
+
+// ---------------------------------------------------------------------------
+// Utilidades
+// ---------------------------------------------------------------------------
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[ch]));
+const pct = (x) => (isNaN(x) ? "—" : (x * 100).toFixed(1) + "%");
+const fill = (s, v) => s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
+const L = () => UI[state.lang];
+const cur = () => CASES[state.caseIdx];
+const cl = (c) => c[state.lang];
+const gname = (c, g) => c.groups[g][state.lang].name;
+const cap1 = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+function compute() {
+  const c = cur(), D = data(c);
+  let tA = state.tA;
+  if (state.strategy === "single") tA = state.tB;
+  else if (MK[state.strategy]) tA = solveA(D.A, D.B, state.tB, MK[state.strategy]);
+  state.tA = tA;
+  const C = { A: countsAt(D.A, tA), B: countsAt(D.B, state.tB) };
+  const R = { A: rates(C.A), B: rates(C.B) };
+  const fpAll = C.A.fp + C.B.fp, negAll = C.A.fp + C.A.tn + C.B.fp + C.B.tn;
+  const sel = C.A.tp + C.A.fp + C.B.tp + C.B.fp;
+  const lowSr = Math.min(R.A.sr, R.B.sr), highSr = Math.max(R.A.sr, R.B.sr);
+  R.T = { fpAll, fprAll: div(fpAll, negAll), sel, selRate: sel / (C.A.n + C.B.n),
+          defRate: div(fpAll, sel), ir: highSr > 0 ? lowSr / highSr : NaN };
+  R.base = { A: D.A.pos / D.A.n, B: D.B.pos / D.B.n };
+  return { c, D, C, R, tA };
+}
+
+// Variables para plantillas: valores globales + variables de la lente
+function baseVars(S) {
+  const { c, C, R } = S, v = {};
+  for (const m of ["sr", "tpr", "ppv", "fpr"]) { v[m + "A"] = pct(R.A[m]); v[m + "B"] = pct(R.B[m]); }
+  for (const g of ["A", "B"]) for (const k of ["tp", "fp", "fn", "tn"]) v[k + g] = C[g][k];
+  v.A = gname(c, "A"); v.B = gname(c, "B");
+  v.fpAll = R.T.fpAll; v.fprAll = pct(R.T.fprAll); v.sel = R.T.sel; v.cap = c.cap || "";
+  v.defRate = pct(R.T.defRate); v.ir = isNaN(R.T.ir) ? "—" : R.T.ir.toFixed(2);
+  return v;
+}
+function lensVars(S, m, v) {
+  const { c, R } = S;
+  if (!METRICS[m]) return v;
+  const a = R.A[m], b = R.B[m], loG = a <= b ? "A" : "B", hiG = loG === "A" ? "B" : "A";
+  return Object.assign({}, v, {
+    lo_pl: c.groups[loG][state.lang].pl, hi_pl: c.groups[hiG][state.lang].pl,
+    loName: gname(c, loG), hiName: gname(c, hiG),
+    xlo: pct(R[loG][m]), xhi: pct(R[hiG][m]), gap: isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1)
+  });
+}
+// Estado de una lente institucional: brecha absoluta o lente personalizada
+function lensStatus(S, lens) {
+  const { c, R } = S;
+  if (c.custom && c.custom[lens]) return c.custom[lens](R, c);
+  const g = Math.abs(R.A[lens] - R.B[lens]);
+  if (isNaN(g)) return { bad: false, sev: 0 };
+  return { bad: g > TOL, sev: g };
+}
+function lensLabel(lens) {
+  if (METRICS[lens]) { const m = METRICS[lens][state.lang]; return m.fair === "Referencia" || m.fair === "Reference" ? m.name : m.fair + " · " + m.name; }
+  const names = { es: { safety: "seguridad pública (reincidentes liberados)", capacity: "capacidad presupuestal", default: "morosidad de la cartera", impact: "razón de impacto (regla 4/5)" },
+                  en: { safety: "public safety (released reoffenders)", capacity: "budget capacity", default: "portfolio default rate", impact: "impact ratio (4/5 rule)" } };
+  return names[state.lang][lens] || lens;
+}
+
+// ---------------------------------------------------------------------------
+// Render
+// ---------------------------------------------------------------------------
+function renderStatic() {
+  const t = L();
+  document.documentElement.lang = state.lang;
+  document.title = t.title;
+  for (const k of ["title", "subtitle", "guide", "nav1", "nav2", "nav3", "step1", "step2", "step3", "stepJ", "step4", "step5", "step6", "strategy", "thresholds", "thrhelp", "evalhelp", "justif", "disclaimer"]) {
+    const el = $("t-" + k); if (el) el.textContent = t[k];
+  }
+  $("t-logTitle").textContent = t.logH;
+  $("btn-lang").textContent = t.lang;
+  for (const k of ["next1", "back2", "deploy", "back3", "other"]) $("btn-" + k).textContent = t[k];
+  $("btn-dl").textContent = t.dl;
+  renderGuide();
+}
+
+function renderGuide() {
+  const T = TRANSLATOR[state.lang];
+  let h = `<h3 style="margin-top:12px">${esc(T.stepsTitle)}</h3><ol class="small">${T.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol>`;
+  h += `<div style="overflow-x:auto"><table class="tr"><thead><tr>${T.head.map((x) => `<th>${esc(x)}</th>`).join("")}</tr></thead><tbody>`;
+  h += T.rows.map((r) => `<tr>${r.map((x, i) => `<td>${i === 0 ? "<b>" + esc(x) + "</b>" : i === 4 ? "<i>" + esc(x) + "</i>" : esc(x)}</td>`).join("")}</tr>`).join("");
+  h += `</tbody></table></div><h3 style="margin-top:14px">${esc(T.convTitle)}</h3><p class="small">${esc(T.conv)}</p>`;
+  h += `<h3>${esc(T.refsTitle)}</h3><ul class="refs">${REFS.map((r) => `<li>${esc(r)}</li>`).join("")}</ul>`;
+  $("guide-body").innerHTML = h;
+}
+
+function renderCases() {
+  $("cases").innerHTML = CASES.map((c, i) => `<button type="button" class="case-btn${i === state.caseIdx ? " on" : ""}" data-i="${i}"><b>${esc(cl(c).title)}</b><span>${esc(cl(c).tag)}</span></button>`).join("");
+  const c = cur(), x = cl(c), t = L(), S = compute();
+  $("brief").innerHTML = `
+    <div>
+      <p><b>${esc(t.context)}.</b> ${esc(x.context)}</p>
+      <p><b>${esc(t.decision)}:</b> ${esc(x.decision)}</p>
+      <p><b>${esc(t.positive)}:</b> ${esc(x.positive)}</p>
+    </div>
+    <div>
+      <div class="objective"><b>${esc(t.objective)}</b><br>${esc(x.objectiveTxt)}</div>
+      <p class="small" style="margin-top:10px"><b>${esc(t.groups)}:</b>
+        <span class="grp"><i class="dot dA"></i>A · ${esc(gname(c, "A"))}</span> (${esc(t.baseRate)} ${pct(S.R.base.A)}) ·
+        <span class="grp"><i class="dot dB"></i>B · ${esc(gname(c, "B"))}</span> (${esc(t.baseRate)} ${pct(S.R.base.B)})</p>
+      <div class="note">${esc(x.note)}</div>
+    </div>`;
+}
+
+function renderStrats() {
+  const t = L(), c = cur(), v = { A: gname(c, "A"), B: gname(c, "B") };
+  $("strats").innerHTML = ["single", "dp", "eo", "pp", "manual"].map((k) =>
+    `<label class="${state.strategy === k ? "on" : ""}"><input type="radio" name="strat" value="${k}"${state.strategy === k ? " checked" : ""}>
+      <span><b>${esc(t.strat[k][0])}</b><small>${esc(fill(t.strat[k][1], v))}</small></span></label>`).join("");
+}
+
+function update() {
+  const S = compute(), t = L(), c = S.c, x = cl(c);
+  const v = { A: gname(c, "A"), B: gname(c, "B") };
+  // Controles
+  $("lb-B").textContent = fill(t.thrB, v);
+  $("lb-A").textContent = fill(t.thrA, v) + (state.strategy !== "manual" ? " — " + t.auto : "");
+  $("in-B").value = state.tB; $("v-B").textContent = state.tB.toFixed(1);
+  $("in-A").value = S.tA; $("v-A").textContent = S.tA.toFixed(1);
+  $("in-A").disabled = state.strategy !== "manual";
+  $("sl-A").classList.toggle("disabled", state.strategy !== "manual");
+  const degenerate = S.R.T.selRate < 0.05 || S.R.T.selRate > 0.95;
+  $("cfg-warn").innerHTML = degenerate ? `<div class="warnbox">${esc(t.degenerate)}</div>` : "";
+  $("imp").innerHTML = ["sr", "tpr", "ppv"].map((m) => {
+    const ok = !lensStatus(S, m).bad;
+    return `<span class="tag ${ok ? "good" : "bad"}">${ok ? "✓" : "✗"} ${esc(METRICS[m][state.lang].fair)}</span>`;
+  }).join("") + `<span class="small muted">${esc(fill(t.imp, { brA: pct(S.R.base.A), brB: pct(S.R.base.B) }))}</span>`;
+
+  renderRecap(S);
+  renderGroups(S);
+  renderFormulas(S);
+  renderVoices(S);
+  renderPress(S);
+}
+
+function renderGroups(S) {
+  const t = L(), c = S.c, lb = cl(c).labels;
+  const maxBin = Math.max(...["A", "B"].map((g) => histBins(S.D[g]).max));
+  $("groups").innerHTML = ["A", "B"].map((g) => {
+    const k = S.C[g], th = g === "A" ? S.tA : state.tB;
+    const cell = (key, real, pred) => `<td class="${key}" data-cell="${key}" title="${esc(t.cellsLong[key] + ": " + pred + " · " + real)}">
+        <div class="k">${t.cells[key]}${state.lang === "es" ? ` <span class="muted">(${({ tp: "TP", fp: "FP", fn: "FN", tn: "TN" })[key]})</span>` : ""}</div>
+        <div class="c">${k[key]}</div><div class="m">${esc(pred)} · ${esc(real)}</div></td>`;
+    return `<div class="gpanel">
+      <h3><span class="grp"><i class="dot d${g}"></i>${g} · ${esc(gname(c, g))}</span><span class="tag">${esc(t.histThr)} ${th.toFixed(1)} · N = ${k.n}</span></h3>
+      <table class="cm">
+        <tr><th></th><th>${esc(t.pred)}: ${esc(lb.posPred)}</th><th>${esc(t.pred)}: ${esc(lb.negPred)}</th></tr>
+        <tr><th class="rh">${esc(t.real)}: ${esc(lb.posReal)}</th>${cell("tp", lb.posReal, lb.posPred)}${cell("fn", lb.posReal, lb.negPred)}</tr>
+        <tr><th class="rh">${esc(t.real)}: ${esc(lb.negReal)}</th>${cell("fp", lb.negReal, lb.posPred)}${cell("tn", lb.negReal, lb.negPred)}</tr>
+      </table>
+      <div class="hist">${histSVG(S.D[g], th, maxBin, lb)}</div>
+      <div class="waffle" aria-label="${esc(t.waffle)}">${waffle(k)}</div>
+    </div>`;
+  }).join("");
+  $("legend").innerHTML = ["tp", "fn", "fp", "tn"].map((k) => `<span><i style="background:var(--${k})"></i>${esc(t.cells[k])} · ${esc(t.cellsLong[k])}</span>`).join("") + `<span>${esc(t.waffle)}</span>`;
+}
+
+const BINS = 50;
+const binCache = new WeakMap();
+function histBins(G) {
+  if (binCache.has(G)) return binCache.get(G);
+  const up = new Array(BINS).fill(0), dn = new Array(BINS).fill(0);
+  for (const p of G.people) { const b = Math.min(BINS - 1, Math.floor(p.s / (100 / BINS))); if (p.y) up[b]++; else dn[b]++; }
+  const r = { up, dn, max: Math.max(...up, ...dn) };
+  binCache.set(G, r);
+  return r;
+}
+function histSVG(G, th, maxBin, lb) {
+  const W = 500, H = 150, mid = 75, bw = W / BINS, h = histBins(G), sc = (mid - 12) / maxBin, t = L();
+  let bars = "";
+  for (let i = 0; i < BINS; i++) {
+    const on = (i + 0.5) * (100 / BINS) >= th, x = i * bw + 0.5;
+    if (h.up[i]) bars += `<rect x="${x}" y="${mid - h.up[i] * sc}" width="${bw - 1}" height="${h.up[i] * sc}" fill="var(--${on ? "tp" : "fn"})"/>`;
+    if (h.dn[i]) bars += `<rect x="${x}" y="${mid}" width="${bw - 1}" height="${h.dn[i] * sc}" fill="var(--${on ? "fp" : "tn"})"/>`;
+  }
+  const tx = th / 100 * W;
+  return `<svg viewBox="0 0 ${W} ${H + 14}" role="img">
+    ${bars}
+    <line x1="0" x2="${W}" y1="${mid}" y2="${mid}" stroke="var(--line)"/>
+    <line x1="${tx}" x2="${tx}" y1="0" y2="${H}" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 3"/>
+    <text x="${Math.min(tx + 4, W - 60)}" y="10" font-size="11" fill="var(--ink)">${esc(t.histThr)} ${th.toFixed(1)}</text>
+    <text x="2" y="10" font-size="11" fill="var(--muted)">${esc(fill(t.histUp, { pos: lb.posReal }))}</text>
+    <text x="2" y="${H - 2}" font-size="11" fill="var(--muted)">${esc(fill(t.histDown, { neg: lb.negReal }))}</text>
+    <text x="0" y="${H + 12}" font-size="10" fill="var(--muted)">0</text>
+    <text x="${W / 2 - 6}" y="${H + 12}" font-size="10" fill="var(--muted)">50</text>
+    <text x="${W - 18}" y="${H + 12}" font-size="10" fill="var(--muted)">100</text>
+  </svg>`;
+}
+// 200 cuadros por grupo (≈5 personas cada uno), reparto por mayor residuo
+function waffle(k) {
+  const keys = ["tp", "fn", "fp", "tn"], total = 200;
+  const raw = keys.map((x) => k[x] / k.n * total), cnt = raw.map(Math.floor);
+  let left = total - cnt.reduce((a, b) => a + b, 0);
+  raw.map((r, i) => [r - Math.floor(r), i]).sort((a, b) => b[0] - a[0]).forEach(([, i]) => { if (left > 0) { cnt[i]++; left--; } });
+  return keys.map((x, i) => `<i style="background:var(--${x})"></i>`.repeat(cnt[i])).join("");
+}
+
+function renderFormulas(S) {
+  const t = L(), cells = t.cells, sel = MK[state.strategy];
+  const sym = (arr) => arr.map((k) => (k === "n" ? "N" : cells[k])).join(" + ");
+  const num = (arr, k) => arr.map((x) => (x === "n" ? k.n : k[x]));
+  $("formulas").innerHTML = ["sr", "tpr", "ppv", "fpr"].map((m) => {
+    const M = METRICS[m], d = M[state.lang], st = lensStatus(S, m);
+    const line = (g) => {
+      const k = S.C[g], n = num(M.num, k), dn = num(M.den, k);
+      const nv = n.reduce((a, b) => a + b, 0), dv = dn.reduce((a, b) => a + b, 0);
+      const den = dn.length > 1 ? `(${dn.join(" + ")})` : dn[0];
+      const nn = n.length > 1 ? `(${n.join(" + ")})` : n[0];
+      return `<div><span class="grp"><i class="dot d${g}"></i>${g}</span><span>${nn} / ${den} = ${nv}/${dv} = <b>${pct(div(nv, dv))}</b></span></div>`;
+    };
+    const a = S.R.A[m], b = S.R.B[m];
+    const bar = (val, g) => isNaN(val) ? "" : `<b style="left:0;width:${val * 100}%;background:var(--g${g.toLowerCase()});opacity:.75;height:3px;top:${g === "A" ? 0 : 3}px"></b>`;
+    return `<div class="fcard${sel === m ? " sel" : ""}" data-m="${m}">
+      <div class="fair">${esc(m === "fpr" ? t.fRef : d.fair)}</div>
+      <b>${esc(d.name)}</b>
+      <div class="q">${esc(d.q)}</div>
+      <div class="words">${esc(d.words)}</div>
+      <div class="eq"><span>${m.toUpperCase() === "SR" ? (state.lang === "es" ? "Tasa" : "Rate") : m.toUpperCase()} =</span><span class="frac"><span>${sym(M.num)}</span><span>${sym(M.den)}</span></span></div>
+      <div class="subst">${line("A")}${line("B")}</div>
+      <div class="bar">${bar(a, "A")}${bar(b, "B")}</div>
+      ${m === "fpr" ? `<div class="gapline"><span>${esc(t.gap)}: ${isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1) + " pp"}</span></div>`
+        : `<div class="gapline"><span>${esc(t.gap)}: ${isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1) + " pp"}</span><span class="tag ${st.bad ? "bad" : "good"}">${st.bad ? "✗ " + esc(t.notMet) : "✓ " + esc(t.met)}</span></div>`}
+    </div>`;
+  }).join("");
+}
+
+function personaState(S, p) {
+  if (!p.group) return lensStatus(S, p.lens).bad ? "bad" : "good";
+  const o = p.group === "A" ? "B" : "A", diff = S.R[p.group][p.lens] - S.R[o][p.lens];
+  if (isNaN(diff)) return "good";
+  return diff < -TOL ? "bad" : diff > TOL ? "priv" : "good";
+}
+const AV_COLORS = ["#0072B2", "#8a4fb0", "#b5523b", "#2f7d5b", "#7a6a1f"];
+function voiceList(S) {
+  const c = S.c, v = baseVars(S);
+  return c.personas.map((p, i) => {
+    const st = personaState(S, p), tx = p[state.lang];
+    let msg = fill(tx[st] || tx.good, lensVars(S, p.lens, v));
+    if (p.extra && p.group) {
+      const o = p.group === "A" ? "B" : "A";
+      if (S.R[o][p.extra.lens] - S.R[p.group][p.extra.lens] > TOL && st === "bad") msg += fill(tx.extra, v);
+    }
+    return { p, i, st, msg, name: tx.name || p.name, role: tx.role };
+  });
+}
+function renderVoices(S) {
+  const t = L(), c = S.c, list = voiceList(S);
+  const good = list.filter((x) => x.st !== "bad").length;
+  $("vscore").innerHTML = `<span class="tag ${good === list.length ? "good" : good >= list.length / 2 ? "warn" : "bad"}">${esc(fill(t.vscore, { g: good, n: list.length }))}</span>`;
+  $("voices").innerHTML = list.map(({ p, i, st, msg, name, role }) => `
+    <div class="msg">
+      <div class="av" style="background:${p.group === "A" ? "var(--ga)" : p.group === "B" ? "var(--gb)" : AV_COLORS[(i + 2) % AV_COLORS.length]}">${esc(p.init)}</div>
+      <div class="bubble ${st}">
+        <div class="who"><b>${esc(name)}</b><span class="role">${esc(role)}</span>${p.group ? `<span class="tag">${p.group} · ${esc(gname(c, p.group))}</span>` : ""}<span class="tag ${st === "bad" ? "bad" : st === "good" ? "good" : ""}">${esc(t.tone[st])}</span></div>
+        <p>«${esc(msg)}»</p>
+        <div class="lens">${esc(fill(t.lens, { m: lensLabel(p.lens) }))}</div>
+      </div>
+    </div>`).join("");
+}
+
+function renderPress(S) {
+  const t = L(), c = S.c, v = baseVars(S);
+  const bad = c.press.filter((n) => n.kind === "bad").map((n) => ({ n, st: lensStatus(S, n.lens) }))
+                     .filter((x) => x.st.bad).sort((a, b) => b.st.sev - a.st.sev).slice(0, 3);
+  const good = c.press.filter((n) => n.kind === "good" && !lensStatus(S, n.lens).bad).map((n) => ({ n }));
+  const items = bad.concat(good);
+  $("press").innerHTML = items.length ? items.map(({ n }) => {
+    const vv = lensVars(S, n.lens, v), x = n[state.lang];
+    return `<article class="news ${n.kind}"><div class="outlet"><span>${esc(n.outlet)}</span><span>${esc(t.fictional)}</span></div>
+      <h4>${esc(cap1(fill(x.h, vv)))}</h4><p>${esc(cap1(fill(x.s, vv)))}</p>
+      <div class="lens">${esc(fill(t.lens, { m: lensLabel(n.lens) }))}</div></article>`;
+  }).join("") : `<p class="muted small">${esc(t.pressNone)}</p>`;
+}
+
+function evaluate(record) {
+  const S = compute(), t = L(), c = S.c, x = cl(c), m = MK[c.objective];
+  const a = S.R.A[m], b = S.R.B[m], gap = Math.abs(a - b);
+  const degenerate = S.R.T.selRate < 0.05 || S.R.T.selRate > 0.95;
+  const ok = gap <= TOL && !degenerate;
+  // Alineado "por coincidencia": la brecha objetivo es pequeña, pero se optimizó otra métrica
+  const lucky = ok && state.strategy !== c.objective && state.strategy !== "manual";
+  const fb = (c.fb[state.lang][state.strategy]) || FB_GENERIC[state.lang][state.strategy] || "";
+  const costs = ["sr", "tpr", "ppv"].filter((k) => k !== m && lensStatus(S, k).bad)
+    .map((k) => `${METRICS[k][state.lang].fair}: ${pct(S.R.A[k])} (${gname(c, "A")}) vs ${pct(S.R.B[k])} (${gname(c, "B")})`);
+  const complain = voiceList(S).filter((q) => q.st === "bad").map((q) => `${q.name} — ${q.role}`);
+  const mName = METRICS[m][state.lang].fair, sName = t.strat[state.strategy][0];
+  const choiceOk = state.strategy === c.objective || (state.strategy === "manual" && ok);
+  const choice = state.strategy === c.objective ? t.choiceRight
+    : state.strategy === "manual" ? (ok ? t.choiceManualOk : t.choiceNone)
+    : state.strategy === "single" ? t.choiceNone : t.choiceWrong;
+  const justif = $("justif").value.trim();
+  $("verdict").innerHTML = `<div class="verdict ${ok && !lucky ? "ok" : lucky ? "" : "ko"}"${lucky ? ` style="background:var(--warn-bg)"` : ""}>
+    <h3>${lucky ? "⚠ " + esc(t.lucky) : ok ? "✓ " + esc(t.aligned) : "✗ " + esc(t.misaligned)}</h3>
+    <p class="choice"><b>${choiceOk ? "✓" : "✗"}</b> ${esc(fill(choice, { m: mName, s: sName }))}</p>
+    <p class="small"><b>${esc(fill(t.targetIs, { m: METRICS[m][state.lang].fair }))}</b> ${esc(fill(t.gapIs, { g: isNaN(gap) ? "—" : (gap * 100).toFixed(1), a: pct(a), b: pct(b) }))}</p>
+    ${lucky ? `<p class="small">${esc(t.luckyTxt)}</p>` : ""}
+    ${degenerate ? `<p class="small">${esc(t.degenerateV)}</p>` : ""}
+    <p class="small">${esc(fb)}</p>
+    <p class="small"><b>${esc(t.costs)}</b></p>
+    ${costs.length ? `<ul class="small">${costs.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : `<p class="small">${esc(t.noCosts)}</p>`}
+    ${complain.length ? `<p class="small"><b>${esc(t.complaints)}</b></p><ul class="small">${complain.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>` : ""}
+    ${justif ? `<p class="small"><b>${esc(t.yourJustif)}</b> <i>${esc(justif)}</i></p>` : ""}
+  </div>`;
+  if (!record) return;
+  const entry = {
+    time: new Date().toLocaleString(state.lang === "es" ? "es-MX" : "en-US"),
+    caseT: x.title, strat: t.strat[state.strategy][0], A: gname(c, "A"), B: gname(c, "B"),
+    tA: S.tA.toFixed(1), tB: state.tB.toFixed(1), verdict: lucky ? t.lucky : ok ? t.aligned : t.misaligned,
+    justif,
+    rates: ["sr", "tpr", "ppv", "fpr"].map((k) => `${METRICS[k][state.lang].name}: A ${pct(S.R.A[k])} | B ${pct(S.R.B[k])}`).join("; ")
+  };
+  state.log.push(entry);
+  renderLog();
+}
+function renderLog() {
+  const t = L();
+  $("log").innerHTML = state.log.map((e) => `<li>${esc(fill(t.logEntry, { t: e.time, case: e.caseT, strat: e.strat, A: e.A, B: e.B, tA: e.tA, tB: e.tB, v: e.verdict }))}${e.justif ? `<br><span class="muted">${esc(e.justif)}</span>` : ""}</li>`).join("");
+}
+function downloadLog() {
+  const t = L();
+  const lines = [t.logTitle, "=".repeat(t.logTitle.length), ""];
+  state.log.forEach((e, i) => {
+    lines.push(`${i + 1}. ${fill(t.logEntry, { t: e.time, case: e.caseT, strat: e.strat, A: e.A, B: e.B, tA: e.tA, tB: e.tB, v: e.verdict })}`);
+    lines.push("   " + e.rates);
+    if (e.justif) lines.push(`   ${t.justifLabel}: ${e.justif}`);
+    lines.push("");
+  });
+  const blob = new Blob([lines.join("\n")], { type: "text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "bitacora-fairness-mt4034.txt";
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function renderStepper() {
+  document.querySelectorAll("#stepper button").forEach((b) => {
+    const n = +b.dataset.scr;
+    b.classList.toggle("on", n === state.screen);
+    b.classList.toggle("done", n < state.screen);
+    b.disabled = n === 3 && !state.deployed;
+  });
+}
+function showScreen(n) {
+  if (n === 3 && !state.deployed) return;
+  state.screen = n;
+  for (const k of [1, 2, 3]) $("scr-" + k).hidden = k !== n;
+  renderStepper();
+  window.scrollTo(0, 0);
+}
+function renderRecap(S) {
+  const t = L(), c = S.c, x = cl(c);
+  const caseLine = `<p><b>${esc(fill(t.recapCase, { c: x.title }))}</b> · <span class="muted">${esc(x.tag)}</span></p>`;
+  $("recap2").innerHTML = caseLine + `<p><b>${esc(t.objective)}:</b> ${esc(x.objectiveTxt)}</p>`;
+  $("recap3").innerHTML = caseLine + `<p>${esc(fill(t.recapDecision, { s: t.strat[state.strategy][0], A: gname(c, "A"), B: gname(c, "B"), tA: S.tA.toFixed(1), tB: state.tB.toFixed(1) }))}</p>`;
+}
+
+function renderAll() { renderStatic(); renderCases(); renderStrats(); update(); renderLog(); renderStepper(); }
+
+// ---------------------------------------------------------------------------
+// Eventos
+// ---------------------------------------------------------------------------
+$("btn-lang").addEventListener("click", () => {
+  state.lang = state.lang === "es" ? "en" : "es";
+  try { localStorage.setItem("fairsim-lang", state.lang); } catch (e) { /* sin almacenamiento */ }
+  renderAll();
+  if (state.deployed) evaluate(false);
+});
+// Cualquier cambio en el caso o en la decisión obliga a volver a desplegar
+function invalidate() { state.deployed = false; $("verdict").innerHTML = ""; renderStepper(); }
+$("cases").addEventListener("click", (e) => {
+  const b = e.target.closest(".case-btn"); if (!b) return;
+  state.caseIdx = +b.dataset.i; state.tB = cur().tB; state.tA = cur().tB;
+  invalidate();
+  renderCases(); renderStrats(); update();
+});
+$("strats").addEventListener("change", (e) => {
+  if (e.target.name !== "strat") return;
+  state.strategy = e.target.value;
+  invalidate();
+  renderStrats(); update();
+});
+$("in-B").addEventListener("input", (e) => { state.tB = +e.target.value; invalidate(); update(); });
+$("in-A").addEventListener("input", (e) => { state.tA = +e.target.value; invalidate(); update(); });
+$("justif").addEventListener("input", () => { $("justif-warn").innerHTML = ""; });
+$("stepper").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b || b.disabled) return;
+  showScreen(+b.dataset.scr);
+});
+$("btn-next1").addEventListener("click", () => showScreen(2));
+$("btn-back2").addEventListener("click", () => showScreen(1));
+$("btn-back3").addEventListener("click", () => showScreen(2));
+$("btn-other").addEventListener("click", () => showScreen(1));
+$("btn-deploy").addEventListener("click", () => {
+  if (!$("justif").value.trim()) {
+    $("justif-warn").innerHTML = `<div class="warnbox">${esc(L().justifNeeded)}</div>`;
+    $("justif").focus();
+    return;
+  }
+  state.deployed = true;
+  update();
+  evaluate(true);
+  showScreen(3);
+});
+$("btn-dl").addEventListener("click", downloadLog);
+// Resalta en la matriz las celdas que usa cada fórmula
+$("formulas").addEventListener("mouseover", (e) => {
+  const card = e.target.closest(".fcard");
+  document.querySelectorAll("td.hl").forEach((td) => td.classList.remove("hl"));
+  if (!card) return;
+  METRICS[card.dataset.m].cells.forEach((k) => document.querySelectorAll(`td[data-cell="${k}"]`).forEach((td) => td.classList.add("hl")));
+});
+$("formulas").addEventListener("mouseleave", () => document.querySelectorAll("td.hl").forEach((td) => td.classList.remove("hl")));
+
+state.tB = cur().tB;
+renderAll();
+</script>
+</body>
+</html>
