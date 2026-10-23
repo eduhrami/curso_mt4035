@@ -289,7 +289,7 @@ const UI = {
     step2: "¿Qué métrica de equidad optimizas?",
     step3: "Matriz de confusión y tasas por grupo",
     stepJ: "Justifica tu decisión",
-    step4: "Voces de los participantes (simuladas)",
+    step4: "Voces de quienes perciben injusticia (simuladas)",
     step5: "Cobertura de prensa (ficticia)",
     step6: "Conclusión y retroalimentación",
     next1: "Continuar: tomar la decisión →",
@@ -331,7 +331,8 @@ const UI = {
     fRef: "Referencia de errores (no se optimiza)",
     gap: "Brecha", met: "se cumple", notMet: "no se cumple",
     tone: { bad: "Percibe injusticia", good: "Percibe justicia", priv: "Sin agravio" },
-    vscore: "{g} de {n} participantes perciben el sistema como justo",
+    vscore: "{b} de {n} participantes perciben injusticia",
+    vnone: "Ningún participante expresa agravio con esta configuración.",
     lens: "Lente: {m}",
     pressNone: "Sin cobertura relevante.",
     fictional: "medio ficticio",
@@ -363,7 +364,7 @@ const UI = {
     step2: "Which fairness metric do you optimize?",
     step3: "Confusion matrix and rates by group",
     stepJ: "Justify your decision",
-    step4: "Stakeholder voices (simulated)",
+    step4: "Voices of those who perceive injustice (simulated)",
     step5: "Press coverage (fictional)",
     step6: "Conclusion and feedback",
     next1: "Continue: make the decision →",
@@ -405,7 +406,8 @@ const UI = {
     fRef: "Error reference (not optimized)",
     gap: "Gap", met: "holds", notMet: "does not hold",
     tone: { bad: "Perceives injustice", good: "Perceives fairness", priv: "No grievance" },
-    vscore: "{g} of {n} stakeholders perceive the system as fair",
+    vscore: "{b} of {n} stakeholders perceive injustice",
+    vnone: "No stakeholder voices a grievance with this configuration.",
     lens: "Lens: {m}",
     pressNone: "No relevant coverage.",
     fictional: "fictional outlet",
@@ -454,13 +456,13 @@ const METRICS = {
 // ---------------------------------------------------------------------------
 const CASES = [
 {
-  id: "compas", seed: 11, sd: 1.4, tB: 60,
+  id: "compas", seed: 11, sd: 1.8, tB: 60,
   groups: {
-    A: { base: 0.48, bias: 0, es: { name: "Afroamericanos", pl: "acusados afroamericanos" }, en: { name: "Black defendants", pl: "Black defendants" } },
-    B: { base: 0.61, bias: 0, es: { name: "Blancos", pl: "acusados blancos" }, en: { name: "White defendants", pl: "white defendants" } }
+    A: { base: 0.38, bias: 0, es: { name: "Afroamericanos", pl: "acusados afroamericanos" }, en: { name: "Black defendants", pl: "Black defendants" } },
+    B: { base: 0.66, bias: 0, es: { name: "Blancos", pl: "acusados blancos" }, en: { name: "White defendants", pl: "white defendants" } }
   },
   objective: "eo",
-  custom: { safety: (R) => ({ bad: R.T.fprAll > 0.25, sev: R.T.fprAll - 0.25 }) },
+  custom: { safety: (R) => ({ bad: R.T.fprAll > 0.30, sev: R.T.fprAll - 0.30 }) },
   es: {
     title: "Libertad previa al juicio", tag: "Justicia penal · inspirado en COMPAS (ProPublica, 2016)",
     context: "Un tribunal de condado usa un puntaje de riesgo para decidir quién espera su juicio en libertad. En 2016, ProPublica analizó el algoritmo COMPAS en Broward, Florida: el proveedor (Northpointe) sostenía que el puntaje estaba calibrado —un mismo puntaje implicaba un riesgo similar en ambos grupos—, pero entre quienes no reincidieron, los acusados afroamericanos habían sido marcados como de alto riesgo casi al doble de la tasa de los blancos.",
@@ -559,7 +561,7 @@ const CASES = [
 {
   id: "salud", seed: 21, sd: 1.1, tB: 30, cap: 650,
   groups: {
-    A: { base: 0.40, bias: -1.3, es: { name: "Pacientes rurales", pl: "pacientes rurales" }, en: { name: "Rural patients", pl: "rural patients" } },
+    A: { base: 0.40, bias: -2.0, es: { name: "Pacientes rurales", pl: "pacientes rurales" }, en: { name: "Rural patients", pl: "rural patients" } },
     B: { base: 0.22, bias: 0, es: { name: "Pacientes urbanos", pl: "pacientes urbanos" }, en: { name: "Urban patients", pl: "urban patients" } }
   },
   objective: "eo",
@@ -658,8 +660,8 @@ const CASES = [
 {
   id: "credito", seed: 31, sd: 1.0, tB: 75,
   groups: {
-    A: { base: 0.68, bias: 0, es: { name: "Trabajadores informales", pl: "trabajadores informales" }, en: { name: "Informal workers", pl: "informal workers" } },
-    B: { base: 0.85, bias: 0, es: { name: "Trabajadores formales", pl: "trabajadores formales" }, en: { name: "Formal workers", pl: "formal workers" } }
+    A: { base: 0.55, bias: 0, es: { name: "Trabajadores informales", pl: "trabajadores informales" }, en: { name: "Informal workers", pl: "informal workers" } },
+    B: { base: 0.88, bias: 0, es: { name: "Trabajadores formales", pl: "trabajadores formales" }, en: { name: "Formal workers", pl: "formal workers" } }
   },
   objective: "pp",
   custom: { default: (R) => ({ bad: R.T.defRate > 0.14, sev: R.T.defRate - 0.14 }) },
@@ -753,10 +755,10 @@ const CASES = [
   }
 },
 {
-  id: "talento", seed: 41, sd: 1.0, tB: 50,
+  id: "talento", seed: 41, sd: 1.8, tB: 50,
   groups: {
-    A: { base: 0.30, bias: 0, es: { name: "Mujeres", pl: "mujeres" }, en: { name: "Women", pl: "women" } },
-    B: { base: 0.50, bias: 0, es: { name: "Hombres", pl: "hombres" }, en: { name: "Men", pl: "men" } }
+    A: { base: 0.22, bias: 0, es: { name: "Mujeres", pl: "mujeres" }, en: { name: "Women", pl: "women" } },
+    B: { base: 0.55, bias: 0, es: { name: "Hombres", pl: "hombres" }, en: { name: "Men", pl: "men" } }
   },
   objective: "dp",
   custom: { impact: (R) => ({ bad: R.T.ir < 0.8, sev: 0.8 - R.T.ir }) },
@@ -877,7 +879,7 @@ const TRANSLATOR = {
       "Lee el caso y su objetivo social. El objetivo nunca nombra la métrica: tradúcelo tú a una pregunta sobre errores (¿a quién no debe afectar qué error?).",
       "Elige la métrica a optimizar. El simulador ajusta el umbral del grupo A para igualarla con el grupo B. Mueve el umbral de referencia para explorar.",
       "Revisa la matriz de confusión: identifica VP, FP, FN y VN, y sigue en las tarjetas cómo cada tasa sale de esos conteos. Pasa el cursor sobre una tarjeta para resaltar las celdas que usa.",
-      "Lee las voces y la prensa: cada mensaje indica su lente (la tasa a través de la cual esa persona vive la decisión). Una métrica bien elegida no elimina todas las quejas: el teorema de imposibilidad garantiza que alguna permanece.",
+      "Lee las voces y la prensa: solo hablan quienes perciben injusticia, y cada mensaje indica su lente (la tasa a través de la cual esa persona vive la decisión). Una métrica bien elegida no elimina todas las quejas: el teorema de imposibilidad garantiza que alguna permanece.",
       "Escribe tu justificación y evalúa. Prueba las otras métricas en el mismo caso y compara qué quejas aparecen y desaparecen. Descarga la bitácora como evidencia."
     ],
     convTitle: "Convención del simulador",
@@ -897,7 +899,7 @@ const TRANSLATOR = {
       "Read the case and its social objective. The objective never names the metric: translate it yourself into a question about errors (which error must not fall on whom?).",
       "Choose the metric to optimize. The simulator adjusts group A's threshold to match group B on that metric. Move the reference threshold to explore.",
       "Inspect the confusion matrix: identify TP, FP, FN and TN, and follow in the cards how each rate comes from those counts. Hover a card to highlight the cells it uses.",
-      "Read the voices and the press: each message shows its lens (the rate through which that person experiences the decision). A well-chosen metric does not remove every complaint: the impossibility theorem guarantees some remain.",
+      "Read the voices and the press: only those who perceive injustice speak, and each message shows its lens (the rate through which that person experiences the decision). A well-chosen metric does not remove every complaint: the impossibility theorem guarantees some remain.",
       "Write your justification and evaluate. Try the other metrics on the same case and compare which complaints appear and disappear. Download the log as evidence."
     ],
     convTitle: "Simulator convention",
@@ -1230,10 +1232,9 @@ function voiceList(S) {
   });
 }
 function renderVoices(S) {
-  const t = L(), c = S.c, list = voiceList(S);
-  const good = list.filter((x) => x.st !== "bad").length;
-  $("vscore").innerHTML = `<span class="tag ${good === list.length ? "good" : good >= list.length / 2 ? "warn" : "bad"}">${esc(fill(t.vscore, { g: good, n: list.length }))}</span>`;
-  $("voices").innerHTML = list.map(({ p, i, st, msg, name, role }) => `
+  const t = L(), c = S.c, all = voiceList(S), list = all.filter((x) => x.st === "bad");
+  $("vscore").innerHTML = `<span class="tag ${list.length ? "bad" : "good"}">${esc(fill(t.vscore, { b: list.length, n: all.length }))}</span>`;
+  $("voices").innerHTML = list.length === 0 ? `<p class="muted small">${esc(t.vnone)}</p>` : list.map(({ p, i, st, msg, name, role }) => `
     <div class="msg">
       <div class="av" style="background:${p.group === "A" ? "var(--ga)" : p.group === "B" ? "var(--gb)" : AV_COLORS[(i + 2) % AV_COLORS.length]}">${esc(p.init)}</div>
       <div class="bubble ${st}">
