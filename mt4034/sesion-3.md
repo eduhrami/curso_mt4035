@@ -147,6 +147,7 @@ Vinculado al proyecto final: entregar un **caso de uso de IA generativa validado
 - Demos guiadas en clase: prompting, RAG, comparación de respuestas entre modelos.
 - Plantilla de *matriz de riesgos éticos* (sesgo, privacidad, transparencia, accountability).
 - Tabla comparativa de métricas de equidad con sus supuestos y trade-offs.
+- [Simulador de fairness](./simulador-fairness/index.html) (ES/EN, se abre directo en el navegador, sin instalación): 4 casos (libertad previa al juicio inspirado en COMPAS, programa de salud, microcréditos, programa de talento) para elegir la métrica a optimizar —paridad demográfica, igualdad de oportunidad o paridad predictiva— y ver la matriz de confusión, las fórmulas, las voces simuladas de los participantes y la cobertura de prensa ficticia.
 
 ---
 
