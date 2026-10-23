@@ -273,7 +273,12 @@ table.tr th{color:var(--muted);font-size:12px}
 // ---------------------------------------------------------------------------
 const TOL = 0.03;          // brecha máxima (3 pp) para considerar una métrica "cumplida"
 const N_PER_GROUP = 1000;  // personas simuladas por grupo
-const MK = { dp: "sr", eo: "tpr", pp: "ppv" }; // estrategia -> tasa que se iguala
+// Estrategia -> tasa que se iguala. Igualdad de oportunidad (Hardt et al., 2016) se define sobre
+// quienes merecen el resultado favorable: TPR si el positivo es favorable ("fav"), FPR si el
+// positivo es el evento adverso ("risk": reincidencia, impago).
+const eoKey = (c) => (c.pos === "risk" ? "fpr" : "tpr");
+const mk = (c, s) => (s === "eo" ? eoKey(c) : { dp: "sr", pp: "ppv" }[s]);
+const fairKeys = (c) => ["sr", eoKey(c), "ppv"];
 
 // ---------------------------------------------------------------------------
 // Textos de interfaz
@@ -313,15 +318,18 @@ const UI = {
       single: ["Sin restricción (umbral único)", "El mismo umbral para ambos grupos. Ninguna métrica de equidad se fuerza."],
       dp: ["Paridad demográfica", "Ajusta el umbral de {A} para igualar la tasa de selección (VP + FP) / N."],
       eo: ["Igualdad de oportunidad", "Ajusta el umbral de {A} para igualar la TPR: VP / (VP + FN)."],
+      eoRisk: ["Igualdad de oportunidad", "Ajusta el umbral de {A} para igualar la FPR: FP / (FP + VN), el error que recae sobre quienes merecen el resultado favorable."],
       pp: ["Paridad predictiva", "Ajusta el umbral de {A} para igualar la precisión (PPV): VP / (VP + FP)."],
       manual: ["Manual (umbrales libres)", "Mueve ambos umbrales y observa qué métrica se cumple."]
     },
     thresholds: "Umbrales de decisión",
-    thrhelp: "El modelo asigna un puntaje de 0 a 100 (probabilidad estimada de merecer el resultado favorable). Resultado favorable si puntaje ≥ umbral.",
+    eoName: "Igualdad de oportunidad",
+    posClass: "Clase positiva",
+    posLine: "Clase positiva (Y = 1): {pos} · Predicción positiva: {pred}",
     thrB: "Umbral para {B} (grupo de referencia)",
     thrA: "Umbral para {A}",
     auto: "calculado para cumplir la métrica",
-    degenerate: "Solución trivial: casi todos (o casi nadie) reciben el resultado favorable. Las métricas se igualan, pero el modelo deja de discriminar entre casos.",
+    degenerate: "Solución trivial: casi todos (o casi nadie) reciben la predicción positiva. Las métricas se igualan, pero el modelo deja de discriminar entre casos.",
     imp: "Teorema de imposibilidad: con tasas base distintas ({brA} vs {brB}), un modelo con errores no puede cumplir las tres a la vez.",
     real: "Real", pred: "Predicción",
     cells: { tp: "VP", fp: "FP", fn: "FN", tn: "VN" },
@@ -348,7 +356,7 @@ const UI = {
     costs: "Costos que acepta esta configuración (métricas que se rompen):",
     noCosts: "No se rompe ninguna otra métrica relevante.",
     complaints: "Participantes que perciben injusticia:",
-    degenerateV: "La configuración es trivial (casi todos o casi nadie recibe el resultado favorable); la igualdad de métricas no tiene valor práctico.",
+    degenerateV: "La configuración es trivial (casi todos o casi nadie recibe la predicción positiva); la igualdad de métricas no tiene valor práctico.",
     logEntry: "{t} · {case} · {strat} · umbrales {A}={tA}, {B}={tB} · {v}",
     disclaimer: "Datos simulados (1,000 personas por grupo, puntajes calibrados con semilla fija). Personajes, diálogos y medios son ficticios y tienen fines didácticos; los casos se inspiran en hechos documentados citados en la guía.",
     logTitle: "Bitácora del simulador de fairness — MT4034",
@@ -387,16 +395,19 @@ const UI = {
     strat: {
       single: ["No constraint (single threshold)", "The same threshold for both groups. No fairness metric is enforced."],
       dp: ["Demographic parity", "Adjusts the threshold for {A} to equalize the selection rate (TP + FP) / N."],
+      eoRisk: ["Equal opportunity", "Adjusts the threshold for {A} to equalize the FPR: FP / (FP + TN), the error that falls on those who deserve the favorable outcome."],
       eo: ["Equal opportunity", "Adjusts the threshold for {A} to equalize the TPR: TP / (TP + FN)."],
       pp: ["Predictive parity", "Adjusts the threshold for {A} to equalize precision (PPV): TP / (TP + FP)."],
       manual: ["Manual (free thresholds)", "Move both thresholds and see which metric holds."]
     },
     thresholds: "Decision thresholds",
-    thrhelp: "The model assigns a 0–100 score (estimated probability of deserving the favorable outcome). Favorable outcome if score ≥ threshold.",
+    eoName: "Equal opportunity",
+    posClass: "Positive class",
+    posLine: "Positive class (Y = 1): {pos} · Positive prediction: {pred}",
     thrB: "Threshold for {B} (reference group)",
     thrA: "Threshold for {A}",
     auto: "computed to satisfy the metric",
-    degenerate: "Trivial solution: almost everyone (or almost no one) gets the favorable outcome. The metrics match, but the model no longer discriminates between cases.",
+    degenerate: "Trivial solution: almost everyone (or almost no one) receives the positive prediction. The metrics match, but the model no longer discriminates between cases.",
     imp: "Impossibility theorem: with different base rates ({brA} vs {brB}), a model that makes errors cannot satisfy all three at once.",
     real: "Actual", pred: "Prediction",
     cells: { tp: "TP", fp: "FP", fn: "FN", tn: "TN" },
@@ -423,7 +434,7 @@ const UI = {
     costs: "Costs this configuration accepts (metrics that break):",
     noCosts: "No other relevant metric breaks.",
     complaints: "Stakeholders who perceive injustice:",
-    degenerateV: "The configuration is trivial (almost everyone or almost no one gets the favorable outcome); equal metrics have no practical value.",
+    degenerateV: "The configuration is trivial (almost everyone or almost no one receives the positive prediction); equal metrics have no practical value.",
     logEntry: "{t} · {case} · {strat} · thresholds {A}={tA}, {B}={tB} · {v}",
     disclaimer: "Simulated data (1,000 people per group, calibrated scores with a fixed seed). Characters, dialogues and outlets are fictional and for teaching purposes; the cases are inspired by documented events cited in the guide.",
     logTitle: "Fairness simulator log — MT4034",
@@ -434,132 +445,142 @@ const UI = {
 // Definición de las tasas (convención del curso: VP, FP, FN, VN)
 const METRICS = {
   sr:  { cells: ["tp", "fp"], num: ["tp", "fp"], den: ["n"],
-         es: { fair: "Paridad demográfica", name: "Tasa de selección", q: "¿Cada grupo recibe el resultado favorable en la misma proporción?", words: "P(favorable | grupo)" },
-         en: { fair: "Demographic parity", name: "Selection rate", q: "Does each group receive the favorable outcome at the same rate?", words: "P(favorable | group)" } },
+         es: { fair: "Paridad demográfica", name: "Tasa de selección (predicción positiva)", q: "¿Cada grupo recibe la predicción positiva en la misma proporción?" },
+         en: { fair: "Demographic parity", name: "Selection rate (positive prediction)", q: "Does each group receive the positive prediction at the same rate?" } },
   tpr: { cells: ["tp", "fn"], num: ["tp"], den: ["tp", "fn"],
-         es: { fair: "Igualdad de oportunidad", name: "Tasa de verdaderos positivos (TPR)", q: "¿Quienes sí lo merecen tienen la misma probabilidad de obtenerlo?", words: "P(favorable | merece, grupo)" },
-         en: { fair: "Equal opportunity", name: "True positive rate (TPR)", q: "Do those who deserve it have the same chance of getting it?", words: "P(favorable | deserves, group)" } },
+         es: { name: "Tasa de verdaderos positivos (TPR)", q: "¿Los positivos reales reciben la predicción positiva con la misma probabilidad en cada grupo?" },
+         en: { name: "True positive rate (TPR)", q: "Do actual positives receive the positive prediction with the same probability in each group?" } },
   ppv: { cells: ["tp", "fp"], num: ["tp"], den: ["tp", "fp"],
-         es: { fair: "Paridad predictiva", name: "Precisión (PPV)", q: "¿Una decisión favorable significa lo mismo en cada grupo?", words: "P(merece | favorable, grupo)" },
-         en: { fair: "Predictive parity", name: "Precision (PPV)", q: "Does a favorable decision mean the same thing in each group?", words: "P(deserves | favorable, group)" } },
+         es: { fair: "Paridad predictiva", name: "Precisión (PPV)", q: "¿Una predicción positiva significa lo mismo en cada grupo?" },
+         en: { fair: "Predictive parity", name: "Precision (PPV)", q: "Does a positive prediction mean the same thing in each group?" } },
   fpr: { cells: ["fp", "tn"], num: ["fp"], den: ["fp", "tn"],
-         es: { fair: "Referencia", name: "Tasa de falsos positivos (FPR)", q: "¿Quien no lo merece lo recibe con la misma frecuencia en cada grupo?", words: "P(favorable | no merece, grupo)" },
-         en: { fair: "Reference", name: "False positive rate (FPR)", q: "Does someone who doesn't deserve it get it equally often in each group?", words: "P(favorable | does not deserve, group)" } }
+         es: { name: "Tasa de falsos positivos (FPR)", q: "¿Los negativos reales reciben por error la predicción positiva con la misma frecuencia en cada grupo?" },
+         en: { name: "False positive rate (FPR)", q: "Do actual negatives wrongly receive the positive prediction equally often in each group?" } },
+  fnr: { cells: ["fn", "tp"], num: ["fn"], den: ["tp", "fn"],
+         es: { name: "Tasa de falsos negativos (FNR)" },
+         en: { name: "False negative rate (FNR)" } }
 };
 
 // ---------------------------------------------------------------------------
-// Casos. Convención del simulador: "positivo" = merece el resultado favorable.
+// Casos. Cada caso declara su clase positiva con la convención dominante de su industria:
+//   pos: "risk" -> positivo = evento adverso (reincide, impago); predicción positiva = detener / rechazar
+//   pos: "fav"  -> positivo = necesidad o desempeño que el programa busca; predicción positiva = inscribir / admitir
 // Cada persona tiene una "lente": la tasa a través de la cual vive la decisión.
-//   - group: la persona compara su grupo contra el otro (bad / good / priv)
+//   - group: la persona compara su grupo contra el otro (bad / good / priv); dir: -1 si la tasa alta la perjudica
 //   - sin group: rol institucional, reacciona a la brecha absoluta
 //   - lentes personalizadas (safety, capacity, default, impact): ver `custom`
 // ---------------------------------------------------------------------------
 const CASES = [
 {
-  id: "compas", seed: 11, sd: 1.8, tB: 60,
+  id: "compas", pos: "risk", seed: 11, sd: 1.8, tB: 40,
   groups: {
-    A: { base: 0.38, bias: 0, es: { name: "Afroamericanos", pl: "acusados afroamericanos" }, en: { name: "Black defendants", pl: "Black defendants" } },
-    B: { base: 0.66, bias: 0, es: { name: "Blancos", pl: "acusados blancos" }, en: { name: "White defendants", pl: "white defendants" } }
+    A: { base: 0.62, bias: 0, es: { name: "Afroamericanos", pl: "acusados afroamericanos" }, en: { name: "Black defendants", pl: "Black defendants" } },
+    B: { base: 0.34, bias: 0, es: { name: "Blancos", pl: "acusados blancos" }, en: { name: "White defendants", pl: "white defendants" } }
   },
   objective: "eo",
-  custom: { safety: (R) => ({ bad: R.T.fprAll > 0.30, sev: R.T.fprAll - 0.30 }) },
+  custom: { safety: (R) => ({ bad: R.T.fnrAll > 0.33, sev: R.T.fnrAll - 0.33 }) },
   es: {
     title: "Libertad previa al juicio", tag: "Justicia penal · inspirado en COMPAS (ProPublica, 2016)",
-    context: "Un tribunal de condado usa un puntaje de riesgo para decidir quién espera su juicio en libertad. En 2016, ProPublica analizó el algoritmo COMPAS en Broward, Florida: el proveedor (Northpointe) sostenía que el puntaje estaba calibrado —un mismo puntaje implicaba un riesgo similar en ambos grupos—, pero entre quienes no reincidieron, los acusados afroamericanos habían sido marcados como de alto riesgo casi al doble de la tasa de los blancos.",
-    decision: "LIBERAR (resultado favorable) o DETENER hasta el juicio.",
-    positive: "La persona NO reincide en dos años (merece la libertad).",
-    objectiveTxt: "La Corte Suprema estatal establece: «Ninguna persona que no va a reincidir debe perder su libertad por su raza. Encarcelar a quien no reincidiría es el error más grave que puede cometer este sistema».",
-    note: "Convención: aquí «positivo» = no reincide. En la lámina del curso el positivo es «reincide»; igualar la TPR de este simulador equivale a igualar la tasa de falsos positivos de la lámina (los marcados como alto riesgo que no reinciden).",
-    labels: { posReal: "No reincide", negReal: "Reincide", posPred: "Liberar", negPred: "Detener" }
+    context: "Un tribunal de condado usa un puntaje de riesgo para decidir quién espera su juicio en libertad. En 2016, ProPublica analizó el algoritmo COMPAS en Broward, Florida: entre quienes no reincidieron, el 44.9% de los acusados afroamericanos había sido marcado como de alto riesgo, contra el 23.5% de los blancos (falsos positivos); entre quienes sí reincidieron, el 47.7% de los blancos había sido marcado de bajo riesgo, contra el 28.0% de los afroamericanos (falsos negativos). El proveedor (Northpointe) respondió que el puntaje tenía paridad predictiva: «alto riesgo» implicaba una probabilidad de reincidir similar en ambos grupos.",
+    decision: "DETENER hasta el juicio (predicción positiva: alto riesgo) o LIBERAR (predicción negativa: bajo riesgo).",
+    positive: "La persona reincide en dos años (Y = 1).",
+    objectiveTxt: "La Corte Suprema estatal establece: «Ninguna persona que no va a reincidir debe ser tratada como peligrosa por su raza. Marcar como de alto riesgo y encarcelar a quien no reincidiría es el error más grave que puede cometer este sistema».",
+    posNote: "Positivo = reincide (Y = 1), la convención de ProPublica (2016), Northpointe (Dieterich et al., 2016) y Chouldechova (2017). La predicción positiva es «alto riesgo → detener». Así, un falso positivo (FP) es alguien que no reincidiría y fue marcado de alto riesgo, y un falso negativo (FN) es alguien que reincidió y fue liberado. Como el resultado favorable (no reincidir) es la clase negativa, la igualdad de oportunidad de Hardt et al. (2016) se aplica igualando la FPR, no la TPR.",
+    note: "Paridad predictiva aquí es la de Northpointe: PPV = P(reincide | alto riesgo).",
+    thr: "El modelo asigna un puntaje de riesgo de 0 a 100 (probabilidad estimada de reincidir). Alto riesgo (detener) si puntaje ≥ umbral.",
+    labels: { posReal: "Reincide", negReal: "No reincide", posPred: "Alto riesgo (detener)", negPred: "Bajo riesgo (liberar)" }
   },
   en: {
     title: "Pretrial release", tag: "Criminal justice · inspired by COMPAS (ProPublica, 2016)",
-    context: "A county court uses a risk score to decide who awaits trial at liberty. In 2016, ProPublica analyzed the COMPAS algorithm in Broward County, Florida: the vendor (Northpointe) argued the score was calibrated —the same score implied similar risk in both groups— but among people who did not reoffend, Black defendants had been labeled high risk at almost twice the rate of white defendants.",
-    decision: "RELEASE (favorable outcome) or DETAIN until trial.",
-    positive: "The person does NOT reoffend within two years (deserves release).",
-    objectiveTxt: "The state Supreme Court rules: “No person who would not reoffend should lose their liberty because of their race. Jailing someone who would not reoffend is the gravest error this system can make.”",
-    note: "Convention: here “positive” = does not reoffend. In the course slides the positive is “reoffends”; equalizing this simulator's TPR is equivalent to equalizing the slides' false positive rate (people labeled high risk who do not reoffend).",
-    labels: { posReal: "Does not reoffend", negReal: "Reoffends", posPred: "Release", negPred: "Detain" }
+    context: "A county court uses a risk score to decide who awaits trial at liberty. In 2016, ProPublica analyzed the COMPAS algorithm in Broward County, Florida: among people who did not reoffend, 44.9% of Black defendants had been labeled high risk, versus 23.5% of white defendants (false positives); among people who did reoffend, 47.7% of white defendants had been labeled low risk, versus 28.0% of Black defendants (false negatives). The vendor (Northpointe) replied that the score had predictive parity: “high risk” implied a similar probability of reoffending in both groups.",
+    decision: "DETAIN until trial (positive prediction: high risk) or RELEASE (negative prediction: low risk).",
+    positive: "The person reoffends within two years (Y = 1).",
+    objectiveTxt: "The state Supreme Court rules: “No person who would not reoffend should be treated as dangerous because of their race. Labeling as high risk and jailing someone who would not reoffend is the gravest error this system can make.”",
+    posNote: "Positive = reoffends (Y = 1), the convention of ProPublica (2016), Northpointe (Dieterich et al., 2016) and Chouldechova (2017). The positive prediction is “high risk → detain”. A false positive (FP) is someone who would not reoffend and was labeled high risk; a false negative (FN) is someone who reoffended and was released. Because the favorable outcome (not reoffending) is the negative class, Hardt et al.'s (2016) equal opportunity is applied by equalizing FPR, not TPR.",
+    note: "Predictive parity here is Northpointe's: PPV = P(reoffends | high risk).",
+    thr: "The model assigns a 0–100 risk score (estimated probability of reoffending). High risk (detain) if score ≥ threshold.",
+    labels: { posReal: "Reoffends", negReal: "Does not reoffend", posPred: "High risk (detain)", negPred: "Low risk (release)" }
   },
   personas: [
-    { name: "Darnell W.", init: "DW", group: "A", lens: "tpr",
-      extra: { lens: "fpr" },
+    { name: "Darnell W.", init: "DW", group: "A", lens: "fpr", dir: -1,
+      extra: { lens: "fnr" },
       es: { role: "Acusado afroamericano · no reincidió",
-        bad: "Yo no volví a delinquir y aun así me dejaron preso. De los afroamericanos que no reincidimos liberan al {tprA}; de los blancos, al {tprB}. A nosotros nunca nos sueltan.",
-        good: "Por fin: si no vas a reincidir, tu oportunidad de salir libre es la misma que la de un blanco ({tprA} vs {tprB}). Es lo mínimo que pedíamos.",
-        priv: "Esta vez no me quejo: a los nuestros que no reinciden los liberan un poco más ({tprA} vs {tprB}).",
-        extra: " Y a los blancos los sueltan aunque vuelvan a delinquir: salió libre el {fprB} de los blancos que reincidieron, contra el {fprA} de los nuestros." },
+        bad: "Yo no volví a delinquir y aun así me marcaron de alto riesgo y me dejaron preso. De los afroamericanos que no reincidimos, al {fprA} nos marcan como peligrosos; de los blancos, al {fprB}. A nosotros nunca nos sueltan.",
+        good: "Por fin: si no vas a reincidir, el riesgo de que te marquen como peligroso es el mismo que para un blanco ({fprA} vs {fprB}). Es lo mínimo que pedíamos.",
+        priv: "Esta vez no me quejo: a los nuestros que no reinciden los marcan de alto riesgo un poco menos ({fprA} vs {fprB}).",
+        extra: " Y a los blancos los sueltan aunque reincidan: al {fnrB} de los blancos que volvieron a delinquir los marcaron de bajo riesgo, contra el {fnrA} de los nuestros." },
       en: { role: "Black defendant · did not reoffend",
-        bad: "I never reoffended and they still kept me locked up. Of Black defendants who don't reoffend, {tprA} get released; of white defendants, {tprB}. They never let us out.",
-        good: "Finally: if you're not going to reoffend, your chance of walking out is the same as a white defendant's ({tprA} vs {tprB}). That's the least we asked for.",
-        priv: "No complaints this time: those of us who don't reoffend are released a bit more often ({tprA} vs {tprB}).",
-        extra: " And they let white defendants out even when they go on to reoffend: {fprB} of white reoffenders walked free, versus {fprA} of ours." } },
-    { name: "Brad K.", init: "BK", group: "B", lens: "tpr",
+        bad: "I never reoffended and they still labeled me high risk and kept me locked up. Of Black defendants who don't reoffend, {fprA} get labeled dangerous; of white defendants, {fprB}. They never let us out.",
+        good: "Finally: if you're not going to reoffend, your risk of being labeled dangerous is the same as a white defendant's ({fprA} vs {fprB}). That's the least we asked for.",
+        priv: "No complaints this time: those of us who don't reoffend are labeled high risk a bit less often ({fprA} vs {fprB}).",
+        extra: " And they let white defendants out even when they reoffend: {fnrB} of white reoffenders were labeled low risk, versus {fnrA} of ours." } },
+    { name: "Brad K.", init: "BK", group: "B", lens: "fpr", dir: -1,
       es: { role: "Acusado blanco · no reincidió",
-        bad: "Nunca he reincidido y me negaron la libertad. Sueltan al {tprA} de los afroamericanos que no reinciden y solo al {tprB} de nosotros. ¿Ahora te castigan por ser blanco?",
-        good: "Me midieron con la misma vara que a todos: quienes no reincidimos salimos en la misma proporción ({tprB} vs {tprA}).",
+        bad: "Nunca he reincidido y me marcaron de alto riesgo. Entre quienes no reinciden, marcan como peligrosos al {fprB} de los blancos y al {fprA} de los afroamericanos. ¿Ahora te castigan por ser blanco?",
+        good: "Me midieron con la misma vara que a todos: a quienes no reincidimos nos marcan de alto riesgo en la misma proporción ({fprB} vs {fprA}).",
         priv: "A mí me soltaron rápido; mi abogado dice que con mi puntaje es casi automático." },
       en: { role: "White defendant · did not reoffend",
-        bad: "I've never reoffended and they denied me release. They let out {tprA} of Black defendants who don't reoffend and only {tprB} of us. So now you get punished for being white?",
-        good: "They measured me with the same yardstick as everyone: those of us who don't reoffend are released at the same rate ({tprB} vs {tprA}).",
+        bad: "I've never reoffended and they labeled me high risk. Among those who don't reoffend, {fprB} of white defendants and {fprA} of Black defendants get labeled dangerous. So now you get punished for being white?",
+        good: "They measured me with the same yardstick as everyone: those of us who don't reoffend are labeled high risk at the same rate ({fprB} vs {fprA}).",
         priv: "They let me out fast; my lawyer says with my score it's almost automatic." } },
     { name: "Jueza Elena Martínez", init: "EM", group: null, lens: "ppv",
       es: { role: "Jueza de audiencias",
-        bad: "Cuando el sistema recomienda liberar, con un acusado blanco acierta el {ppvB} de las veces y con uno afroamericano el {ppvA}. Si la misma recomendación no significa lo mismo, ¿cómo la defiendo en audiencia?",
-        good: "Una recomendación de libertad significa lo mismo para cualquier acusado: no reincide el {ppvA} y el {ppvB}. Puedo leer el puntaje igual para todos." },
+        bad: "Cuando el sistema marca «alto riesgo», reincide el {ppvB} de los acusados blancos y el {ppvA} de los afroamericanos. Si la misma etiqueta no significa lo mismo, ¿cómo la defiendo en audiencia?",
+        good: "«Alto riesgo» significa lo mismo para cualquier acusado: reincide el {ppvA} y el {ppvB}. Puedo leer el puntaje igual para todos." },
       en: { name: "Judge Elena Martínez", role: "Trial court judge",
-        bad: "When the system recommends release, it is right {ppvB} of the time for a white defendant and {ppvA} for a Black defendant. If the same recommendation doesn't mean the same thing, how do I defend it in court?",
-        good: "A release recommendation means the same for any defendant: {ppvA} and {ppvB} do not reoffend. I can read the score the same way for everyone." } },
+        bad: "When the system says “high risk”, {ppvB} of white defendants and {ppvA} of Black defendants reoffend. If the same label doesn't mean the same thing, how do I defend it in court?",
+        good: "“High risk” means the same for any defendant: {ppvA} and {ppvB} reoffend. I can read the score the same way for everyone." } },
     { name: "Marta Ruiz", init: "MR", group: null, lens: "safety",
       es: { role: "Vocera, Asociación de Víctimas",
-        bad: "Se liberó a {fpAll} personas que volvieron a delinquir: el {fprAll} de todos los reincidentes salió libre. Alguien tiene que responder a las víctimas.",
-        good: "Liberados que reincidieron: {fpAll} ({fprAll} de los reincidentes). Vigilamos, pero el sistema no está soltando a cualquiera." },
+        bad: "Se liberó a {fnAll} personas que volvieron a delinquir: el {fnrAll} de todos los reincidentes fue marcado de bajo riesgo. Alguien tiene que responder a las víctimas.",
+        good: "Reincidentes liberados: {fnAll} ({fnrAll} de los reincidentes). Vigilamos, pero el sistema no está soltando a cualquiera." },
       en: { role: "Spokesperson, Victims' Association",
-        bad: "{fpAll} people who went on to reoffend were released: {fprAll} of all reoffenders walked free. Someone has to answer to the victims.",
-        good: "Released people who reoffended: {fpAll} ({fprAll} of reoffenders). We're watching, but the system isn't letting just anyone out." } },
+        bad: "{fnAll} people who went on to reoffend were released: {fnrAll} of all reoffenders were labeled low risk. Someone has to answer to the victims.",
+        good: "Released reoffenders: {fnAll} ({fnrAll} of reoffenders). We're watching, but the system isn't letting just anyone out." } },
     { name: "Keisha J.", init: "KJ", group: null, lens: "sr",
       es: { role: "Coordinadora, ONG de derechos civiles",
-        bad: "El condado libera al {xhi} de los {hi_pl} y solo al {xlo} de los {lo_pl}. Una brecha de {gap} puntos en libertad es una brecha racial, la mires como la mires.",
-        good: "Las tasas de liberación ya son parecidas ({srA} vs {srB}). Ahora hay que vigilar que se sostenga." },
+        bad: "El condado detiene al {xhi} de los {hi_pl} y solo al {xlo} de los {lo_pl}. Una brecha de {gap} puntos en detenciones es una brecha racial, la mires como la mires.",
+        good: "Las tasas de detención ya son parecidas ({srA} vs {srB}). Ahora hay que vigilar que se sostenga." },
       en: { role: "Coordinator, civil rights NGO",
-        bad: "The county releases {xhi} of {hi_pl} and only {xlo} of {lo_pl}. A {gap}-point gap in liberty is a racial gap, however you slice it.",
-        good: "Release rates are now similar ({srA} vs {srB}). Now we have to make sure it lasts." } }
+        bad: "The county detains {xhi} of {hi_pl} and only {xlo} of {lo_pl}. A {gap}-point gap in detentions is a racial gap, however you slice it.",
+        good: "Detention rates are now similar ({srA} vs {srB}). Now we have to make sure it lasts." } }
   ],
   press: [
-    { lens: "tpr", kind: "bad", outlet: "La Gaceta del Condado",
-      es: { h: "Algoritmo judicial deja en prisión a {lo_pl} que no reincidirían", s: "Entre quienes no vuelven a delinquir, sale libre el {xhi} de los {hi_pl} y solo el {xlo} de los {lo_pl}: una brecha de {gap} puntos." },
-      en: { h: "Court algorithm keeps {lo_pl} who would not reoffend behind bars", s: "Among those who do not reoffend, {xhi} of {hi_pl} are released but only {xlo} of {lo_pl}: a {gap}-point gap." } },
-    { lens: "fpr", kind: "bad", outlet: "Pulso Digital",
-      es: { h: "Los {hi_pl} que reinciden salen libres con más frecuencia", s: "El {xhi} de los {hi_pl} que reincidieron había sido liberado, contra el {xlo} de los {lo_pl}." },
-      en: { h: "{hi_pl} who reoffend are released more often", s: "{xhi} of {hi_pl} who reoffended had been released, versus {xlo} of {lo_pl}." } },
+    { lens: "fpr", kind: "bad", outlet: "La Gaceta del Condado",
+      es: { h: "Algoritmo judicial marca como peligrosos a {hi_pl} que no reincidirían", s: "Entre quienes no vuelven a delinquir, el {xhi} de los {hi_pl} fue marcado de alto riesgo, contra el {xlo} de los {lo_pl}: una brecha de {gap} puntos en falsos positivos." },
+      en: { h: "Court algorithm labels {hi_pl} who would not reoffend as dangerous", s: "Among those who do not reoffend, {xhi} of {hi_pl} were labeled high risk versus {xlo} of {lo_pl}: a {gap}-point gap in false positives." } },
+    { lens: "fnr", kind: "bad", outlet: "Pulso Digital",
+      es: { h: "Los {hi_pl} que reinciden pasan como de bajo riesgo con más frecuencia", s: "El {xhi} de los {hi_pl} que reincidieron había sido marcado de bajo riesgo, contra el {xlo} de los {lo_pl} (falsos negativos)." },
+      en: { h: "{hi_pl} who reoffend are labeled low risk more often", s: "{xhi} of {hi_pl} who reoffended had been labeled low risk, versus {xlo} of {lo_pl} (false negatives)." } },
     { lens: "ppv", kind: "bad", outlet: "Crónica Tribunal",
-      es: { h: "Jueces cuestionan el puntaje: «liberar» no significa lo mismo para todos", s: "Entre los liberados, no reincide el {xhi} en un grupo y el {xlo} en el otro." },
-      en: { h: "Judges question the score: “release” doesn't mean the same for everyone", s: "Among those released, {xhi} in one group do not reoffend versus {xlo} in the other." } },
+      es: { h: "Jueces cuestionan el puntaje: «alto riesgo» no significa lo mismo para todos", s: "Entre los marcados de alto riesgo, reincide el {xhi} en un grupo y el {xlo} en el otro." },
+      en: { h: "Judges question the score: “high risk” doesn't mean the same for everyone", s: "Among those labeled high risk, {xhi} in one group reoffend versus {xlo} in the other." } },
     { lens: "sr", kind: "bad", outlet: "Voz Ciudadana",
-      es: { h: "Brecha racial en las liberaciones: {xhi} contra {xlo}", s: "Organizaciones civiles exigen explicar por qué el condado libera a {hi_pl} en mayor proporción." },
-      en: { h: "Racial gap in releases: {xhi} versus {xlo}", s: "Civil society groups demand to know why the county releases {hi_pl} at a higher rate." } },
+      es: { h: "Brecha racial en las detenciones: {xhi} contra {xlo}", s: "Organizaciones civiles exigen explicar por qué el condado detiene a {hi_pl} en mayor proporción." },
+      en: { h: "Racial gap in detentions: {xhi} versus {xlo}", s: "Civil society groups demand to know why the county detains {hi_pl} at a higher rate." } },
     { lens: "safety", kind: "bad", outlet: "Noticias 24",
-      es: { h: "Liberados por el algoritmo reincidieron: {fpAll} casos", s: "La Asociación de Víctimas pide suspender el sistema: salió libre el {fprAll} de los reincidentes." },
-      en: { h: "People released by the algorithm reoffended: {fpAll} cases", s: "The Victims' Association asks to suspend the system: {fprAll} of reoffenders were released." } },
-    { lens: "tpr", kind: "good", outlet: "La Gaceta del Condado",
-      es: { h: "Corte celebra: quien no reincidirá tiene la misma probabilidad de libertad, sin importar su raza", s: "La tasa de liberación entre quienes no reinciden es {tprA} ({A}) y {tprB} ({B})." },
-      en: { h: "Court hails result: those who won't reoffend have the same chance of release regardless of race", s: "The release rate among those who do not reoffend is {tprA} ({A}) and {tprB} ({B})." } }
+      es: { h: "Liberados por el algoritmo reincidieron: {fnAll} casos", s: "La Asociación de Víctimas pide suspender el sistema: el {fnrAll} de los reincidentes fue marcado de bajo riesgo." },
+      en: { h: "People released by the algorithm reoffended: {fnAll} cases", s: "The Victims' Association asks to suspend the system: {fnrAll} of reoffenders were labeled low risk." } },
+    { lens: "fpr", kind: "good", outlet: "La Gaceta del Condado",
+      es: { h: "Corte celebra: quien no reincidirá corre el mismo riesgo de ser marcado como peligroso, sin importar su raza", s: "La tasa de falsos positivos es {fprA} ({A}) y {fprB} ({B})." },
+      en: { h: "Court hails result: those who won't reoffend face the same risk of being labeled dangerous regardless of race", s: "The false positive rate is {fprA} ({A}) and {fprB} ({B})." } }
   ],
   fb: {
     es: {
-      eo: "La Corte define la justicia por el error que hay que evitar entre quienes merecen el resultado favorable: que una persona que no reincidiría pierda su libertad. Igualdad de oportunidad iguala P(liberado | no reincide) entre grupos. Es la elección típica en justicia penal, donde el falso positivo de la lámina (marcar como peligroso a quien no lo es) causa daño directo. Costo: con tasas base distintas se rompen la paridad predictiva y la demográfica, y suele aumentar el número de reincidentes liberados; esos costos deben gestionarse (supervisión, medidas cautelares), no ignorarse.",
-      pp: "Es la defensa de Northpointe: una recomendación «significa lo mismo» en ambos grupos. Pero con tasas base distintas, la calibración obliga a que los errores recaigan sobre el grupo con mayor tasa de reincidencia observada: los afroamericanos que no reinciden son detenidos con más frecuencia y los blancos que reinciden salen más. Es exactamente el hallazgo de ProPublica y no responde a la pregunta de la Corte.",
-      dp: "Igualar las tasas de liberación ignora que las tasas base observadas difieren. No garantiza que quienes no reincidirían tengan la misma probabilidad de salir, y puede liberar a muchos más reincidentes en un grupo. Es una meta de distribución agregada, no la que fija la Corte."
+      eo: "La Corte define la justicia por el error que no debe recaer de forma desigual sobre quienes merecen el resultado favorable: marcar como de alto riesgo a quien no reincidiría (falso positivo). La igualdad de oportunidad, aplicada al resultado favorable (no reincidir), equivale a igualar la FPR = FP / (FP + VN) entre grupos: es exactamente la brecha que documentó ProPublica (44.9% vs 23.5%). Costo: con tasas base distintas se rompen la paridad predictiva (el argumento de Northpointe) y la demográfica, y pueden aumentar los reincidentes liberados; esos costos deben gestionarse (supervisión, medidas cautelares), no ignorarse.",
+      pp: "Es la defensa de Northpointe (Dieterich et al., 2016): «alto riesgo» significa la misma probabilidad de reincidir en ambos grupos, PPV = VP / (VP + FP). Pero Chouldechova (2017) demuestra que, con tasas base distintas, igualar la PPV obliga a que la FPR y la FNR difieran: los afroamericanos que no reinciden son marcados de alto riesgo con más frecuencia y los blancos que reinciden pasan como de bajo riesgo. Es el hallazgo de ProPublica y no responde a la pregunta de la Corte.",
+      dp: "Igualar las tasas de detención ignora que las tasas base observadas difieren. No garantiza que quienes no reincidirían corran el mismo riesgo de ser marcados como peligrosos (FPR) y puede liberar a muchos más reincidentes en un grupo. Es una meta de distribución agregada, no la que fija la Corte."
     },
     en: {
-      eo: "The Court defines fairness by the error to avoid among those who deserve the favorable outcome: someone who would not reoffend losing their liberty. Equal opportunity equalizes P(released | does not reoffend) across groups. It is the typical choice in criminal justice, where the slides' false positive (labeling a harmless person as dangerous) causes direct harm. Cost: with different base rates, predictive and demographic parity break, and the number of released reoffenders usually rises; those costs must be managed (supervision, conditions), not ignored.",
-      pp: "This is Northpointe's defense: a recommendation “means the same” in both groups. But with different base rates, calibration forces errors onto the group with the higher observed reoffense rate: Black defendants who would not reoffend are detained more often and white reoffenders are released more often. That is exactly ProPublica's finding, and it does not answer the Court's question.",
-      dp: "Equalizing release rates ignores that observed base rates differ. It does not guarantee that people who would not reoffend have the same chance of release, and it may release many more reoffenders in one group. It is an aggregate distribution goal, not the one set by the Court."
+      eo: "The Court defines fairness by the error that must not fall unequally on those who deserve the favorable outcome: labeling as high risk someone who would not reoffend (false positive). Equal opportunity, applied to the favorable outcome (not reoffending), amounts to equalizing FPR = FP / (FP + TN) across groups: exactly the gap ProPublica documented (44.9% vs 23.5%). Cost: with different base rates, predictive parity (Northpointe's argument) and demographic parity break, and released reoffenders may increase; those costs must be managed (supervision, conditions), not ignored.",
+      pp: "This is Northpointe's defense (Dieterich et al., 2016): “high risk” means the same probability of reoffending in both groups, PPV = TP / (TP + FP). But Chouldechova (2017) shows that, with different base rates, equalizing PPV forces FPR and FNR to differ: Black defendants who would not reoffend are labeled high risk more often and white reoffenders pass as low risk. That is ProPublica's finding, and it does not answer the Court's question.",
+      dp: "Equalizing detention rates ignores that observed base rates differ. It does not guarantee that people who would not reoffend face the same risk of being labeled dangerous (FPR), and it may release many more reoffenders in one group. It is an aggregate distribution goal, not the one set by the Court."
     }
   }
 },
+
 {
-  id: "salud", seed: 21, sd: 1.1, tB: 30, cap: 650,
+  id: "salud", pos: "fav", seed: 21, sd: 1.1, tB: 30, cap: 650,
   groups: {
     A: { base: 0.40, bias: -2.0, es: { name: "Pacientes rurales", pl: "pacientes rurales" }, en: { name: "Rural patients", pl: "rural patients" } },
     B: { base: 0.22, bias: 0, es: { name: "Pacientes urbanos", pl: "pacientes urbanos" }, en: { name: "Urban patients", pl: "urban patients" } }
@@ -572,7 +593,9 @@ const CASES = [
     decision: "INSCRIBIR en el programa (resultado favorable) o NO inscribir.",
     positive: "El paciente realmente tiene necesidad alta de cuidado.",
     objectiveTxt: "La Secretaría de Salud fija: «Todo paciente con necesidad alta debe tener la misma probabilidad de entrar al programa, viva donde viva. Dejar fuera a quien lo necesita es el error más caro: termina en hospitalizaciones evitables». El presupuesto alcanza para unos 650 lugares.",
+    posNote: "Positivo = el paciente tiene necesidad alta de cuidado (Y = 1), como en Obermeyer et al. (2019), donde el algoritmo identifica a los pacientes de alto riesgo para el programa. La predicción positiva es «inscribir». Un falso negativo (FN) es un paciente que lo necesitaba y quedó fuera. Aquí el positivo coincide con el resultado favorable, así que la igualdad de oportunidad iguala la TPR.",
     note: "El puntaje está sesgado contra los pacientes rurales (proxy de gasto). Observa qué ocurre con un umbral único.",
+    thr: "El modelo asigna un puntaje de 0 a 100 (necesidad estimada de cuidado). Inscribir si puntaje ≥ umbral.",
     labels: { posReal: "Necesidad alta", negReal: "Necesidad baja", posPred: "Inscribir", negPred: "No inscribir" }
   },
   en: {
@@ -581,7 +604,9 @@ const CASES = [
     decision: "ENROLL in the program (favorable outcome) or DO NOT enroll.",
     positive: "The patient truly has high care needs.",
     objectiveTxt: "The Health Ministry states: “Every patient with high needs must have the same chance of entering the program, wherever they live. Leaving out someone who needs it is the costliest error: it ends in avoidable hospitalizations.” The budget covers about 650 places.",
+    posNote: "Positive = the patient has high care needs (Y = 1), as in Obermeyer et al. (2019), where the algorithm identifies high-risk patients for the program. The positive prediction is “enroll”. A false negative (FN) is a patient who needed it and was left out. Here the positive class is the favorable outcome, so equal opportunity equalizes TPR.",
     note: "The score is biased against rural patients (spending proxy). Watch what happens with a single threshold.",
+    thr: "The model assigns a 0–100 score (estimated care need). Enroll if score ≥ threshold.",
     labels: { posReal: "High need", negReal: "Low need", posPred: "Enroll", negPred: "Do not enroll" }
   },
   personas: [
@@ -658,104 +683,109 @@ const CASES = [
   }
 },
 {
-  id: "credito", seed: 31, sd: 1.0, tB: 75,
+  id: "credito", pos: "risk", seed: 31, sd: 1.8, tB: 40,
   groups: {
-    A: { base: 0.55, bias: 0, es: { name: "Trabajadores informales", pl: "trabajadores informales" }, en: { name: "Informal workers", pl: "informal workers" } },
-    B: { base: 0.88, bias: 0, es: { name: "Trabajadores formales", pl: "trabajadores formales" }, en: { name: "Formal workers", pl: "formal workers" } }
+    A: { base: 0.40, bias: 0, es: { name: "Trabajadores informales", pl: "trabajadores informales" }, en: { name: "Informal workers", pl: "informal workers" } },
+    B: { base: 0.15, bias: 0, es: { name: "Trabajadores formales", pl: "trabajadores formales" }, en: { name: "Formal workers", pl: "formal workers" } }
   },
   objective: "pp",
   custom: { default: (R) => ({ bad: R.T.defRate > 0.14, sev: R.T.defRate - 0.14 }) },
   es: {
     title: "Microcréditos para negocios", tag: "Crédito · fintech",
-    context: "Una fintech mexicana otorga microcréditos con un modelo de puntaje y un único producto con la misma tasa de interés para todos. El consejo y el supervisor financiero exigen que el puntaje se pueda auditar con un solo significado: que una aprobación represente el mismo riesgo en cualquier segmento.",
-    decision: "APROBAR el crédito (resultado favorable) o RECHAZAR.",
-    positive: "El solicitante paga el crédito completo.",
-    objectiveTxt: "El consejo y el supervisor establecen: «Un aprobado debe significar la misma probabilidad de pago en cualquier segmento. Solo así la tasa única es justa —ningún segmento subsidia a otro— y el puntaje se puede explicar y auditar». Los fondeadores retiran recursos si la morosidad supera 14%.",
-    note: "Las metas de inclusión financiera son legítimas, pero en este caso el mandato se refiere al significado del puntaje.",
-    labels: { posReal: "Paga", negReal: "No paga", posPred: "Aprobar", negPred: "Rechazar" }
+    context: "Una fintech mexicana otorga microcréditos con un modelo de probabilidad de impago y un único producto con la misma tasa de interés para todos. El consejo y el supervisor financiero exigen que el puntaje se pueda auditar con un solo significado: que una predicción de impago (rechazo) represente el mismo riesgo en cualquier segmento.",
+    decision: "RECHAZAR el crédito (predicción positiva: impago) o APROBAR (predicción negativa).",
+    positive: "El solicitante cae en impago (default) en los siguientes 12 meses (Y = 1).",
+    objectiveTxt: "El consejo y el supervisor establecen: «Un rechazo por riesgo debe significar la misma probabilidad de impago en cualquier segmento. Solo así cada rechazo se justifica con el mismo criterio y el puntaje se puede explicar y auditar». Los fondeadores retiran recursos si la morosidad de los créditos aprobados supera 14%.",
+    posNote: "Positivo = impago (default, Y = 1), la convención estándar de los modelos de riesgo de crédito, cuya variable objetivo es la probabilidad de incumplimiento (PD). La predicción positiva es «alto riesgo → rechazar». Así, un falso positivo (FP) es un buen pagador rechazado y un falso negativo (FN) es un crédito aprobado que cae en impago. Como el resultado favorable (pagar) es la clase negativa, la igualdad de oportunidad se aplica igualando la FPR.",
+    note: "Las metas de inclusión financiera son legítimas, pero en este caso el mandato se refiere al significado del puntaje. La morosidad de la cartera aprobada es FN / (FN + VN).",
+    thr: "El modelo asigna un puntaje de 0 a 100 (probabilidad estimada de impago, PD). Rechazar si puntaje ≥ umbral.",
+    labels: { posReal: "Impago", negReal: "Paga", posPred: "Rechazar (alto riesgo)", negPred: "Aprobar" }
   },
   en: {
     title: "Small-business microloans", tag: "Credit · fintech",
-    context: "A Mexican fintech grants microloans with a scoring model and a single product with the same interest rate for everyone. The board and the financial supervisor require that the score can be audited with a single meaning: an approval must represent the same risk in any segment.",
-    decision: "APPROVE the loan (favorable outcome) or REJECT.",
-    positive: "The applicant repays the loan in full.",
-    objectiveTxt: "The board and the supervisor state: “An approval must mean the same probability of repayment in any segment. Only then is the single rate fair —no segment subsidizes another— and the score can be explained and audited.” Funders withdraw if defaults exceed 14%.",
-    note: "Financial inclusion goals are legitimate, but in this case the mandate concerns the meaning of the score.",
-    labels: { posReal: "Repays", negReal: "Defaults", posPred: "Approve", negPred: "Reject" }
+    context: "A Mexican fintech grants microloans with a probability-of-default model and a single product with the same interest rate for everyone. The board and the financial supervisor require that the score can be audited with a single meaning: a default prediction (rejection) must represent the same risk in any segment.",
+    decision: "REJECT the loan (positive prediction: default) or APPROVE (negative prediction).",
+    positive: "The applicant defaults within the next 12 months (Y = 1).",
+    objectiveTxt: "The board and the supervisor state: “A risk-based rejection must mean the same probability of default in any segment. Only then is every rejection justified by the same criterion and the score can be explained and audited.” Funders withdraw if defaults among approved loans exceed 14%.",
+    posNote: "Positive = default (Y = 1), the standard convention in credit risk models, whose target is the probability of default (PD). The positive prediction is “high risk → reject”. A false positive (FP) is a good payer who was rejected; a false negative (FN) is an approved loan that defaults. Because the favorable outcome (repaying) is the negative class, equal opportunity is applied by equalizing FPR.",
+    note: "Financial inclusion goals are legitimate, but in this case the mandate concerns the meaning of the score. The default rate of the approved portfolio is FN / (FN + TN).",
+    thr: "The model assigns a 0–100 score (estimated probability of default, PD). Reject if score ≥ threshold.",
+    labels: { posReal: "Defaults", negReal: "Repays", posPred: "Reject (high risk)", negPred: "Approve" }
   },
   personas: [
-    { name: "Lupita Torres", init: "LT", group: "A", lens: "tpr",
+    { name: "Lupita Torres", init: "LT", group: "A", lens: "fpr", dir: -1,
       es: { role: "Comerciante informal · siempre ha pagado",
-        bad: "Llevo diez años pagando mis tandas y mi crédito de mercancía a tiempo, y me lo negaron. De los informales que sí pagamos aprueban al {tprA}; de los asalariados, al {tprB}.",
-        good: "Si pagas, te aprueban casi igual que a un asalariado ({tprA} vs {tprB}). Por fin cuenta mi historial.",
+        bad: "Llevo diez años pagando mis tandas y mi crédito de mercancía a tiempo, y me rechazaron. De los informales que sí pagamos rechazan al {fprA}; de los asalariados, al {fprB}.",
+        good: "Si pagas, el riesgo de que te rechacen es casi el mismo que para un asalariado ({fprA} vs {fprB}). Por fin cuenta mi historial.",
         priv: "Me aprobaron a la primera." },
       en: { role: "Informal vendor · always repaid",
-        bad: "I've paid my savings circles and my merchandise credit on time for ten years, and they turned me down. Of informal workers who do repay, {tprA} get approved; of salaried workers, {tprB}.",
-        good: "If you repay, you get approved almost like a salaried worker ({tprA} vs {tprB}). My track record finally counts.",
+        bad: "I've paid my savings circles and my merchandise credit on time for ten years, and they turned me down. Of informal workers who do repay, {fprA} get rejected; of salaried workers, {fprB}.",
+        good: "If you repay, your chance of being rejected is almost the same as a salaried worker's ({fprA} vs {fprB}). My track record finally counts.",
         priv: "I was approved on the first try." } },
-    { name: "Ricardo Peña", init: "RP", group: "B", lens: "tpr",
+    { name: "Ricardo Peña", init: "RP", group: "B", lens: "fpr", dir: -1,
       es: { role: "Empleado formal · buen pagador",
-        bad: "Tengo nómina y nunca me he atrasado, y me rechazaron. Aprueban al {tprA} de los informales que pagan y al {tprB} de nosotros.",
-        good: "Me evaluaron igual que a cualquiera que paga ({tprB} vs {tprA}).",
+        bad: "Tengo nómina y nunca me he atrasado, y me rechazaron. Rechazan al {fprB} de los asalariados que pagamos y al {fprA} de los informales que pagan.",
+        good: "Me evaluaron igual que a cualquiera que paga ({fprB} vs {fprA}).",
         priv: "Con mi recibo de nómina me aprobaron en minutos." },
       en: { role: "Salaried employee · good payer",
-        bad: "I'm on payroll and have never been late, and they rejected me. They approve {tprA} of informal workers who repay and {tprB} of us.",
-        good: "They assessed me like anyone else who repays ({tprB} vs {tprA}).",
+        bad: "I'm on payroll and have never been late, and they rejected me. They reject {fprB} of salaried workers who repay and {fprA} of informal workers who repay.",
+        good: "They assessed me like anyone else who repays ({fprB} vs {fprA}).",
         priv: "With my payslip I was approved in minutes." } },
     { name: "Sofía Garza", init: "SG", group: null, lens: "ppv",
       es: { role: "Directora de riesgos",
-        bad: "Entre los aprobados, paga el {xhi} de los {hi_pl} y el {xlo} de los {lo_pl}. Con una sola tasa de interés, un segmento subsidia al otro y no puedo justificarlo ante el comité ni ante el supervisor.",
-        good: "Un «aprobado» significa la misma probabilidad de pago en ambos segmentos ({ppvA} vs {ppvB}). Puedo cobrar la misma tasa y defenderla." },
+        bad: "Entre los rechazados, habría caído en impago el {xhi} de los {hi_pl} y solo el {xlo} de los {lo_pl}. Si un rechazo no significa el mismo riesgo en ambos segmentos, no puedo justificarlo ante el comité ni ante el supervisor.",
+        good: "Un rechazo significa la misma probabilidad de impago en ambos segmentos ({ppvA} vs {ppvB}). Puedo explicar cada decisión con el mismo criterio." },
       en: { role: "Chief risk officer",
-        bad: "Among approved applicants, {xhi} of {hi_pl} repay versus {xlo} of {lo_pl}. With a single interest rate, one segment subsidizes the other and I can't justify it to the committee or the supervisor.",
-        good: "An “approval” means the same probability of repayment in both segments ({ppvA} vs {ppvB}). I can charge the same rate and defend it." } },
+        bad: "Among rejected applicants, {xhi} of {hi_pl} would have defaulted versus only {xlo} of {lo_pl}. If a rejection doesn't mean the same risk in both segments, I can't justify it to the committee or the supervisor.",
+        good: "A rejection means the same probability of default in both segments ({ppvA} vs {ppvB}). I can explain every decision with the same criterion." } },
     { name: "Fondo Andino", init: "FA", group: null, lens: "default",
       es: { role: "Fondeador institucional",
-        bad: "La morosidad de la cartera nueva es de {defRate}. Por encima de 14% retiramos el fondeo.",
-        good: "Morosidad de {defRate}: dentro de nuestro apetito de riesgo." },
+        bad: "La morosidad de los créditos aprobados es de {defRate}. Por encima de 14% retiramos el fondeo.",
+        good: "Morosidad de los aprobados de {defRate}: dentro de nuestro apetito de riesgo." },
       en: { name: "Andino Fund", role: "Institutional funder",
-        bad: "Default on the new portfolio is {defRate}. Above 14% we withdraw funding.",
-        good: "Default of {defRate}: within our risk appetite." } },
+        bad: "Default among approved loans is {defRate}. Above 14% we withdraw funding.",
+        good: "Default among approved loans of {defRate}: within our risk appetite." } },
     { name: "Carmen Ávila", init: "CA", group: null, lens: "sr",
       es: { role: "Red de Inclusión Financiera (ONG)",
-        bad: "Solo el {xlo} de los {lo_pl} obtiene crédito, frente al {xhi} de los {hi_pl}. Así se perpetúa la exclusión financiera.",
-        good: "El acceso al crédito es similar entre segmentos ({srA} vs {srB})." },
+        bad: "La fintech rechaza al {xhi} de los {hi_pl} y solo al {xlo} de los {lo_pl}. Así se perpetúa la exclusión financiera.",
+        good: "Las tasas de rechazo son similares entre segmentos ({srA} vs {srB})." },
       en: { role: "Financial Inclusion Network (NGO)",
-        bad: "Only {xlo} of {lo_pl} get credit, versus {xhi} of {hi_pl}. That is how financial exclusion perpetuates itself.",
-        good: "Access to credit is similar across segments ({srA} vs {srB})." } }
+        bad: "The fintech rejects {xhi} of {hi_pl} and only {xlo} of {lo_pl}. That is how financial exclusion perpetuates itself.",
+        good: "Rejection rates are similar across segments ({srA} vs {srB})." } }
   ],
   press: [
     { lens: "ppv", kind: "bad", outlet: "Finanzas Abiertas",
-      es: { h: "En la fintech, un «aprobado» no vale igual en todos los segmentos", s: "Entre los aprobados paga el {xhi} de los {hi_pl} y el {xlo} de los {lo_pl}; analistas advierten subsidios cruzados." },
-      en: { h: "At the fintech, an “approval” isn't worth the same in every segment", s: "Among approved applicants, {xhi} of {hi_pl} repay versus {xlo} of {lo_pl}; analysts warn of cross-subsidies." } },
+      es: { h: "En la fintech, un «rechazo» no significa el mismo riesgo en todos los segmentos", s: "Entre los rechazados habría incumplido el {xhi} de los {hi_pl} y el {xlo} de los {lo_pl}; analistas cuestionan el criterio del modelo." },
+      en: { h: "At the fintech, a “rejection” doesn't mean the same risk in every segment", s: "Among rejected applicants, {xhi} of {hi_pl} would have defaulted versus {xlo} of {lo_pl}; analysts question the model's criterion." } },
     { lens: "default", kind: "bad", outlet: "Mercados Hoy",
-      es: { h: "Morosidad de {defRate} enciende alertas entre fondeadores", s: "El fondeo de la fintech podría retirarse si la cartera no se corrige." },
-      en: { h: "{defRate} default rate sets off alarms among funders", s: "The fintech's funding could be withdrawn if the portfolio is not corrected." } },
-    { lens: "tpr", kind: "bad", outlet: "Pulso Digital",
-      es: { h: "Buenos pagadores rechazados: la fintech aprueba al {xlo} de los {lo_pl} cumplidos", s: "Entre quienes sí pagan, se aprueba al {xhi} de los {hi_pl}." },
-      en: { h: "Good payers rejected: the fintech approves {xlo} of reliable {lo_pl}", s: "Among those who do repay, {xhi} of {hi_pl} are approved." } },
+      es: { h: "Morosidad de {defRate} en los créditos aprobados enciende alertas entre fondeadores", s: "El fondeo de la fintech podría retirarse si la cartera no se corrige." },
+      en: { h: "{defRate} default rate among approved loans sets off alarms among funders", s: "The fintech's funding could be withdrawn if the portfolio is not corrected." } },
+    { lens: "fpr", kind: "bad", outlet: "Pulso Digital",
+      es: { h: "Buenos pagadores rechazados: la fintech rechaza al {xhi} de los {hi_pl} cumplidos", s: "Entre quienes sí pagan, se rechaza al {xlo} de los {lo_pl}." },
+      en: { h: "Good payers rejected: the fintech rejects {xhi} of reliable {hi_pl}", s: "Among those who do repay, {xlo} of {lo_pl} are rejected." } },
     { lens: "sr", kind: "bad", outlet: "Voz Ciudadana",
-      es: { h: "Exclusión financiera: solo el {xlo} de los {lo_pl} obtiene crédito", s: "Frente al {xhi} de los {hi_pl}, según datos del propio modelo." },
-      en: { h: "Financial exclusion: only {xlo} of {lo_pl} get credit", s: "Versus {xhi} of {hi_pl}, according to the model's own data." } },
+      es: { h: "Exclusión financiera: la fintech rechaza al {xhi} de los {hi_pl}", s: "Frente al {xlo} de los {lo_pl}, según datos del propio modelo." },
+      en: { h: "Financial exclusion: the fintech rejects {xhi} of {hi_pl}", s: "Versus {xlo} of {lo_pl}, according to the model's own data." } },
     { lens: "ppv", kind: "good", outlet: "Finanzas Abiertas",
-      es: { h: "Supervisor valida el modelo: un aprobado significa lo mismo en todos los segmentos", s: "La probabilidad de pago entre aprobados es {ppvA} y {ppvB}." },
-      en: { h: "Supervisor validates the model: an approval means the same in all segments", s: "The repayment probability among approved applicants is {ppvA} and {ppvB}." } }
+      es: { h: "Supervisor valida el modelo: un rechazo significa el mismo riesgo en todos los segmentos", s: "La probabilidad de impago entre rechazados es {ppvA} y {ppvB}." },
+      en: { h: "Supervisor validates the model: a rejection means the same risk in all segments", s: "The probability of default among rejected applicants is {ppvA} and {ppvB}." } }
   ],
   fb: {
     es: {
-      pp: "El mandato es que el puntaje conserve su significado: P(paga | aprobado) igual entre segmentos. Paridad predictiva es la elección típica en crédito y seguros, donde la decisión depende de confiar en el puntaje y la tasa única solo es justa si el riesgo aprobado es el mismo. Costo: los informales que sí pagan se aprueban con menor frecuencia (igualdad de oportunidad rota) y su acceso es menor (paridad demográfica rota). Ese costo debe atenderse con otros instrumentos (productos para construir historial, datos alternativos), no deformando el significado del puntaje.",
-      eo: "Igualar la aprobación de los buenos pagadores es una meta valiosa de inclusión, pero el «aprobado» informal y el formal dejan de significar lo mismo: con tasa única, la cartera de un segmento subsidia a la del otro y la morosidad sube. No es lo que piden el consejo y el supervisor.",
-      dp: "Igualar el acceso obliga a aprobar informales con menor probabilidad de pago (o a rechazar formales solventes); el puntaje pierde significado y la morosidad sube. Es una meta de inclusión, no la que fija este caso."
+      pp: "El mandato es que el puntaje conserve su significado: PPV = P(impago | rechazado) = VP / (VP + FP) igual entre segmentos. La paridad predictiva (y, en general, la calibración del puntaje) es la elección típica en crédito y seguros, donde la decisión depende de confiar en el puntaje y cada rechazo debe justificarse con el mismo criterio de riesgo. Costo: los informales que sí pagan son rechazados con más frecuencia (FPR mayor: igualdad de oportunidad rota) y su tasa de rechazo es mayor (paridad demográfica rota). Ese costo debe atenderse con otros instrumentos (productos para construir historial, datos alternativos), no deformando el significado del puntaje.",
+      eo: "Igualar la FPR —que los buenos pagadores sean rechazados con la misma frecuencia en ambos segmentos— es una meta valiosa de inclusión, pero un rechazo informal y uno formal dejan de significar el mismo riesgo y la morosidad de los aprobados sube. No es lo que piden el consejo y el supervisor.",
+      dp: "Igualar las tasas de rechazo obliga a aprobar informales con mayor probabilidad de impago (o a rechazar formales solventes); el puntaje pierde significado y la morosidad sube. Es una meta de inclusión, no la que fija este caso."
     },
     en: {
-      pp: "The mandate is for the score to keep its meaning: P(repays | approved) equal across segments. Predictive parity is the typical choice in credit and insurance, where the decision depends on trusting the score and a single rate is only fair if the approved risk is the same. Cost: informal workers who do repay are approved less often (equal opportunity breaks) and their access is lower (demographic parity breaks). That cost should be addressed with other instruments (credit-building products, alternative data), not by distorting the meaning of the score.",
-      eo: "Equalizing approval of good payers is a valuable inclusion goal, but an informal and a formal “approval” no longer mean the same: with a single rate, one segment's portfolio subsidizes the other's and defaults rise. That's not what the board and supervisor ask for.",
-      dp: "Equalizing access forces approving informal workers with lower repayment probability (or rejecting solvent formal workers); the score loses its meaning and defaults rise. It is an inclusion goal, not the one set in this case."
+      pp: "The mandate is for the score to keep its meaning: PPV = P(default | rejected) = TP / (TP + FP) equal across segments. Predictive parity (and, more generally, score calibration) is the typical choice in credit and insurance, where the decision depends on trusting the score and every rejection must be justified by the same risk criterion. Cost: informal workers who do repay are rejected more often (higher FPR: equal opportunity breaks) and their rejection rate is higher (demographic parity breaks). That cost should be addressed with other instruments (credit-building products, alternative data), not by distorting the meaning of the score.",
+      eo: "Equalizing FPR —good payers rejected equally often in both segments— is a valuable inclusion goal, but an informal and a formal rejection no longer mean the same risk, and defaults among approved loans rise. That's not what the board and supervisor ask for.",
+      dp: "Equalizing rejection rates forces approving informal workers with a higher probability of default (or rejecting solvent formal workers); the score loses its meaning and defaults rise. It is an inclusion goal, not the one set in this case."
     }
   }
 },
+
 {
-  id: "talento", seed: 41, sd: 1.8, tB: 50,
+  id: "talento", pos: "fav", seed: 41, sd: 1.8, tB: 50,
   groups: {
     A: { base: 0.22, bias: 0, es: { name: "Mujeres", pl: "mujeres" }, en: { name: "Women", pl: "women" } },
     B: { base: 0.55, bias: 0, es: { name: "Hombres", pl: "hombres" }, en: { name: "Men", pl: "men" } }
@@ -768,7 +798,9 @@ const CASES = [
     decision: "ADMITIR al programa (resultado favorable) o NO admitir.",
     positive: "Evaluación histórica de «alto desempeño» (etiqueta sesgada).",
     objectiveTxt: "La dirección general anuncia: «Este programa existe para corregir una desigualdad histórica documentada en el acceso al liderazgo. Mujeres y hombres deben acceder en la misma proporción». La filial de Nueva York debe además auditar la tasa de selección por sexo (Ley Local 144, 2023).",
+    posNote: "Positivo = candidato de alto desempeño según la evaluación histórica (Y = 1), la convención habitual en modelos de selección de talento. La predicción positiva es «admitir». Un falso negativo (FN) es alguien bien evaluado que quedó fuera. Aquí el positivo coincide con el resultado favorable, así que la igualdad de oportunidad iguala la TPR.",
     note: "Cuando la etiqueta («alto desempeño») está sesgada, la TPR y la PPV también lo están: se calculan con esa misma etiqueta.",
+    thr: "El modelo asigna un puntaje de 0 a 100 (probabilidad estimada de alto desempeño). Admitir si puntaje ≥ umbral.",
     labels: { posReal: "Alto desempeño (hist.)", negReal: "Sin alto desempeño", posPred: "Admitir", negPred: "No admitir" }
   },
   en: {
@@ -777,7 +809,9 @@ const CASES = [
     decision: "ADMIT to the program (favorable outcome) or DO NOT admit.",
     positive: "Historical “high performer” rating (biased label).",
     objectiveTxt: "Senior management announces: “This program exists to correct a documented historical inequality in access to leadership. Women and men must gain access at the same rate.” The New York subsidiary must also audit selection rates by sex (Local Law 144, 2023).",
+    posNote: "Positive = high-performing candidate according to historical reviews (Y = 1), the usual convention in talent selection models. The positive prediction is “admit”. A false negative (FN) is a well-rated person who was left out. Here the positive class is the favorable outcome, so equal opportunity equalizes TPR.",
     note: "When the label (“high performer”) is biased, TPR and PPV are biased too: they are computed with that same label.",
+    thr: "The model assigns a 0–100 score (estimated probability of high performance). Admit if score ≥ threshold.",
     labels: { posReal: "High performer (hist.)", negReal: "Not high performer", posPred: "Admit", negPred: "Do not admit" }
   },
   personas: [
@@ -869,10 +903,10 @@ const TRANSLATOR = {
   es: {
     head: ["Métrica", "Fórmula", "Pregunta", "Quién percibe injusticia si se rompe", "Cómo suena"],
     rows: [
-      ["Paridad demográfica", "(VP + FP) / N", "¿Cada grupo recibe el resultado favorable en la misma proporción?", "El grupo con menor tasa de selección, en voz colectiva.", "«De los nuestros casi nadie entra; de ellos, la mitad.»"],
-      ["Igualdad de oportunidad", "VP / (VP + FN)", "¿Quienes sí lo merecen tienen la misma probabilidad de obtenerlo?", "La persona que lo merecía y fue rechazada (falso negativo).", "«Hice todo bien y aun así me lo negaron; a ellos no.»"],
-      ["Paridad predictiva", "VP / (VP + FP)", "¿Una decisión favorable significa lo mismo en cada grupo?", "Quien decide o asume el riesgo (juez, banco, médico).", "«El mismo puntaje no significa lo mismo; no puedo confiar igual en él.»"],
-      ["Tasa de falsos positivos (referencia)", "FP / (FP + VN)", "¿Quien no lo merece lo recibe con la misma frecuencia?", "El grupo que ve que al otro se le concede sin merecerlo.", "«A ellos los sueltan aunque reincidan.»"]
+      ["Paridad demográfica", "(VP + FP) / N", "¿Cada grupo recibe la predicción positiva en la misma proporción?", "El grupo más afectado en la tasa agregada, en voz colectiva.", "«A los nuestros casi siempre nos rechazan; a ellos, casi nunca.»"],
+      ["Igualdad de oportunidad", "VP / (VP + FN) si el positivo es el resultado favorable; FP / (FP + VN) si el positivo es el evento adverso", "¿Quienes merecen el resultado favorable lo obtienen con la misma probabilidad?", "La persona que lo merecía y no lo obtuvo (FN si positivo = favorable; FP si positivo = evento adverso).", "«Hice todo bien y aun así me lo negaron; a ellos no.»"],
+      ["Paridad predictiva", "VP / (VP + FP)", "¿Una predicción positiva significa lo mismo en cada grupo?", "Quien decide o asume el riesgo (juez, banco, médico).", "«El mismo puntaje no significa lo mismo; no puedo confiar igual en él.»"],
+      ["Tasa de falsos negativos (referencia)", "FN / (VP + FN)", "¿El evento o la necesidad real pasan inadvertidos con la misma frecuencia en cada grupo?", "El grupo que ve que al otro se le deja pasar (o que a él se le ignora).", "«A ellos los sueltan aunque reincidan.»"]
     ],
     stepsTitle: "Cómo usar el simulador",
     steps: [
@@ -882,17 +916,17 @@ const TRANSLATOR = {
       "Lee las voces y la prensa: solo hablan quienes perciben injusticia, y cada mensaje indica su lente (la tasa a través de la cual esa persona vive la decisión). Una métrica bien elegida no elimina todas las quejas: el teorema de imposibilidad garantiza que alguna permanece.",
       "Escribe tu justificación y evalúa. Prueba las otras métricas en el mismo caso y compara qué quejas aparecen y desaparecen. Descarga la bitácora como evidencia."
     ],
-    convTitle: "Convención del simulador",
-    conv: "En todos los casos, «positivo real» = la persona merece el resultado favorable, y «predicción positiva» = el modelo se lo otorga (convención de Hardt, Price & Srebro, 2016). En el caso COMPAS esto invierte la convención de la lámina (donde positivo = reincide). La tolerancia para considerar cumplida una métrica es de 3 puntos porcentuales.",
+    convTitle: "Clase positiva en cada caso",
+    conv: "Cada caso usa la convención dominante de su industria, y la nota «Clase positiva» de cada caso la explica. En justicia penal y crédito, el positivo es el evento adverso que el modelo predice (reincide, impago) y la predicción positiva es la decisión desfavorable (detener, rechazar), como en ProPublica (2016), Chouldechova (2017) y los modelos de probabilidad de impago. En salud y talento, el positivo es la necesidad o el desempeño que el programa busca y la predicción positiva es inscribir o admitir. La igualdad de oportunidad (Hardt, Price & Srebro, 2016) iguala el trato a quienes merecen el resultado favorable: es la TPR cuando el positivo es el favorable y la FPR cuando el positivo es el evento adverso. La tolerancia para considerar cumplida una métrica es de 3 puntos porcentuales.",
     refsTitle: "Referencias"
   },
   en: {
     head: ["Metric", "Formula", "Question", "Who perceives injustice if it breaks", "How it sounds"],
     rows: [
-      ["Demographic parity", "(TP + FP) / N", "Does each group receive the favorable outcome at the same rate?", "The group with the lower selection rate, as a collective voice.", "“Almost none of us get in; half of them do.”"],
-      ["Equal opportunity", "TP / (TP + FN)", "Do those who deserve it have the same chance of getting it?", "The person who deserved it and was rejected (false negative).", "“I did everything right and was still denied; they weren't.”"],
-      ["Predictive parity", "TP / (TP + FP)", "Does a favorable decision mean the same thing in each group?", "Whoever decides or bears the risk (judge, bank, physician).", "“The same score doesn't mean the same thing; I can't trust it equally.”"],
-      ["False positive rate (reference)", "FP / (FP + TN)", "Does someone who doesn't deserve it get it equally often?", "The group that sees the other one granted it undeservedly.", "“They get released even when they reoffend.”"]
+      ["Demographic parity", "(TP + FP) / N", "Does each group receive the positive prediction at the same rate?", "The group hit hardest in the aggregate rate, as a collective voice.", "“They almost always reject us; they almost never reject them.”"],
+      ["Equal opportunity", "TP / (TP + FN) if the positive class is the favorable outcome; FP / (FP + TN) if the positive class is the adverse event", "Do those who deserve the favorable outcome get it with the same probability?", "The person who deserved it and didn't get it (FN if positive = favorable; FP if positive = adverse event).", "“I did everything right and was still denied; they weren't.”"],
+      ["Predictive parity", "TP / (TP + FP)", "Does a positive prediction mean the same thing in each group?", "Whoever decides or bears the risk (judge, bank, physician).", "“The same score doesn't mean the same thing; I can't trust it equally.”"],
+      ["False negative rate (reference)", "FN / (TP + FN)", "Do the real event or need go unnoticed equally often in each group?", "The group that sees the other one let through (or sees itself ignored).", "“They get released even when they reoffend.”"]
     ],
     stepsTitle: "How to use the simulator",
     steps: [
@@ -902,8 +936,8 @@ const TRANSLATOR = {
       "Read the voices and the press: only those who perceive injustice speak, and each message shows its lens (the rate through which that person experiences the decision). A well-chosen metric does not remove every complaint: the impossibility theorem guarantees some remain.",
       "Write your justification and evaluate. Try the other metrics on the same case and compare which complaints appear and disappear. Download the log as evidence."
     ],
-    convTitle: "Simulator convention",
-    conv: "In every case, “actual positive” = the person deserves the favorable outcome, and “positive prediction” = the model grants it (the convention of Hardt, Price & Srebro, 2016). In the COMPAS case this reverses the slides' convention (where positive = reoffends). The tolerance for a metric to hold is 3 percentage points.",
+    convTitle: "Positive class in each case",
+    conv: "Each case uses the dominant convention of its industry, explained in the case's “Positive class” note. In criminal justice and credit, the positive class is the adverse event the model predicts (reoffends, defaults) and the positive prediction is the unfavorable decision (detain, reject), as in ProPublica (2016), Chouldechova (2017) and probability-of-default models. In health and talent, the positive class is the need or performance the program looks for and the positive prediction is enroll or admit. Equal opportunity (Hardt, Price & Srebro, 2016) equalizes treatment of those who deserve the favorable outcome: it is TPR when the positive class is favorable and FPR when the positive class is the adverse event. The tolerance for a metric to hold is 3 percentage points.",
     refsTitle: "References"
   }
 };
@@ -912,6 +946,7 @@ const REFS = [
   "Angwin, J., Larson, J., Mattu, S., & Kirchner, L. (2016, May 23). Machine bias. ProPublica. https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing",
   "Barocas, S., Hardt, M., & Narayanan, A. (2023). Fairness and machine learning: Limitations and opportunities. MIT Press. https://fairmlbook.org",
   "Chouldechova, A. (2017). Fair prediction with disparate impact: A study of bias in recidivism prediction instruments. Big Data, 5(2), 153–163.",
+  "Dieterich, W., Mendoza, C., & Brennan, T. (2016). COMPAS risk scales: Demonstrating accuracy equity and predictive parity. Northpointe Inc.",
   "Hardt, M., Price, E., & Srebro, N. (2016). Equality of opportunity in supervised learning. Advances in Neural Information Processing Systems, 29.",
   "Kleinberg, J., Mullainathan, S., & Raghavan, M. (2017). Inherent trade-offs in the fair determination of risk scores. Proceedings of ITCS 2017.",
   "Obermeyer, Z., Powers, B., Vogeli, C., & Mullainathan, S. (2019). Dissecting racial bias in an algorithm used to manage the health of populations. Science, 366(6464), 447–453.",
@@ -953,7 +988,7 @@ function countsAt(G, t) {
 }
 const div = (a, b) => (b > 0 ? a / b : NaN);
 function rates(c) {
-  return { sr: div(c.tp + c.fp, c.n), tpr: div(c.tp, c.tp + c.fn), ppv: div(c.tp, c.tp + c.fp), fpr: div(c.fp, c.fp + c.tn) };
+  return { sr: div(c.tp + c.fp, c.n), tpr: div(c.tp, c.tp + c.fn), ppv: div(c.tp, c.tp + c.fp), fpr: div(c.fp, c.fp + c.tn), fnr: div(c.fn, c.tp + c.fn) };
 }
 // Busca el umbral de A que iguala la métrica con B (desempate: el más cercano a tB)
 function solveA(GA, GB, tB, metric) {
@@ -997,15 +1032,17 @@ function compute() {
   const c = cur(), D = data(c);
   let tA = state.tA;
   if (state.strategy === "single") tA = state.tB;
-  else if (MK[state.strategy]) tA = solveA(D.A, D.B, state.tB, MK[state.strategy]);
+  else if (mk(c, state.strategy)) tA = solveA(D.A, D.B, state.tB, mk(c, state.strategy));
   state.tA = tA;
   const C = { A: countsAt(D.A, tA), B: countsAt(D.B, state.tB) };
   const R = { A: rates(C.A), B: rates(C.B) };
   const fpAll = C.A.fp + C.B.fp, negAll = C.A.fp + C.A.tn + C.B.fp + C.B.tn;
+  const fnAll = C.A.fn + C.B.fn, posAll = C.A.tp + C.A.fn + C.B.tp + C.B.fn, tnAll = C.A.tn + C.B.tn;
   const sel = C.A.tp + C.A.fp + C.B.tp + C.B.fp;
   const lowSr = Math.min(R.A.sr, R.B.sr), highSr = Math.max(R.A.sr, R.B.sr);
-  R.T = { fpAll, fprAll: div(fpAll, negAll), sel, selRate: sel / (C.A.n + C.B.n),
-          defRate: div(fpAll, sel), ir: highSr > 0 ? lowSr / highSr : NaN };
+  // fnrAll: eventos adversos no detectados; defRate: tasa de eventos entre predichos negativos (FN / (FN + VN))
+  R.T = { fpAll, fprAll: div(fpAll, negAll), fnAll, fnrAll: div(fnAll, posAll), sel, selRate: sel / (C.A.n + C.B.n),
+          defRate: div(fnAll, fnAll + tnAll), ir: highSr > 0 ? lowSr / highSr : NaN };
   R.base = { A: D.A.pos / D.A.n, B: D.B.pos / D.B.n };
   return { c, D, C, R, tA };
 }
@@ -1013,16 +1050,16 @@ function compute() {
 // Variables para plantillas: valores globales + variables de la lente
 function baseVars(S) {
   const { c, C, R } = S, v = {};
-  for (const m of ["sr", "tpr", "ppv", "fpr"]) { v[m + "A"] = pct(R.A[m]); v[m + "B"] = pct(R.B[m]); }
+  for (const m of ["sr", "tpr", "ppv", "fpr", "fnr"]) { v[m + "A"] = pct(R.A[m]); v[m + "B"] = pct(R.B[m]); }
   for (const g of ["A", "B"]) for (const k of ["tp", "fp", "fn", "tn"]) v[k + g] = C[g][k];
   v.A = gname(c, "A"); v.B = gname(c, "B");
-  v.fpAll = R.T.fpAll; v.fprAll = pct(R.T.fprAll); v.sel = R.T.sel; v.cap = c.cap || "";
+  v.fpAll = R.T.fpAll; v.fprAll = pct(R.T.fprAll); v.fnAll = R.T.fnAll; v.fnrAll = pct(R.T.fnrAll); v.sel = R.T.sel; v.cap = c.cap || "";
   v.defRate = pct(R.T.defRate); v.ir = isNaN(R.T.ir) ? "—" : R.T.ir.toFixed(2);
   return v;
 }
 function lensVars(S, m, v) {
   const { c, R } = S;
-  if (!METRICS[m]) return v;
+  if (!METRICS[m] || !(m in R.A)) return v;
   const a = R.A[m], b = R.B[m], loG = a <= b ? "A" : "B", hiG = loG === "A" ? "B" : "A";
   return Object.assign({}, v, {
     lo_pl: c.groups[loG][state.lang].pl, hi_pl: c.groups[hiG][state.lang].pl,
@@ -1038,8 +1075,14 @@ function lensStatus(S, lens) {
   if (isNaN(g)) return { bad: false, sev: 0 };
   return { bad: g > TOL, sev: g };
 }
+// Nombre de la definición de equidad que materializa una tasa en este caso ("" si es solo referencia)
+function fairLabel(c, m) {
+  if (m === "sr") return METRICS.sr[state.lang].fair;
+  if (m === "ppv") return METRICS.ppv[state.lang].fair;
+  return m === eoKey(c) ? L().eoName : "";
+}
 function lensLabel(lens) {
-  if (METRICS[lens]) { const m = METRICS[lens][state.lang]; return m.fair === "Referencia" || m.fair === "Reference" ? m.name : m.fair + " · " + m.name; }
+  if (METRICS[lens]) { const f = fairLabel(cur(), lens); return f ? f + " · " + METRICS[lens][state.lang].name : METRICS[lens][state.lang].name; }
   const names = { es: { safety: "seguridad pública (reincidentes liberados)", capacity: "capacidad presupuestal", default: "morosidad de la cartera", impact: "razón de impacto (regla 4/5)" },
                   en: { safety: "public safety (released reoffenders)", capacity: "budget capacity", default: "portfolio default rate", impact: "impact ratio (4/5 rule)" } };
   return names[state.lang][lens] || lens;
@@ -1052,7 +1095,7 @@ function renderStatic() {
   const t = L();
   document.documentElement.lang = state.lang;
   document.title = t.title;
-  for (const k of ["title", "subtitle", "guide", "nav1", "nav2", "nav3", "step1", "step2", "step3", "stepJ", "step4", "step5", "step6", "strategy", "thresholds", "thrhelp", "evalhelp", "justif", "disclaimer"]) {
+  for (const k of ["title", "subtitle", "guide", "nav1", "nav2", "nav3", "step1", "step2", "step3", "stepJ", "step4", "step5", "step6", "strategy", "thresholds", "evalhelp", "justif", "disclaimer"]) {
     const el = $("t-" + k); if (el) el.textContent = t[k];
   }
   $("t-logTitle").textContent = t.logH;
@@ -1086,21 +1129,25 @@ function renderCases() {
       <p class="small" style="margin-top:10px"><b>${esc(t.groups)}:</b>
         <span class="grp"><i class="dot dA"></i>A · ${esc(gname(c, "A"))}</span> (${esc(t.baseRate)} ${pct(S.R.base.A)}) ·
         <span class="grp"><i class="dot dB"></i>B · ${esc(gname(c, "B"))}</span> (${esc(t.baseRate)} ${pct(S.R.base.B)})</p>
+      <div class="note"><b>${esc(t.posClass)}.</b> ${esc(x.posNote)}</div>
       <div class="note">${esc(x.note)}</div>
     </div>`;
 }
 
 function renderStrats() {
   const t = L(), c = cur(), v = { A: gname(c, "A"), B: gname(c, "B") };
-  $("strats").innerHTML = ["single", "dp", "eo", "pp", "manual"].map((k) =>
-    `<label class="${state.strategy === k ? "on" : ""}"><input type="radio" name="strat" value="${k}"${state.strategy === k ? " checked" : ""}>
-      <span><b>${esc(t.strat[k][0])}</b><small>${esc(fill(t.strat[k][1], v))}</small></span></label>`).join("");
+  $("strats").innerHTML = ["single", "dp", "eo", "pp", "manual"].map((k) => {
+    const tx = t.strat[k === "eo" && c.pos === "risk" ? "eoRisk" : k];
+    return `<label class="${state.strategy === k ? "on" : ""}"><input type="radio" name="strat" value="${k}"${state.strategy === k ? " checked" : ""}>
+      <span><b>${esc(tx[0])}</b><small>${esc(fill(tx[1], v))}</small></span></label>`;
+  }).join("");
 }
 
 function update() {
   const S = compute(), t = L(), c = S.c, x = cl(c);
   const v = { A: gname(c, "A"), B: gname(c, "B") };
   // Controles
+  $("t-thrhelp").textContent = x.thr;
   $("lb-B").textContent = fill(t.thrB, v);
   $("lb-A").textContent = fill(t.thrA, v) + (state.strategy !== "manual" ? " — " + t.auto : "");
   $("in-B").value = state.tB; $("v-B").textContent = state.tB.toFixed(1);
@@ -1109,9 +1156,9 @@ function update() {
   $("sl-A").classList.toggle("disabled", state.strategy !== "manual");
   const degenerate = S.R.T.selRate < 0.05 || S.R.T.selRate > 0.95;
   $("cfg-warn").innerHTML = degenerate ? `<div class="warnbox">${esc(t.degenerate)}</div>` : "";
-  $("imp").innerHTML = ["sr", "tpr", "ppv"].map((m) => {
+  $("imp").innerHTML = fairKeys(c).map((m) => {
     const ok = !lensStatus(S, m).bad;
-    return `<span class="tag ${ok ? "good" : "bad"}">${ok ? "✓" : "✗"} ${esc(METRICS[m][state.lang].fair)}</span>`;
+    return `<span class="tag ${ok ? "good" : "bad"}">${ok ? "✓" : "✗"} ${esc(fairLabel(c, m))}</span>`;
   }).join("") + `<span class="small muted">${esc(fill(t.imp, { brA: pct(S.R.base.A), brB: pct(S.R.base.B) }))}</span>`;
 
   renderRecap(S);
@@ -1140,7 +1187,7 @@ function renderGroups(S) {
       <div class="waffle" aria-label="${esc(t.waffle)}">${waffle(k)}</div>
     </div>`;
   }).join("");
-  $("legend").innerHTML = ["tp", "fn", "fp", "tn"].map((k) => `<span><i style="background:var(--${k})"></i>${esc(t.cells[k])} · ${esc(t.cellsLong[k])}</span>`).join("") + `<span>${esc(t.waffle)}</span>`;
+  $("legend").innerHTML = `<span><b>${esc(fill(t.posLine, { pos: lb.posReal, pred: lb.posPred }))}</b></span>` + ["tp", "fn", "fp", "tn"].map((k) => `<span><i style="background:var(--${k})"></i>${esc(t.cells[k])} · ${esc(t.cellsLong[k])}</span>`).join("") + `<span>${esc(t.waffle)}</span>`;
 }
 
 const BINS = 50;
@@ -1184,11 +1231,14 @@ function waffle(k) {
 }
 
 function renderFormulas(S) {
-  const t = L(), cells = t.cells, sel = MK[state.strategy];
+  const t = L(), c = S.c, lb = cl(c).labels, cells = t.cells, sel = mk(c, state.strategy);
+  const grp = state.lang === "es" ? "grupo" : "group";
+  const words = { sr: `P(${lb.posPred} | ${grp})`, tpr: `P(${lb.posPred} | ${lb.posReal}, ${grp})`,
+                  ppv: `P(${lb.posReal} | ${lb.posPred}, ${grp})`, fpr: `P(${lb.posPred} | ${lb.negReal}, ${grp})` };
   const sym = (arr) => arr.map((k) => (k === "n" ? "N" : cells[k])).join(" + ");
   const num = (arr, k) => arr.map((x) => (x === "n" ? k.n : k[x]));
   $("formulas").innerHTML = ["sr", "tpr", "ppv", "fpr"].map((m) => {
-    const M = METRICS[m], d = M[state.lang], st = lensStatus(S, m);
+    const M = METRICS[m], d = M[state.lang], st = lensStatus(S, m), fair = fairLabel(c, m);
     const line = (g) => {
       const k = S.C[g], n = num(M.num, k), dn = num(M.den, k);
       const nv = n.reduce((a, b) => a + b, 0), dv = dn.reduce((a, b) => a + b, 0);
@@ -1199,14 +1249,14 @@ function renderFormulas(S) {
     const a = S.R.A[m], b = S.R.B[m];
     const bar = (val, g) => isNaN(val) ? "" : `<b style="left:0;width:${val * 100}%;background:var(--g${g.toLowerCase()});opacity:.75;height:3px;top:${g === "A" ? 0 : 3}px"></b>`;
     return `<div class="fcard${sel === m ? " sel" : ""}" data-m="${m}">
-      <div class="fair">${esc(m === "fpr" ? t.fRef : d.fair)}</div>
+      <div class="fair">${esc(fair || t.fRef)}</div>
       <b>${esc(d.name)}</b>
       <div class="q">${esc(d.q)}</div>
-      <div class="words">${esc(d.words)}</div>
+      <div class="words">${esc(words[m])}</div>
       <div class="eq"><span>${m.toUpperCase() === "SR" ? (state.lang === "es" ? "Tasa" : "Rate") : m.toUpperCase()} =</span><span class="frac"><span>${sym(M.num)}</span><span>${sym(M.den)}</span></span></div>
       <div class="subst">${line("A")}${line("B")}</div>
       <div class="bar">${bar(a, "A")}${bar(b, "B")}</div>
-      ${m === "fpr" ? `<div class="gapline"><span>${esc(t.gap)}: ${isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1) + " pp"}</span></div>`
+      ${!fair ? `<div class="gapline"><span>${esc(t.gap)}: ${isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1) + " pp"}</span></div>`
         : `<div class="gapline"><span>${esc(t.gap)}: ${isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1) + " pp"}</span><span class="tag ${st.bad ? "bad" : "good"}">${st.bad ? "✗ " + esc(t.notMet) : "✓ " + esc(t.met)}</span></div>`}
     </div>`;
   }).join("");
@@ -1214,7 +1264,8 @@ function renderFormulas(S) {
 
 function personaState(S, p) {
   if (!p.group) return lensStatus(S, p.lens).bad ? "bad" : "good";
-  const o = p.group === "A" ? "B" : "A", diff = S.R[p.group][p.lens] - S.R[o][p.lens];
+  // dir = -1: un valor más alto de la tasa perjudica a la persona (p. ej., FPR cuando positivo = evento adverso)
+  const o = p.group === "A" ? "B" : "A", diff = (p.dir || 1) * (S.R[p.group][p.lens] - S.R[o][p.lens]);
   if (isNaN(diff)) return "good";
   return diff < -TOL ? "bad" : diff > TOL ? "priv" : "good";
 }
@@ -1260,17 +1311,17 @@ function renderPress(S) {
 }
 
 function evaluate(record) {
-  const S = compute(), t = L(), c = S.c, x = cl(c), m = MK[c.objective];
+  const S = compute(), t = L(), c = S.c, x = cl(c), m = mk(c, c.objective);
   const a = S.R.A[m], b = S.R.B[m], gap = Math.abs(a - b);
   const degenerate = S.R.T.selRate < 0.05 || S.R.T.selRate > 0.95;
   const ok = gap <= TOL && !degenerate;
   // Alineado "por coincidencia": la brecha objetivo es pequeña, pero se optimizó otra métrica
   const lucky = ok && state.strategy !== c.objective && state.strategy !== "manual";
   const fb = (c.fb[state.lang][state.strategy]) || FB_GENERIC[state.lang][state.strategy] || "";
-  const costs = ["sr", "tpr", "ppv"].filter((k) => k !== m && lensStatus(S, k).bad)
-    .map((k) => `${METRICS[k][state.lang].fair}: ${pct(S.R.A[k])} (${gname(c, "A")}) vs ${pct(S.R.B[k])} (${gname(c, "B")})`);
+  const costs = fairKeys(c).filter((k) => k !== m && lensStatus(S, k).bad)
+    .map((k) => `${fairLabel(c, k)} (${METRICS[k][state.lang].name}): ${pct(S.R.A[k])} (${gname(c, "A")}) vs ${pct(S.R.B[k])} (${gname(c, "B")})`);
   const complain = voiceList(S).filter((q) => q.st === "bad").map((q) => `${q.name} — ${q.role}`);
-  const mName = METRICS[m][state.lang].fair, sName = t.strat[state.strategy][0];
+  const mName = fairLabel(c, m), sName = t.strat[state.strategy][0];
   const choiceOk = state.strategy === c.objective || (state.strategy === "manual" && ok);
   const choice = state.strategy === c.objective ? t.choiceRight
     : state.strategy === "manual" ? (ok ? t.choiceManualOk : t.choiceNone)
@@ -1279,7 +1330,7 @@ function evaluate(record) {
   $("verdict").innerHTML = `<div class="verdict ${ok && !lucky ? "ok" : lucky ? "" : "ko"}"${lucky ? ` style="background:var(--warn-bg)"` : ""}>
     <h3>${lucky ? "⚠ " + esc(t.lucky) : ok ? "✓ " + esc(t.aligned) : "✗ " + esc(t.misaligned)}</h3>
     <p class="choice"><b>${choiceOk ? "✓" : "✗"}</b> ${esc(fill(choice, { m: mName, s: sName }))}</p>
-    <p class="small"><b>${esc(fill(t.targetIs, { m: METRICS[m][state.lang].fair }))}</b> ${esc(fill(t.gapIs, { g: isNaN(gap) ? "—" : (gap * 100).toFixed(1), a: pct(a), b: pct(b) }))}</p>
+    <p class="small"><b>${esc(fill(t.targetIs, { m: `${fairLabel(c, m)} (${METRICS[m][state.lang].name})` }))}</b> ${esc(fill(t.gapIs, { g: isNaN(gap) ? "—" : (gap * 100).toFixed(1), a: pct(a), b: pct(b) }))}</p>
     ${lucky ? `<p class="small">${esc(t.luckyTxt)}</p>` : ""}
     ${degenerate ? `<p class="small">${esc(t.degenerateV)}</p>` : ""}
     <p class="small">${esc(fb)}</p>
