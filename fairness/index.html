@@ -87,6 +87,14 @@ table.cm td .m{font-size:11px;opacity:.9}
 td.tp{background:color-mix(in srgb,var(--tp) 22%,transparent)} td.fn{background:color-mix(in srgb,var(--fn) 25%,transparent)}
 td.fp{background:color-mix(in srgb,var(--fp) 25%,transparent)} td.tn{background:color-mix(in srgb,var(--tn) 22%,transparent)}
 td.hl{border-color:var(--ink)!important;transform:scale(1.03)}
+table.cm td .r{font-size:11px;font-variant-numeric:tabular-nums;margin-top:4px;padding-top:3px;border-top:1px solid color-mix(in srgb,currentColor 30%,transparent)}
+table.cm td .r b,table.cm td.sum b{font-size:12.5px}
+table.cm .nw{white-space:nowrap}
+table.cm td.sum{background:var(--soft);border:1px dashed var(--line);font-size:11px;font-variant-numeric:tabular-nums;padding:6px}
+table.cm td.sum>div+div{margin-top:4px;padding-top:4px;border-top:1px dashed var(--line)}
+table.cm td.void{background:none}
+details.classic{margin:14px 0 0}
+details.classic .note{background:var(--soft)}
 .hist svg{width:100%;height:auto;display:block}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);margin-top:6px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
@@ -222,6 +230,10 @@ table.tr th{color:var(--muted);font-size:12px}
       <div class="groups2" id="groups"></div>
       <div class="legend" id="legend"></div>
       <div class="formulas" id="formulas"></div>
+      <details class="classic" id="classic">
+        <summary id="t-classic"></summary>
+        <div id="classic-body"></div>
+      </details>
     </section>
     <section class="card">
       <h2 id="t-stepJ"></h2>
@@ -360,6 +372,14 @@ const UI = {
     logEntry: "{t} · {case} · {strat} · umbrales {A}={tA}, {B}={tB} · {v}",
     disclaimer: "Datos simulados (1,000 personas por grupo, puntajes calibrados con semilla fija). Personajes, diálogos y medios son ficticios y tienen fines didácticos; los casos se inspiran en hechos documentados citados en la guía.",
     logTitle: "Bitácora del simulador de fairness — MT4034",
+    selRate: "Tasa de selección",
+    classic: "Calidad del clasificador (Población total)",
+    classicScale: "Código de colores: verde ≥ 80% · amarillo 60–80% · rojo < 60%.",
+    classicNote: "Estas métricas miden qué tan bien el modelo identifica la clase positiva del caso ({pos}), sin importar la equidad entre grupos. La precisión es la misma PPV y el recall es la misma TPR de las tarjetas de arriba; aquí se leen como calidad del clasificador y se calculan también para la población completa (A + B).",
+    classicHead: ["Métrica", "Fórmula", "Global (A + B)"],
+    classicRows: { prec: ["Precisión (precision)", "De quienes el modelo predice positivos, ¿cuántos lo son realmente?"],
+                   rec: ["Recall (sensibilidad)", "De los positivos reales, ¿cuántos detecta el modelo?"],
+                   f1: ["F1-Score", "Media armónica de precisión y recall: solo es alta si ambas lo son."] },
     justifLabel: "Justificación"
   },
   en: {
@@ -438,6 +458,14 @@ const UI = {
     logEntry: "{t} · {case} · {strat} · thresholds {A}={tA}, {B}={tB} · {v}",
     disclaimer: "Simulated data (1,000 people per group, calibrated scores with a fixed seed). Characters, dialogues and outlets are fictional and for teaching purposes; the cases are inspired by documented events cited in the guide.",
     logTitle: "Fairness simulator log — MT4034",
+    selRate: "Selection rate",
+    classic: "Classifier quality (Total population)",
+    classicScale: "Color code: green ≥ 80% · yellow 60–80% · red < 60%.",
+    classicNote: "These metrics measure how well the model identifies the case's positive class ({pos}), regardless of fairness between groups. Precision is the same PPV and recall is the same TPR as in the cards above; here they are read as classifier quality and are also computed for the whole population (A + B).",
+    classicHead: ["Metric", "Formula", "Overall (A + B)"],
+    classicRows: { prec: ["Precision", "Of those the model predicts as positive, how many actually are?"],
+                   rec: ["Recall (sensitivity)", "Of the actual positives, how many does the model detect?"],
+                   f1: ["F1-score", "Harmonic mean of precision and recall: it is high only if both are."] },
     justifLabel: "Justification"
   }
 };
@@ -1102,6 +1130,7 @@ function renderStatic() {
   $("btn-lang").textContent = t.lang;
   for (const k of ["next1", "back2", "deploy", "back3", "other"]) $("btn-" + k).textContent = t[k];
   $("btn-dl").textContent = t.dl;
+  $("t-classic").textContent = t.classic;
   renderGuide();
 }
 
@@ -1164,6 +1193,7 @@ function update() {
   renderRecap(S);
   renderGroups(S);
   renderFormulas(S);
+  renderClassic(S);
   renderVoices(S);
   renderPress(S);
 }
@@ -1172,16 +1202,24 @@ function renderGroups(S) {
   const t = L(), c = S.c, lb = cl(c).labels;
   const maxBin = Math.max(...["A", "B"].map((g) => histBins(S.D[g]).max));
   $("groups").innerHTML = ["A", "B"].map((g) => {
-    const k = S.C[g], th = g === "A" ? S.tA : state.tB;
+    const k = S.C[g], th = g === "A" ? S.tA : state.tB, r = S.R[g], C = t.cells;
+    // Tasas que se leen por fila dentro de su celda: TPR en VP (fila de positivos reales), FPR en FP (fila de negativos reales)
+    // Línea 1: fórmula; línea 2: sustitución con conteos y resultado (cocientes con "/")
+    const nw = (x) => `<span class="nw">${x}</span>`;
+    const rl = (name, fNum, fDen, nNum, nDen, val) =>
+      `<div>${nw(`${name} =`)} ${nw(`${fNum} / ${fDen}`)}</div><div>${nw(`= ${nNum} / ${nDen}`)} ${nw(`= <b>${pct(val)}</b>`)}</div>`;
+    const inRate = (key) => key === "tp" ? `<div class="r">${rl("TPR", C.tp, `(${C.tp} + ${C.fn})`, k.tp, `(${k.tp} + ${k.fn})`, r.tpr)}</div>`
+      : key === "fp" ? `<div class="r">${rl("FPR", C.fp, `(${C.fp} + ${C.tn})`, k.fp, `(${k.fp} + ${k.tn})`, r.fpr)}</div>` : "";
     const cell = (key, real, pred) => `<td class="${key}" data-cell="${key}" title="${esc(t.cellsLong[key] + ": " + pred + " · " + real)}">
         <div class="k">${t.cells[key]}${state.lang === "es" ? ` <span class="muted">(${({ tp: "TP", fp: "FP", fn: "FN", tn: "TN" })[key]})</span>` : ""}</div>
-        <div class="c">${k[key]}</div><div class="m">${esc(pred)} · ${esc(real)}</div></td>`;
+        <div class="c">${k[key]}</div><div class="m">${esc(pred)} · ${esc(real)}</div>${inRate(key)}</td>`;
     return `<div class="gpanel">
       <h3><span class="grp"><i class="dot d${g}"></i>${g} · ${esc(gname(c, g))}</span><span class="tag">${esc(t.histThr)} ${th.toFixed(1)} · N = ${k.n}</span></h3>
       <table class="cm">
         <tr><th></th><th>${esc(t.pred)}: ${esc(lb.posPred)}</th><th>${esc(t.pred)}: ${esc(lb.negPred)}</th></tr>
         <tr><th class="rh">${esc(t.real)}: ${esc(lb.posReal)}</th>${cell("tp", lb.posReal, lb.posPred)}${cell("fn", lb.posReal, lb.negPred)}</tr>
         <tr><th class="rh">${esc(t.real)}: ${esc(lb.negReal)}</th>${cell("fp", lb.negReal, lb.posPred)}${cell("tn", lb.negReal, lb.negPred)}</tr>
+        <tr><th></th><td class="sum"><div>${rl(esc(t.selRate), `(${C.tp} + ${C.fp})`, "N", `(${k.tp} + ${k.fp})`, k.n, r.sr)}</div><div>${rl("PPV", C.tp, `(${C.tp} + ${C.fp})`, k.tp, `(${k.tp} + ${k.fp})`, r.ppv)}</div></td><td class="void"></td></tr>
       </table>
       <div class="hist">${histSVG(S.D[g], th, maxBin, lb)}</div>
       <div class="waffle" aria-label="${esc(t.waffle)}">${waffle(k)}</div>
@@ -1260,6 +1298,33 @@ function renderFormulas(S) {
         : `<div class="gapline"><span>${esc(t.gap)}: ${isNaN(a - b) ? "—" : (Math.abs(a - b) * 100).toFixed(1) + " pp"}</span><span class="tag ${st.bad ? "bad" : "good"}">${st.bad ? "✗ " + esc(t.notMet) : "✓ " + esc(t.met)}</span></div>`}
     </div>`;
   }).join("");
+}
+
+// Métricas clásicas del clasificador (solo visualización; no intervienen en la evaluación)
+function renderClassic(S) {
+  const t = L(), c = S.c, lb = cl(c).labels, C = t.cells;
+  const sum = (k) => S.C.A[k] + S.C.B[k];
+  const K = { A: S.C.A, B: S.C.B, T: { tp: sum("tp"), fp: sum("fp"), fn: sum("fn"), tn: sum("tn") } };
+  // Semáforo de calidad: verde ≥ 80%, amarillo 60–80%, rojo < 60%
+  const q = (x) => `<span class="tag ${isNaN(x) ? "" : x >= 0.8 ? "good" : x >= 0.6 ? "warn" : "bad"}" style="font-size:12.5px">${pct(x)}</span>`;
+  const calc = {
+    prec: (k) => `${k.tp} / (${k.tp} + ${k.fp}) = ${q(div(k.tp, k.tp + k.fp))}`,
+    rec: (k) => `${k.tp} / (${k.tp} + ${k.fn}) = ${q(div(k.tp, k.tp + k.fn))}`,
+    f1: (k) => `2·${k.tp} / (2·${k.tp} + ${k.fp} + ${k.fn}) = ${q(div(2 * k.tp, 2 * k.tp + k.fp + k.fn))}`
+  };
+  const form = {
+    prec: `${C.tp} / (${C.tp} + ${C.fp}) = PPV`,
+    rec: `${C.tp} / (${C.tp} + ${C.fn}) = TPR`,
+    f1: `2·P·R / (P + R) = 2·${C.tp} / (2·${C.tp} + ${C.fp} + ${C.fn})`
+  };
+  const H = t.classicHead;
+  const head = `<th>${esc(H[0])}</th><th>${esc(H[1])}</th>` +
+    ["A", "B"].map((g) => `<th><span class="grp"><i class="dot d${g}"></i>${g} · ${esc(gname(c, g))}</span></th>`).join("") + `<th>${esc(H[2])}</th>`;
+  const rows = ["prec", "rec", "f1"].map((m) => `<tr><td><b>${esc(t.classicRows[m][0])}</b><br><span class="muted small">${esc(t.classicRows[m][1])}</span></td>
+    <td class="words" style="white-space:nowrap">${form[m]}</td>${["A", "B", "T"].map((g) => `<td style="white-space:nowrap;font-variant-numeric:tabular-nums">${calc[m](K[g])}</td>`).join("")}</tr>`).join("");
+  $("classic-body").innerHTML = `<div class="note">${esc(fill(t.classicNote, { pos: lb.posReal }))}</div>
+    <div style="overflow-x:auto"><table class="tr"><thead><tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="small muted" style="margin:8px 0 0">${esc(t.classicScale)}</p>`;
 }
 
 function personaState(S, p) {
