@@ -1,7 +1,7 @@
 /**
- * Genera las series históricas (104 semanas, columna total y categorías) de las 3 regiones × 4 escenarios
- * predefinidos con su semilla sugerida, para el Modelador de series de tiempo (mt4035/modelador-series-tiempo/).
- * Uso: npx tsx scripts/series-modelador.ts ../../modelador-series-tiempo/series.json [--truth <verdad.json fuera del repo>]
+ * Verificación del Modelador de series de tiempo: escribe la historia (104 semanas) que produce el motor completo
+ * (createScmEngine) para las 3 regiones × 4 escenarios con su semilla sugerida, para compararla con la que genera la página.
+ * Uso: npx tsx scripts/series-modelador.ts <salida.json fuera del repo> [--truth <verdad.json fuera del repo>]
  * La verdad (proceso oculto) solo se usa para validar el estimador; no se publica.
  */
 import { writeFileSync } from "node:fs";
