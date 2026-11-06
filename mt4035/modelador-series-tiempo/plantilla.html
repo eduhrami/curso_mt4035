@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modelador de series de tiempo</title>
+<style>
+:root{
+  --bg:#f5f6f8; --panel:#ffffff; --ink:#1c2230; --muted:#5d6676; --line:#e1e5eb; --soft:#f0f2f6; --grid:#e9ecf1;
+  --accent:#1f3b73; --accent-ink:#ffffff;
+  --real:#8e99aa; --model:#2f5bea; --fc:#d55e00; --band:rgba(213,94,0,.10); --data:#009E73;
+  --good:#1a7f52; --good-bg:#e6f5ee; --warn:#9a6a00; --warn-bg:#fff4d6; --bad:#c0392b; --bad-bg:#fdecea;
+  --code-bg:#f3f4f7;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#12151b; --panel:#1b1f28; --ink:#e7eaf0; --muted:#9aa3b2; --line:#2d333f; --soft:#232834; --grid:#262c37;
+    --accent:#8fb0ff; --accent-ink:#0f1320;
+    --real:#7d889a; --model:#7c9bff; --fc:#ff9a4d; --band:rgba(255,154,77,.12); --data:#3fd1a5;
+    --good:#52d293; --good-bg:#16332a; --warn:#f2c14e; --warn-bg:#3a3018; --bad:#ff7b6e; --bad-bg:#3a1f1d;
+    --code-bg:#161a22;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151b; --panel:#1b1f28; --ink:#e7eaf0; --muted:#9aa3b2; --line:#2d333f; --soft:#232834; --grid:#262c37;
+  --accent:#8fb0ff; --accent-ink:#0f1320;
+  --real:#7d889a; --model:#7c9bff; --fc:#ff9a4d; --band:rgba(255,154,77,.12); --data:#3fd1a5;
+  --good:#52d293; --good-bg:#16332a; --warn:#f2c14e; --warn-bg:#3a3018; --bad:#ff7b6e; --bad-bg:#3a1f1d;
+  --code-bg:#161a22;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+a{color:var(--model)}
+header{background:var(--panel);border-bottom:1px solid var(--line)}
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px}
+.hdr{display:flex;align-items:center;gap:12px;padding:12px 0;flex-wrap:wrap}
+.hdr h1{font-size:19px;margin:0}
+.hdr .sub{color:var(--muted);font-size:13px}
+.hdr .sp{flex:1}
+.hdr nav{display:flex;gap:12px;font-size:13px;flex-wrap:wrap}
+button,select,input{font:inherit;color:inherit}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+select,input[type=number]{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:5px 8px}
+main{padding:16px 0 48px}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px;min-width:0}
+h2{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+h2 .n{background:var(--accent);color:var(--accent-ink);border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex:none}
+h3{font-size:14px;margin:0 0 6px}
+p{margin:0 0 8px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.note{font-size:13px;background:var(--warn-bg);border-radius:8px;padding:8px 10px;margin-top:10px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.row label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.row label select{color:var(--ink);min-width:180px}
+.file{display:inline-block}
+.file input{display:none}
+.grid2{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px}
+@media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.ctl{border-top:1px solid var(--line);padding:10px 0}
+.ctl:first-of-type{border-top:0;padding-top:0}
+.ctl .lab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13.5px}
+.ctl .lab b{font-weight:600}
+.ctl .val{display:flex;align-items:center;gap:4px}
+.ctl .val input{width:92px;text-align:right}
+.ctl input[type=range]{width:100%;accent-color:var(--model);margin:6px 0 0}
+.ctl .help{font-size:12px;color:var(--muted)}
+.qgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 14px}
+.qgrid .ctl{border-top:0;padding:4px 0}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.tile{background:var(--soft);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:12px;color:var(--muted)}
+.tile .v{font-size:20px;font-weight:650;font-variant-numeric:tabular-nums}
+.tile .v small{font-size:12px;font-weight:400;color:var(--muted)}
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart svg text{fill:var(--muted);font-size:11px;font-family:inherit}
+.tip{position:absolute;pointer-events:none;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.12);white-space:nowrap;display:none;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin:6px 0 0}
+.legend i{display:inline-block;width:18px;height:0;border-top:2.5px solid;vertical-align:middle;margin-right:5px}
+.legend i.dash{border-top-style:dashed}
+.legend i.dot{border-top-style:dotted}
+.comp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.comp{grid-template-columns:minmax(0,1fr)}}
+.f01{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:8px 0}
+.f01 div{background:var(--soft);border-radius:8px;padding:6px 10px}
+.f01 .k{font-size:12px;color:var(--muted)}
+.f01 .v{font-weight:650;font-variant-numeric:tabular-nums;font-size:16px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:12px;flex-wrap:wrap}
+.tabs button{border:0;background:none;padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;color:var(--muted)}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.pane{display:none}
+.pane.on{display:block}
+.formula{background:var(--soft);border-left:4px solid var(--accent);border-radius:0 8px 8px 0;padding:10px 12px;margin:8px 0 12px;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;font-size:16.5px;overflow-x:auto}
+.formula .sub{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:13px;color:var(--muted);margin-top:4px}
+.fgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 20px}
+@media (max-width:900px){.fgrid{grid-template-columns:minmax(0,1fr)}}
+pre{background:var(--code-bg);border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:12.5px;line-height:1.45;max-height:560px;margin:0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.refs li{margin-bottom:8px}
+.refs{padding-left:20px;margin:0}
+.ok{color:var(--good)} .bad{color:var(--bad)}
+footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap hdr">
+    <div>
+      <h1>Modelador de series de tiempo · Hoshi Mart</h1>
+      <div class="sub">Descomposición multiplicativa de la demanda por tienda · MT4035 Sesión 4 (EGADE)</div>
+    </div>
+    <span class="sp"></span>
+    <nav><a href="../scm/">Abrir el simulador Hoshi Mart</a><a href="../">Todos los simuladores</a></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <h2><span class="n">1</span>Elige la serie</h2>
+    <p class="small">Estas son las historias de demanda (104 semanas, unidades por tienda por día) que descarga el simulador desde la pestaña «Pronóstico» para cada región y escenario de mercado <b>con la semilla sugerida</b>. Si cambiaste la semilla, o si estás en A2 o A3 y tu CSV ya trae semanas jugadas, carga tu propio archivo.</p>
+    <div class="row">
+      <label>Región<select id="selRegion"></select></label>
+      <label>Escenario de mercado<select id="selScenario"></select></label>
+      <label>Columna<select id="selCol">
+        <option value="total">total (la que usa el simulador)</option>
+        <option value="frescos">frescos</option>
+        <option value="refrigerado">refrigerado</option>
+        <option value="ambiente">ambiente</option>
+        <option value="congelado">congelado</option>
+      </select></label>
+      <label>Año a pronosticar<select id="selYear"></select></label>
+      <span class="file btn"><label style="cursor:pointer;color:var(--ink);font-size:14px">Cargar mi CSV<input type="file" id="fileCsv" accept=".csv,text/csv"></label></span>
+      <button class="btn" id="btnDownload">Descargar esta serie (CSV)</button>
+    </div>
+    <div id="srcInfo" class="small muted" style="margin-top:8px"></div>
+    <div id="colNote" class="note" style="display:none">Las columnas por categoría sirven para explorar (cada una tiene su propia amplitud estacional). Los parámetros que capturas en el simulador se estiman con la columna <b>total</b>.</div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">2</span>Ajusta el modelo y compáralo con la serie real</h2>
+    <div class="grid2">
+      <div>
+        <div class="ctl">
+          <div class="lab"><b>Nivel base</b><span class="val"><input type="number" id="nLevel" step="0.1"><span class="small muted">u/tienda/día</span></span></div>
+          <input type="range" id="rLevel" step="0.1">
+          <div class="help" id="hLevel">Demanda de una semana con índice 1 al inicio del año a pronosticar.</div>
+        </div>
+        <div class="ctl">
+          <div class="lab"><b>Crecimiento anual (g)</b><span class="val"><input type="number" id="nGrowth" step="0.1" min="-15" max="30"><span class="small muted">%</span></span></div>
+          <input type="range" id="rGrowth" min="-15" max="30" step="0.1">
+          <div class="help">Tendencia compuesta. Gira la curva alrededor del inicio del año a pronosticar.</div>
+        </div>
+        <div class="ctl">
+          <div class="lab"><b>Índices estacionales por trimestre</b></div>
+          <div class="qgrid" id="qControls"></div>
+          <div class="help" id="hQuarters">El modelo los normaliza a promedio 1.</div>
+        </div>
+        <div class="ctl">
+          <div class="lab"><b>CV del residuo semanal</b><span class="val"><input type="number" id="nCv" step="0.1" min="0" max="25"><span class="small muted">%</span></span></div>
+          <input type="range" id="rCv" min="0" max="25" step="0.1">
+          <div class="help" id="hCv"></div>
+        </div>
+        <div class="btns">
+          <button class="btn primary" id="btnFit">Estimar automáticamente</button>
+          <button class="btn" id="btnReset">Partir de cero</button>
+        </div>
+        <p class="small muted" style="margin-top:8px">«Partir de cero» deja el modelo sin tendencia ni estacionalidad. Mueve un parámetro a la vez y observa qué parte de la gráfica cambia. «Estimar automáticamente» aplica el mismo método que el código Python (pestaña 4).</p>
+      </div>
+      <div style="min-width:0">
+        <div class="tiles">
+          <div class="tile"><div class="k">WAPE del ajuste (historia)</div><div class="v" id="tWape">–</div></div>
+          <div class="tile"><div class="k">Sesgo (modelo − real)</div><div class="v" id="tBias">–</div></div>
+          <div class="tile"><div class="k">CV de tus residuos</div><div class="v" id="tCv">–</div></div>
+          <div class="tile"><div class="k" id="tP95k">p95 semanal</div><div class="v" id="tP95">–</div></div>
+        </div>
+        <div class="chart" id="chMain"><svg id="svgMain" viewBox="0 0 860 330"></svg><div class="tip" id="tipMain"></div></div>
+        <div class="legend">
+          <span><i style="border-color:var(--real)"></i>Demanda real</span>
+          <span><i style="border-color:var(--model)"></i>Tu modelo (historia)</span>
+          <span><i class="dash" style="border-color:var(--fc)"></i>Pronóstico del año</span>
+          <span><i class="dot" style="border-color:var(--fc)"></i>p95 semanal del año</span>
+        </div>
+        <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
+          <h3>Valores para capturar en el simulador (pronóstico F-01, <span id="f01Year">A1</span>)</h3>
+          <div class="f01" id="f01"></div>
+          <div class="btns"><button class="btn" id="btnCopy">Copiar valores</button><span class="small muted" id="copyMsg"></span></div>
+          <p class="small muted" style="margin-top:6px">En la pestaña «Pronóstico» del simulador se capturan con este formato. Recuerda que el pronóstico se vuelve a capturar en T1 de cada año con los datos nuevos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">3</span>Los componentes de la descomposición</h2>
+    <p class="small">Cada gráfica aísla un factor del modelo. Los puntos verdes son <b>lo que dicen los datos</b> una vez que quitas los otros factores de tu modelo; la línea o las barras son <b>tu parámetro</b>. Si coinciden, ese componente está bien estimado.</p>
+    <div class="comp">
+      <div style="min-width:0"><h3>Tendencia: L · (1 + g)<sup>t</sup></h3><div class="chart"><svg id="svgTrend" viewBox="0 0 420 240"></svg></div><p class="small muted">Puntos: serie desestacionalizada (real ÷ índice del trimestre). Línea: nivel y crecimiento.</p></div>
+      <div style="min-width:0"><h3>Estacionalidad: S<sub>q</sub></h3><div class="chart"><svg id="svgSeason" viewBox="0 0 420 240"></svg></div><p class="small muted">Barras: tus índices normalizados. Puntos: promedio de real ÷ tendencia en cada trimestre.</p></div>
+      <div style="min-width:0"><h3>Residuo: real ÷ modelo − 1</h3><div class="chart"><svg id="svgResid" viewBox="0 0 420 240"></svg></div><p class="small muted">Lo que el modelo no explica. Debe verse como ruido sin patrón alrededor de 0; la banda es ±1 CV.</p></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">4</span>Fórmulas y código</h2>
+    <div class="tabs" role="tablist">
+      <button class="on" data-pane="pFormulas">Fórmulas</button>
+      <button data-pane="pPython">Código Python</button>
+    </div>
+    <div class="pane on" id="pFormulas">
+      <p>El simulador usa una <b>descomposición multiplicativa</b>: la demanda es el producto de un nivel con tendencia, un índice estacional y un choque aleatorio. Es multiplicativa porque la amplitud de la estacionalidad crece con el nivel (un T3 10% arriba significa más unidades cuando la demanda es mayor).</p>
+      <div class="formula">y<sub>w</sub> = L · (1 + g)<sup>(w − w<sub>0</sub>)/52</sup> · S<sub>q(w)</sub> · (1 + ε<sub>w</sub>)
+        <div class="sub">w: semana (0 = inicio de A1; negativa en la historia). w<sub>0</sub> = 52 × año a pronosticar (0 en A1, 52 en A2, 104 en A3). q(w): trimestre de la semana, 13 semanas cada uno. ε<sub>w</sub>: choque semanal independiente, con media 0 y desviación estándar CV.</div></div>
+      <div class="fgrid" id="formulaList"></div>
+      <p class="small muted" style="margin-top:12px">Este modelo equivale a Holt-Winters con tendencia y estacionalidad multiplicativas cuando sus tres parámetros de suavizamiento (α del nivel, β de la tendencia y γ de la estacionalidad) valen cero: nivel, crecimiento e índices quedan fijos en lugar de actualizarse cada semana. Funciona aquí porque el proceso del simulador tiene esa misma forma; con datos reales, la tendencia y la estacionalidad cambian en el tiempo y conviene suavizar (Holt-Winters) o descomponer con STL.</p>
+    </div>
+    <div class="pane" id="pPython">
+      <p class="small">Copia el código en una celda de Jupyter (o divídelo por los comentarios «Celda»). Requiere <code>numpy</code>, <code>pandas</code> y <code>matplotlib</code>. Pon el CSV en la misma carpeta que el notebook y ajusta <code>ARCHIVO</code> y <code>ANIO</code>; abajo ya van con la serie seleccionada.</p>
+      <div class="btns" style="margin:0 0 8px"><button class="btn" id="btnCopyPy">Copiar código</button><button class="btn" id="btnDownloadPy">Descargar .py</button><span class="small muted" id="copyPyMsg"></span></div>
+      <pre><code id="pyCode"></code></pre>
+      <p class="small" style="margin-top:10px"><b>Salida esperada con esta serie</b> (debe coincidir con «Estimar automáticamente»):</p>
+      <pre><code id="pyOut"></code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2><span class="n">5</span>Referencias</h2>
+    <ul class="refs small">
+      <li>Cleveland, R. B., Cleveland, W. S., McRae, J. E., & Terpenning, I. (1990). STL: A seasonal-trend decomposition procedure based on loess. <i>Journal of Official Statistics, 6</i>(1), 3–73. — Descomposición robusta con estacionalidad que cambia en el tiempo.</li>
+      <li>Holt, C. C. (2004). Forecasting seasonals and trends by exponentially weighted moving averages. <i>International Journal of Forecasting, 20</i>(1), 5–10. https://doi.org/10.1016/j.ijforecast.2003.09.015 (reimpresión del memorando de 1957). — Suavizamiento exponencial con tendencia y estacionalidad.</li>
+      <li>Hyndman, R. J., & Athanasopoulos, G. (2021). <i>Forecasting: Principles and practice</i> (3rd ed.). OTexts. <a href="https://otexts.com/fpp3/decomposition.html" target="_blank" rel="noopener">https://otexts.com/fpp3/decomposition.html</a> — Capítulo 3 (descomposición clásica aditiva y multiplicativa, X-11, STL) y sección 8.3 (Holt-Winters multiplicativo).</li>
+      <li>Makridakis, S., Wheelwright, S. C., & Hyndman, R. J. (1998). <i>Forecasting: Methods and applications</i> (3rd ed.). Wiley. — Capítulo 3: descomposición de series de tiempo, método de razón a la media móvil e índices estacionales.</li>
+      <li>Shiskin, J., Young, A. H., & Musgrave, J. C. (1967). <i>The X-11 variant of the Census Method II seasonal adjustment program</i> (Technical Paper No. 15, rev.). U.S. Department of Commerce, Bureau of the Census. — Ajuste estacional oficial basado en descomposición multiplicativa.</li>
+      <li>Winters, P. R. (1960). Forecasting sales by exponentially weighted moving averages. <i>Management Science, 6</i>(3), 324–342. https://doi.org/10.1287/mnsc.6.3.324 — Modelo de Holt-Winters con estacionalidad multiplicativa aplicado a ventas.</li>
+      <li>Seabold, S., & Perktold, J. (2010). Statsmodels: Econometric and statistical modeling with Python. <i>Proceedings of the 9th Python in Science Conference</i>, 92–96. — <code>seasonal_decompose(model="multiplicative")</code>, <code>STL</code> y <code>ExponentialSmoothing</code> en Python.</li>
+    </ul>
+  </section>
+</main>
+<footer>Hoshi Mart es una empresa ficticia. Datos generados con el motor del simulador (semillas sugeridas de cada escenario). MT4035 · EGADE Business School.</footer>
+
+<script id="seriesData" type="application/json">/*__SERIES__*/</script>
+<script id="pySource" type="text/plain">/*__PYTHON__*/</script>
+<script>
+"use strict";
+const SERIES = JSON.parse(document.getElementById("seriesData").textContent);
+const PY_SOURCE = document.getElementById("pySource").textContent.replace(/^\n/, "");
+const REGIONS = [["kaigan","Kaigan"],["redriver","Red River"],["valle","Valle Metropolitano"]];
+const SCEN = [["EM-01","Mercado estable"],["EM-02","Demanda incierta"],["EM-03","Presión de costos"],["EM-04","Crecimiento acelerado"]];
+const QN = ["T1","T2","T3","T4"];
+const $ = (id) => document.getElementById(id);
+const fmt = (x, d = 1) => Number.isFinite(x) ? x.toLocaleString("es-MX", { minimumFractionDigits: d, maximumFractionDigits: d }) : "–";
+const quarterOf = (w) => ((Math.floor(w / 13) % 4) + 4) % 4;
+const yearLabel = (y) => y < 0 ? "H" + (y + 3) : "A" + (y + 1);
+
+// ---------- Estado ----------
+const st = { src: null, col: "total", Y: 0, maxY: 0, level: 0, g: 0, q: [1,1,1,1], cv: 0.05 };
+
+function currentData() {
+  const s = st.src;
+  const w = [], y = [];
+  s.week.forEach((wk, i) => { const v = s[st.col] ? s[st.col][i] : NaN; if (wk < 52 * st.Y && v > 0) { w.push(wk); y.push(v); } });
+  return { w, y };
+}
+
+// ---------- Modelo ----------
+const normQ = (q) => { const m = q.reduce((a, b) => a + b, 0) / 4 || 1; return q.map((x) => x / m); };
+function modelAt(p, w) { const S = normQ(p.q); return p.level * Math.pow(1 + p.g, (w - 52 * p.Y) / 52) * S[quarterOf(w)]; }
+const params = () => ({ level: st.level, g: st.g, q: st.q, Y: st.Y, cv: st.cv });
+
+function polyfit(x, y) { // mínimos cuadrados: y = a + b x
+  const n = x.length, mx = x.reduce((s, v) => s + v, 0) / n, my = y.reduce((s, v) => s + v, 0) / n;
+  let sxy = 0, sxx = 0; for (let i = 0; i < n; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) ** 2; }
+  const b = sxy / sxx; return { a: my - b * mx, b };
+}
+const std = (r) => { const m = r.reduce((s, v) => s + v, 0) / r.length; return Math.sqrt(r.reduce((s, v) => s + (v - m) ** 2, 0) / (r.length - 1)); };
+
+/** Mismo método que el código Python: razón a la tendencia exponencial. */
+function autoFit(w, y, Y) {
+  const t = w.map((x) => x / 52), q = w.map(quarterOf);
+  let f = polyfit(t, y.map(Math.log));                                   // paso 1
+  const ratio = y.map((v, i) => v / Math.exp(f.a + f.b * t[i]));
+  let S = [0,1,2,3].map((k) => { const r = ratio.filter((_, i) => q[i] === k); return r.reduce((a, b) => a + b, 0) / r.length; });
+  S = normQ(S);                                                           // paso 2
+  f = polyfit(t, y.map((v, i) => Math.log(v / S[q[i]])));                // paso 3
+  let L = Math.exp(f.a); const g = Math.exp(f.b) - 1;
+  let res = y.map((v, i) => v / (L * Math.pow(1 + g, t[i]) * S[q[i]]) - 1); // paso 4
+  L *= 1 + res.reduce((a, b) => a + b, 0) / res.length;
+  res = y.map((v, i) => v / (L * Math.pow(1 + g, t[i]) * S[q[i]]) - 1);
+  return { level: L * Math.pow(1 + g, Y), g, q: S, cv: std(res), Y };
+}
+
+function erfc(x) {
+  const z = Math.abs(x), t = 1 / (1 + 0.5 * z);
+  const r = t * Math.exp(-z * z - 1.26551223 + t * (1.00002368 + t * (0.37409196 + t * (0.09678418 + t * (-0.18628806 + t * (0.27886807 + t * (-1.13520398 + t * (1.48851587 + t * (-0.82215223 + t * 0.17087277)))))))));
+  return x >= 0 ? r : 2 - r;
+}
+/** p95 semanal del año: valor que solo 5% de las semanas supera, con residuo normal de desviación CV. */
+function p95Of(p) {
+  const fc = Array.from({ length: 52 }, (_, i) => modelAt(p, 52 * p.Y + i));
+  if (p.cv <= 1e-9) return Math.max(...fc);
+  const tail = (x) => fc.reduce((a, e) => a + 0.5 * erfc((x / e - 1) / p.cv / Math.SQRT2), 0) / fc.length;
+  let lo = 0, hi = Math.max(...fc) * 3;
+  for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (tail(mid) > 0.05) lo = mid; else hi = mid; }
+  return (lo + hi) / 2;
+}
+
+// ---------- Gráficas SVG ----------
+const NS = "http://www.w3.org/2000/svg";
+function el(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function niceTicks(lo, hi, n = 5) {
+  const span = hi - lo, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const step = [1, 2, 2.5, 5, 10].map((m) => m * mag).find((s) => span / s <= n) || 10 * mag;
+  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(v); return { ticks: out, step };
+}
+function frame(svg, W, H, m, xr, yr, opts = {}) {
+  svg.innerHTML = "";
+  const X = (v) => m.l + (v - xr[0]) / (xr[1] - xr[0]) * (W - m.l - m.r);
+  const Yf = (v) => H - m.b - (v - yr[0]) / (yr[1] - yr[0]) * (H - m.t - m.b);
+  const { ticks, step } = niceTicks(yr[0], yr[1], opts.yTicks || 5);
+  const dec = opts.yDec ?? (step < 1 ? (step < 0.1 ? 2 : 1) : 0);
+  ticks.forEach((v) => {
+    el("line", { x1: m.l, x2: W - m.r, y1: Yf(v), y2: Yf(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+    const tx = el("text", { x: m.l - 6, y: Yf(v) + 4, "text-anchor": "end" }, svg); tx.textContent = (opts.yFmt || ((x) => fmt(x, dec)))(v);
+  });
+  return { X, Y: Yf };
+}
+function path(pts, X, Y) { return pts.map((p, i) => (i ? "L" : "M") + X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(""); }
+function yearAxis(svg, X, H, m, w0, w1, top) {
+  for (let y = Math.floor(w0 / 52); y * 52 <= w1; y++) {
+    const a = Math.max(y * 52, w0), b = Math.min(y * 52 + 52, w1 + 1);
+    if (y * 52 > w0) el("line", { x1: X(y * 52), x2: X(y * 52), y1: top, y2: H - m.b, stroke: "var(--line)", "stroke-width": 1 }, svg);
+    for (let qq = 0; qq < 4; qq++) { const wq = y * 52 + qq * 13 + 6.5; if (wq > w0 && wq < w1 && b - a > 30) { const t = el("text", { x: X(wq), y: H - m.b + 14, "text-anchor": "middle", style: "font-size:10px" }, svg); t.textContent = QN[qq]; } }
+    if (b - a > 8) { const t = el("text", { x: X((a + b) / 2), y: H - m.b + 28, "text-anchor": "middle", style: "font-weight:600" }, svg); t.textContent = yearLabel(y); }
+  }
+}
+
+let mainGeom = null;
+function drawMain(d, p, p95) {
+  const svg = $("svgMain"), W = 860, H = 330, m = { l: 56, r: 12, t: 12, b: 36 };
+  const w0 = d.w[0], w1 = 52 * p.Y + 51;
+  const histModel = d.w.map((w) => [w, modelAt(p, w)]);
+  const fcPts = Array.from({ length: 52 }, (_, i) => [52 * p.Y + i, modelAt(p, 52 * p.Y + i)]);
+  const all = d.y.concat(histModel.map((x) => x[1]), fcPts.map((x) => x[1]), [p95]);
+  let lo = Math.min(...all), hi = Math.max(...all); const pad = (hi - lo) * 0.06; lo -= pad; hi += pad;
+  const { X, Y } = frame(svg, W, H, m, [w0, w1 + 1], [lo, hi]);
+  el("rect", { x: X(52 * p.Y), y: m.t, width: X(w1 + 1) - X(52 * p.Y), height: H - m.t - m.b, fill: "var(--band)" }, svg);
+  yearAxis(svg, X, H, m, w0, w1, m.t);
+  el("path", { d: path(d.w.map((w, i) => [w, d.y[i]]), X, Y), fill: "none", stroke: "var(--real)", "stroke-width": 1.6 }, svg);
+  el("path", { d: path(histModel, X, Y), fill: "none", stroke: "var(--model)", "stroke-width": 2.2 }, svg);
+  el("path", { d: path(fcPts, X, Y), fill: "none", stroke: "var(--fc)", "stroke-width": 2.2, "stroke-dasharray": "6 4" }, svg);
+  el("line", { x1: X(52 * p.Y), x2: X(w1 + 1), y1: Y(p95), y2: Y(p95), stroke: "var(--fc)", "stroke-width": 1.6, "stroke-dasharray": "2 3" }, svg);
+  const lab = el("text", { x: X(52 * p.Y) + 6, y: m.t + 14, style: "font-weight:600;fill:var(--fc)" }, svg); lab.textContent = "Pronóstico " + yearLabel(p.Y);
+  const cursor = el("line", { x1: 0, x2: 0, y1: m.t, y2: H - m.b, stroke: "var(--muted)", "stroke-width": 1, "stroke-dasharray": "3 3", visibility: "hidden" }, svg);
+  mainGeom = { X, W, m, w0, w1, d, p, cursor };
+}
+function onMainMove(ev) {
+  if (!mainGeom) return;
+  const g = mainGeom, svg = $("svgMain"), r = svg.getBoundingClientRect();
+  const sx = (ev.clientX - r.left) / r.width * g.W;
+  const w = Math.round(g.w0 + (sx - g.m.l) / (g.W - g.m.l - g.m.r) * (g.w1 + 1 - g.w0));
+  const tip = $("tipMain");
+  if (w < g.w0 || w > g.w1) { tip.style.display = "none"; g.cursor.setAttribute("visibility", "hidden"); return; }
+  const i = g.d.w.indexOf(w), real = i >= 0 ? g.d.y[i] : NaN, mod = modelAt(g.p, w);
+  g.cursor.setAttribute("x1", g.X(w)); g.cursor.setAttribute("x2", g.X(w)); g.cursor.setAttribute("visibility", "visible");
+  const yr = Math.floor(w / 52), wk = ((w % 52) + 52) % 52 + 1;
+  tip.innerHTML = `<b>${yearLabel(yr)} · ${QN[quarterOf(w)]} · semana ${wk}</b><br>` +
+    (i >= 0 ? `Real: ${fmt(real)}<br>Modelo: ${fmt(mod)}<br>Residuo: ${fmt((real / mod - 1) * 100)}%` : `Pronóstico: ${fmt(mod)}`);
+  tip.style.display = "block";
+  const px = ev.clientX - r.left; tip.style.left = Math.min(px + 12, r.width - tip.offsetWidth - 4) + "px"; tip.style.top = "8px";
+}
+
+function drawTrend(d, p) {
+  const svg = $("svgTrend"), W = 420, H = 240, m = { l: 52, r: 8, t: 10, b: 34 }, S = normQ(p.q);
+  const des = d.w.map((w, i) => [w, d.y[i] / S[quarterOf(w)]]);
+  const w1 = 52 * p.Y + 51, line = [];
+  for (let w = d.w[0]; w <= w1; w += 1) line.push([w, p.level * Math.pow(1 + p.g, (w - 52 * p.Y) / 52)]);
+  const all = des.map((x) => x[1]).concat(line.map((x) => x[1]));
+  let lo = Math.min(...all), hi = Math.max(...all); const pad = (hi - lo) * 0.08; lo -= pad; hi += pad;
+  const { X, Y } = frame(svg, W, H, m, [d.w[0], w1 + 1], [lo, hi], { yTicks: 4 });
+  yearAxis(svg, X, H, m, d.w[0], w1, m.t);
+  des.forEach(([w, v]) => el("circle", { cx: X(w), cy: Y(v), r: 1.8, fill: "var(--data)", opacity: 0.75 }, svg));
+  el("path", { d: path(line, X, Y), fill: "none", stroke: "var(--model)", "stroke-width": 2.2 }, svg);
+  el("circle", { cx: X(52 * p.Y), cy: Y(p.level), r: 4, fill: "var(--fc)" }, svg);
+}
+function drawSeason(d, p) {
+  const svg = $("svgSeason"), W = 420, H = 240, m = { l: 44, r: 8, t: 10, b: 26 }, S = normQ(p.q);
+  const ratio = [0,1,2,3].map((k) => { const r = d.w.map((w, i) => [w, d.y[i]]).filter(([w]) => quarterOf(w) === k).map(([w, v]) => v / (p.level * Math.pow(1 + p.g, (w - 52 * p.Y) / 52))); return r; });
+  const means = ratio.map((r) => r.reduce((a, b) => a + b, 0) / r.length);
+  const all = S.concat(means, [1]);
+  let lo = Math.min(...all), hi = Math.max(...all); const pad = Math.max((hi - lo) * 0.25, 0.02); lo -= pad; hi += pad;
+  const { X, Y } = frame(svg, W, H, m, [0, 4], [lo, hi], { yTicks: 4, yDec: 2 });
+  el("line", { x1: m.l, x2: W - m.r, y1: Y(1), y2: Y(1), stroke: "var(--muted)", "stroke-width": 1 }, svg);
+  S.forEach((v, k) => {
+    const x = X(k + 0.2), w = X(k + 0.8) - X(k + 0.2);
+    el("rect", { x, width: w, y: Math.min(Y(v), Y(1)), height: Math.max(1, Math.abs(Y(v) - Y(1))), fill: "var(--model)", opacity: 0.85, rx: 2 }, svg);
+    el("circle", { cx: X(k + 0.5), cy: Y(means[k]), r: 5, fill: "var(--data)", stroke: "var(--panel)", "stroke-width": 1.5 }, svg);
+    const t = el("text", { x: X(k + 0.5), y: H - m.b + 14, "text-anchor": "middle" }, svg); t.innerHTML = `<tspan style="font-weight:600">${QN[k]}</tspan> ${fmt(v, 3)}`;
+  });
+}
+function drawResid(d, p) {
+  const svg = $("svgResid"), W = 420, H = 240, m = { l: 44, r: 8, t: 10, b: 34 };
+  const res = d.w.map((w, i) => [w, (d.y[i] / modelAt(p, w) - 1) * 100]);
+  const mx = Math.max(Math.max(...res.map((r) => Math.abs(r[1]))), p.cv * 100 * 1.2, 1) * 1.1;
+  const w1 = d.w[d.w.length - 1];
+  const { X, Y } = frame(svg, W, H, m, [d.w[0], w1 + 1], [-mx, mx], { yTicks: 4, yFmt: (v) => fmt(v, 0) + "%" });
+  el("rect", { x: m.l, width: W - m.l - m.r, y: Y(p.cv * 100), height: Y(-p.cv * 100) - Y(p.cv * 100), fill: "var(--band)" }, svg);
+  yearAxis(svg, X, H, m, d.w[0], w1, m.t);
+  const bw = Math.max(1, (X(1) - X(0)) * 0.7);
+  res.forEach(([w, v]) => el("rect", { x: X(w) + 0.15 * bw, width: bw, y: Math.min(Y(v), Y(0)), height: Math.max(0.5, Math.abs(Y(v) - Y(0))), fill: Math.abs(v) > p.cv * 200 ? "var(--fc)" : "var(--real)" }, svg));
+  el("line", { x1: m.l, x2: W - m.r, y1: Y(0), y2: Y(0), stroke: "var(--muted)", "stroke-width": 1 }, svg);
+}
+
+// ---------- Controles ----------
+const controls = [];
+function bind(rangeId, numId, get, set, toUi = (x) => x, fromUi = (x) => x, dec = 1) {
+  const r = $(rangeId), n = $(numId);
+  const apply = (v) => { if (!Number.isFinite(v)) return; set(fromUi(v)); render(); };
+  r.addEventListener("input", () => apply(Number(r.value)));
+  n.addEventListener("input", () => apply(Number(n.value.replace(",", "."))));
+  controls.push(() => { const v = toUi(get()); r.value = v; if (document.activeElement !== n) n.value = v.toFixed(dec); });
+}
+function buildQuarterControls() {
+  const box = $("qControls");
+  QN.forEach((name, k) => {
+    const div = document.createElement("div"); div.className = "ctl";
+    div.innerHTML = `<div class="lab"><span>${name}</span><span class="val"><input type="number" id="nQ${k}" step="0.001" min="0.5" max="1.5"></span></div><input type="range" id="rQ${k}" min="0.6" max="1.4" step="0.001">`;
+    box.appendChild(div);
+    bind("rQ" + k, "nQ" + k, () => st.q[k], (v) => { st.q[k] = Math.min(3, Math.max(0.2, v)); }, (x) => x, (x) => x, 3);
+  });
+}
+
+function setLevelRange() {
+  const d = currentData(), mean = d.y.reduce((a, b) => a + b, 0) / d.y.length;
+  const r = $("rLevel"); r.min = (mean * 0.5).toFixed(0); r.max = (mean * 1.6).toFixed(0);
+}
+
+function resetModel() {
+  const d = currentData();
+  const last = d.y.slice(-52); st.level = last.reduce((a, b) => a + b, 0) / last.length;
+  st.g = 0; st.q = [1,1,1,1];
+  const res = d.y.map((v, i) => v / modelAt(params(), d.w[i]) - 1); st.cv = std(res);
+  render();
+}
+function applyFit() { const d = currentData(); const f = autoFit(d.w, d.y, st.Y); Object.assign(st, { level: f.level, g: f.g, q: f.q, cv: f.cv }); render(); }
+
+function f01Values(p, p95) {
+  const S = normQ(p.q);
+  return [["Nivel base", fmt(p.level, 1), p.level.toFixed(1)], ["Crecimiento anual", fmt(p.g * 100, 1) + "%", (p.g * 100).toFixed(1)],
+    ...S.map((v, k) => ["Índice " + QN[k], fmt(v, 3), v.toFixed(3)]), ["CV semanal", fmt(p.cv * 100, 1) + "%", (p.cv * 100).toFixed(1)], ["p95 semanal", fmt(p95, 1), p95.toFixed(1)]];
+}
+
+function render() {
+  const d = currentData(), p = params();
+  controls.forEach((f) => f());
+  const S = normQ(p.q);
+  $("hQuarters").innerHTML = "Normalizados (promedio 1): " + S.map((v, k) => QN[k] + " " + fmt(v, 3)).join(" · ");
+  $("hLevel").textContent = `Demanda de una semana con índice 1 al inicio de ${yearLabel(p.Y)} (semana ${52 * p.Y}).`;
+  const model = d.w.map((w) => modelAt(p, w));
+  const abs = d.y.reduce((a, v, i) => a + Math.abs(v - model[i]), 0), sumY = d.y.reduce((a, b) => a + b, 0);
+  const bias = (model.reduce((a, b) => a + b, 0) - sumY) / sumY;
+  const res = d.y.map((v, i) => v / model[i] - 1), rcv = std(res);
+  const p95 = p95Of(p);
+  $("tWape").textContent = fmt(abs / sumY * 100, 2) + "%";
+  $("tBias").innerHTML = `<span class="${Math.abs(bias) > 0.01 ? "bad" : "ok"}">${bias > 0 ? "+" : ""}${fmt(bias * 100, 2)}%</span>`;
+  $("tCv").textContent = fmt(rcv * 100, 2) + "%";
+  $("tP95k").textContent = "p95 semanal " + yearLabel(p.Y);
+  $("tP95").textContent = fmt(p95, 1);
+  $("hCv").innerHTML = `El que declaras en el pronóstico; define el p95. El CV de los residuos de tu modelo es <b>${fmt(rcv * 100, 1)}%</b> <a href="#" id="useCv">usarlo</a>.`;
+  $("useCv").onclick = (e) => { e.preventDefault(); st.cv = rcv; render(); };
+  $("f01Year").textContent = yearLabel(p.Y);
+  $("f01").innerHTML = f01Values(p, p95).map(([k, v]) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+  drawMain(d, p, p95); drawTrend(d, p); drawSeason(d, p); drawResid(d, p);
+  renderFormulas(d, p, p95, rcv, abs / sumY);
+  renderPython(d);
+}
+
+function renderFormulas(d, p, p95, rcv, wape) {
+  const S = normQ(p.q), w = 52 * p.Y + 26, q = quarterOf(w);
+  const items = [
+    ["1. Tendencia (nivel con crecimiento compuesto)", `T<sub>w</sub> = L · (1 + g)<sup>(w − w<sub>0</sub>)/52</sup>`, `Ejemplo, semana ${w} (mitad de ${yearLabel(p.Y)}): ${fmt(p.level)} · (1 + ${fmt(p.g, 4)})<sup>${fmt((w - 52 * p.Y) / 52, 2)}</sup> = ${fmt(p.level * Math.pow(1 + p.g, (w - 52 * p.Y) / 52))}`],
+    ["2. Índice estacional del trimestre", `S<sub>q</sub> = s<sub>q</sub> / ((s<sub>1</sub> + s<sub>2</sub> + s<sub>3</sub> + s<sub>4</sub>) / 4)`, `Constante en las 13 semanas del trimestre; promedio 1. Ahora: ${S.map((v, k) => QN[k] + " = " + fmt(v, 3)).join(", ")}`],
+    ["3. Pronóstico de la semana", `ŷ<sub>w</sub> = T<sub>w</sub> · S<sub>q(w)</sub>`, `Semana ${w} (${QN[q]}): ${fmt(p.level * Math.pow(1 + p.g, (w - 52 * p.Y) / 52))} × ${fmt(S[q], 3)} = ${fmt(modelAt(p, w))}`],
+    ["4. Residuo multiplicativo", `e<sub>w</sub> = y<sub>w</sub> / ŷ<sub>w</sub> − 1`, `Un residuo de +5% significa que la semana vendió 5% más que el modelo.`],
+    ["5. Coeficiente de variación del residuo", `CV = √( Σ (e<sub>w</sub> − ē)² / (n − 1) )`, `Con tu modelo en la historia: ${fmt(rcv * 100, 2)}% (declarado: ${fmt(p.cv * 100, 1)}%).`],
+    ["6. p95 semanal del año", `(1/52) Σ<sub>w∈año</sub> P( ŷ<sub>w</sub>(1 + ε) > p95 ) = 5%,  ε ~ N(0, CV²)`, `El valor que solo 5% de las semanas del año supera: ${fmt(p95)}. Se resuelve por bisección.`],
+    ["7. Error del ajuste (WAPE)", `WAPE = Σ |y<sub>w</sub> − ŷ<sub>w</sub>| / Σ y<sub>w</sub>`, `Con tu modelo en la historia: ${fmt(wape * 100, 2)}%. Ni con los parámetros verdaderos llega a 0: el choque semanal es impredecible.`],
+    ["Cómo se estiman (método de razón a la tendencia)", `ln y<sub>w</sub> ≈ a + b·t  →  S<sub>q</sub> = media(y / e<sup>a+bt</sup>)  →  ln(y / S<sub>q</sub>) ≈ a′ + b′·t`, `Paso 1: tendencia exponencial preliminar con años completos. Paso 2: índices = promedio por trimestre de real ÷ tendencia, normalizados. Paso 3: se desestacionaliza y se reestima: L = e<sup>a′</sup>, g = e<sup>b′</sup> − 1. Paso 4: se corrige el nivel para que el residuo promedie 0 y se calculan CV y p95.`],
+  ];
+  $("formulaList").innerHTML = items.map(([h, f, s]) => `<div><h3>${h}</h3><div class="formula">${f}<div class="sub">${s}</div></div></div>`).join("");
+}
+
+function fileNameFor() { return st.src.file || `hoshi-mart-demanda-${st.src.regionId}-${st.src.seed}-hasta-0.csv`; }
+function pythonText() {
+  let code = PY_SOURCE.replace(/^ARCHIVO = .*$/m, `ARCHIVO = "${fileNameFor()}"  # cambia por el nombre de tu archivo`)
+    .replace(/^ANIO = \d+/m, `ANIO = ${st.Y}`);
+  if (st.col !== "total") code = code.replace('y = df["total"]', `y = df["${st.col}"]`).replace('label="Real (total)"', `label="Real (${st.col})"`);
+  return code;
+}
+function renderPython(d) {
+  $("pyCode").textContent = pythonText();
+  const f = autoFit(d.w, d.y, st.Y), p95 = p95Of(f);
+  const model = d.w.map((w) => modelAt(f, w)), wape = d.y.reduce((a, v, i) => a + Math.abs(v - model[i]), 0) / d.y.reduce((a, b) => a + b, 0);
+  const n = (x, dd) => x.toLocaleString("en-US", { minimumFractionDigits: dd, maximumFractionDigits: dd });
+  $("pyOut").textContent = [`Valores para F-01 (año ${yearLabel(st.Y)})`, `  Nivel base:        ${n(f.level, 1)} unidades por tienda por día`, `  Crecimiento anual: ${(f.g * 100).toFixed(1)} %`,
+    ...f.q.map((v, k) => `  Índice T${k + 1}:         ${v.toFixed(3)}`), `  CV semanal:        ${(f.cv * 100).toFixed(1)} %`, `  p95 semanal:       ${n(p95, 1)}`, `  (WAPE del ajuste en la historia: ${(wape * 100).toFixed(2)} %)`].join("\n");
+}
+
+// ---------- Fuente de datos ----------
+function setYearOptions() {
+  const sel = $("selYear"); sel.innerHTML = "";
+  for (let y = 0; y <= st.maxY; y++) { const o = document.createElement("option"); o.value = y; o.textContent = yearLabel(y) + (y ? " (con las semanas jugadas)" : ""); sel.appendChild(o); }
+  st.Y = Math.min(st.Y, st.maxY); sel.value = st.Y;
+}
+function loadBuiltIn() {
+  const id = $("selRegion").value + "-" + $("selScenario").value;
+  const s = SERIES.find((x) => x.id === id);
+  st.src = { ...s, regionId: $("selRegion").value };
+  st.maxY = 0; st.Y = 0; setYearOptions();
+  $("srcInfo").innerHTML = `${s.region} · ${s.scenario} · semilla ${s.seed} · historia H1–H2 (104 semanas). Si en el simulador usaste otra semilla, tus datos serán distintos: carga tu CSV.`;
+  setLevelRange(); resetModel();
+}
+function parseCsv(text, name) {
+  const lines = text.trim().split(/\r?\n/), head = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const iw = head.indexOf("semana"), it = head.indexOf("total");
+  if (iw < 0 || it < 0) throw new Error("El archivo debe tener las columnas «semana» y «total» (CSV descargado del simulador).");
+  const cols = ["total", "frescos", "refrigerado", "ambiente", "congelado"], out = { week: [], file: name };
+  cols.forEach((c) => out[c] = []);
+  for (const l of lines.slice(1)) {
+    const v = l.split(","); const w = Number(v[iw]); if (!Number.isFinite(w)) continue;
+    out.week.push(w); cols.forEach((c) => { const i = head.indexOf(c); out[c].push(i >= 0 ? Number(v[i]) : NaN); });
+  }
+  if (out.week.length < 52) throw new Error("Se necesitan al menos 52 semanas.");
+  return out;
+}
+$("fileCsv").addEventListener("change", (e) => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then((t) => {
+    try {
+      const s = parseCsv(t, f.name);
+      const maxW = Math.max(...s.week);
+      st.src = s; st.maxY = Math.max(0, Math.min(2, Math.floor((maxW + 1) / 52))); st.Y = st.maxY; setYearOptions();
+      const m = f.name.match(/demanda-([a-z]+)-(\d+)/);
+      $("srcInfo").innerHTML = `Tu archivo: <b>${f.name}</b> · ${s.week.length} semanas (de la ${s.week[0]} a la ${maxW})${m ? ` · región ${m[1]}, semilla ${m[2]}` : ""}. <a href="#" id="backBuiltIn">Volver a las series precargadas</a>`;
+      $("backBuiltIn").onclick = (ev) => { ev.preventDefault(); loadBuiltIn(); };
+      if (!s[st.col].some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; }
+      setLevelRange(); resetModel();
+    } catch (err) { $("srcInfo").innerHTML = `<span class="bad">${err.message}</span>`; }
+    e.target.value = "";
+  });
+});
+function downloadText(name, text, type) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+$("btnDownload").addEventListener("click", () => {
+  const s = st.src, cols = ["frescos", "refrigerado", "ambiente", "congelado", "total"];
+  const rows = ["semana,anio,trimestre,semana_del_anio," + cols.join(",")];
+  s.week.forEach((w, i) => { const y = Math.floor(w / 52); rows.push([w, yearLabel(y), QN[quarterOf(w)], ((w % 52) + 52) % 52 + 1, ...cols.map((c) => Number.isFinite(s[c][i]) ? s[c][i].toFixed(1) : "")].join(",")); });
+  downloadText(fileNameFor(), rows.join("\n") + "\n", "text/csv");
+});
+function copy(text, msgId) {
+  const done = () => { $(msgId).textContent = "Copiado"; setTimeout(() => $(msgId).textContent = "", 1800); };
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, () => fallback()); else fallback();
+  function fallback() { const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) {} t.remove(); }
+}
+$("btnCopy").addEventListener("click", () => { const p = params(); copy(f01Values(p, p95Of(p)).map(([k, , raw]) => `${k}: ${raw}`).join("\n"), "copyMsg"); });
+$("btnCopyPy").addEventListener("click", () => copy(pythonText(), "copyPyMsg"));
+$("btnDownloadPy").addEventListener("click", () => downloadText("modelador_hoshi_mart.py", pythonText(), "text/x-python"));
+
+// ---------- Inicio ----------
+REGIONS.forEach(([v, t]) => $("selRegion").add(new Option(t, v)));
+SCEN.forEach(([v, t]) => $("selScenario").add(new Option(t, v)));
+$("selRegion").addEventListener("change", loadBuiltIn);
+$("selScenario").addEventListener("change", loadBuiltIn);
+$("selCol").addEventListener("change", () => { st.col = $("selCol").value; $("colNote").style.display = st.col === "total" ? "none" : "block"; setLevelRange(); resetModel(); });
+$("selYear").addEventListener("change", () => { st.Y = Number($("selYear").value); setLevelRange(); resetModel(); });
+bind("rLevel", "nLevel", () => st.level, (v) => { st.level = Math.max(1, v); }, (x) => x, (x) => x, 1);
+bind("rGrowth", "nGrowth", () => st.g, (v) => { st.g = v; }, (x) => x * 100, (x) => x / 100, 1);
+bind("rCv", "nCv", () => st.cv, (v) => { st.cv = Math.max(0, v); }, (x) => x * 100, (x) => x / 100, 1);
+buildQuarterControls();
+$("btnFit").addEventListener("click", applyFit);
+$("btnReset").addEventListener("click", resetModel);
+$("svgMain").addEventListener("mousemove", onMainMove);
+$("svgMain").addEventListener("mouseleave", () => { $("tipMain").style.display = "none"; if (mainGeom) mainGeom.cursor.setAttribute("visibility", "hidden"); });
+document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b));
+  document.querySelectorAll(".pane").forEach((x) => x.classList.toggle("on", x.id === b.dataset.pane));
+}));
+loadBuiltIn();
+</script>
+</body>
+</html>

@@ -83,6 +83,7 @@ Lectura y discusión guiada del caso **Seven-Eleven Japan Co.** (Kellogg KEL026,
 - Capítulos de inventarios (safety stock, service levels, variabilidad)
 - Material del profesor: plantilla simple (hoja de cálculo) para comparar 1 CD vs 2 CDs (costo total vs tiempo de entrega)
 - **Beer Game (simulación en línea):** la sesión incluye la simulación del Beer Game para experimentar de primera mano el efecto bullwhip. Se juega en línea desde https://beergame.masystem.se/ (reglas: https://www.masystem.se/MA-system-Consulting/Play-The-Beer-Game/Rules). Referencia institucional: Hammond (1994), citada arriba.
+- **Modelador de series de tiempo (Hoshi Mart):** https://eduhrami.github.io/curso_mt4035/modelador-series/ — laboratorio para estimar los parámetros del pronóstico del simulador (nivel base, crecimiento, índices trimestrales, CV y p95) con una descomposición multiplicativa: precarga la historia de cada región y escenario de mercado, acepta el CSV propio de la partida, muestra cada componente y su fórmula e incluye el código Python equivalente para un notebook. Referencias base: Hyndman y Athanasopoulos (2021, cap. 3) y Makridakis, Wheelwright y Hyndman (1998, cap. 3).
 
 ---
 
