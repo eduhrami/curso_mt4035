@@ -575,7 +575,7 @@ REGIONS.forEach(([v, t]) => $("selRegion").add(new Option(t, v)));
 SCEN.forEach(([v, t]) => $("selScenario").add(new Option(t, v)));
 $("selRegion").addEventListener("change", loadBuiltIn);
 $("selScenario").addEventListener("change", loadBuiltIn);
-$("selCol").addEventListener("change", () => { st.col = $("selCol").value; $("colNote").style.display = st.col === "total" ? "none" : "block"; setLevelRange(); resetModel(); });
+$("selCol").addEventListener("change", () => { st.col = $("selCol").value; if (!(st.src[st.col] || []).some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; } $("colNote").style.display = st.col === "total" ? "none" : "block"; setLevelRange(); resetModel(); });
 $("selYear").addEventListener("change", () => { st.Y = Number($("selYear").value); setLevelRange(); resetModel(); });
 bind("rLevel", "nLevel", () => st.level, (v) => { st.level = Math.max(1, v); }, (x) => x, (x) => x, 1);
 bind("rGrowth", "nGrowth", () => st.g, (v) => { st.g = v; }, (x) => x * 100, (x) => x / 100, 1);
