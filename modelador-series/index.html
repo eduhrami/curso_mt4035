@@ -58,6 +58,10 @@ p{margin:0 0 8px}
 .row label select{color:var(--ink);min-width:180px}
 .file{display:inline-block}
 .file input{display:none}
+.file.disabled{opacity:.45;pointer-events:none}
+.file.primary label{color:var(--accent-ink)!important;font-weight:600}
+main.waiting section.dep{opacity:.35;pointer-events:none;user-select:none}
+#srcInfo.pending{background:var(--warn-bg);color:var(--ink);border-radius:8px;padding:8px 10px}
 .grid2{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px}
 @media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
 .ctl{border-top:1px solid var(--line);padding:10px 0}
@@ -119,7 +123,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
   </div>
 </header>
 
-<main class="wrap">
+<main class="wrap" id="main">
   <section class="card">
     <h2><span class="n">1</span>Elige la serie</h2>
     <p class="small">Elige la misma región, el mismo escenario de mercado y la misma semilla que tu partida del simulador. La página genera la historia de demanda (104 semanas, unidades por tienda por día) con el mismo código del simulador, para inicializar tu pronóstico de A1.</p>
@@ -135,14 +139,14 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
         <option value="congelado">congelado</option>
       </select></label>
       <label>Año a pronosticar<select id="selYear"></select></label>
-      <span class="file btn"><label style="cursor:pointer;color:var(--ink);font-size:14px">Cargar mi CSV<input type="file" id="fileCsv" accept=".csv,text/csv"></label></span>
+      <span class="file btn disabled" id="btnCsv" title="Disponible al elegir A2 o A3 en «Año a pronosticar»"><label style="cursor:pointer;color:var(--ink);font-size:14px">Cargar mi CSV<input type="file" id="fileCsv" accept=".csv,text/csv" disabled></label></span>
     </div>
-    <p class="small" style="margin:8px 0 0"><b>Utiliza la misma semilla que en el simulador para tener resultados correctos.</b> Si deseas recalcular los parámetros para A2 o A3, carga con «Cargar mi CSV» el archivo que te entrega el simulador en la pestaña «Pronóstico» al inicio de ese año: trae también las semanas que ya jugaste.</p>
+    <p class="small" style="margin:8px 0 0"><b>Utiliza la misma semilla que en el simulador para tener resultados correctos.</b> Si deseas recalcular los parámetros para A2 o A3, elige el año en «Año a pronosticar» y carga con «Cargar mi CSV» el archivo que te entrega el simulador en la pestaña «Pronóstico» al inicio de ese año: trae también las semanas que ya jugaste.</p>
     <div id="srcInfo" class="small muted" style="margin-top:4px"></div>
     <div id="colNote" class="note" style="display:none">Las columnas por categoría sirven para explorar (cada una tiene su propia amplitud estacional). Los parámetros que capturas en el simulador se estiman con la columna <b>total</b>.</div>
   </section>
 
-  <section class="card">
+  <section class="card dep">
     <h2><span class="n">2</span>Ajusta el modelo y compáralo con la serie real</h2>
     <div class="grid2">
       <div>
@@ -209,7 +213,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
     </div>
   </section>
 
-  <section class="card">
+  <section class="card dep">
     <h2><span class="n">3</span>Los componentes de la descomposición</h2>
     <p class="small">Cada gráfica aísla un factor del modelo. Los puntos verdes son <b>lo que dicen los datos</b> una vez que quitas los otros factores de tu modelo; la línea o las barras son <b>tu parámetro</b>. Si coinciden, ese componente está bien estimado.</p>
     <div class="comp">
@@ -219,7 +223,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
     </div>
   </section>
 
-  <section class="card">
+  <section class="card dep">
     <h2><span class="n">4</span>Fórmulas y código</h2>
     <div class="tabs" role="tablist">
       <button class="on" data-pane="pFormulas">Fórmulas</button>
@@ -353,7 +357,7 @@ const quarterOf = (w) => ((Math.floor(w / 13) % 4) + 4) % 4;
 const yearLabel = (y) => y < 0 ? "H" + (y + 3) : "A" + (y + 1);
 
 // ---------- Estado ----------
-const st = { src: null, col: "total", Y: 0, maxY: 0, level: 0, g: 0, q: [1,1,1,1], cv: 0.05 };
+const st = { src: null, file: null, col: "total", Y: 0, level: 0, g: 0, q: [1,1,1,1], cv: 0.05 };
 
 function currentData() {
   const s = st.src;
@@ -608,19 +612,41 @@ function renderPython(d) {
 // ---------- Fuente de datos ----------
 function setYearOptions() {
   const sel = $("selYear"); sel.innerHTML = "";
-  for (let y = 0; y <= st.maxY; y++) { const o = document.createElement("option"); o.value = y; o.textContent = yearLabel(y) + (y ? ` (con las semanas jugadas hasta ${yearLabel(y - 1)})` : ""); sel.appendChild(o); }
-  st.Y = Math.min(st.Y, st.maxY); sel.value = st.Y;
+  ["A1 (con la semilla)", "A2 (carga el CSV del simulador)", "A3 (carga el CSV del simulador)"].forEach((t, y) => sel.add(new Option(t, y)));
+  sel.value = st.Y;
 }
+/** A1 se genera con la semilla; A2 y A3 requieren el CSV que entrega el simulador al inicio de ese año. */
+function applyYear() {
+  const on = st.Y > 0;
+  $("btnCsv").classList.toggle("disabled", !on); $("btnCsv").classList.toggle("primary", on); $("fileCsv").disabled = !on;
+  $("btnCsv").title = on ? `Carga el CSV que descargaste en la pestaña «Pronóstico» al inicio de ${yearLabel(st.Y)}` : "Disponible al elegir A2 o A3 en «Año a pronosticar»";
+  if (!on) return loadBuiltIn();
+  if (st.file && Math.max(...st.file.week) >= 52 * st.Y - 1) return useFile();
+  showPending();
+}
+function showPending(extra = "") {
+  $("main").classList.add("waiting");
+  const info = $("srcInfo"); info.classList.add("pending");
+  info.innerHTML = `${extra}Para pronosticar <b>${yearLabel(st.Y)}</b>, haz clic en <b>«Cargar mi CSV»</b> y elige el archivo que descargaste en la pestaña «Pronóstico» del simulador al inicio de ${yearLabel(st.Y)} (${yearLabel(st.Y)}-T1). Ese archivo trae la historia y también las semanas que ya jugaste.`;
+}
+function useFile() {
+  const s = st.file, maxW = Math.max(...s.week), m = s.file.match(/demanda-([a-z]+)-(\d+)/);
+  st.src = s; $("main").classList.remove("waiting"); $("srcInfo").classList.remove("pending");
+  $("srcInfo").innerHTML = `Tu archivo: <b>${s.file}</b> · ${s.week.length} semanas (de la ${s.week[0]} a la ${maxW})${m ? ` · región ${m[1]}, semilla ${m[2]}` : ""} · se usan las semanas anteriores a ${yearLabel(st.Y)}.`;
+  if (!s[st.col].some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; }
+  setLevelRange(); resetModel();
+}
+function toA1() { st.Y = 0; $("selYear").value = 0; applyYear(); }
 const suggestedSeed = () => SCEN.find((x) => x.id === $("selScenario").value).seed;
 function loadBuiltIn() {
   const region = $("selRegion").value, scen = SCEN.find((x) => x.id === $("selScenario").value);
   let seed = Math.floor(Number($("nSeed").value));
   if (!Number.isFinite(seed) || seed < 0) { seed = scen.seed; $("nSeed").value = seed; }
-  st.maxY = 0; st.Y = 0; setYearOptions();
+  $("main").classList.remove("waiting"); $("srcInfo").classList.remove("pending");
   st.src = { ...parseCsv(HoshiDemanda.historyCsv(region, scen.id, seed), null), file: null, regionId: region, seed };
   if (!st.src[st.col].some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; }
   const regionName = REGIONS.find((r) => r[0] === region)[1];
-  $("srcInfo").innerHTML = `${regionName} · ${scen.title} · semilla aleatoria <b>${seed}</b>${seed === scen.seed ? " (la sugerida del escenario)" : ""} · historia H1–H2 (104 semanas). Para A2 o A3, carga tu CSV.`;
+  $("srcInfo").innerHTML = `${regionName} · ${scen.title} · semilla aleatoria <b>${seed}</b>${seed === scen.seed ? " (la sugerida del escenario)" : ""} · historia H1–H2 (104 semanas). Para A2 o A3, elige el año y carga tu CSV.`;
   setLevelRange(); resetModel();
 }
 function parseCsv(text, name) {
@@ -640,16 +666,14 @@ $("fileCsv").addEventListener("change", (e) => {
   const f = e.target.files[0]; if (!f) return;
   f.text().then((t) => {
     try {
-      const s = parseCsv(t, f.name);
-      const maxW = Math.max(...s.week);
-      st.src = s; st.maxY = Math.max(0, Math.min(2, Math.floor((maxW + 1) / 52))); st.Y = st.maxY; setYearOptions();
-      const m = f.name.match(/demanda-([a-z]+)-(\d+)/);
-      if (m) { if (REGIONS.some((r) => r[0] === m[1])) $("selRegion").value = m[1]; $("nSeed").value = m[2]; }
-      $("srcInfo").innerHTML = `Tu archivo: <b>${f.name}</b> · ${s.week.length} semanas (de la ${s.week[0]} a la ${maxW})${m ? ` · región ${m[1]}, semilla ${m[2]}` : ""}. <a href="#" id="backBuiltIn">Volver a generar la serie con región, escenario y semilla</a>`;
-      $("backBuiltIn").onclick = (ev) => { ev.preventDefault(); loadBuiltIn(); };
-      if (!s[st.col].some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; }
-      setLevelRange(); resetModel();
-    } catch (err) { $("srcInfo").innerHTML = `<span class="bad">${err.message}</span>`; }
+      const s = parseCsv(t, f.name), maxW = Math.max(...s.week);
+      if (maxW < 52 * st.Y - 1) {
+        showPending(`<span class="bad">El archivo <b>${f.name}</b> llega solo hasta la semana ${maxW} y no trae todo ${yearLabel(st.Y - 1)}.</span> `);
+      } else {
+        st.file = s;
+        useFile();
+      }
+    } catch (err) { showPending(`<span class="bad">${err.message}</span> `); }
     e.target.value = "";
   });
 });
@@ -669,12 +693,12 @@ $("btnDownloadPy").addEventListener("click", () => downloadText("modelador_hoshi
 REGIONS.forEach(([v, t]) => $("selRegion").add(new Option(t, v)));
 SCEN.forEach((x) => $("selScenario").add(new Option(x.title, x.id)));
 $("nSeed").value = SCEN[0].seed;
-$("selRegion").addEventListener("change", loadBuiltIn);
-$("selScenario").addEventListener("change", () => { $("nSeed").value = suggestedSeed(); loadBuiltIn(); });
-$("nSeed").addEventListener("change", loadBuiltIn);
-$("btnSeedDefault").addEventListener("click", () => { $("nSeed").value = suggestedSeed(); loadBuiltIn(); });
+$("selRegion").addEventListener("change", toA1);
+$("selScenario").addEventListener("change", () => { $("nSeed").value = suggestedSeed(); toA1(); });
+$("nSeed").addEventListener("change", toA1);
+$("btnSeedDefault").addEventListener("click", () => { $("nSeed").value = suggestedSeed(); toA1(); });
 $("selCol").addEventListener("change", () => { st.col = $("selCol").value; if (!(st.src[st.col] || []).some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; } $("colNote").style.display = st.col === "total" ? "none" : "block"; setLevelRange(); resetModel(); });
-$("selYear").addEventListener("change", () => { st.Y = Number($("selYear").value); if (!st.src.file) loadBuiltIn(); else { setLevelRange(); resetModel(); } });
+$("selYear").addEventListener("change", () => { st.Y = Number($("selYear").value); applyYear(); });
 bind("rLevel", "nLevel", () => st.level, (v) => { st.level = Math.max(1, v); }, (x) => x, (x) => x, 1);
 bind("rGrowth", "nGrowth", () => st.g, (v) => { st.g = v; }, (x) => x * 100, (x) => x / 100, 1);
 bind("rCv", "nCv", () => st.cv, (v) => { st.cv = Math.max(0, v); }, (x) => x * 100, (x) => x / 100, 1);
@@ -687,7 +711,8 @@ document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("cli
   document.querySelectorAll(".tabs button").forEach((x) => x.classList.toggle("on", x === b));
   document.querySelectorAll(".pane").forEach((x) => x.classList.toggle("on", x.id === b.dataset.pane));
 }));
-loadBuiltIn();
+setYearOptions();
+applyYear();
 </script>
 </body>
 </html>
