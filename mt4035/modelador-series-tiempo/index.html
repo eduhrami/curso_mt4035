@@ -122,7 +122,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
 <main class="wrap">
   <section class="card">
     <h2><span class="n">1</span>Elige la serie</h2>
-    <p class="small">Elige la misma región, el mismo escenario de mercado y la misma semilla que tu partida del simulador. La página genera la demanda (unidades por tienda por día) con el mismo código del simulador: los 2 años de historia y, si pronosticas A2 o A3, también los años anteriores a ese.</p>
+    <p class="small">Elige la misma región, el mismo escenario de mercado y la misma semilla que tu partida del simulador. La página genera la historia de demanda (104 semanas, unidades por tienda por día) con el mismo código del simulador, para inicializar tu pronóstico de A1.</p>
     <div class="row">
       <label>Región<select id="selRegion"></select></label>
       <label>Escenario de mercado<select id="selScenario"></select></label>
@@ -137,7 +137,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
       <label>Año a pronosticar<select id="selYear"></select></label>
       <span class="file btn"><label style="cursor:pointer;color:var(--ink);font-size:14px">Cargar mi CSV<input type="file" id="fileCsv" accept=".csv,text/csv"></label></span>
     </div>
-    <p class="small" style="margin:8px 0 0"><b>Utiliza la misma semilla que en el simulador para tener resultados correctos.</b></p>
+    <p class="small" style="margin:8px 0 0"><b>Utiliza la misma semilla que en el simulador para tener resultados correctos.</b> Si deseas recalcular los parámetros para A2 o A3, carga con «Cargar mi CSV» el archivo que te entrega el simulador en la pestaña «Pronóstico» al inicio de ese año: trae también las semanas que ya jugaste.</p>
     <div id="srcInfo" class="small muted" style="margin-top:4px"></div>
     <div id="colNote" class="note" style="display:none">Las columnas por categoría sirven para explorar (cada una tiene su propia amplitud estacional). Los parámetros que capturas en el simulador se estiman con la columna <b>total</b>.</div>
   </section>
@@ -608,7 +608,7 @@ function renderPython(d) {
 // ---------- Fuente de datos ----------
 function setYearOptions() {
   const sel = $("selYear"); sel.innerHTML = "";
-  for (let y = 0; y <= st.maxY; y++) { const o = document.createElement("option"); o.value = y; o.textContent = yearLabel(y) + (y ? ` (con los datos hasta ${yearLabel(y - 1)})` : ""); sel.appendChild(o); }
+  for (let y = 0; y <= st.maxY; y++) { const o = document.createElement("option"); o.value = y; o.textContent = yearLabel(y) + (y ? ` (con las semanas jugadas hasta ${yearLabel(y - 1)})` : ""); sel.appendChild(o); }
   st.Y = Math.min(st.Y, st.maxY); sel.value = st.Y;
 }
 const suggestedSeed = () => SCEN.find((x) => x.id === $("selScenario").value).seed;
@@ -616,11 +616,11 @@ function loadBuiltIn() {
   const region = $("selRegion").value, scen = SCEN.find((x) => x.id === $("selScenario").value);
   let seed = Math.floor(Number($("nSeed").value));
   if (!Number.isFinite(seed) || seed < 0) { seed = scen.seed; $("nSeed").value = seed; }
-  st.maxY = 2; setYearOptions();
-  st.src = { ...parseCsv(HoshiDemanda.historyCsv(region, scen.id, seed, 52 * st.Y), null), file: null, regionId: region, seed };
+  st.maxY = 0; st.Y = 0; setYearOptions();
+  st.src = { ...parseCsv(HoshiDemanda.historyCsv(region, scen.id, seed), null), file: null, regionId: region, seed };
   if (!st.src[st.col].some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; }
   const regionName = REGIONS.find((r) => r[0] === region)[1];
-  $("srcInfo").innerHTML = `${regionName} · ${scen.title} · semilla aleatoria <b>${seed}</b>${seed === scen.seed ? " (la sugerida del escenario)" : ""} · datos de H1 a ${yearLabel(st.Y - 1)} (${st.src.week.length} semanas).`;
+  $("srcInfo").innerHTML = `${regionName} · ${scen.title} · semilla aleatoria <b>${seed}</b>${seed === scen.seed ? " (la sugerida del escenario)" : ""} · historia H1–H2 (104 semanas). Para A2 o A3, carga tu CSV.`;
   setLevelRange(); resetModel();
 }
 function parseCsv(text, name) {
