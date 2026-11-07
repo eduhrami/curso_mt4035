@@ -122,11 +122,11 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
 <main class="wrap">
   <section class="card">
     <h2><span class="n">1</span>Elige la serie</h2>
-    <p class="small">Elige la misma región, el mismo escenario de mercado y la misma semilla que tu partida del simulador. La página genera la historia de demanda (104 semanas, unidades por tienda por día) con el mismo código del simulador, así que obtienes exactamente los datos del archivo CSV de la pestaña «Pronóstico».</p>
+    <p class="small">Elige la misma región, el mismo escenario de mercado y la misma semilla que tu partida del simulador. La página genera la demanda (unidades por tienda por día) con el mismo código del simulador: los 2 años de historia y, si pronosticas A2 o A3, también los años anteriores a ese.</p>
     <div class="row">
       <label>Región<select id="selRegion"></select></label>
       <label>Escenario de mercado<select id="selScenario"></select></label>
-      <label>Semilla aleatoria<span style="display:flex;gap:6px"><input type="number" id="nSeed" min="0" step="1" style="width:110px"><button class="btn" id="btnSeedDefault" type="button" title="Usar la semilla sugerida del escenario">Sugerida</button></span></label>
+      <label title="Utiliza la misma semilla que en el simulador para tener resultados correctos.">Semilla aleatoria<span style="display:flex;gap:6px"><input type="number" id="nSeed" min="0" step="1" style="width:110px" title="Utiliza la misma semilla que en el simulador para tener resultados correctos."><button class="btn" id="btnSeedDefault" type="button" title="Usar la semilla sugerida del escenario">Sugerida</button></span></label>
       <label>Columna<select id="selCol">
         <option value="total">total (la que usa el simulador)</option>
         <option value="frescos">frescos</option>
@@ -136,15 +136,9 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
       </select></label>
       <label>Año a pronosticar<select id="selYear"></select></label>
       <span class="file btn"><label style="cursor:pointer;color:var(--ink);font-size:14px">Cargar mi CSV<input type="file" id="fileCsv" accept=".csv,text/csv"></label></span>
-      <button class="btn" id="btnDownload">Descargar esta serie (CSV)</button>
     </div>
-    <div id="srcInfo" class="small muted" style="margin-top:8px"></div>
-    <details class="note" style="background:var(--soft)" open>
-      <summary style="cursor:pointer;font-weight:600">¿Por qué necesito la semilla aleatoria?</summary>
-      <p style="margin-top:6px">La demanda de cada partida no está escrita de antemano: el simulador la <b>sortea</b> al iniciar la partida (el nivel, el crecimiento, la forma de la estacionalidad y el choque aleatorio de cada semana). La <b>semilla aleatoria</b> es el número con el que arranca ese sorteo. Con la misma región, el mismo escenario y la misma semilla, el sorteo da siempre el mismo resultado; con otra semilla, la historia de demanda es distinta aunque la región y el escenario sean iguales. Por eso, para que tu modelo sirva para <b>tu</b> partida, la semilla de esta página debe ser la misma que la del simulador.</p>
-      <p>¿Dónde la encuentras? En la pantalla de inicio del simulador, en el campo «Semilla» (cada escenario propone una semilla sugerida; el dado 🎲 sortea otra), en la lista «Mis corridas» (el número entre paréntesis), en el reporte final y en el nombre del archivo CSV que descargas: <code>hoshi-mart-demanda-<i>región</i>-<b><i>semilla</i></b>-hasta-<i>n</i>.csv</code>.</p>
-      <p style="margin:0">Si creaste tu propio escenario («Crear mi propio escenario») o ya jugaste algún año (A2 o A3, cuando el archivo también trae las semanas jugadas), usa «Cargar mi CSV» con el archivo que descargaste del simulador.</p>
-    </details>
+    <p class="small" style="margin:8px 0 0"><b>Utiliza la misma semilla que en el simulador para tener resultados correctos.</b></p>
+    <div id="srcInfo" class="small muted" style="margin-top:4px"></div>
     <div id="colNote" class="note" style="display:none">Las columnas por categoría sirven para explorar (cada una tiene su propia amplitud estacional). Los parámetros que capturas en el simulador se estiman con la columna <b>total</b>.</div>
   </section>
 
@@ -168,13 +162,13 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
           <div class="help" id="hQuarters">El modelo los normaliza a promedio 1.</div>
         </div>
         <div class="ctl">
-          <div class="lab"><b>Coeficiente de variación del residuo semanal</b><span class="val"><input type="number" id="nCv" step="0.1" min="0" max="25"><span class="small muted">%</span></span></div>
+          <div class="lab"><b>Coeficiente de variación (CV) del residuo semanal</b><span class="val"><input type="number" id="nCv" step="0.1" min="0" max="25"><span class="small muted">%</span></span></div>
           <input type="range" id="rCv" min="0" max="25" step="0.1">
           <div class="help" id="hCv"></div>
           <details class="help" style="margin-top:6px">
-            <summary style="cursor:pointer;color:var(--ink)">¿Qué es el coeficiente de variación del residuo?</summary>
+            <summary style="cursor:pointer;color:var(--ink)">¿Qué es el coeficiente de variación (CV) del residuo?</summary>
             <p style="margin-top:6px">Ni el mejor modelo acierta exactamente cada semana: siempre hay una diferencia entre la demanda real y el pronóstico. Esa diferencia, expresada como porcentaje del pronóstico, es el <b>residuo</b> de la semana (real ÷ pronóstico − 1). Por ejemplo, si el pronóstico era 2,000 unidades y se vendieron 2,100, el residuo es +5%; si se vendieron 1,900, es −5%.</p>
-            <p>El <b>coeficiente de variación</b> mide qué tan grandes suelen ser esos residuos: es la desviación estándar de los residuos de todas las semanas. Como el residuo ya es un porcentaje, el coeficiente de variación también lo es. Un coeficiente de variación de 5% quiere decir que, en una semana típica, la demanda real se aleja alrededor de 5% del pronóstico, hacia arriba o hacia abajo; aproximadamente 2 de cada 3 semanas quedan dentro de ±5% y casi todas dentro de ±10%.</p>
+            <p>El <b>coeficiente de variación (CV)</b> mide qué tan grandes suelen ser esos residuos: es la desviación estándar de los residuos de todas las semanas. Como el residuo ya es un porcentaje, el coeficiente de variación también lo es. Un coeficiente de variación de 5% quiere decir que, en una semana típica, la demanda real se aleja alrededor de 5% del pronóstico, hacia arriba o hacia abajo; aproximadamente 2 de cada 3 semanas quedan dentro de ±5% y casi todas dentro de ±10%.</p>
             <p style="margin:0"><b>¿Para qué se usa?</b> Mide la incertidumbre que el modelo no puede eliminar. En el simulador define el <b>inventario de seguridad</b> de las tiendas: si declaras un coeficiente de variación menor que el real, las tiendas quedan desprotegidas y faltan productos en las semanas altas; si declaras uno mayor, cargas inventario de más. También determina el percentil 95 de abajo.</p>
           </details>
         </div>
@@ -186,10 +180,10 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
       </div>
       <div style="min-width:0">
         <div class="tiles">
-          <div class="tile"><div class="k">Error porcentual absoluto ponderado del ajuste (WAPE, historia)</div><div class="v" id="tWape">–</div></div>
+          <div class="tile"><div class="k">Error porcentual absoluto ponderado (WAPE) del ajuste, calculado con los datos históricos</div><div class="v" id="tWape">–</div></div>
           <div class="tile"><div class="k">Sesgo (modelo − real)</div><div class="v" id="tBias">–</div></div>
-          <div class="tile"><div class="k">Coeficiente de variación de tus residuos</div><div class="v" id="tCv">–</div></div>
-          <div class="tile"><div class="k" id="tP95k">Percentil 95 semanal</div><div class="v" id="tP95">–</div></div>
+          <div class="tile"><div class="k">Coeficiente de variación (CV) de tus residuos, calculado con los datos históricos</div><div class="v" id="tCv">–</div></div>
+          <div class="tile"><div class="k" id="tP95k">Percentil 95 (p95) semanal</div><div class="v" id="tP95">–</div></div>
         </div>
         <details class="small" style="margin:-4px 0 10px">
           <summary style="cursor:pointer;font-weight:600">¿Qué es el percentil 95 semanal (p95) y para qué se usa?</summary>
@@ -201,9 +195,9 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
         <div class="chart" id="chMain"><svg id="svgMain" viewBox="0 0 860 330"></svg><div class="tip" id="tipMain"></div></div>
         <div class="legend">
           <span><i style="border-color:var(--real)"></i>Demanda real</span>
-          <span><i style="border-color:var(--model)"></i>Tu modelo (historia)</span>
+          <span><i style="border-color:var(--model)"></i>Tu modelo (datos históricos)</span>
           <span><i class="dash" style="border-color:var(--fc)"></i>Pronóstico del año</span>
-          <span><i class="dot" style="border-color:var(--fc)"></i>Percentil 95 semanal del año</span>
+          <span><i class="dot" style="border-color:var(--fc)"></i>Percentil 95 (p95) semanal del año</span>
         </div>
         <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px">
           <h3>Valores para capturar en el simulador (pronóstico F-01, <span id="f01Year">A1</span>)</h3>
@@ -234,7 +228,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;padding:12px 0 28px}
     <div class="pane on" id="pFormulas">
       <p>El simulador usa una <b>descomposición multiplicativa</b>: la demanda es el producto de un nivel con tendencia, un índice estacional y un choque aleatorio. Es multiplicativa porque la amplitud de la estacionalidad crece con el nivel (un T3 10% arriba significa más unidades cuando la demanda es mayor).</p>
       <div class="formula">y<sub>w</sub> = L · (1 + g)<sup>(w − w<sub>0</sub>)/52</sup> · S<sub>q(w)</sub> · (1 + ε<sub>w</sub>)
-        <div class="sub">L: nivel base. g: crecimiento anual. S<sub>q</sub>: índice estacional del trimestre. w: semana (0 = inicio de A1; negativa en la historia). w<sub>0</sub> = 52 × año a pronosticar (0 en A1, 52 en A2, 104 en A3). q(w): trimestre de la semana, 13 semanas cada uno. ε<sub>w</sub>: choque aleatorio de la semana, independiente entre semanas, con media 0 y desviación estándar igual al coeficiente de variación (CV).</div></div>
+        <div class="sub">L: nivel base. g: crecimiento anual. S<sub>q</sub>: índice estacional del trimestre. w: semana (0 = inicio de A1; negativa en los datos históricos). w<sub>0</sub> = 52 × año a pronosticar (0 en A1, 52 en A2, 104 en A3). q(w): trimestre de la semana, 13 semanas cada uno. ε<sub>w</sub>: choque aleatorio de la semana, independiente entre semanas, con media 0 y desviación estándar igual al coeficiente de variación (CV).</div></div>
       <div class="fgrid" id="formulaList"></div>
       <p class="small muted" style="margin-top:12px">Este modelo equivale a Holt-Winters con tendencia y estacionalidad multiplicativas cuando sus tres parámetros de suavizamiento (α del nivel, β de la tendencia y γ de la estacionalidad) valen cero: nivel, crecimiento e índices quedan fijos en lugar de actualizarse cada semana. Funciona aquí porque el proceso del simulador tiene esa misma forma; con datos reales, la tendencia y la estacionalidad cambian en el tiempo y conviene suavizar (Holt-Winters) o descomponer con STL.</p>
     </div>
@@ -469,7 +463,7 @@ function applyFit() { const d = currentData(); const f = autoFit(d.w, d.y, st.Y)
 function f01Values(p, p95) {
   const S = normQ(p.q);
   return [["Nivel base", fmt(p.level, 1), p.level.toFixed(1)], ["Crecimiento anual", fmt(p.g * 100, 1) + "%", (p.g * 100).toFixed(1)],
-    ...S.map((v, k) => ["Índice " + QN[k], fmt(v, 3), v.toFixed(3)]), ["Coeficiente de variación semanal", fmt(p.cv * 100, 1) + "%", (p.cv * 100).toFixed(1)], ["Percentil 95 semanal", fmt(p95, 1), p95.toFixed(1)]];
+    ...S.map((v, k) => ["Índice " + QN[k], fmt(v, 3), v.toFixed(3)]), ["Coeficiente de variación (CV) semanal", fmt(p.cv * 100, 1) + "%", (p.cv * 100).toFixed(1)], ["Percentil 95 (p95) semanal", fmt(p95, 1), p95.toFixed(1)]];
 }
 
 function render() {
@@ -486,9 +480,9 @@ function render() {
   $("tWape").textContent = fmt(abs / sumY * 100, 2) + "%";
   $("tBias").innerHTML = `<span class="${Math.abs(bias) > 0.01 ? "bad" : "ok"}">${bias > 0 ? "+" : ""}${fmt(bias * 100, 2)}%</span>`;
   $("tCv").textContent = fmt(rcv * 100, 2) + "%";
-  $("tP95k").textContent = "Percentil 95 semanal de " + yearLabel(p.Y);
+  $("tP95k").textContent = "Percentil 95 (p95) semanal de " + yearLabel(p.Y);
   $("tP95").textContent = fmt(p95, 1);
-  $("hCv").innerHTML = `Es el valor que declaras en el pronóstico. El coeficiente de variación de los residuos de tu modelo en la historia es <b>${fmt(rcv * 100, 1)}%</b>: <a href="#" id="useCv">usar ese valor</a>.`;
+  $("hCv").innerHTML = `Es el valor que declaras en el pronóstico. El coeficiente de variación (CV) de los residuos de tu modelo, calculado con los datos históricos, es <b>${fmt(rcv * 100, 1)}%</b>: <a href="#" id="useCv">usar ese valor</a>.`;
   $("useCv").onclick = (e) => { e.preventDefault(); st.cv = rcv; render(); };
   $("f01Year").textContent = yearLabel(p.Y);
   $("f01").innerHTML = f01Values(p, p95).map(([k, v]) => `<div><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
@@ -504,15 +498,15 @@ function renderFormulas(d, p, p95, rcv, wape) {
     ["2. Índice estacional del trimestre", `S<sub>q</sub> = s<sub>q</sub> / ((s<sub>1</sub> + s<sub>2</sub> + s<sub>3</sub> + s<sub>4</sub>) / 4)`, `Constante en las 13 semanas del trimestre; promedio 1. Ahora: ${S.map((v, k) => QN[k] + " = " + fmt(v, 3)).join(", ")}`],
     ["3. Pronóstico de la semana", `ŷ<sub>w</sub> = T<sub>w</sub> · S<sub>q(w)</sub>`, `Semana ${w} (${QN[q]}): ${fmt(p.level * Math.pow(1 + p.g, (w - 52 * p.Y) / 52))} × ${fmt(S[q], 3)} = ${fmt(modelAt(p, w))}`],
     ["4. Residuo multiplicativo", `e<sub>w</sub> = y<sub>w</sub> / ŷ<sub>w</sub> − 1`, `Un residuo de +5% significa que la semana vendió 5% más que el modelo.`],
-    ["5. Coeficiente de variación del residuo (CV)", `CV = √( Σ (e<sub>w</sub> − ē)² / (n − 1) )`, `Desviación estándar de los residuos semanales: cuánto se aleja, en promedio, la demanda real del pronóstico, en porcentaje. Con tu modelo en la historia: ${fmt(rcv * 100, 2)}% (declarado: ${fmt(p.cv * 100, 1)}%).`],
+    ["5. Coeficiente de variación del residuo (CV)", `CV = √( Σ (e<sub>w</sub> − ē)² / (n − 1) )`, `Desviación estándar de los residuos semanales: cuánto se aleja, en promedio, la demanda real del pronóstico, en porcentaje. Con tu modelo, calculado con los datos históricos: ${fmt(rcv * 100, 2)}% (declarado: ${fmt(p.cv * 100, 1)}%).`],
     ["6. Percentil 95 semanal del año (p95)", `(1/52) Σ<sub>w∈año</sub> P( ŷ<sub>w</sub>(1 + ε) > p95 ) = 5%,  ε ~ Normal(0, CV²)`, `El nivel de demanda que solo 5% de las semanas del año supera (1 de cada 20): ${fmt(p95)}. Sirve para dimensionar la capacidad de las semanas altas. Se resuelve por bisección: se prueban valores hasta que la probabilidad promedio de rebasarlo es 5%.`],
-    ["7. Error porcentual absoluto ponderado del ajuste (WAPE)", `WAPE = Σ |y<sub>w</sub> − ŷ<sub>w</sub>| / Σ y<sub>w</sub>`, `Con tu modelo en la historia: ${fmt(wape * 100, 2)}%. Ni con los parámetros verdaderos llega a 0: el choque semanal es impredecible.`],
+    ["7. Error porcentual absoluto ponderado del ajuste (WAPE)", `WAPE = Σ |y<sub>w</sub> − ŷ<sub>w</sub>| / Σ y<sub>w</sub>`, `Con tu modelo, calculado con los datos históricos: ${fmt(wape * 100, 2)}%. Ni con los parámetros verdaderos llega a 0: el choque semanal es impredecible.`],
     ["Cómo se estiman (método de razón a la tendencia)", `ln y<sub>w</sub> ≈ a + b·t  →  S<sub>q</sub> = media(y / e<sup>a+bt</sup>)  →  ln(y / S<sub>q</sub>) ≈ a′ + b′·t`, `Paso 1: tendencia exponencial preliminar con años completos. Paso 2: índices = promedio por trimestre de real ÷ tendencia, normalizados. Paso 3: se desestacionaliza y se reestima: L = e<sup>a′</sup>, g = e<sup>b′</sup> − 1. Paso 4: se corrige el nivel para que el residuo promedie 0 y se calculan el coeficiente de variación y el percentil 95.`],
   ];
   $("formulaList").innerHTML = items.map(([h, f, s]) => `<div><h3>${h}</h3><div class="formula">${f}<div class="sub">${s}</div></div></div>`).join("");
 }
 
-function fileNameFor() { return st.src.file || `hoshi-mart-demanda-${st.src.regionId}-${st.src.seed}-hasta-0.csv`; }
+function fileNameFor() { return st.src.file || `hoshi-mart-demanda-${st.src.regionId}-${st.src.seed}-hasta-${4 * st.Y}.csv`; }
 function pythonText() {
   let code = PY_SOURCE.replace(/^ARCHIVO = .*$/m, `ARCHIVO = "${fileNameFor()}"  # cambia por el nombre de tu archivo`)
     .replace(/^ANIO = \d+/m, `ANIO = ${st.Y}`);
@@ -525,13 +519,13 @@ function renderPython(d) {
   const model = d.w.map((w) => modelAt(f, w)), wape = d.y.reduce((a, v, i) => a + Math.abs(v - model[i]), 0) / d.y.reduce((a, b) => a + b, 0);
   const n = (x, dd) => x.toLocaleString("en-US", { minimumFractionDigits: dd, maximumFractionDigits: dd });
   $("pyOut").textContent = [`Valores para F-01 (año ${yearLabel(st.Y)})`, `  Nivel base:        ${n(f.level, 1)} unidades por tienda por día`, `  Crecimiento anual: ${(f.g * 100).toFixed(1)} %`,
-    ...f.q.map((v, k) => `  Índice T${k + 1}:         ${v.toFixed(3)}`), `  CV semanal:        ${(f.cv * 100).toFixed(1)} %`, `  p95 semanal:       ${n(p95, 1)}`, `  (WAPE del ajuste en la historia: ${(wape * 100).toFixed(2)} %)`].join("\n");
+    ...f.q.map((v, k) => `  Índice T${k + 1}:         ${v.toFixed(3)}`), `  Coeficiente de variación (CV) semanal: ${(f.cv * 100).toFixed(1)} %`, `  Percentil 95 (p95) semanal:   ${n(p95, 1)}`, `  (Error porcentual absoluto ponderado (WAPE) del ajuste, calculado con los datos históricos: ${(wape * 100).toFixed(2)} %)`].join("\n");
 }
 
 // ---------- Fuente de datos ----------
 function setYearOptions() {
   const sel = $("selYear"); sel.innerHTML = "";
-  for (let y = 0; y <= st.maxY; y++) { const o = document.createElement("option"); o.value = y; o.textContent = yearLabel(y) + (y ? " (con las semanas jugadas)" : ""); sel.appendChild(o); }
+  for (let y = 0; y <= st.maxY; y++) { const o = document.createElement("option"); o.value = y; o.textContent = yearLabel(y) + (y ? ` (con los datos hasta ${yearLabel(y - 1)})` : ""); sel.appendChild(o); }
   st.Y = Math.min(st.Y, st.maxY); sel.value = st.Y;
 }
 const suggestedSeed = () => SCEN.find((x) => x.id === $("selScenario").value).seed;
@@ -539,11 +533,11 @@ function loadBuiltIn() {
   const region = $("selRegion").value, scen = SCEN.find((x) => x.id === $("selScenario").value);
   let seed = Math.floor(Number($("nSeed").value));
   if (!Number.isFinite(seed) || seed < 0) { seed = scen.seed; $("nSeed").value = seed; }
-  st.src = { ...parseCsv(HoshiDemanda.historyCsv(region, scen.id, seed), null), file: null, regionId: region, seed };
-  st.maxY = 0; st.Y = 0; setYearOptions();
+  st.maxY = 2; setYearOptions();
+  st.src = { ...parseCsv(HoshiDemanda.historyCsv(region, scen.id, seed, 52 * st.Y), null), file: null, regionId: region, seed };
   if (!st.src[st.col].some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; }
   const regionName = REGIONS.find((r) => r[0] === region)[1];
-  $("srcInfo").innerHTML = `${regionName} · ${scen.title} · semilla aleatoria <b>${seed}</b>${seed === scen.seed ? " (la sugerida del escenario)" : ""} · historia H1–H2 (104 semanas).`;
+  $("srcInfo").innerHTML = `${regionName} · ${scen.title} · semilla aleatoria <b>${seed}</b>${seed === scen.seed ? " (la sugerida del escenario)" : ""} · datos de H1 a ${yearLabel(st.Y - 1)} (${st.src.week.length} semanas).`;
   setLevelRange(); resetModel();
 }
 function parseCsv(text, name) {
@@ -579,12 +573,6 @@ $("fileCsv").addEventListener("change", (e) => {
 function downloadText(name, text, type) {
   const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
 }
-$("btnDownload").addEventListener("click", () => {
-  const s = st.src, cols = ["frescos", "refrigerado", "ambiente", "congelado", "total"];
-  const rows = ["semana,anio,trimestre,semana_del_anio," + cols.join(",")];
-  s.week.forEach((w, i) => { const y = Math.floor(w / 52); rows.push([w, yearLabel(y), QN[quarterOf(w)], ((w % 52) + 52) % 52 + 1, ...cols.map((c) => Number.isFinite(s[c][i]) ? s[c][i].toFixed(1) : "")].join(",")); });
-  downloadText(fileNameFor(), rows.join("\n") + "\n", "text/csv");
-});
 function copy(text, msgId) {
   const done = () => { $(msgId).textContent = "Copiado"; setTimeout(() => $(msgId).textContent = "", 1800); };
   if (navigator.clipboard) navigator.clipboard.writeText(text).then(done, () => fallback()); else fallback();
@@ -603,7 +591,7 @@ $("selScenario").addEventListener("change", () => { $("nSeed").value = suggested
 $("nSeed").addEventListener("change", loadBuiltIn);
 $("btnSeedDefault").addEventListener("click", () => { $("nSeed").value = suggestedSeed(); loadBuiltIn(); });
 $("selCol").addEventListener("change", () => { st.col = $("selCol").value; if (!(st.src[st.col] || []).some((x) => x > 0)) { st.col = "total"; $("selCol").value = "total"; } $("colNote").style.display = st.col === "total" ? "none" : "block"; setLevelRange(); resetModel(); });
-$("selYear").addEventListener("change", () => { st.Y = Number($("selYear").value); setLevelRange(); resetModel(); });
+$("selYear").addEventListener("change", () => { st.Y = Number($("selYear").value); if (!st.src.file) loadBuiltIn(); else { setLevelRange(); resetModel(); } });
 bind("rLevel", "nLevel", () => st.level, (v) => { st.level = Math.max(1, v); }, (x) => x, (x) => x, 1);
 bind("rGrowth", "nGrowth", () => st.g, (v) => { st.g = v; }, (x) => x * 100, (x) => x / 100, 1);
 bind("rCv", "nCv", () => st.cv, (v) => { st.cv = Math.max(0, v); }, (x) => x * 100, (x) => x / 100, 1);

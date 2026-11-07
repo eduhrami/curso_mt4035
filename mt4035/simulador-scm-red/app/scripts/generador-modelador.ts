@@ -11,12 +11,15 @@ import type { Params, RegionId } from "../src/types.ts";
 
 const params = paramsJson as Params;
 
-/** CSV de la historia (104 semanas) igual al que descarga el simulador al inicio de la partida (A1-T1). */
-export function historyCsv(region: RegionId, presetId: string, seed: number): string {
+/**
+ * CSV igual al que descarga el simulador: la historia (104 semanas) y las semanas anteriores a `untilWeek`
+ * (0 = A1-T1, 52 = A2-T1, 104 = A3-T1). Es la demanda del mercado: no depende de las decisiones del equipo.
+ */
+export function historyCsv(region: RegionId, presetId: string, seed: number, untilWeek = 0): string {
   const preset = PRESETS.find((p) => p.id === presetId);
   if (!preset) throw new Error(`Escenario desconocido: ${presetId}`);
   const truth = drawTruth(createRng(seed), params, region, preset.market);
-  return demandCsv({ truth, region, market: preset.market }, params, seed, 0, 1);
+  return demandCsv({ truth, region, market: preset.market }, params, seed, untilWeek, 1);
 }
 
 export const presets = PRESETS.map((p) => ({ id: p.id, title: p.title, seed: p.seed }));

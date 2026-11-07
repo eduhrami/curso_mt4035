@@ -9,7 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 ARCHIVO = "hoshi-mart-demanda-kaigan-4101-hasta-0.csv"  # cambia por el nombre de tu archivo
-ANIO = 0   # año que pronosticas: 0 = A1, 1 = A2, 2 = A3 (en A2 y A3 el CSV trae también las semanas jugadas)
+ANIO = 0   # año que pronosticas: 0 = A1, 1 = A2, 2 = A3 (para A2 y A3 el CSV trae también los años anteriores)
 
 df = pd.read_csv(ARCHIVO)
 df = df[df["semana"] < 52 * ANIO].copy()  # toda la historia disponible antes del año a pronosticar
@@ -34,13 +34,13 @@ b, a = np.polyfit(t, np.log(desest), 1)
 L = math.exp(a)            # nivel en la semana 0 (inicio de A1), índice 1
 g = math.exp(b) - 1        # crecimiento anual compuesto
 
-# Celda 5 · Paso 4: modelo, residuo, CV y p95 del año a pronosticar
+# Celda 5 · Paso 4: modelo, residuo, coeficiente de variación (CV) y percentil 95 (p95) del año a pronosticar
 modelo = L * (1 + g) ** t * S[q]
 residuo = y / modelo - 1
 L = L * (1 + residuo.mean())          # corrige el sesgo del logaritmo (residuo promedio 0)
 modelo = L * (1 + g) ** t * S[q]
 residuo = y / modelo - 1
-CV = residuo.std(ddof=1)
+CV = residuo.std(ddof=1)               # coeficiente de variación (CV) del residuo semanal
 
 nivel_anio = L * (1 + g) ** ANIO      # nivel base al inicio del año a pronosticar
 semanas = np.arange(52 * ANIO, 52 * ANIO + 52)
@@ -56,15 +56,15 @@ for _ in range(60):              # bisección: el valor que solo 5% de las seman
     lo, hi = (mid, hi) if cola(mid) > 0.05 else (lo, mid)
 p95 = (lo + hi) / 2
 
-wape = np.abs(y - modelo).sum() / y.sum()
+wape = np.abs(y - modelo).sum() / y.sum()  # error porcentual absoluto ponderado (WAPE)
 print(f"Valores para F-01 (año A{ANIO + 1})")
 print(f"  Nivel base:        {nivel_anio:,.1f} unidades por tienda por día")
 print(f"  Crecimiento anual: {g * 100:.1f} %")
 for k in range(4):
     print(f"  Índice T{k + 1}:         {S[k]:.3f}")
-print(f"  CV semanal:        {CV * 100:.1f} %")
-print(f"  p95 semanal:       {p95:,.1f}")
-print(f"  (WAPE del ajuste en la historia: {wape * 100:.2f} %)")
+print(f"  Coeficiente de variación (CV) semanal: {CV * 100:.1f} %")
+print(f"  Percentil 95 (p95) semanal:   {p95:,.1f}")
+print(f"  (Error porcentual absoluto ponderado (WAPE) del ajuste, calculado con los datos históricos: {wape * 100:.2f} %)")
 
 # Celda 6 · Gráficas: serie real, modelo y pronóstico del año con su p95
 fig, ax = plt.subplots(3, 1, figsize=(10, 9), sharex=False)
